@@ -580,6 +580,84 @@
       text-align: center;
     }
 
+    .profile-photo-error-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1.5rem, 4vw, 2.75rem);
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(6px);
+      z-index: 7200;
+    }
+
+    .profile-photo-error-overlay[hidden] {
+      display: none;
+    }
+
+    .profile-photo-error-modal {
+      width: min(360px, 100%);
+      background: #ffffff;
+      color: var(--neutral-900, #0f172a);
+      border-radius: 1.25rem;
+      padding: clamp(1.5rem, 3.5vw, 2rem);
+      box-shadow: 0 28px 60px rgba(15, 23, 42, 0.28);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .profile-photo-error-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 999px;
+      margin: 0 auto;
+      display: grid;
+      place-items: center;
+      background: rgba(239, 68, 68, 0.15);
+      color: #dc2626;
+      font-size: 1.4rem;
+    }
+
+    .profile-photo-error-title {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .profile-photo-error-message {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--neutral-700, #334155);
+      line-height: 1.5;
+    }
+
+    .profile-photo-error-close {
+      align-self: center;
+      border: none;
+      border-radius: 999px;
+      padding: 0.65rem 1.75rem;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .profile-photo-error-close:hover,
+    .profile-photo-error-close:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+      outline: none;
+    }
+
+    body.profile-photo-error-lock {
+      overflow: hidden;
+    }
+
     .profile-photo-reminder {
       margin-top: 1rem;
       font-size: 0.9rem;
@@ -947,6 +1025,16 @@
         </div>
         <p id="profile-photo-reminder" class="profile-photo-reminder">Recuerda: la foto debe mostrar solo tu rostro real, sin otras personas, dibujos ni mascarillas.</p>
       </div>
+    </div>
+  </div>
+  <div id="profile-photo-error-overlay" class="profile-photo-error-overlay" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="profile-photo-error-title" aria-describedby="profile-photo-error-message">
+    <div class="profile-photo-error-modal" role="document">
+      <div class="profile-photo-error-icon" aria-hidden="true">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h2 id="profile-photo-error-title" class="profile-photo-error-title">Tu imagen es demasiado pesada</h2>
+      <p id="profile-photo-error-message" class="profile-photo-error-message" data-profile-photo-error-message>El archivo supera los 2&nbsp;MB permitidos. Por favor elige una imagen más ligera.</p>
+      <button type="button" class="profile-photo-error-close" data-profile-photo-error-close>Cerrar</button>
     </div>
   </div>
   <div id="account-block-overlay" class="withdrawal-overlay">
