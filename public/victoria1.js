@@ -55,12 +55,55 @@
       var confirmBtn = document.getElementById('profile-photo-confirm');
       var changeBtn = document.getElementById('profile-photo-change');
       var reminderText = document.getElementById('profile-photo-reminder');
+      var errorOverlay = document.getElementById('profile-photo-error-overlay');
+      var errorOverlayMessage = errorOverlay ? errorOverlay.querySelector('[data-profile-photo-error-message]') : null;
+      var errorOverlayClose = errorOverlay ? errorOverlay.querySelector('[data-profile-photo-error-close]') : null;
+      var defaultOverlayMessage = errorOverlayMessage ? errorOverlayMessage.textContent : '';
+      var lastFocusedElement = null;
       if (!overlay || !fileInput) {
         return;
       }
 
       var MAX_SIZE = 2 * 1024 * 1024;
       var pendingPhoto = '';
+
+      function showErrorOverlay(message) {
+        if (!errorOverlay) {
+          return false;
+        }
+        lastFocusedElement = document.activeElement;
+        errorOverlay.hidden = false;
+        errorOverlay.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('profile-photo-error-lock');
+        if (errorOverlayMessage) {
+          errorOverlayMessage.textContent = message || defaultOverlayMessage;
+        }
+        if (errorOverlayClose) {
+          try {
+            errorOverlayClose.focus();
+          } catch (e) {}
+        }
+        return true;
+      }
+
+      function hideErrorOverlay() {
+        if (!errorOverlay) {
+          return;
+        }
+        errorOverlay.hidden = true;
+        errorOverlay.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('profile-photo-error-lock');
+        if (errorOverlayMessage) {
+          errorOverlayMessage.textContent = defaultOverlayMessage;
+        }
+        var target = lastFocusedElement && typeof lastFocusedElement.focus === 'function' ? lastFocusedElement : fileInput;
+        if (target && typeof target.focus === 'function') {
+          try {
+            target.focus();
+          } catch (e) {}
+        }
+        lastFocusedElement = null;
+      }
 
       function safeGet(storage, key) {
         try {
@@ -112,6 +155,7 @@
         overlay.hidden = true;
         overlay.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('profile-photo-lock');
+        hideErrorOverlay();
       }
 
       function updateHeaderAvatar(dataUrl) {
@@ -253,6 +297,7 @@
               errorMessage.textContent = 'Selecciona una imagen que muestre claramente tu rostro antes de continuar.';
               errorMessage.hidden = false;
             }
+            showErrorOverlay('Selecciona una imagen que muestre claramente tu rostro antes de continuar.');
             return;
           }
           finalizePhoto(pendingPhoto);
@@ -271,6 +316,7 @@
             errorMessage.textContent = 'El archivo supera los 2 MB permitidos. Por favor elige una imagen más ligera.';
             errorMessage.hidden = false;
           }
+          showErrorOverlay('El archivo supera los 2 MB permitidos. Por favor elige una imagen más ligera.');
           resetPreview();
           return;
         }
@@ -331,9 +377,31 @@
             errorMessage.textContent = 'No se pudo leer la imagen seleccionada. Intenta nuevamente.';
             errorMessage.hidden = false;
           }
+          showErrorOverlay('No se pudo leer la imagen seleccionada. Intenta nuevamente.');
           resetPreview();
         };
         reader.readAsDataURL(file);
+      });
+
+      if (errorOverlayClose) {
+        errorOverlayClose.addEventListener('click', function () {
+          hideErrorOverlay();
+        });
+      }
+
+      if (errorOverlay) {
+        errorOverlay.addEventListener('click', function (event) {
+          if (event.target === errorOverlay) {
+            hideErrorOverlay();
+          }
+        });
+      }
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && errorOverlay && !errorOverlay.hidden) {
+          event.preventDefault();
+          hideErrorOverlay();
+        }
       });
     });
     window.addEventListener('DOMContentLoaded', function () {
