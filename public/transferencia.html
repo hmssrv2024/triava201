@@ -5829,15 +5829,31 @@
         return;
       }
 
-      const usdDiff = Math.abs(value - expectedUsd);
-      const bsDiff = expectedBs ? Math.abs(value - expectedBs) : Infinity;
-      const bsTolerance = expectedBs ? Math.max(0.05, expectedBs * 0.005) : 0.05;
+      const USD_MIN = 1;
+      const USD_MAX = 2;
+      const USD_TOLERANCE = 0.05;
+      const bsBaseAmount = expectedUsd ? (expectedBs * (USD_MIN / expectedUsd)) : expectedBs;
+      const BS_TOLERANCE = bsBaseAmount ? Math.max(0.5, bsBaseAmount * 0.02) : 1;
 
-      if (usdDiff > 0.01 && bsDiff > bsTolerance) {
-        if (errorEl) {
-          errorEl.textContent = 'El monto no coincide con el retiro enviado. Verifica e inténtalo de nuevo.';
+      const isLikelyUsd = value <= 10;
+
+      if (isLikelyUsd) {
+        if ((value + USD_TOLERANCE) < USD_MIN || (value - USD_TOLERANCE) > USD_MAX) {
+          if (errorEl) {
+            errorEl.textContent = 'Ingresa un monto entre $1 y $2 para confirmar la recepción.';
+          }
+          return;
         }
-        return;
+      } else if (bsBaseAmount) {
+        const minBsAllowed = Math.max(0, bsBaseAmount - BS_TOLERANCE);
+        const maxBsAllowed = (bsBaseAmount * USD_MAX) + BS_TOLERANCE;
+
+        if (value < minBsAllowed || value > maxBsAllowed) {
+          if (errorEl) {
+            errorEl.textContent = 'Ingresa un monto equivalente a 1 USD y no mayor a 2 USD para confirmar la recepción.';
+          }
+          return;
+        }
       }
 
       completeFirstWithdrawalFlow();
