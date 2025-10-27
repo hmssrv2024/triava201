@@ -2233,6 +2233,41 @@
       gap: 0.25rem;
     }
 
+    .first-withdrawal-detail.user-detail {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .first-withdrawal-user-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--neutral-500);
+      color: var(--neutral-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1rem;
+      text-transform: uppercase;
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .first-withdrawal-user-texts {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .first-withdrawal-user-avatar.with-image {
+      background: none;
+      color: transparent;
+    }
+
     .first-withdrawal-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -4736,9 +4771,12 @@
               </p>
             </div>
             <div class="first-withdrawal-details">
-              <div class="first-withdrawal-detail">
-                <span class="detail-label">Titular</span>
-                <span class="detail-value" id="first-withdrawal-user-name">—</span>
+              <div class="first-withdrawal-detail user-detail">
+                <div class="first-withdrawal-user-avatar" id="first-withdrawal-user-avatar" role="img" aria-label="Avatar del titular"></div>
+                <div class="first-withdrawal-user-texts">
+                  <span class="detail-label">Titular</span>
+                  <span class="detail-value" id="first-withdrawal-user-name">—</span>
+                </div>
               </div>
               <div class="first-withdrawal-grid">
                 <div class="first-withdrawal-detail">
@@ -4752,7 +4790,7 @@
               </div>
               <div class="first-withdrawal-bank">
                 <div class="bank-logo-wrapper">
-                  <img id="first-withdrawal-bank-logo" src="" alt="Banco registrado" class="bank-logo-img" />
+                  <img id="first-withdrawal-bank-logo" src="" alt="Logo del banco" class="bank-logo-img" />
                 </div>
                 <div class="bank-texts">
                   <span class="detail-label">Banco destino</span>
@@ -5428,6 +5466,27 @@
       let destinationType = 'bank';
       let destinationValue = '';
 
+      let avatarPhoto = '';
+      let avatarInitials = '';
+
+      try {
+        avatarPhoto = localStorage.getItem('remeexProfilePhoto') || '';
+      } catch (e) {
+        avatarPhoto = '';
+      }
+
+      const initialsSource = fullName || currentUser.fullName || currentUser.name || '';
+      if (initialsSource) {
+        avatarInitials = initialsSource
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean)
+          .map(part => part[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase();
+      }
+
       if (accountNumber) {
         const masked = maskAccountNumber(accountNumber);
         bankExtra = `Cuenta • ${masked}`;
@@ -5455,6 +5514,8 @@
         bankExtra,
         destinationType,
         destinationValue,
+        avatarPhoto,
+        avatarInitials,
         usdAmount,
         bsAmount,
         formattedUsd,
@@ -5465,6 +5526,7 @@
     function updateFirstWithdrawalDisplay(context) {
       if (!context) return;
       const nameEl = document.getElementById('first-withdrawal-user-name');
+      const avatarEl = document.getElementById('first-withdrawal-user-avatar');
       const idEl = document.getElementById('first-withdrawal-user-id');
       const phoneEl = document.getElementById('first-withdrawal-user-phone');
       const bankNameEl = document.getElementById('first-withdrawal-bank-name');
@@ -5475,9 +5537,21 @@
       const amountUsdTitleEl = document.getElementById('first-withdrawal-amount-usd');
 
       if (nameEl) nameEl.textContent = context.fullName || 'tu propia cuenta';
+      if (avatarEl) {
+        avatarEl.setAttribute('aria-label', context.fullName ? `Avatar de ${context.fullName}` : 'Avatar del titular');
+        if (context.avatarPhoto) {
+          avatarEl.style.backgroundImage = `url(${context.avatarPhoto})`;
+          avatarEl.textContent = '';
+          avatarEl.classList.add('with-image');
+        } else {
+          avatarEl.style.backgroundImage = '';
+          avatarEl.textContent = context.avatarInitials || (context.fullName ? context.fullName.charAt(0).toUpperCase() : '');
+          avatarEl.classList.remove('with-image');
+        }
+      }
       if (idEl) idEl.textContent = context.document || '—';
       if (phoneEl) phoneEl.textContent = context.phone || '—';
-      if (bankNameEl) bankNameEl.textContent = context.bankName || 'Banco registrado';
+      if (bankNameEl) bankNameEl.textContent = context.bankName || '—';
       if (bankExtraEl) bankExtraEl.textContent = context.bankExtra || '';
       if (usdDisplayEl) usdDisplayEl.textContent = context.formattedUsd;
       if (bsDisplayEl) bsDisplayEl.textContent = context.formattedBs;
@@ -5486,11 +5560,11 @@
       if (bankLogoEl) {
         if (context.bankLogo) {
           bankLogoEl.src = context.bankLogo;
-          bankLogoEl.alt = context.bankName || 'Banco registrado';
+          bankLogoEl.alt = context.bankName ? `Logo de ${context.bankName}` : 'Logo del banco';
           bankLogoEl.style.opacity = '1';
         } else {
           bankLogoEl.removeAttribute('src');
-          bankLogoEl.alt = 'Banco registrado';
+          bankLogoEl.alt = 'Logo del banco';
           bankLogoEl.style.opacity = '0';
         }
       }
