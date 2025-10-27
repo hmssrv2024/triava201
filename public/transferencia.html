@@ -2120,6 +2120,290 @@
       font-size: 0.9rem;
     }
 
+    .btn-large {
+      width: 100%;
+      height: 48px;
+      font-size: 0.95rem;
+    }
+
+    .btn-link {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.25rem;
+      height: auto;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: color 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-link i {
+      margin-right: 0.35rem;
+      font-size: 0.95rem;
+    }
+
+    .btn-link:hover {
+      color: var(--primary-light);
+    }
+
+    .first-withdrawal-container {
+      width: 100%;
+      max-width: 520px;
+      padding: 0 1.5rem;
+    }
+
+    .first-withdrawal-card {
+      background: var(--neutral-100);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      padding: 2rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .first-withdrawal-step {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .first-withdrawal-step.active {
+      display: flex;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .first-withdrawal-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.75rem;
+    }
+
+    .first-withdrawal-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-full);
+      background: rgba(26, 31, 113, 0.08);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+    }
+
+    .first-withdrawal-icon.success {
+      background: rgba(0, 211, 77, 0.12);
+      color: var(--success);
+    }
+
+    .first-withdrawal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .first-withdrawal-subtitle {
+      font-size: 0.95rem;
+      color: var(--neutral-700);
+      line-height: 1.5;
+    }
+
+    .first-withdrawal-details {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .first-withdrawal-detail {
+      background: var(--neutral-200);
+      border-radius: var(--radius-lg);
+      padding: 0.9rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .first-withdrawal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .first-withdrawal-bank {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      padding: 0.95rem 1rem;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(26, 31, 113, 0.08), rgba(12, 16, 69, 0.08));
+    }
+
+    .bank-logo-wrapper {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-lg);
+      background: var(--neutral-100);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .bank-logo-img {
+      max-width: 48px;
+      max-height: 48px;
+      object-fit: contain;
+    }
+
+    .bank-texts {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .detail-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      color: var(--neutral-600);
+      text-transform: uppercase;
+    }
+
+    .detail-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+      word-break: break-word;
+    }
+
+    .detail-caption {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+    }
+
+    .first-withdrawal-amount-card {
+      border-radius: var(--radius-xl);
+      background: var(--neutral-100);
+      box-shadow: inset 0 0 0 1px rgba(26, 31, 113, 0.08);
+      padding: 1rem 1.25rem;
+    }
+
+    .amount-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .amount-divider {
+      width: 1px;
+      height: 48px;
+      background: rgba(26, 31, 113, 0.12);
+      justify-self: center;
+    }
+
+    .amount-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: block;
+    }
+
+    .amount-secondary {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--neutral-800);
+    }
+
+    .first-withdrawal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .first-withdrawal-processing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    .first-withdrawal-spinner {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      border: 4px solid rgba(26, 31, 113, 0.15);
+      border-top-color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    .first-withdrawal-confirmation {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      text-align: left;
+    }
+
+    .confirmation-input {
+      width: 100%;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--neutral-400);
+      padding: 0.85rem 1rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: var(--neutral-100);
+    }
+
+    .confirmation-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.15);
+    }
+
+    .field-error {
+      font-size: 0.85rem;
+      color: var(--danger);
+      min-height: 1em;
+    }
+
+    .confirmation-hint {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+      line-height: 1.4;
+    }
+
+    @media (max-width: 480px) {
+      .first-withdrawal-card {
+        padding: 1.75rem 1.25rem;
+      }
+
+      .first-withdrawal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .amount-row {
+        grid-template-columns: 1fr;
+      }
+
+      .amount-divider {
+        display: none;
+      }
+    }
+
 
     .confirmation-message {
       font-size: 0.9rem;
@@ -4437,17 +4721,104 @@
       </div>
     </div>
 
-    <!-- Advertencia para datos del titular -->
+    <!-- Flujo guiado para el primer retiro obligatorio -->
     <div id="first-withdrawal-overlay" class="modal-overlay">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title">Tu primer retiro</h3>
-        </div>
-        <div class="modal-body">
-          <p>Por seguridad, el primer retiro debe realizarse a una cuenta a nombre de <strong id="first-withdrawal-owner-name">tu propia cuenta</strong>. Después de completar tu primer retiro podrás registrar cuentas de terceros para próximos retiros.</p>
-        </div>
-        <div class="modal-footer confirm-modal">
-          <button id="first-withdrawal-overlay-btn" class="btn btn-primary">Entendido</button>
+      <div class="first-withdrawal-container">
+        <div class="first-withdrawal-card">
+          <div class="first-withdrawal-step active" data-step="intro">
+            <div class="first-withdrawal-hero">
+              <div class="first-withdrawal-icon">
+                <i class="fas fa-bolt"></i>
+              </div>
+              <h3 class="first-withdrawal-title">Activa tus retiros</h3>
+              <p class="first-withdrawal-subtitle">
+                Antes de comenzar a retirar, enviaremos un retiro de validación de <strong id="first-withdrawal-amount-usd">$1.00</strong> a tu cuenta registrada.
+              </p>
+            </div>
+            <div class="first-withdrawal-details">
+              <div class="first-withdrawal-detail">
+                <span class="detail-label">Titular</span>
+                <span class="detail-value" id="first-withdrawal-user-name">—</span>
+              </div>
+              <div class="first-withdrawal-grid">
+                <div class="first-withdrawal-detail">
+                  <span class="detail-label">Documento</span>
+                  <span class="detail-value" id="first-withdrawal-user-id">—</span>
+                </div>
+                <div class="first-withdrawal-detail">
+                  <span class="detail-label">Teléfono móvil</span>
+                  <span class="detail-value" id="first-withdrawal-user-phone">—</span>
+                </div>
+              </div>
+              <div class="first-withdrawal-bank">
+                <div class="bank-logo-wrapper">
+                  <img id="first-withdrawal-bank-logo" src="" alt="Banco registrado" class="bank-logo-img" />
+                </div>
+                <div class="bank-texts">
+                  <span class="detail-label">Banco destino</span>
+                  <span class="detail-value" id="first-withdrawal-bank-name">—</span>
+                  <span class="detail-caption" id="first-withdrawal-bank-extra"></span>
+                </div>
+              </div>
+              <div class="first-withdrawal-amount-card">
+                <div class="amount-row">
+                  <div>
+                    <span class="detail-label">Monto de validación</span>
+                    <span class="amount-value" id="first-withdrawal-usd-amount-display">$1.00</span>
+                  </div>
+                  <div class="amount-divider"></div>
+                  <div>
+                    <span class="detail-label">Equivalente estimado</span>
+                    <span class="amount-secondary" id="first-withdrawal-bs-amount-display">Bs 0,00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="first-withdrawal-actions">
+              <button id="first-withdrawal-start-btn" class="btn btn-primary btn-large">
+                <i class="fas fa-paper-plane"></i> Retirar 1 USD de mi cuenta
+              </button>
+              <button class="btn btn-link first-withdrawal-change" type="button">
+                <i class="fas fa-user-edit"></i> Estos no son mis datos, quiero cambiarlo
+              </button>
+            </div>
+          </div>
+
+          <div class="first-withdrawal-step" data-step="processing">
+            <div class="first-withdrawal-processing">
+              <div class="first-withdrawal-spinner" aria-hidden="true"></div>
+              <h3>Enviando tu validación</h3>
+              <p>Estamos transfiriendo el monto de prueba a tu cuenta bancaria. Esto puede tardar unos segundos.</p>
+            </div>
+          </div>
+
+          <div class="first-withdrawal-step" data-step="confirmation">
+            <div class="first-withdrawal-hero">
+              <div class="first-withdrawal-icon success">
+                <i class="fas fa-shield-check"></i>
+              </div>
+              <h3 class="first-withdrawal-title">Confirma la recepción</h3>
+              <p class="first-withdrawal-subtitle">
+                Revisa el estado de tu banco y escribe el monto exacto que recibiste para finalizar la activación de retiros.
+              </p>
+            </div>
+            <div class="first-withdrawal-confirmation">
+              <label for="first-withdrawal-confirm-amount" class="detail-label">Monto recibido</label>
+              <input id="first-withdrawal-confirm-amount" type="text" inputmode="decimal" placeholder="Ej: Bs 151,10" class="confirmation-input" autocomplete="off">
+              <div id="first-withdrawal-error" class="field-error" role="alert"></div>
+              <div class="confirmation-hint">
+                Si recibiste el equivalente en bolívares, introdúcelo tal como aparece en tu estado. También aceptamos <strong>1,00</strong> como confirmación en dólares.
+              </div>
+            </div>
+            <div class="first-withdrawal-actions">
+              <button id="first-withdrawal-confirm-btn" class="btn btn-primary btn-large">
+                Confirmé mi retiro de validación
+              </button>
+              <button class="btn btn-link first-withdrawal-change" type="button">
+                <i class="fas fa-user-edit"></i> Estos no son mis datos, quiero cambiarlo
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -4834,6 +5205,21 @@
 
     let cachedOwnerName = '';
 
+    const OWNER_FIELD_IDS = [
+      'mobile-id',
+      'mobile-name',
+      'account-id',
+      'account-name',
+      'classic-mobile-id',
+      'classic-mobile-name',
+      'classic-account-id',
+      'classic-account-name'
+    ];
+
+    let firstWithdrawalContext = null;
+    let firstWithdrawalProcessingTimer = null;
+    const SUPPORT_WHATSAPP = '+17373018059';
+
     function extractFullName(data) {
       if (!data || typeof data !== 'object') return '';
       if (typeof data.fullName === 'string' && data.fullName.trim()) {
@@ -4891,10 +5277,557 @@
     }
 
     function updateFirstWithdrawalOverlayName(field) {
-      const overlayNameEl = document.getElementById('first-withdrawal-owner-name');
+      const overlayNameEl = document.getElementById('first-withdrawal-user-name');
       if (!overlayNameEl) return;
       const ownerName = getOwnerDisplayName(field);
       overlayNameEl.textContent = ownerName || 'tu propia cuenta';
+    }
+
+    function isFirstWithdrawalCompleted() {
+      return localStorage.getItem('firstWithdrawalDone') === 'true';
+    }
+
+    function parseStoredObject(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function buildFullPhoneNumber(data) {
+      if (!data || typeof data !== 'object') return '';
+      let fullPhone = '';
+      const candidates = [
+        data.phoneNumberFull,
+        data.fullPhoneNumber,
+        data.phoneFull,
+        data.mobileNumberFull,
+        data.phone,
+        data.phoneNumber,
+        data.mobileNumber,
+        data.phoneNumberShort
+      ];
+
+      for (const candidate of candidates) {
+        if (typeof candidate === 'string' && candidate.trim()) {
+          fullPhone = candidate.trim();
+          break;
+        }
+      }
+
+      if (!fullPhone && data.phonePrefix && data.phoneNumber) {
+        fullPhone = `${data.phonePrefix}${data.phoneNumber}`;
+      }
+
+      fullPhone = fullPhone || '';
+      const digits = fullPhone.replace(/\D/g, '');
+
+      if (digits.length === 7 && data.phonePrefix) {
+        return `${data.phonePrefix.replace(/\D/g, '')}${digits}`;
+      }
+
+      if (digits) {
+        return digits.startsWith('58') ? `+${digits}` : digits;
+      }
+
+      return fullPhone.trim();
+    }
+
+    function formatDisplayPhone(phone) {
+      if (!phone) return '';
+      const digits = phone.replace(/\D/g, '');
+      if (!digits) return phone.trim();
+
+      if (digits.length === 12 && digits.startsWith('58')) {
+        return `+${digits.slice(0, 2)} ${digits.slice(2, 5)}-${digits.slice(5, 8)}-${digits.slice(8)}`;
+      }
+
+      if (digits.length === 11 && digits.startsWith('0')) {
+        return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+      }
+
+      if (digits.length === 10) {
+        return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+      }
+
+      if (digits.length === 12 && digits.startsWith('0')) {
+        return `${digits.slice(0, 4)}-${digits.slice(4, 8)}-${digits.slice(8)}`;
+      }
+
+      return phone.trim();
+    }
+
+    function maskAccountNumber(value) {
+      if (!value) return '';
+      const digits = String(value).replace(/\D/g, '');
+      if (digits.length >= 4) {
+        return `****${digits.slice(-4)}`;
+      }
+      return String(value);
+    }
+
+    function getBankInfoById(bankId) {
+      if (!bankId || !CONFIG || !CONFIG.BANKS) return null;
+      const nationalBanks = Array.isArray(CONFIG.BANKS.NACIONAL) ? CONFIG.BANKS.NACIONAL : [];
+      return nationalBanks.find(bank => bank.id === bankId) || null;
+    }
+
+    function buildFirstWithdrawalContext() {
+      const registration = parseStoredObject('visaRegistrationCompleted');
+      const userData = parseStoredObject('visaUserData');
+      const banking = parseStoredObject('remeexVerificationBanking');
+
+      const combined = Object.assign({}, registration, userData, banking);
+
+      const fullName = getOwnerDisplayName() || combined.fullName || '';
+      const documentCandidates = [
+        banking.accountId,
+        combined.documentNumber,
+        combined.idNumber,
+        combined.identification,
+        combined.cedula
+      ];
+
+      let document = '';
+      for (const candidate of documentCandidates) {
+        if (typeof candidate === 'string' && candidate.trim()) {
+          document = candidate.trim();
+          break;
+        }
+      }
+
+      const rawPhone = buildFullPhoneNumber(combined);
+      const displayPhone = formatDisplayPhone(rawPhone);
+
+      let bankName = '';
+      let bankLogo = '';
+
+      if (selectedBank) {
+        bankName = selectedBank.name || '';
+        bankLogo = selectedBank.logo || '';
+      } else if (banking.bankName) {
+        bankName = banking.bankName;
+      }
+
+      const bankInfo = banking.bankId ? getBankInfoById(banking.bankId) : null;
+      if (!bankLogo && bankInfo && bankInfo.logo) {
+        bankLogo = bankInfo.logo;
+      }
+      if (!bankName && bankInfo && bankInfo.name) {
+        bankName = bankInfo.name;
+      }
+
+      const accountNumber = banking.accountNumber || combined.accountNumber || '';
+      const mobileDestination = banking.mobileNumber || combined.mobileNumber || '';
+
+      let bankExtra = '';
+      let destinationType = 'bank';
+      let destinationValue = '';
+
+      if (accountNumber) {
+        const masked = maskAccountNumber(accountNumber);
+        bankExtra = `Cuenta • ${masked}`;
+        destinationType = 'bank';
+        destinationValue = masked;
+      } else if (mobileDestination || displayPhone) {
+        const formattedMobile = formatDisplayPhone(mobileDestination || displayPhone);
+        bankExtra = formattedMobile ? `Pago móvil • ${formattedMobile}` : '';
+        destinationType = 'mobile';
+        destinationValue = formattedMobile || mobileDestination || displayPhone;
+      }
+
+      const usdAmount = 1;
+      const usdToBs = Number(CONFIG.EXCHANGE_RATES.USD_TO_BS) || 0;
+      const bsAmount = usdToBs > 0 ? parseFloat((usdAmount * usdToBs).toFixed(2)) : 0;
+      const formattedUsd = formatCurrency(usdAmount, 'usd');
+      const formattedBs = bsAmount ? formatCurrency(bsAmount, 'bs') : 'Bs 0,00';
+
+      return {
+        fullName,
+        document,
+        phone: displayPhone || rawPhone || '',
+        bankName,
+        bankLogo,
+        bankExtra,
+        destinationType,
+        destinationValue,
+        usdAmount,
+        bsAmount,
+        formattedUsd,
+        formattedBs
+      };
+    }
+
+    function updateFirstWithdrawalDisplay(context) {
+      if (!context) return;
+      const nameEl = document.getElementById('first-withdrawal-user-name');
+      const idEl = document.getElementById('first-withdrawal-user-id');
+      const phoneEl = document.getElementById('first-withdrawal-user-phone');
+      const bankNameEl = document.getElementById('first-withdrawal-bank-name');
+      const bankExtraEl = document.getElementById('first-withdrawal-bank-extra');
+      const bankLogoEl = document.getElementById('first-withdrawal-bank-logo');
+      const usdDisplayEl = document.getElementById('first-withdrawal-usd-amount-display');
+      const bsDisplayEl = document.getElementById('first-withdrawal-bs-amount-display');
+      const amountUsdTitleEl = document.getElementById('first-withdrawal-amount-usd');
+
+      if (nameEl) nameEl.textContent = context.fullName || 'tu propia cuenta';
+      if (idEl) idEl.textContent = context.document || '—';
+      if (phoneEl) phoneEl.textContent = context.phone || '—';
+      if (bankNameEl) bankNameEl.textContent = context.bankName || 'Banco registrado';
+      if (bankExtraEl) bankExtraEl.textContent = context.bankExtra || '';
+      if (usdDisplayEl) usdDisplayEl.textContent = context.formattedUsd;
+      if (bsDisplayEl) bsDisplayEl.textContent = context.formattedBs;
+      if (amountUsdTitleEl) amountUsdTitleEl.textContent = context.formattedUsd;
+
+      if (bankLogoEl) {
+        if (context.bankLogo) {
+          bankLogoEl.src = context.bankLogo;
+          bankLogoEl.alt = context.bankName || 'Banco registrado';
+          bankLogoEl.style.opacity = '1';
+        } else {
+          bankLogoEl.removeAttribute('src');
+          bankLogoEl.alt = 'Banco registrado';
+          bankLogoEl.style.opacity = '0';
+        }
+      }
+    }
+
+    function showFirstWithdrawalOverlay(step = 'intro') {
+      const overlay = document.getElementById('first-withdrawal-overlay');
+      if (!overlay) return;
+
+      overlay.style.display = 'flex';
+      overlay.setAttribute('data-step', step);
+
+      const steps = overlay.querySelectorAll('.first-withdrawal-step');
+      steps.forEach(element => {
+        if (element.getAttribute('data-step') === step) {
+          element.classList.add('active');
+        } else {
+          element.classList.remove('active');
+        }
+      });
+    }
+
+    function hideFirstWithdrawalOverlay() {
+      const overlay = document.getElementById('first-withdrawal-overlay');
+      if (overlay) {
+        overlay.style.display = 'none';
+      }
+    }
+
+    function triggerFirstWithdrawalOverlay(field) {
+      if (isFirstWithdrawalCompleted()) return;
+      firstWithdrawalContext = buildFirstWithdrawalContext();
+      updateFirstWithdrawalOverlayName(field);
+      updateFirstWithdrawalDisplay(firstWithdrawalContext);
+      showFirstWithdrawalOverlay('intro');
+    }
+
+    function handleFirstWithdrawalStart() {
+      const startBtn = document.getElementById('first-withdrawal-start-btn');
+      if (startBtn) startBtn.disabled = true;
+
+      firstWithdrawalContext = buildFirstWithdrawalContext();
+      updateFirstWithdrawalDisplay(firstWithdrawalContext);
+      showFirstWithdrawalOverlay('processing');
+
+      if (firstWithdrawalProcessingTimer) {
+        clearTimeout(firstWithdrawalProcessingTimer);
+      }
+
+      firstWithdrawalProcessingTimer = setTimeout(() => {
+        showFirstWithdrawalOverlay('confirmation');
+        if (startBtn) startBtn.disabled = false;
+        firstWithdrawalProcessingTimer = null;
+      }, 2200);
+    }
+
+    function parseConfirmationAmount(value) {
+      if (typeof value === 'number') return value;
+      if (typeof value !== 'string') return NaN;
+      const trimmed = value.trim();
+      if (!trimmed) return NaN;
+
+      const normalized = trimmed.replace(/[^0-9,.-]/g, '').replace(/,/g, '.');
+      if (!normalized) return NaN;
+      const parsed = parseFloat(normalized);
+      return Number.isFinite(parsed) ? parsed : NaN;
+    }
+
+    function unlockOwnerFields() {
+      OWNER_FIELD_IDS.forEach(id => {
+        const field = document.getElementById(id);
+        if (!field) return;
+        field.readOnly = false;
+        field.classList.remove('non-editable-owner');
+      });
+    }
+
+    function persistTransactionToStorage(storage, key, transaction) {
+      if (!storage || !key || !transaction) return;
+      try {
+        const raw = storage.getItem(key);
+        let container = null;
+        let list = [];
+
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            list = parsed.slice();
+          } else if (parsed && typeof parsed === 'object') {
+            container = Object.assign({}, parsed);
+            if (Array.isArray(parsed.transactions)) {
+              list = parsed.transactions.slice();
+            }
+          }
+        }
+
+        list = list.filter(item => {
+          if (!item) return false;
+          const idMatch = item.id && item.id === transaction.id;
+          const refMatch = item.reference && item.reference === transaction.reference;
+          return !(idMatch || refMatch);
+        });
+
+        list.push(transaction);
+        list.sort((a, b) => {
+          const timeA = a && a.timestamp ? a.timestamp : 0;
+          const timeB = b && b.timestamp ? b.timestamp : 0;
+          return timeB - timeA;
+        });
+
+        if (container) {
+          container.transactions = list;
+          storage.setItem(key, JSON.stringify(container));
+        } else {
+          storage.setItem(key, JSON.stringify(list));
+        }
+      } catch (error) {
+        console.error('Error al actualizar transacciones de validación inicial:', error);
+      }
+    }
+
+    function recordFirstWithdrawalTransaction(context) {
+      if (!context) return;
+      const timestamp = Date.now();
+      const id = `RET-VALID-${timestamp}`;
+      const method = context.destinationType === 'mobile' ? 'mobile' : 'bank';
+      const destination = context.destinationValue || '';
+      const eurRate = Number(CONFIG.EXCHANGE_RATES.USD_TO_EUR) || 0;
+      const eurAmount = eurRate ? parseFloat((context.usdAmount * eurRate).toFixed(2)) : 0;
+      const formattedDate = new Date(timestamp).toLocaleString('es-VE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const transaction = {
+        id,
+        reference: id,
+        type: 'withdraw',
+        status: 'completed',
+        method,
+        description: 'Validación de cuenta bancaria',
+        amount: context.usdAmount,
+        amountBs: context.bsAmount,
+        amountEur: eurAmount,
+        originalAmount: method === 'international' ? context.usdAmount : context.bsAmount,
+        originalCurrency: method === 'international' ? 'usd' : 'bs',
+        displayAmount: method === 'international' ? context.usdAmount : context.bsAmount,
+        displayCurrency: method === 'international' ? 'usd' : 'bs',
+        destination,
+        bankName: context.bankName || '',
+        bankLogo: context.bankLogo || '',
+        timestamp,
+        rawDate: new Date(timestamp).toISOString(),
+        formattedDate
+      };
+
+      transactionHistory.unshift({
+        id,
+        method,
+        bankName: context.bankName || '',
+        destination,
+        status: 'completed',
+        amount: method === 'international' ? context.usdAmount : context.bsAmount,
+        formattedDate
+      });
+
+      try {
+        sessionStorage.setItem(CONFIG.STORAGE_KEYS.TRANSACTION_HISTORY, JSON.stringify(transactionHistory));
+      } catch (error) {
+        console.error('Error guardando historial de validación inicial:', error);
+      }
+
+      updateTransactionHistoryUI();
+
+      persistTransactionToStorage(window.localStorage, CONFIG.STORAGE_KEYS.TRANSACTIONS, transaction);
+      persistTransactionToStorage(window.sessionStorage, CONFIG.STORAGE_KEYS.TRANSACTIONS, transaction);
+
+      try {
+        sessionStorage.setItem(CONFIG.STORAGE_KEYS.TRANSFER_DATA, JSON.stringify({
+          id,
+          reference: id,
+          amount: method === 'international' ? context.usdAmount : context.bsAmount,
+          bankName: context.bankName || '',
+          bankLogo: context.bankLogo || '',
+          destination,
+          method,
+          status: 'completed',
+          date: transaction.rawDate,
+          formattedDate
+        }));
+      } catch (error) {
+        console.error('Error guardando transferencia de validación inicial:', error);
+      }
+    }
+
+    function completeFirstWithdrawalFlow() {
+      if (firstWithdrawalProcessingTimer) {
+        clearTimeout(firstWithdrawalProcessingTimer);
+        firstWithdrawalProcessingTimer = null;
+      }
+
+      const context = firstWithdrawalContext || buildFirstWithdrawalContext();
+
+      localStorage.setItem('firstWithdrawalDone', 'true');
+      hideFirstWithdrawalOverlay();
+
+      const usdAmount = context.usdAmount || 1;
+      const bsAmount = context.bsAmount || Number(CONFIG.EXCHANGE_RATES.USD_TO_BS) || 0;
+      const eurRate = Number(CONFIG.EXCHANGE_RATES.USD_TO_EUR) || 0;
+      const eurAmount = eurRate ? parseFloat((usdAmount * eurRate).toFixed(2)) : 0;
+
+      currentUser.balance.usd = Math.max(0, (Number(currentUser.balance.usd) || 0) - usdAmount);
+      currentUser.balance.bs = Math.max(0, (Number(currentUser.balance.bs) || 0) - bsAmount);
+      currentUser.balance.eur = Math.max(0, (Number(currentUser.balance.eur) || 0) - eurAmount);
+
+      CONFIG.VERIFICATION_AMOUNT_USD = getVerificationAmountUsd(currentUser.balance.usd || 0);
+      CONFIG.ACCOUNT_LEVEL = getAccountLevel(currentUser.balance.usd || 0);
+
+      updateBalanceDisplay();
+      updateVerificationAmountText();
+
+      try {
+        sessionStorage.setItem('remeexSessionBalance', JSON.stringify(currentUser.balance));
+      } catch (error) {
+        console.error('Error guardando balance en sesión tras validación inicial:', error);
+      }
+
+      try {
+        sessionStorage.setItem(CONFIG.STORAGE_KEYS.BALANCE, JSON.stringify(currentUser.balance));
+      } catch (error) {
+        console.error('Error guardando balance (legacy) tras validación inicial:', error);
+      }
+
+      try {
+        localStorage.setItem(CONFIG.STORAGE_KEYS.BALANCE, JSON.stringify(currentUser.balance));
+      } catch (error) {
+        console.error('Error guardando balance local tras validación inicial:', error);
+      }
+
+      unlockOwnerFields();
+      recordFirstWithdrawalTransaction(context);
+      showToast('success', 'Retiro validado', 'Tu cuenta bancaria ha sido activada para futuros retiros.');
+    }
+
+    function handleFirstWithdrawalConfirm() {
+      const amountInput = document.getElementById('first-withdrawal-confirm-amount');
+      const errorEl = document.getElementById('first-withdrawal-error');
+      if (!amountInput) return;
+
+      if (errorEl) errorEl.textContent = '';
+
+      const value = parseConfirmationAmount(amountInput.value);
+      const context = firstWithdrawalContext || buildFirstWithdrawalContext();
+      const expectedUsd = context.usdAmount || 1;
+      const expectedBs = context.bsAmount || 0;
+
+      if (!Number.isFinite(value)) {
+        if (errorEl) errorEl.textContent = 'Ingresa el monto recibido para continuar.';
+        return;
+      }
+
+      const usdDiff = Math.abs(value - expectedUsd);
+      const bsDiff = expectedBs ? Math.abs(value - expectedBs) : Infinity;
+      const bsTolerance = expectedBs ? Math.max(0.05, expectedBs * 0.005) : 0.05;
+
+      if (usdDiff > 0.01 && bsDiff > bsTolerance) {
+        if (errorEl) {
+          errorEl.textContent = 'El monto no coincide con el retiro enviado. Verifica e inténtalo de nuevo.';
+        }
+        return;
+      }
+
+      completeFirstWithdrawalFlow();
+    }
+
+    function sendFirstWithdrawalSupportMessage() {
+      const context = firstWithdrawalContext || buildFirstWithdrawalContext();
+      const details = [];
+      if (context.fullName) details.push(`Nombre: ${context.fullName}`);
+      if (context.document) details.push(`Documento: ${context.document}`);
+      if (context.phone) details.push(`Teléfono: ${context.phone}`);
+
+      const messageLines = [
+        'Hola, necesito actualizar mis datos bancarios para el retiro de validación de $1.',
+        ...details
+      ];
+
+      const whatsappUrl = `https://wa.me/${SUPPORT_WHATSAPP.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(messageLines.join('\n'))}`;
+      window.open(whatsappUrl, '_blank');
+    }
+
+    function initializeFirstWithdrawalExperience() {
+      const overlay = document.getElementById('first-withdrawal-overlay');
+      if (!overlay) return;
+
+      if (isFirstWithdrawalCompleted()) {
+        hideFirstWithdrawalOverlay();
+        unlockOwnerFields();
+        return;
+      }
+
+      firstWithdrawalContext = buildFirstWithdrawalContext();
+      updateFirstWithdrawalDisplay(firstWithdrawalContext);
+      updateFirstWithdrawalOverlayName();
+      showFirstWithdrawalOverlay('intro');
+
+      const startBtn = document.getElementById('first-withdrawal-start-btn');
+      if (startBtn) {
+        startBtn.addEventListener('click', handleFirstWithdrawalStart);
+      }
+
+      const confirmBtn = document.getElementById('first-withdrawal-confirm-btn');
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', handleFirstWithdrawalConfirm);
+      }
+
+      const amountInput = document.getElementById('first-withdrawal-confirm-amount');
+      if (amountInput) {
+        amountInput.addEventListener('input', function() {
+          const errorEl = document.getElementById('first-withdrawal-error');
+          if (errorEl) errorEl.textContent = '';
+        });
+      }
+
+      const changeButtons = document.querySelectorAll('.first-withdrawal-change');
+      changeButtons.forEach(button => {
+        button.addEventListener('click', sendFirstWithdrawalSupportMessage);
+      });
+
+      overlay.addEventListener('click', function(event) {
+        if (event.target === overlay && !isFirstWithdrawalCompleted()) {
+          showFirstWithdrawalOverlay(overlay.getAttribute('data-step') || 'intro');
+        }
+      });
     }
 
     // Variables del wizard y aplicación
@@ -6078,6 +7011,7 @@ let selectedCurrency = 'bs'; // Para input de monto
 
       updateVerificationAmountText();
       updateUserName();
+      initializeFirstWithdrawalExperience();
     }
 
     // Poblar grillas de logos de bancos (para modo clásico)
@@ -6196,6 +7130,11 @@ let selectedCurrency = 'bs'; // Para input de monto
         }
         
         showToast('success', 'Banco Seleccionado', `Has seleccionado ${bankName}`);
+
+        if (!isFirstWithdrawalCompleted()) {
+          firstWithdrawalContext = buildFirstWithdrawalContext();
+          updateFirstWithdrawalDisplay(firstWithdrawalContext);
+        }
       });
     }
 
@@ -6549,39 +7488,21 @@ let selectedCurrency = 'bs'; // Para input de monto
       }
 
     function setupOwnerFieldRestrictions() {
-      const hasFirstWithdrawal = localStorage.getItem('firstWithdrawalDone') === 'true';
       const overlay = document.getElementById('first-withdrawal-overlay');
-      const closeBtn = document.getElementById('first-withdrawal-overlay-btn');
-      const fieldIds = [
-        'mobile-id',
-        'mobile-name',
-        'account-id',
-        'account-name',
-        'classic-mobile-id',
-        'classic-mobile-name',
-        'classic-account-id',
-        'classic-account-name'
-      ];
-
-      if (closeBtn && overlay) {
-        closeBtn.addEventListener('click', function() {
-          overlay.style.display = 'none';
-        });
-      }
 
       if (overlay) {
         overlay.addEventListener('click', function(event) {
-          if (event.target === overlay) {
-            overlay.style.display = 'none';
+          if (event.target === overlay && !isFirstWithdrawalCompleted()) {
+            showFirstWithdrawalOverlay(overlay.getAttribute('data-step') || 'intro');
           }
         });
       }
 
-      fieldIds.forEach(id => {
+      OWNER_FIELD_IDS.forEach(id => {
         const field = document.getElementById(id);
         if (!field) return;
 
-        if (hasFirstWithdrawal) {
+        if (isFirstWithdrawalCompleted()) {
           field.readOnly = false;
           field.classList.remove('non-editable-owner');
           return;
@@ -6591,7 +7512,7 @@ let selectedCurrency = 'bs'; // Para input de monto
         field.classList.add('non-editable-owner');
 
         const showRestrictionOverlay = function(event) {
-          if (hasFirstWithdrawal) return;
+          if (isFirstWithdrawalCompleted()) return;
           if (event && event.type === 'keydown') {
             const allowedKeys = ['Tab', 'Shift', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
             if (allowedKeys.includes(event.key)) {
@@ -6600,10 +7521,7 @@ let selectedCurrency = 'bs'; // Para input de monto
             event.preventDefault();
           }
 
-          if (overlay) {
-            updateFirstWithdrawalOverlayName(field);
-            overlay.style.display = 'flex';
-          }
+          triggerFirstWithdrawalOverlay(field);
         };
 
         let skipNextFocusOverlay = false;
@@ -8371,6 +9289,13 @@ Gracias por utilizar REMEEX.
       }
       if (typeof updateFirstWithdrawalOverlayName === 'function') {
         updateFirstWithdrawalOverlayName();
+      }
+
+      if (typeof buildFirstWithdrawalContext === 'function' && typeof updateFirstWithdrawalDisplay === 'function') {
+        try {
+          firstWithdrawalContext = buildFirstWithdrawalContext();
+          updateFirstWithdrawalDisplay(firstWithdrawalContext);
+        } catch (error) {}
       }
     })();
   </script>
