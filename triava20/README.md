@@ -5,6 +5,9 @@
 
 Este repositorio contiene una aplicación sencilla de ejemplo. Ahora incluye un pequeño backend en Node.js que permite que un administrador inicie sesión, consulte los usuarios conectados y cambie la clave de un usuario.
 
+> [!TIP]
+> Todo el contenido estático del sitio (páginas `.html`, hojas de estilo y medios) ahora vive dentro de `public/`. De esta forma basta con servir esa carpeta para visualizar cualquier pantalla sin rutas rotas. Puedes ejecutar `npm run dev` o lanzar un servidor estático (`python -m http.server 8000 --directory public`) y navegar directamente a `http://localhost:8000/` para revisar la web completa.
+
 ## Scripts disponibles
 
 - `npm run build:dolarhoy`: genera el bundle ofuscado de la página `dolarhoy`, aplica la ofuscación avanzada y minifica el HTML para producción.
