@@ -1,0 +1,26 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.remeexvisa.app">
+
+    <application
+        android:label="Remeex Visa"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:theme="@style/Theme.RemeexVisa">
+        <meta-data android:name="asset_statements" android:resource="@string/asset_statements"/>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <meta-data android:name="android.support.customtabs.trusted.DEFAULT_URL"
+                android:value="https://visa.remeexvisa.com/app" />
+            <meta-data android:name="android.support.customtabs.trusted.SCOPE"
+                android:value="https://visa.remeexvisa.com/app" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

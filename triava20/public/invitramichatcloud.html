@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Remeex Visa · Mejorador de Texto (Operador)</title>
+  <style>
+    :root{
+      --bg:#0b1222; /* azul profundo estilo Visa */
+      --card:#0f1830cc;
+      --accent:#e7b83b; /* dorado */
+      --accent-2:#7aa5ff;
+      --ink:#e9eefc;
+      --muted:#98a3c7;
+      --ok:#17b26a; --warn:#f59e0b; --err:#ef4444;
+      --radius:18px;
+      --shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 800px at 20% -10%, #1b2f72 0%, transparent 60%),
+                  radial-gradient(1100px 700px at 110% 0%, #08204f 0%, transparent 60%),
+                  var(--bg);
+      color:var(--ink);
+      font: 15px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      letter-spacing:.2px;
+      display:flex; align-items:center; justify-content:center;
+      padding:40px 16px;
+    }
+    .app{width:min(1100px,100%);}
+    .brand{display:flex; gap:14px; align-items:center; margin-bottom:18px}
+    .logo{width:42px; height:42px; border-radius:12px; background:linear-gradient(145deg,#16317f 0%,#0b1a47 50%,#07112f 100%); box-shadow:var(--shadow); position:relative}
+    .logo::after{content:""; position:absolute; inset:7px; border-radius:8px; background:radial-gradient(120% 120% at 0% 0%, rgba(231,184,59,.35), transparent 55%),
+      linear-gradient(135deg, rgba(122,165,255,.4), rgba(231,184,59,.3)); filter:blur(.2px)}
+    .title{font-weight:700; font-size:22px}
+    .subtitle{color:var(--muted); font-size:13px}
+
+    .card{background:var(--card); border:1px solid rgba(231,184,59,.18); border-radius:var(--radius); box-shadow:var(--shadow)}
+    .grid{display:grid; grid-template-columns:1.2fr .8fr; gap:16px}
+    @media (max-width: 980px){.grid{grid-template-columns:1fr;}}
+
+    .pane{padding:18px}
+    .pane h3{margin:0 0 10px; font-size:14px; letter-spacing:.35px; text-transform:uppercase; color:#cdd6ff}
+
+    textarea, input[type="text"], input[type="password"], select{
+      width:100%; box-sizing:border-box; background:#0a1330; color:var(--ink); border:1px solid #2b3a6c; border-radius:14px; padding:12px 12px; outline:none;
+      transition:border .15s ease, box-shadow .15s ease; box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    textarea{min-height:190px; resize:vertical}
+    textarea:focus, input:focus, select:focus{border-color:var(--accent-2); box-shadow:0 0 0 3px rgba(122,165,255,.18)}
+
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px}
+    .muted{color:var(--muted); font-size:12px}
+
+    .toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px}
+    .btn{
+      appearance:none; border:1px solid #2b3a6c; padding:10px 14px; border-radius:14px; background:#101b3d; color:var(--ink); cursor:pointer;
+      box-shadow:var(--shadow); font-weight:600; letter-spacing:.3px; transition:transform .06s ease, filter .15s ease, border .15s;
+    }
+    .btn:hover{filter:brightness(1.1)}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{border-color:rgba(231,184,59,.55); background:linear-gradient(180deg, #1a2450, #0f1739);}
+
+    .flag{display:inline-flex; align-items:center; gap:8px; font-size:12px; padding:6px 10px; border:1px dashed #39519f; border-radius:999px; color:#c8d4ff}
+    .flag b{color:var(--accent)}
+
+    .out{min-height:220px; background:#09102a; border:1px solid #223063; border-radius:14px; padding:14px; white-space:pre-wrap}
+
+    .badge{display:inline-block; font-size:11px; padding:3px 8px; border-radius:999px; border:1px solid #2b3a6c; color:#cdd6ff; background:#101a3a}
+
+    .footer{margin-top:16px; font-size:12px; color:#a9b7e7}
+    .hl{color:var(--accent)}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <div class="title">Remeex Visa · Mejorador de Texto (Operador)</div>
+        <div class="subtitle">Escribe en lenguaje natural. Obtén una versión profesional, clara y con tono de operador Remeex Visa.</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- ENTRADA -->
+      <section class="card pane">
+        <h3>Entrada</h3>
+        <textarea id="input" placeholder="Ej.: Hola, quiero saber por qué mi recarga no aparece. Me urge."></textarea>
+        <div class="toolbar">
+          <button class="btn" id="demo1">Ejemplo 1</button>
+          <button class="btn" id="demo2">Ejemplo 2</button>
+          <span class="flag">Idioma detectado: <b id="langChip">—</b></span>
+        </div>
+
+        <h3 style="margin-top:18px">Objetivo & Tono</h3>
+        <div class="row">
+          <div>
+            <label class="muted">Objetivo</label>
+            <select id="objetivo">
+              <option value="mejorar">Mejorar/optimizar redacción</option>
+              <option value="resumir">Resumir manteniendo contexto</option>
+              <option value="responder">Redactar respuesta al cliente</option>
+              <option value="ortografia">Corregir ortografía y estilo</option>
+              <option value="whatsapp">Versión breve para WhatsApp</option>
+            </select>
+          </div>
+          <div>
+            <label class="muted">Tono</label>
+            <select id="tono">
+              <option value="profesional" selected>Profesional y claro</option>
+              <option value="empatico">Empático y cercano</option>
+              <option value="directo">Directo y conciso</option>
+              <option value="formal">Formal/legal</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label class="muted">Formato</label>
+            <select id="formato">
+              <option value="parrafo">Párrafo</option>
+              <option value="bullet">Viñetas</option>
+              <option value="plantilla">Plantilla operador</option>
+            </select>
+          </div>
+          <div>
+            <label class="muted">Extras</label>
+            <select id="extras">
+              <option value="neutro" selected>Español neutro</option>
+              <option value="ve">Español Venezuela</option>
+              <option value="es">Español España</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="toolbar" style="margin-top:12px">
+          <button class="btn primary" id="run">Mejorar texto</button>
+          <button class="btn" id="copiar">Copiar</button>
+          <button class="btn" id="limpiar">Limpiar</button>
+        </div>
+      </section>
+
+      <!-- SALIDA & CONFIG -->
+      <section class="card pane">
+        <h3>Salida</h3>
+        <div id="salida" class="out" aria-live="polite"></div>
+
+        <div style="height:10px"></div>
+        <h3>Configuración</h3>
+        <div class="row">
+          <div>
+            <label class="muted">Model (OpenRouter)</label>
+            <select id="modelo">
+              <option value="deepseek/deepseek-chat-v3.1:free" selected>deepseek/deepseek-chat-v3.1:free</option>
+              <option value="google/gemini-2.0-flash-lite-preview-02-05:free">google/gemini-2.0-flash-lite-preview-02-05:free</option>
+              <option value="openai/gpt-4o-mini">openai/gpt-4o-mini</option>
+              <option value="anthropic/claude-3.5-sonnet">anthropic/claude-3.5-sonnet</option>
+            </select>
+          </div>
+          <div>
+            <label class="muted">API Key (no se guarda)</label>
+            <div style="display:flex; gap:8px">
+              <input type="password" id="apiKey" placeholder="sk-or-v1-..." />
+              <button class="btn" id="toggleKey" title="Mostrar/ocultar">👁️</button>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar" style="margin-top:10px">
+          <span class="badge" id="status">Listo</span>
+          <span class="badge">Referer activo</span>
+        </div>
+        <div class="footer">
+          Usa tu clave de <span class="hl">OpenRouter</span>. No se envía a terceros. Recomendado: <span class="hl">dominio local</span> o HTTPS con mismo origen.
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ———————————— UTILIDADES UI ————————————
+    const $ = (q)=>document.querySelector(q);
+    const input = $('#input');
+    const salida = $('#salida');
+    const langChip = $('#langChip');
+    const status = $('#status');
+
+    // Demos
+    $('#demo1').onclick = ()=>{
+      input.value = 'Hola. Hice una recarga hace 30 minutos y no me aparece en saldo. ¿Qué hago?';
+      detectLang();
+    }
+    $('#demo2').onclick = ()=>{
+      input.value = 'Buenas, necesito bloquear mi tarjeta virtual por un cobro que no reconozco. ¿Me ayudan?';
+      detectLang();
+    }
+
+    $('#limpiar').onclick = ()=>{ input.value=''; salida.textContent=''; detectLang(); }
+    $('#copiar').onclick = async ()=>{
+      try{ await navigator.clipboard.writeText(salida.textContent.trim());
+        toast('Copiado en portapapeles'); }catch{ toast('No se pudo copiar'); }
+    }
+
+    $('#toggleKey').onclick = ()=>{
+      const f = $('#apiKey'); f.type = (f.type==='password'?'text':'password');
+    }
+
+    input.addEventListener('input', detectLang);
+    function detectLang(){
+      const txt = input.value || '';
+      // detection simple: caracteres con tildes -> ES; fallback EN
+      const hasES = /[áéíóúñ¿¡]/i.test(txt) || /\b(qué|por qué|hola|ayuda|tarjeta|saldo|recarga|retiro)\b/i.test(txt);
+      langChip.textContent = txt.trim()? (hasES? 'Español' : 'Detectando…') : '—';
+    }
+
+    function toast(msg){
+      status.textContent = msg; setTimeout(()=>status.textContent='Listo', 2200);
+    }
+
+    // ———————————— PROMPT DEL OPERADOR ————————————
+    function buildSystemPrompt(opts){
+      const {objetivo, tono, formato, extras} = opts;
+      const registro = `You are a senior Customer Operations specialist at Remeex Visa. You write in Spanish (${extras}). Your job: transform the user's raw text into a polished, professional message that a Remeex Visa operator would send to a client.\n`+
+      `Always follow Remeex Visa voice: clear, respectful, precise; avoid emojis; avoid jargon; keep privacy and security in mind; never share internal systems.\n`+
+      `If the user asks for a response to the customer, include brief context + clear next steps + reassurance.\n`+
+      `Avoid promises you cannot guarantee; avoid exact times unless provided; be concise.`;
+
+      const objetivoRules = {
+        mejorar: 'Rewrite to improve clarity, tone, and grammar. Maintain meaning. Keep it concise (70-140 words).',
+        resumir: 'Summarize keeping key context and action items. Max 80 words.',
+        responder: 'Draft a ready-to-send reply to the client with greeting (optional), brief explanation, concrete next steps, and a courteous closing. 60-120 words.',
+        ortografia: 'Fix spelling, grammar, and style. Keep original structure as much as possible.',
+        whatsapp: 'Produce a brief WhatsApp-style response (35-80 words), direct and courteous, with a single call to action.'
+      };
+
+      const tonoRules = {
+        profesional: 'Tone: professional, warm, precise.',
+        empatico: 'Tone: empathetic, reassuring, warm.',
+        directo: 'Tone: direct, concise, action-focused.',
+        formal: 'Tone: formal/legal, neutral, exact.'
+      };
+
+      const formatoRules = {
+        parrafo: 'Format: one or two short paragraphs.',
+        bullet: 'Format: concise bullet points (3–6 items).',
+        plantilla: 'Format: operator template with sections: Greeting · Context · What we did/Why · Next steps · Closing.'
+      };
+
+      const locale = {
+        neutro: 'español neutro', ve:'español (Venezuela)', es:'español (España)'
+      }[extras] || 'español neutro';
+
+      return `${registro}\n${objetivoRules[objetivo]}\n${tonoRules[tono]}\n${formatoRules[formato]}\nOutput strictly in ${locale}.`;
+    }
+
+    // ———————————— LÓGICA DE LLAMADA ————————————
+    $('#run').onclick = async ()=>{
+      const apiKey = $('#apiKey').value.trim();
+      if(!apiKey){ toast('Añade tu API Key de OpenRouter'); return; }
+
+      const modelo = $('#modelo').value;
+      const objetivo = $('#objetivo').value;
+      const tono = $('#tono').value;
+      const formato = $('#formato').value;
+      const extras = $('#extras').value;
+      const userText = input.value.trim();
+      if(!userText){ toast('Escribe un texto de entrada'); return; }
+
+      const system = buildSystemPrompt({objetivo, tono, formato, extras});
+
+      salida.textContent = 'Generando…';
+      try{
+        const res = await fetch('https://openrouter.ai/api/v1/chat/completions',{
+          method:'POST',
+          headers:{
+            'Authorization':'Bearer '+apiKey,
+            'Content-Type':'application/json',
+            'X-Title':'Remeex Visa · Mejorador',
+            'HTTP-Referer': location.origin
+          },
+          body: JSON.stringify({
+            model: modelo,
+            messages: [
+              { role:'system', content: system },
+              { role:'user', content: userText }
+            ],
+            temperature: 0.3,
+            max_tokens: 450
+          })
+        });
+        if(!res.ok){ throw new Error('HTTP '+res.status); }
+        const data = await res.json();
+        const out = data.choices?.[0]?.message?.content?.trim() || '(Sin respuesta)';
+        salida.textContent = out;
+        toast('Listo');
+      }catch(e){
+        console.error(e); salida.textContent = 'Error: '+e.message; toast('Error al generar');
+      }
+    };
+
+    // Primer render
+    detectLang();
+  </script>
+</body>
+</html>

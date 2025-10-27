@@ -1,0 +1,8 @@
+{
+  "name": "Remeex Visa Chatbot Guide",
+  "description": "An AI-powered chatbot that acts as a comprehensive, interactive user manual for the Remeex Visa financial service, guiding users through all its features and processes.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "prompt": ""
+}

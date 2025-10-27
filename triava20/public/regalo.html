@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selecciona tu Regalo - LatinPhone</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #0071e3;
+            --primary-hover: #0062c3;
+            --primary-light: #e9f3ff;
+            --secondary-color: #1d1d1f;
+            --accent-color: #86868b;
+            --success-color: #4cd964;
+            --error-color: #ff3b30;
+            --warning-color: #ffcc00;
+            --background-color: #ffffff;
+            --background-alt: #f5f7fa;
+            --light-gray: #f5f5f7;
+            --medium-gray: #d2d2d7;
+            --border-color: #d2d2d7;
+            --white: #ffffff;
+            --black: #000000;
+            --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition-fast: 0.2s ease;
+            --transition: 0.3s ease;
+            --transition-slow: 0.5s ease;
+            --radius-sm: 6px;
+            --radius: 12px;
+            --radius-lg: 20px;
+            --radius-full: 9999px;
+            --header-height: 70px;
+            --z-header: 1000;
+            --z-overlay: 1001;
+            --z-dropdown: 1002;
+            --z-modal: 1003;
+            --z-toast: 1004;
+            --max-width: 1280px;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 62.5%;
+        }
+
+        body {
+            font-family: var(--font-main);
+            font-size: 1.6rem;
+            line-height: 1.6;
+            color: var(--secondary-color);
+            background-color: var(--background-alt);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .site-header {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            height: 4.4rem;
+            padding: 0.5rem 1.4rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 12px 26px rgba(15, 23, 42, 0.18);
+            box-sizing: border-box;
+        }
+
+        .logo-text {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .gift-container {
+            max-width: 80rem;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .gift-header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 3rem 4rem;
+            text-align: center;
+        }
+
+        .gift-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .gift-subtitle {
+            font-size: 1.8rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .gift-content {
+            padding: 4rem;
+        }
+
+        .form-section, .gifts-section, .confirmation-section {
+            display: none;
+        }
+
+        .form-section.active, .gifts-section.active, .confirmation-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(1rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 2.4rem;
+            font-weight: 600;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1.4rem 1.6rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1.6rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+        }
+
+        .form-error {
+            color: var(--error-color);
+            font-size: 1.4rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.4rem 2.8rem;
+            border-radius: var(--radius-full);
+            font-weight: 500;
+            font-size: 1.6rem;
+            transition: var(--transition);
+            border: none;
+            outline: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-icon {
+            margin-right: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-gray);
+            color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--medium-gray);
+            transform: translateY(-2px);
+        }
+
+        .btn-block {
+            display: flex;
+            width: 100%;
+        }
+
+        .form-actions {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background-color: var(--primary-light);
+            border-radius: var(--radius);
+        }
+
+        .welcome-message h3 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .welcome-message p {
+            font-size: 1.6rem;
+            color: var(--secondary-color);
+        }
+
+        .gifts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .gift-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            background-color: var(--white);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .gift-card:hover {
+            transform: translateY(-0.5rem);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-color);
+        }
+
+        .gift-card.selected {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+        }
+
+        .gift-img {
+            width: 100%;
+            height: 18rem;
+            object-fit: contain;
+            background-color: var(--light-gray);
+            padding: 2rem;
+        }
+
+        .gift-info {
+            padding: 2rem;
+        }
+
+        .gift-brand {
+            font-size: 1.3rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .gift-name {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            min-height: 4.8rem;
+        }
+
+        .gift-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .gift-specs span {
+            padding: 0.3rem 0.8rem;
+            background-color: var(--light-gray);
+            border-radius: 3rem;
+            font-size: 1.2rem;
+        }
+
+        .gift-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .gift-selection {
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 10rem;
+            height: 10rem;
+            background-color: var(--success-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            margin: 0 auto 3rem;
+        }
+
+        .confirmation-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .confirmation-message {
+            font-size: 1.7rem;
+            color: var(--accent-color);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .confirmation-details {
+            background-color: var(--light-gray);
+            padding: 3rem;
+            border-radius: var(--radius);
+            margin-bottom: 3rem;
+        }
+
+        .confirmation-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            font-size: 1.6rem;
+        }
+
+        .confirmation-detail-label {
+            font-weight: 500;
+            color: var(--accent-color);
+        }
+
+        .confirmation-gift {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 2rem;
+            background-color: var(--white);
+            border-radius: var(--radius);
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .confirmation-gift-img {
+            width: 10rem;
+            height: 10rem;
+            object-fit: contain;
+        }
+
+        .confirmation-gift-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .confirmation-gift-info p {
+            color: var(--accent-color);
+            font-size: 1.4rem;
+        }
+
+        .confirmation-next {
+            text-align: center;
+        }
+
+        .confirmation-next p {
+            margin-bottom: 2rem;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 4rem;
+            height: 4rem;
+            border: 4px solid rgba(0, 113, 227, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-message {
+            background-color: rgba(255, 59, 48, 0.1);
+            color: var(--error-color);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        /* Footer */
+        .site-footer {
+            background-color: var(--white);
+            padding: 3rem 0;
+            text-align: center;
+            margin-top: 4rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-logo {
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo img {
+            height: 4rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-link:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-copyright {
+            color: var(--accent-color);
+            font-size: 1.4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gifts-grid {
+                grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+            }
+            
+            .gift-content {
+                padding: 2rem;
+            }
+            
+            .confirmation-gift {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .gifts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .gift-header {
+                padding: 2rem;
+            }
+            
+            .gift-title {
+                font-size: 2.4rem;
+            }
+            
+            .gift-subtitle {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container">
+            <div class="logo-container">
+                <img src="latinphone.png" alt="LatinPhone" class="logo-img" loading="lazy">
+                <span class="logo-text">LatinPhone</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="gift-container">
+            <div class="gift-header">
+                <h1 class="gift-title">¡Selecciona tu Regalo!</h1>
+                <p class="gift-subtitle">Gracias por tu compra. Elige un regalo especial completamente gratis.</p>
+            </div>
+            
+            <div class="gift-content">
+                <!-- Sección de Formulario -->
+                <div class="form-section active" id="form-section">
+                    <h2 class="section-title">Verifica tu pedido</h2>
+                    
+                    <div class="error-message" id="error-message">
+                        <i class="fas fa-exclamation-circle"></i> No pudimos verificar los detalles proporcionados. Por favor, verifica el número de orden y tu nombre.
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="order-number" class="form-label">Número de Orden</label>
+                        <input type="text" id="order-number" class="form-input" placeholder="Ejemplo: LP-25082532" required>
+                        <div class="form-error" id="order-number-error">Por favor, ingresa un número de orden válido (formato: LP-XXXXXXXX).</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customer-name" class="form-label">Tu Nombre</label>
+                        <input type="text" id="customer-name" class="form-input" placeholder="Nombre y apellido" required>
+                        <div class="form-error" id="customer-name-error">Por favor, ingresa tu nombre completo.</div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-primary btn-block" id="verify-btn">
+                            <i class="fas fa-search btn-icon"></i>Verificar y Continuar
+                        </button>
+                        <div class="spinner" id="spinner"></div>
+                    </div>
+                </div>
+                
+                <!-- Sección de Selección de Regalos -->
+                <div class="gifts-section" id="gifts-section">
+                    <div class="welcome-message">
+                        <h3>¡Hola, <span id="customer-name-display">Cliente</span>!</h3>
+                        <p>Como agradecimiento por tu compra <span id="order-number-display">LP-XXXXXXXX</span>, te invitamos a elegir uno de estos fantásticos regalos completamente gratis.</p>
+                    </div>
+                    
+                    <h2 class="section-title">Selecciona tu regalo</h2>
+                    
+                    <div class="gifts-grid" id="gifts-grid">
+                        <!-- Los productos se cargarán dinámicamente -->
+                    </div>
+                    
+                    <div class="gift-selection">
+                        <button class="btn btn-primary" id="confirm-gift-btn" disabled>
+                            <i class="fas fa-gift btn-icon"></i>Confirmar Regalo
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Sección de Confirmación -->
+                <div class="confirmation-section" id="confirmation-section">
+                    <div class="success-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    
+                    <h2 class="confirmation-title">¡Regalo Confirmado!</h2>
+                    <p class="confirmation-message">Hemos registrado tu selección. Tu regalo será enviado junto con tu pedido original.</p>
+                    
+                    <div class="confirmation-details">
+                        <div class="confirmation-detail">
+                            <div class="confirmation-detail-label">Número de Orden:</div>
+                            <div id="confirmation-order-number">LP-25082532</div>
+                        </div>
+                        <div class="confirmation-detail">
+                            <div class="confirmation-detail-label">Cliente:</div>
+                            <div id="confirmation-customer-name">Juan Pérez</div>
+                        </div>
+                        <div class="confirmation-detail">
+                            <div class="confirmation-detail-label">Fecha de Selección:</div>
+                            <div id="confirmation-date">21/03/2025</div>
+                        </div>
+                    </div>
+                    
+                    <div class="confirmation-gift">
+                        <img src="" alt="Regalo seleccionado" class="confirmation-gift-img" id="confirmation-gift-img">
+                        <div class="confirmation-gift-info">
+                            <h3 id="confirmation-gift-name">Nombre del regalo</h3>
+                            <p id="confirmation-gift-specs">Especificaciones del regalo</p>
+                        </div>
+                    </div>
+                    
+                    <div class="confirmation-next">
+                        <p>¿Tienes alguna pregunta sobre tu regalo o tu pedido?</p>
+                        <a href="https://wa.me/+18133584564?text=Hola%20LatinPhone,%20tengo%20una%20consulta%20sobre%20mi%20regalo%20seleccionado%20para%20el%20pedido%20" class="btn btn-primary" id="contact-support-btn">
+                            <i class="fab fa-whatsapp btn-icon"></i>Contactar Soporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-logo">
+                <img src="latinphone.png" alt="LatinPhone" loading="lazy">
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Inicio</a>
+                <a href="#" class="footer-link">Productos</a>
+                <a href="#" class="footer-link">Soporte</a>
+                <a href="#" class="footer-link">Contacto</a>
+            </div>
+            <div class="footer-copyright">
+                &copy; 2025 LatinPhone. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos del DOM
+            const formSection = document.getElementById('form-section');
+            const giftsSection = document.getElementById('gifts-section');
+            const confirmationSection = document.getElementById('confirmation-section');
+            const orderNumberInput = document.getElementById('order-number');
+            const customerNameInput = document.getElementById('customer-name');
+            const orderNumberError = document.getElementById('order-number-error');
+            const customerNameError = document.getElementById('customer-name-error');
+            const verifyBtn = document.getElementById('verify-btn');
+            const spinner = document.getElementById('spinner');
+            const errorMessage = document.getElementById('error-message');
+            const customerNameDisplay = document.getElementById('customer-name-display');
+            const orderNumberDisplay = document.getElementById('order-number-display');
+            const giftsGrid = document.getElementById('gifts-grid');
+            const confirmGiftBtn = document.getElementById('confirm-gift-btn');
+            const confirmationOrderNumber = document.getElementById('confirmation-order-number');
+            const confirmationCustomerName = document.getElementById('confirmation-customer-name');
+            const confirmationDate = document.getElementById('confirmation-date');
+            const confirmationGiftImg = document.getElementById('confirmation-gift-img');
+            const confirmationGiftName = document.getElementById('confirmation-gift-name');
+            const confirmationGiftSpecs = document.getElementById('confirmation-gift-specs');
+            const contactSupportBtn = document.getElementById('contact-support-btn');
+
+            // Variables para almacenar el estado
+            let selectedGift = null;
+
+            // Base de datos de productos disponibles como regalo (precio < $100)
+            const giftProducts = [
+                {
+                    id: 'xiaomi-redmi-a3',
+                    name: 'Xiaomi Redmi A3 3GB/64GB',
+                    brand: 'Xiaomi',
+                    price: 55,
+                    specs: ['3GB RAM', '64GB', 'Android 13'],
+                    image: 'https://i01.appmifile.com/webfile/globalimg/products/pc/Redmi-A3/specs-header.png'
+                },
+                {
+                    id: 'xiaomi-buds-5',
+                    name: 'Xiaomi Buds 5',
+                    brand: 'Xiaomi',
+                    price: 40,
+                    specs: ['Bluetooth 5.3', '40h de batería', 'Resistentes al agua'],
+                    image: 'https://i01.appmifile.com/v1/MI_18455B3E4DA706226CF7535A58E875F0267/pms_1664354008.06029150.png'
+                },
+                {
+                    id: 'samsung-tag-2',
+                    name: 'Samsung Tag 2',
+                    brand: 'Samsung',
+                    price: 30,
+                    specs: ['Localización precisa', 'Batería de larga duración'],
+                    image: 'https://images.samsung.com/is/image/samsung/p6pim/es/ei-t5340bbegeu/gallery/es-galaxy-smarttag2-ei-t5340-ei-t5340bbegeu-thumb-537058600?$160_160_PNG$'
+                },
+                {
+                    id: 'samsung-fit-3',
+                    name: 'Samsung Fit 3',
+                    brand: 'Samsung',
+                    price: 55,
+                    specs: ['Monitor cardíaco', 'Resistente al agua', 'Batería 7 días'],
+                    image: 'https://images.samsung.com/is/image/samsung/p6pim/es/sm-r370nzkaeux/gallery/es-galaxy-fit3-sm-r370-sm-r370nzkaeux-thumb-538315627?$160_160_PNG$'
+                },
+                {
+                    id: 'xiaomi-smartband-9',
+                    name: 'Xiaomi Smart Band 9',
+                    brand: 'Xiaomi',
+                    price: 50,
+                    specs: ['Pantalla AMOLED', 'Resistente al agua 5ATM', 'Batería 14 días'],
+                    image: 'https://i01.appmifile.com/v1/MI_18455B3E4DA706226CF7535A58E875F0267/pms_1686104831.80967028.png'
+                },
+                {
+                    id: 'blackshark-watch-gt3',
+                    name: 'Black Shark Watch GT3',
+                    brand: 'Black Shark',
+                    price: 60,
+                    specs: ['Pantalla 1.43"', 'Monitor de sueño', 'Resistente al agua'],
+                    image: 'https://www.blacksharktech.com/cdn/shop/products/xiaomi-blackshark.jpg?v=1679908118'
+                },
+                {
+                    id: 'xiaomi-mouse',
+                    name: 'Xiaomi Mouse Wireless 3',
+                    brand: 'Xiaomi',
+                    price: 25,
+                    specs: ['Bluetooth 5.1', 'Batería 12 meses', 'DPI ajustable'],
+                    image: 'https://c1.neweggimages.com/ProductImage/A6MY_1_201911051548767799.jpg'
+                },
+                {
+                    id: 'skullcandy-dime-3',
+                    name: 'Skullcandy Dime 3',
+                    brand: 'Skullcandy',
+                    price: 35,
+                    specs: ['Resistente al agua', '12h de batería', 'Micrófono integrado'],
+                    image: 'https://m.media-amazon.com/images/I/61J2s33TBXL._AC_UF1000,1000_QL80_.jpg'
+                },
+                {
+                    id: 'amazon-firestick',
+                    name: 'Amazon Fire TV Stick 4K',
+                    brand: 'Amazon',
+                    price: 50,
+                    specs: ['4K UHD', 'Dolby Vision', 'Alexa Voice Remote'],
+                    image: 'https://m.media-amazon.com/images/I/51CgKGfMelL._AC_UF894,1000_QL80_.jpg'
+                },
+                {
+                    id: 'xiaomi-home-camera',
+                    name: 'Xiaomi Home Security 2K',
+                    brand: 'Xiaomi',
+                    price: 50,
+                    specs: ['Resolución 2K', 'Visión nocturna', 'Detección de movimiento'],
+                    image: 'https://i01.appmifile.com/v1/MI_18455B3E4DA706226CF7535A58E875F0267/pms_1672813194.66313014.png'
+                },
+                {
+                    id: 'motorola-buds',
+                    name: 'Motorola Buds',
+                    brand: 'Motorola',
+                    price: 45,
+                    specs: ['Resistente al agua', '20h de batería', 'Cancelación de ruido'],
+                    image: 'https://motorolaus.vtexassets.com/arquivos/ids/163136-1600-auto?width=1600&height=auto&aspect=true'
+                },
+                {
+                    id: 'apple-charger',
+                    name: 'Apple Charger 20W',
+                    brand: 'Apple',
+                    price: 30,
+                    specs: ['20W', 'USB-C', 'Carga rápida'],
+                    image: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/MU7V2_GEO_US?wid=1144&hei=1144&fmt=jpeg&qlt=90&.v=1542406417329'
+                }
+            ];
+
+            // Función para validar el formato del número de orden
+            function validateOrderNumber(orderNumber) {
+                // Formato: LP-XXXXXXXX (donde X son números)
+                const regex = /^LP-\d{8}$/;
+                return regex.test(orderNumber);
+            }
+
+            // Función para validar el nombre del cliente
+            function validateCustomerName(name) {
+                return name.trim().length >= 3 && name.trim().indexOf(' ') !== -1;
+            }
+
+            // Función para cargar los productos disponibles como regalo
+            function loadGiftProducts() {
+                giftsGrid.innerHTML = '';
+                
+                giftProducts.forEach(product => {
+                    const giftCard = document.createElement('div');
+                    giftCard.className = 'gift-card';
+                    giftCard.setAttribute('data-id', product.id);
+                    
+                    const specsHTML = product.specs.map(spec => `<span>${spec}</span>`).join('');
+                    
+                    giftCard.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}" class="gift-img">
+                        <div class="gift-info">
+                            <div class="gift-brand">${product.brand}</div>
+                            <h3 class="gift-name">${product.name}</h3>
+                            <div class="gift-specs">
+                                ${specsHTML}
+                            </div>
+                            <div class="gift-price">$${product.price.toFixed(2)} <span style="text-decoration: line-through; color: var(--accent-color); font-size: 1.4rem; margin-left: 0.5rem;">Gratis</span></div>
+                        </div>
+                    `;
+                    
+                    giftCard.addEventListener('click', () => {
+                        // Quitar selección anterior
+                        document.querySelectorAll('.gift-card.selected').forEach(card => {
+                            card.classList.remove('selected');
+                        });
+                        
+                        // Seleccionar este regalo
+                        giftCard.classList.add('selected');
+                        selectedGift = product;
+                        
+                        // Habilitar botón de confirmación
+                        confirmGiftBtn.disabled = false;
+                    });
+                    
+                    giftsGrid.appendChild(giftCard);
+                });
+            }
+
+            // Función para verificar la orden
+            function verifyOrder() {
+                const orderNumber = orderNumberInput.value.trim();
+                const customerName = customerNameInput.value.trim();
+                
+                // Validar campos
+                let isValid = true;
+                
+                if (!validateOrderNumber(orderNumber)) {
+                    orderNumberError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    orderNumberError.style.display = 'none';
+                }
+                
+                if (!validateCustomerName(customerName)) {
+                    customerNameError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    customerNameError.style.display = 'none';
+                }
+                
+                if (!isValid) return;
+                
+                // Mostrar spinner y ocultar mensaje de error
+                spinner.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                // Simular verificación con el servidor
+                setTimeout(() => {
+                    // Para este ejemplo, aceptamos cualquier número de orden con formato válido
+                    // En un entorno real, esto verificaría con el servidor
+                    
+                    const isOrderValid = true; // Simular orden válida
+                    
+                    if (isOrderValid) {
+                        // Actualizar información del cliente
+                        customerNameDisplay.textContent = customerName;
+                        orderNumberDisplay.textContent = orderNumber;
+                        
+                        // Ocultar sección de formulario y mostrar sección de regalos
+                        formSection.classList.remove('active');
+                        giftsSection.classList.add('active');
+                        
+                        // Cargar productos de regalo
+                        loadGiftProducts();
+                    } else {
+                        // Mostrar mensaje de error
+                        errorMessage.style.display = 'block';
+                    }
+                    
+                    // Ocultar spinner
+                    spinner.style.display = 'none';
+                }, 2000); // 2 segundos de simulación
+            }
+
+            // Función para confirmar la selección del regalo
+            function confirmGiftSelection() {
+                if (!selectedGift) return;
+                
+                // Actualizar información de confirmación
+                confirmationOrderNumber.textContent = orderNumberInput.value.trim();
+                confirmationCustomerName.textContent = customerNameInput.value.trim();
+                
+                const today = new Date();
+                confirmationDate.textContent = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
+                
+                confirmationGiftImg.src = selectedGift.image;
+                confirmationGiftImg.alt = selectedGift.name;
+                confirmationGiftName.textContent = selectedGift.name;
+                confirmationGiftSpecs.textContent = selectedGift.specs.join(' • ');
+                
+                // Actualizar enlace de soporte
+                const orderNumber = orderNumberInput.value.trim();
+                contactSupportBtn.href = `https://wa.me/+18133584564?text=Hola%20LatinPhone,%20tengo%20una%20consulta%20sobre%20mi%20regalo%20seleccionado%20(${encodeURIComponent(selectedGift.name)})%20para%20el%20pedido%20${orderNumber}`;
+                
+                // Mostrar sección de confirmación
+                giftsSection.classList.remove('active');
+                confirmationSection.classList.add('active');
+                
+                // Mostrar confeti para celebrar
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            // Event Listeners
+            verifyBtn.addEventListener('click', verifyOrder);
+            
+            orderNumberInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyOrder();
+                }
+            });
+            
+            customerNameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyOrder();
+                }
+            });
+            
+            confirmGiftBtn.addEventListener('click', confirmGiftSelection);
+            
+            // Formateo del número de orden
+            orderNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^A-Za-z0-9-]/g, '').toUpperCase();
+                
+                // Asegurar que comienza con "LP-"
+                if (!value.startsWith('LP-') && value !== 'L' && value !== 'LP') {
+                    if (value.startsWith('L')) {
+                        value = 'LP-' + value.substring(1);
+                    } else {
+                        value = 'LP-' + value;
+                    }
+                }
+                
+                // Limitar a 11 caracteres (LP- + 8 dígitos)
+                if (value.length > 11) {
+                    value = value.substring(0, 11);
+                }
+                
+                e.target.value = value;
+            });
+        });
+    </script>
+</body>
+</html>

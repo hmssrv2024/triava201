@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Andrea - Asistente Virtual Remeex</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="chatbot.css">
+    <meta name="theme-color" content="#1A1F71">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Andrea - Remeex">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h2>Remeex</h2>
+            </div>
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <p>Iniciando conversación con Andrea...</p>
+        </div>
+    </div>
+
+    <!-- Main Chat Container -->
+    <div id="chatContainer" class="chat-container">
+        <!-- Header -->
+        <header class="chat-header">
+            <div class="header-content">
+                <div class="assistant-info">
+                    <div class="avatar-container">
+                        <div class="assistant-avatar">
+                            <img src="https://via.placeholder.com/48x48/1A1F71/FFFFFF?text=A" alt="Andrea" id="assistantImage">
+                            <div class="status-indicator online"></div>
+                        </div>
+                    </div>
+                    <div class="assistant-details">
+                        <h1 class="assistant-name">Andrea</h1>
+                        <p class="assistant-role">Especialista en Servicios Financieros</p>
+                        <div class="status-text">
+                            <span class="status-dot"></span>
+                            <span id="statusText">En línea - Tiempo de respuesta < 30s</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn" id="menuBtn" aria-label="Menú">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Chat Messages Container -->
+        <main class="chat-messages" id="chatMessages">
+            <div class="welcome-section">
+                <div class="welcome-avatar">
+                    <img src="https://via.placeholder.com/72x72/1A1F71/FFFFFF?text=A" alt="Andrea">
+                </div>
+                <div class="welcome-content">
+                    <h2>¡Hola! Soy Andrea 👋</h2>
+                    <p>Tu especialista personal en servicios financieros de Remeex. Estoy aquí para ayudarte con todas tus consultas sobre nuestra plataforma.</p>
+                    <div class="trust-indicators">
+                        <div class="trust-item">
+                            <i class="fas fa-shield-check"></i>
+                            <span>100% Seguro</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Disponible 24/7</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="fas fa-certificate"></i>
+                            <span>Certificado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Start Options -->
+            <div class="quick-start-section">
+                <h3>¿En qué puedo ayudarte hoy?</h3>
+                <div class="quick-options">
+                    <button class="quick-option primary" data-action="validation">
+                        <div class="option-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="option-content">
+                            <span class="option-title">Validar mi cuenta</span>
+                            <span class="option-desc">Proceso rápido y seguro</span>
+                        </div>
+                        <i class="fas fa-arrow-right option-arrow"></i>
+                    </button>
+                    
+                    <button class="quick-option" data-action="security">
+                        <div class="option-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="option-content">
+                            <span class="option-title">Seguridad y confianza</span>
+                            <span class="option-desc">Conoce nuestras certificaciones</span>
+                        </div>
+                        <i class="fas fa-arrow-right option-arrow"></i>
+                    </button>
+                    
+                    <button class="quick-option" data-action="balance">
+                        <div class="option-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="option-content">
+                            <span class="option-title">Gestionar mi saldo</span>
+                            <span class="option-desc">Recargas y transferencias</span>
+                        </div>
+                        <i class="fas fa-arrow-right option-arrow"></i>
+                    </button>
+                    
+                    <button class="quick-option" data-action="cards">
+                        <div class="option-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="option-content">
+                            <span class="option-title">Tarjetas virtuales</span>
+                            <span class="option-desc">Crea y gestiona tarjetas</span>
+                        </div>
+                        <i class="fas fa-arrow-right option-arrow"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-content">
+                <div class="typing-avatar">
+                    <img src="https://via.placeholder.com/32x32/1A1F71/FFFFFF?text=A" alt="Andrea">
+                </div>
+                <div class="typing-bubble">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="typing-text">Andrea está escribiendo...</div>
+        </div>
+
+        <!-- Suggestions Bar -->
+        <div class="suggestions-bar" id="suggestionsBar">
+            <div class="suggestions-content">
+                <div class="suggestions-header">
+                    <span>Sugerencias para ti</span>
+                    <button class="close-suggestions" id="closeSuggestions">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="suggestions-list" id="suggestionsList">
+                    <!-- Suggestions will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <footer class="chat-input-container">
+            <div class="input-wrapper">
+                <div class="input-field">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Escribe tu mensaje aquí..." 
+                        rows="1"
+                        maxlength="1000"
+                        aria-label="Escribir mensaje"
+                    ></textarea>
+                    <div class="character-count">
+                        <span id="charCount">0</span>/1000
+                    </div>
+                </div>
+                <button class="send-button" id="sendButton" aria-label="Enviar mensaje" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="input-actions">
+                <div class="quick-actions">
+                    <button class="quick-action" data-message="¿Cómo puedo validar mi cuenta?">
+                        <i class="fas fa-user-check"></i>
+                        <span>Validación</span>
+                    </button>
+                    <button class="quick-action" data-message="¿Es seguro Remeex?">
+                        <i class="fas fa-shield-check"></i>
+                        <span>Seguridad</span>
+                    </button>
+                    <button class="quick-action" data-message="¿Cómo puedo retirar dinero?">
+                        <i class="fas fa-money-bill-transfer"></i>
+                        <span>Retiros</span>
+                    </button>
+                    <button class="quick-action" data-message="Necesito ayuda">
+                        <i class="fas fa-headset"></i>
+                        <span>Soporte</span>
+                    </button>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Menu Overlay -->
+        <div class="menu-overlay" id="menuOverlay">
+            <div class="menu-content">
+                <div class="menu-header">
+                    <h3>Opciones</h3>
+                    <button class="close-menu" id="closeMenu">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="menu-items">
+                    <button class="menu-item" data-action="restart">
+                        <i class="fas fa-refresh"></i>
+                        <span>Reiniciar conversación</span>
+                    </button>
+                    <button class="menu-item" data-action="transcript">
+                        <i class="fas fa-download"></i>
+                        <span>Descargar transcripción</span>
+                    </button>
+                    <button class="menu-item" data-action="contact">
+                        <i class="fas fa-phone"></i>
+                        <span>Contactar soporte humano</span>
+                    </button>
+                    <button class="menu-item" data-action="feedback">
+                        <i class="fas fa-star"></i>
+                        <span>Evaluar conversación</span>
+                    </button>
+                </div>
+                <div class="menu-footer">
+                    <div class="app-info">
+                        <p>Remeex Assistant v2.1</p>
+                        <p>Powered by Andrea AI</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast-container" id="toastContainer">
+            <!-- Toasts will be inserted here -->
+        </div>
+
+        <!-- Connection Status -->
+        <div class="connection-status" id="connectionStatus">
+            <div class="connection-content">
+                <i class="fas fa-wifi"></i>
+                <span>Reconectando...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-item" data-action="copy">
+            <i class="fas fa-copy"></i>
+            <span>Copiar</span>
+        </div>
+        <div class="context-item" data-action="share">
+            <i class="fas fa-share"></i>
+            <span>Compartir</span>
+        </div>
+        <div class="context-item" data-action="translate">
+            <i class="fas fa-language"></i>
+            <span>Traducir</span>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal-overlay" id="feedbackModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>¿Cómo fue tu experiencia?</h3>
+                <button class="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="rating-section">
+                    <div class="stars-rating">
+                        <button class="star" data-rating="1"><i class="fas fa-star"></i></button>
+                        <button class="star" data-rating="2"><i class="fas fa-star"></i></button>
+                        <button class="star" data-rating="3"><i class="fas fa-star"></i></button>
+                        <button class="star" data-rating="4"><i class="fas fa-star"></i></button>
+                        <button class="star" data-rating="5"><i class="fas fa-star"></i></button>
+                    </div>
+                    <p class="rating-text">Excelente</p>
+                </div>
+                <div class="feedback-form">
+                    <textarea placeholder="Comparte tu opinión para ayudarnos a mejorar..." rows="4"></textarea>
+                    <div class="form-actions">
+                        <button class="btn-secondary" id="skipFeedback">Omitir</button>
+                        <button class="btn-primary" id="submitFeedback">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="chatbot.js"></script>
+</body>
+</html>

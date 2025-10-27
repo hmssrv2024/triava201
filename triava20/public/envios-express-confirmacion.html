@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pago confirmado · Remeex Express</title>
+    <link rel="stylesheet" href="envios-express.css" />
+    <style>
+      .confirmation-wrapper {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 4rem;
+        text-align: center;
+      }
+      .confirmation-card {
+        background: rgba(255, 255, 255, 0.94);
+        border-radius: 18px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem 2rem;
+      }
+      .confirmation-card h1 {
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        margin-bottom: 0.75rem;
+      }
+      .confirmation-card p {
+        margin-bottom: 1.5rem;
+        color: #394247;
+        line-height: 1.6;
+      }
+      .confirmation-details {
+        display: grid;
+        gap: 0.75rem;
+        margin: 2rem 0;
+        text-align: left;
+      }
+      .confirmation-details dt {
+        font-weight: 600;
+        color: #1f2a32;
+      }
+      .confirmation-details dd {
+        margin: 0;
+        color: #4a555b;
+        word-break: break-word;
+      }
+      .confirmation-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 2rem;
+      }
+      .confirmation-actions a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.9rem 1.4rem;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .confirmation-actions a.primary {
+        background: linear-gradient(135deg, #0d98ba, #07b39b);
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(7, 179, 155, 0.25);
+      }
+      .confirmation-actions a.secondary {
+        background: rgba(7, 179, 155, 0.08);
+        color: #046077;
+      }
+      .confirmation-actions a:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 36px rgba(7, 179, 155, 0.2);
+      }
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(7, 179, 155, 0.12);
+        color: #046077;
+        border-radius: 999px;
+        padding: 0.35rem 1rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+      .status-pill span {
+        font-size: 1.05rem;
+      }
+    </style>
+  </head>
+  <body class="page page--light">
+    <main class="confirmation-wrapper">
+      <article class="confirmation-card" aria-live="polite">
+        <h1>¡Pago registrado con éxito!</h1>
+        <p>
+          Confirmamos la recepción de tu orden en PayPal. Nuestro equipo procesará la remesa y te
+          notificaremos cuando esté acreditada.
+        </p>
+        <div class="status-pill" id="statusPill" hidden>
+          <span>●</span>
+          <strong id="orderStatus">Pendiente</strong>
+        </div>
+        <dl class="confirmation-details">
+          <dt>Número de orden</dt>
+          <dd id="orderId">—</dd>
+          <dt>Monto abonado</dt>
+          <dd><span id="orderAmount">—</span> <span id="orderCurrency"></span></dd>
+          <dt>Beneficiario</dt>
+          <dd id="orderRecipient">—</dd>
+        </dl>
+        <section class="confirmation-actions">
+          <a class="primary" href="/envios-express-paises.html">Crear otra transferencia</a>
+          <a class="secondary" href="/">Volver al inicio</a>
+        </section>
+      </article>
+    </main>
+    <script type="module">
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get('orderId');
+      const status = params.get('status');
+      const amount = params.get('amount');
+      const currency = params.get('currency');
+      const recipient = params.get('recipient');
+
+      const orderIdEl = document.getElementById('orderId');
+      const orderStatusEl = document.getElementById('orderStatus');
+      const orderAmountEl = document.getElementById('orderAmount');
+      const orderCurrencyEl = document.getElementById('orderCurrency');
+      const orderRecipientEl = document.getElementById('orderRecipient');
+      const statusPillEl = document.getElementById('statusPill');
+
+      if (orderId) {
+        orderIdEl.textContent = orderId;
+      }
+
+      if (status) {
+        orderStatusEl.textContent = status;
+        statusPillEl.hidden = false;
+      }
+
+      if (amount) {
+        orderAmountEl.textContent = amount;
+      }
+
+      if (currency) {
+        orderCurrencyEl.textContent = currency;
+      }
+
+      if (recipient) {
+        orderRecipientEl.textContent = recipient;
+      }
+    </script>
+  </body>
+</html>

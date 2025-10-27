@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LatinPhone - Pago Seguro | Envío Garantizado</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="img/favicon.png">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    
+    <!-- Meta tags SEO -->
+    <meta name="description" content="Completa tu compra de forma segura en LatinPhone. Smartphones, laptops y accesorios con envío directo desde USA. Garantía internacional y precios imbatibles.">
+    <meta name="keywords" content="checkout, pago seguro, compra online, envíos internacionales, Venezuela, Colombia, Latinoamérica">
+    <meta name="author" content="LatinPhone">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="components.css">
+    <link rel="stylesheet" href="checkout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader" class="overlay active">
+        <div class="loader-container">
+            <img src="latinphone.png" alt="LatinPhone" width="120" class="brand-logo-badge brand-logo-preloader">
+            <div class="loader"></div>
+            <p style="color: white; margin-top: 20px;">Cargando sistema de pago seguro...</p>
+            <div id="venezuela-detection" style="display: flex; align-items: center; margin-top: 20px; background: rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 50px; animation: fadeInUp 0.5s;">
+                <div class="venezuala-flag"></div>
+                <span style="color: white; margin-left: 8px;">¡Detectamos que te conectas desde Venezuela!</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="checkout-header">
+        <div class="container checkout-header-content">
+            <a href="latinphonestorehome.html" class="checkout-logo" aria-label="Inicio LatinPhone">
+                <img src="latinphone.png" alt="LatinPhone" class="checkout-logo-img brand-logo-badge">
+            </a>
+            <div class="checkout-header-actions">
+                <a href="tienda.html" class="checkout-header-action">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Volver a la tienda</span>
+                </a>
+                <a href="#" class="checkout-header-action" id="support-link">
+                    <i class="fas fa-headset"></i>
+                    <span>Soporte</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container section">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 25%;"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="progress-step active" data-step="1">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="progress-step-text">Carrito</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="progress-step-text">Envío</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="progress-step-text">Pago</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="progress-step-text">Confirmación</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Container -->
+        <div class="checkout-container">
+            <!-- Checkout Form -->
+            <div class="checkout-form-container">
+                <!-- Step 1: Cart Review -->
+                <div class="checkout-step active" id="step-1">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="mb-0" style="font-size: 1.3rem;">Resumen de tu pedido</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="product-preview-container">
+                                <!-- Los productos del carrito se mostrarán aquí -->
+                            </div>
+                            
+                            <div class="security-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <div class="security-badge-text">
+                                    Garantizamos la seguridad de tu pago con encriptación SSL de 256 bits. Tus datos personales están protegidos.
+                                </div>
+                            </div>
+                            
+                            <div class="nationalization-notice">
+                                <div class="nationalization-notice-title">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Información importante
+                                </div>
+                                <p class="nationalization-notice-text">
+                                    Los envíos a Venezuela tienen un cargo adicional de nacionalización de <span class="nationalization-amount">$30.00</span> (<span id="nationalization-bs">2,610.00 Bs</span>) que se paga en efectivo directamente al transportista al momento de la entrega.
+                                </p>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="carrito.html" class="btn btn-outline">
+                                    <i class="fas fa-arrow-left"></i> Volver al carrito
+                                </a>
+                                <button type="button" class="btn btn-primary" id="go-to-step-2">
+                                    Continuar <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Shipping Information -->
+                <div class="checkout-step" id="step-2">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="mb-0" style="font-size: 1.3rem;">Información de Envío</h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="shipping-form">
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="name" class="form-label">Nombre completo</label>
+                                            <input type="text" class="form-control" id="name" placeholder="Ingresa tu nombre completo" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="email" class="form-label">Correo electrónico</label>
+                                            <input type="email" class="form-control" id="email" placeholder="ejemplo@correo.com" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="phone" class="form-label">Número de teléfono</label>
+                                            <input type="tel" class="form-control" id="phone" placeholder="+58 412 1234567" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="dni" class="form-label">Documento de identidad</label>
+                                            <input type="text" class="form-control" id="dni" placeholder="V-12345678" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="address" class="form-label">Dirección</label>
+                                    <input type="text" class="form-control" id="address" placeholder="Calle, número, apartamento, etc." required>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="city" class="form-label">Ciudad</label>
+                                            <input type="text" class="form-control" id="city" placeholder="Ciudad" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="state" class="form-label">Estado</label>
+                                            <input type="text" class="form-control" id="state" placeholder="Estado" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="shipping-method" class="form-label">Método de envío</label>
+                                    <div class="payment-methods shipping-methods">
+                                        <div class="payment-method active" data-shipping="express" data-cost="70">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-bolt"></i>
+                                            </div>
+                                            <div class="payment-method-name">Express</div>
+                                            <div class="mt-1">1-4 días</div>
+                                            <div class="mt-1 text-primary font-weight-bold">$70.00</div>
+                                        </div>
+                                        <div class="payment-method" data-shipping="standard" data-cost="35">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-truck"></i>
+                                            </div>
+                                            <div class="payment-method-name">Estándar</div>
+                                            <div class="mt-1">7-10 días</div>
+                                            <div class="mt-1 text-primary font-weight-bold">$35.00</div>
+                                        </div>
+                                        <div class="payment-method" data-shipping="free" data-cost="0">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-gift"></i>
+                                            </div>
+                                            <div class="payment-method-name">Gratuito</div>
+                                            <div class="mt-1">15-20 días</div>
+                                            <div class="mt-1 text-success font-weight-bold">$0.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="shipping-company" class="form-label">Empresa de envío</label>
+                                    <select class="form-control" id="shipping-company" required>
+                                        <option value="">Selecciona una empresa</option>
+                                        <option value="mrw" selected>MRW</option>
+                                        <option value="zoom">Zoom</option>
+                                        <option value="liberty">Liberty Express</option>
+                                        <option value="tealca">Tealca</option>
+                                        <option value="ipostel">Ipostel</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input type="checkbox" id="nationalization-agreement" class="form-check-input" required>
+                                        <label for="nationalization-agreement" class="form-check-label">
+                                            Entiendo y acepto pagar el cargo de nacionalización de $30.00 (<span id="nationalization-checkbox-bs">2,610.00 Bs</span>) en efectivo al transportista al recibir mi pedido.
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button type="button" class="btn btn-outline" id="back-to-step-1">
+                                        <i class="fas fa-arrow-left"></i> Volver
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="go-to-step-3">
+                                        Continuar <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment Information -->
+                <div class="checkout-step" id="step-3">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="mb-0" style="font-size: 1.3rem;">Información de Pago</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="credit-card" id="credit-card">
+                                <div class="credit-card-front">
+                                    <div class="credit-card-logo">
+                                        <div class="credit-card-chip"></div>
+                                        <div class="credit-card-type" id="card-type-display">VISA</div>
+                                    </div>
+                                    <div class="credit-card-number" id="card-number-display">•••• •••• •••• ••••</div>
+                                    <div class="credit-card-info">
+                                        <div>
+                                            <span>TITULAR</span>
+                                            <strong id="card-name-display">NOMBRE APELLIDO</strong>
+                                        </div>
+                                        <div>
+                                            <span>VENCE</span>
+                                            <strong id="card-expiry-display">MM/AA</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="credit-card-back">
+                                    <div class="magnetic-strip"></div>
+                                    <div class="signature-box">
+                                        <div class="cvv" id="card-cvv-display">***</div>
+                                    </div>
+                                    <div class="terms">
+                                        Esta tarjeta es propiedad del banco emisor. Su uso está sujeto a los términos y condiciones del acuerdo con el titular.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <form id="payment-form">
+                                <div class="form-group">
+                                    <label for="card-name-input" class="form-label">Nombre en la tarjeta</label>
+                                    <input type="text" class="form-control" id="card-name-input" placeholder="Nombre como aparece en la tarjeta" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="card-number-input" class="form-label">Número de tarjeta</label>
+                                    <input type="text" class="form-control" id="card-number-input" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                                    <div class="text-muted mt-1" style="font-size: 0.8rem;">
+                                        Para prueba: 4745034211763009
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="card-expiry-input" class="form-label">Fecha de vencimiento</label>
+                                            <input type="text" class="form-control" id="card-expiry-input" placeholder="MM/AA" maxlength="5" required>
+                                            <div class="text-muted mt-1" style="font-size: 0.8rem;">
+                                                Para prueba: 01/26
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="card-cvv-input" class="form-label">Código de seguridad (CVV)</label>
+                                            <input type="password" class="form-control" id="card-cvv-input" placeholder="***" maxlength="3" required>
+                                            <div class="text-muted mt-1" style="font-size: 0.8rem;">
+                                                Para prueba: 583
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="security-badge">
+                                    <i class="fas fa-lock"></i>
+                                    <div class="security-badge-text">
+                                        Tus datos están protegidos con encriptación de nivel bancario. Usamos tecnología SSL para proteger tu información.
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button type="button" class="btn btn-outline" id="back-to-step-2">
+                                        <i class="fas fa-arrow-left"></i> Volver
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="process-payment">
+                                        Pagar <i class="fas fa-lock"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Confirmation -->
+                <div class="checkout-step" id="step-4">
+                    <div class="order-confirmation">
+                        <div class="confirmation-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h2 class="confirmation-title">¡Pago Completado con Éxito!</h2>
+                        <p class="confirmation-message">Tu pedido ha sido confirmado y está siendo procesado. Recibirás un correo electrónico con los detalles de tu compra y actualizaciones en tiempo real.</p>
+                        
+                        <div class="confirmation-details">
+                            <h3 class="confirmation-details-title">Detalles del Pedido</h3>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Número de pedido:</div>
+                                <div class="confirmation-value" id="order-number">LP-2025-7851349</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Fecha:</div>
+                                <div class="confirmation-value" id="order-date">21 de Marzo, 2025</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Método de pago:</div>
+                                <div class="confirmation-value">Tarjeta de crédito terminada en 3009</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Método de envío:</div>
+                                <div class="confirmation-value" id="shipping-method-display">MRW Express (3-5 días)</div>
+                            </div>
+                            
+                            <hr class="summary-divider">
+                            
+                            <div class="product-list" id="confirmation-products">
+                                <!-- Productos confirmados se mostrarán aquí -->
+                            </div>
+                            
+                            <hr class="summary-divider">
+                            
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Subtotal:</div>
+                                <div class="confirmation-value" id="confirmation-subtotal">$0.00</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">IVA (16%):</div>
+                                <div class="confirmation-value" id="confirmation-tax">$0.00</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Envío:</div>
+                                <div class="confirmation-value" id="confirmation-shipping">$0.00</div>
+                            </div>
+                            <div class="confirmation-row confirmation-total">
+                                <div class="confirmation-label">Total:</div>
+                                <div class="confirmation-value" id="confirmation-total">$0.00</div>
+                            </div>
+                            <div class="bolivar-conversion-large" id="total-bs-conversion">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <div class="venezuala-flag"></div>
+                                    <span id="total-bs">0.00 Bs</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="nationalization-notice">
+                            <div class="nationalization-notice-title">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Pago de Nacionalización Pendiente
+                            </div>
+                            <p class="nationalization-notice-text">
+                                Recuerda que debes pagar <span class="nationalization-amount">$30.00</span> (<span id="confirmation-nationalization-bs">2,610.00 Bs</span>) al transportista cuando recibas tu pedido. Este cargo es obligatorio para la nacionalización del producto en Venezuela.
+                            </p>
+                        </div>
+                        
+                        <div class="confirmation-actions">
+                            <a href="#" class="btn btn-primary" id="complete-order">
+                                <i class="fas fa-check-circle"></i> Completar Orden
+                            </a>
+                            <a href="#" class="btn btn-success" id="contact-whatsapp">
+                                <i class="fab fa-whatsapp"></i> Contactar por WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checkout Summary -->
+            <div class="checkout-summary-container">
+                <div class="checkout-summary">
+                    <div class="checkout-summary-header">
+                        <h3 class="checkout-summary-title">Resumen del Pedido</h3>
+                        <p class="checkout-summary-subtitle">Revisa los detalles de tu compra</p>
+                    </div>
+                    <div class="checkout-summary-content">
+                        <div class="product-list" id="summary-products">
+                            <!-- Productos del carrito se mostrarán aquí -->
+                        </div>
+                        
+                        <hr class="summary-divider">
+                        
+                        <div class="summary-item">
+                            <div class="summary-item-label">Subtotal</div>
+                            <div class="summary-item-value" id="summary-subtotal">$0.00</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">IVA (16%)</div>
+                            <div class="summary-item-value" id="summary-tax">$0.00</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">Envío</div>
+                            <div class="summary-item-value" id="summary-shipping">$0.00</div>
+                        </div>
+                        <div class="summary-item total">
+                            <div class="summary-item-label">Total</div>
+                            <div class="summary-item-value" id="summary-total">$0.00</div>
+                        </div>
+                        <div class="bolivar-conversion-large">
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <div class="venezuala-flag"></div>
+                                <span id="summary-total-bs">0.00 Bs</span>
+                            </div>
+                        </div>
+                        
+                        <div class="nationalization-notice mt-4">
+                            <div class="nationalization-notice-title">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Información de aduana
+                            </div>
+                            <p class="nationalization-notice-text">
+                                Cargo fijo de nacionalización: <span class="nationalization-amount">$30.00</span> (<span id="summary-nationalization-bs">2,610.00 Bs</span>)
+                            </p>
+                            <p class="nationalization-notice-text">
+                                Este cargo se paga en efectivo al recibir tu pedido.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- OTP Verification Modal -->
+    <div class="overlay" id="otp-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Verificación de Seguridad</h3>
+                <button class="modal-close" id="close-otp">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Hemos enviado un código de verificación a tu correo electrónico para confirmar la identidad del titular de la tarjeta.</p>
+                
+                <div class="otp-container mt-4 mb-4">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-1">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-2">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-3">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-4">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-5">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-6">
+                </div>
+                
+                <p class="text-muted text-center mb-4">El código expira en <span id="otp-timer">02:00</span></p>
+                <p class="text-muted text-center mb-4">Para prueba: <strong>415263</strong></p>
+                
+                <div class="form-group text-center">
+                    <button class="btn btn-primary" id="verify-otp">Verificar</button>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="#" id="resend-otp">No recibí el código. Reenviar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Video Modal -->
+    <div class="product-video-overlay" id="product-video-overlay">
+        <div class="product-video-container">
+            <video id="product-video" class="product-video" controls autoplay>
+                <source src="" type="video/mp4">
+            </video>
+            <button class="product-video-close" id="close-video">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="product-video-title" id="product-video-title">
+                Samsung Galaxy S25 Ultra
+            </div>
+        </div>
+    </div>
+
+    <!-- Tally iframe container -->
+    <div class="tally-iframe-container" id="tally-container">
+        <iframe data-tally-src="https://tally.so/r/3jvjBx?transparentBackground=1" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0" title="Planilla de entrega LatinPhone"></iframe>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <a href="latinphonestorehome.html">
+                            <img src="latinphone.png" alt="LatinPhone">
+                            <h3>LatinPhone</h3>
+                        </a>
+                    </div>
+                    <p>El distribuidor #1 de móviles de alta gama en Latinoamérica.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Productos</h4>
+                    <ul>
+                        <li><a href="#">Samsung</a></li>
+                        <li><a href="#">Apple</a></li>
+                        <li><a href="#">Google</a></li>
+                        <li><a href="#">Xiaomi</a></li>
+                        <li><a href="#">Accesorios</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Soporte</h4>
+                    <ul>
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Contacto</a></li>
+                        <li><a href="#">Garantía</a></li>
+                        <li><a href="#">Envíos</a></li>
+                        <li><a href="#">Devoluciones</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Empresa</h4>
+                    <ul>
+                        <li><a href="#">Sobre Nosotros</a></li>
+                        <li><a href="#">Carreras</a></li>
+                        <li><a href="#">Prensa</a></li>
+                        <li><a href="#">Responsabilidad Social</a></li>
+                        <li><a href="#">Afiliados</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 LatinPhone. Todos los derechos reservados.</p>
+                <ul class="legal-links">
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Privacidad</a></li>
+                    <li><a href="#">Cookies</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="tally.js" async></script>
+    <script src="checkout.js"></script>
+</body>
+</html>

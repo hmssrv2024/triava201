@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mapa de Países, Estados y Ciudades — LATAM (Remeex)</title>
+<style>
+  :root{
+    --bg:#0b1220; --card:#111a2b; --muted:#8aa0c4; --text:#eaf0ff; --accent:#1f6feb; --ok:#19c37d; --warn:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#0b1220,#0b1220 60%,#0e1627);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  header{position:sticky;top:0;background:rgba(11,18,32,.9);backdrop-filter:blur(8px);border-bottom:1px solid #1f2a44;z-index:10}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  h1{font-size:18px;margin:0}
+  .sub{color:var(--muted);font-size:13px}
+  .grid{display:grid;gap:14px}
+  @media(min-width:900px){ .grid{grid-template-columns:320px 1fr} }
+  .card{background:var(--card);border:1px solid #1f2a44;border-radius:14px;padding:14px}
+  label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+  select,input,textarea,button{width:100%;border-radius:10px;border:1px solid #263253;background:#0d1526;color:var(--text);padding:10px}
+  select:focus,input:focus,textarea:focus{outline:2px solid var(--accent);border-color:transparent}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .toolbar button{flex:1}
+  .list{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow:auto;padding-right:6px}
+  .item{background:#0d1526;border:1px solid #1f2a44;border-radius:10px;padding:10px}
+  .item h4{margin:0 0 6px;font-size:14px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{background:#0b1220;border:1px solid #1f2a44;color:#cfe1ff;padding:6px 8px;border-radius:999px;font-size:12px}
+  .muted{color:var(--muted)}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  .row > *{flex:1}
+  .hint{font-size:12px;color:var(--muted)}
+  .ok{color:var(--ok)} .warn{color:var(--warn)}
+  .small{font-size:12px}
+  details{background:#0d1526;border:1px solid #1f2a44;border-radius:10px;padding:8px}
+  summary{cursor:pointer;color:#cfe1ff}
+  .footer{opacity:.8;font-size:12px;margin-top:14px}
+  .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid #26427a;background:#0b1a35;font-size:11px;margin-left:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>LATAM — Países, Estados/Deptos/Provincias y Ciudades <span class="pill">Plantilla Remeex</span></h1>
+    <div class="sub">Pensado para app de remesas: selector por país → estado/departamento → ciudades. Escalable con JSON.</div>
+  </div>
+</header>
+
+<main class="wrap grid">
+  <!-- LADO IZQUIERDO: FILTROS Y CARGA -->
+  <section class="card">
+    <label for="country">País</label>
+    <select id="country"></select>
+
+    <div class="toolbar">
+      <button id="btnExport">Exportar JSON</button>
+      <button id="btnImport">Cargar JSON</button>
+    </div>
+
+    <details style="margin-top:10px">
+      <summary>Cómo usar / Importar datos</summary>
+      <div class="small muted" style="margin-top:8px;line-height:1.5">
+        1) Elige un país. 2) Selecciona un estado/departamento para ver/editar sus ciudades. <br>
+        3) <b>Exportar JSON</b> descarga el dataset actual. 4) <b>Cargar JSON</b> te permite pegar un dataset grande (pegas el texto y confirmas).
+      </div>
+    </details>
+
+    <details style="margin-top:8px">
+      <summary>Agregar/Editar datos rápidamente</summary>
+      <div class="small" style="margin-top:8px">
+        <div class="row">
+          <input id="newRegion" placeholder="Nuevo estado/departamento/provincia" />
+          <button id="addRegion">Añadir estado</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <input id="newCity" placeholder="Nueva ciudad (para estado seleccionado)" />
+          <button id="addCity">Añadir ciudad</button>
+        </div>
+        <div class="hint">Nota: Esto modifica el dataset en memoria. Luego usa “Exportar JSON”.</div>
+      </div>
+    </details>
+
+    <details style="margin-top:8px">
+      <summary>Importar pegando JSON</summary>
+      <div class="small" style="margin-top:8px">
+        <textarea id="jsonInput" rows="8" placeholder='Pegue aquí un JSON con el formato {"País":{"_meta":{...},"Estados":{"Nombre":["Ciudad1","Ciudad2"]}}}'></textarea>
+        <div class="toolbar">
+          <button id="applyJson">Aplicar JSON</button>
+        </div>
+      </div>
+    </details>
+
+    <div class="footer muted">Nivel 1 completo y ciudades de ejemplo para: México, Brasil, Argentina, Colombia, Venezuela, Chile, Perú. El resto queda preparado para completar.</div>
+  </section>
+
+  <!-- LADO DERECHO: LISTADOS -->
+  <section class="card">
+    <div class="row">
+      <div>
+        <label for="search">Buscar estado o ciudad</label>
+        <input id="search" placeholder="Ej.: Antioquia, Maracaibo, Jalisco..." />
+      </div>
+      <div>
+        <label for="regionSelect">Estado/Departamento/Provincia</label>
+        <select id="regionSelect"></select>
+      </div>
+    </div>
+
+    <div class="list" id="results" style="margin-top:12px"></div>
+  </section>
+</main>
+
+<script type="module">
+/**
+ * DATASET:
+ * Estructura:
+ * {
+ *   "País": {
+ *     _meta: { type: "Estados/Departamentos/Provincias/Regiones", iso: "ISO-3166-1/2 opcional" },
+ *     Estados: {
+ *        "NombreEstado": ["Ciudad A","Ciudad B", ...],
+ *        ...
+ *     }
+ *   },
+ *   ...
+ * }
+ *
+ * Nota: Para países aún no completados, dejamos { _meta, Estados:{} } para que puedas ir poblando.
+ */
+import { DATASET } from './countries-data.js';
+// ======= UI LOGIC =======
+const countryEl = document.getElementById('country');
+const regionEl = document.getElementById('regionSelect');
+const resultsEl = document.getElementById('results');
+const searchEl = document.getElementById('search');
+const btnExport = document.getElementById('btnExport');
+const btnImport = document.getElementById('btnImport');
+const jsonInput = document.getElementById('jsonInput');
+const applyJson = document.getElementById('applyJson');
+const addRegionBtn = document.getElementById('addRegion');
+const addCityBtn = document.getElementById('addCity');
+const newRegion = document.getElementById('newRegion');
+const newCity = document.getElementById('newCity');
+
+function initCountries(){
+  const names = Object.keys(DATASET).sort((a,b)=>a.localeCompare(b,'es'));
+  countryEl.innerHTML = names.map(n=>`<option value="${n}">${n}</option>`).join('');
+  countryEl.value = 'México';
+  onCountryChange();
+}
+
+function onCountryChange(){
+  const name = countryEl.value;
+  const regions = DATASET[name]?.Estados || {};
+  const keys = Object.keys(regions).sort((a,b)=>a.localeCompare(b,'es'));
+  regionEl.innerHTML = `<option value="">— Todos los estados —</option>` + keys.map(k=>`<option>${k}</option>`).join('');
+  renderList();
+}
+
+function renderList(){
+  const q = (searchEl.value||'').trim().toLowerCase();
+  const name = countryEl.value;
+  const selRegion = regionEl.value;
+  const meta = DATASET[name]?._meta||{};
+  const regions = DATASET[name]?.Estados||{};
+  let items = [];
+
+  const regionKeys = selRegion ? [selRegion] : Object.keys(regions);
+  regionKeys.forEach(r=>{
+    const cities = regions[r]||[];
+    // Filtrado
+    const matchesRegion = !q || r.toLowerCase().includes(q);
+    const filteredCities = q ? cities.filter(c=>c.toLowerCase().includes(q)) : cities;
+    if(matchesRegion || filteredCities.length){
+      items.push({region:r,cities: (filteredCities.length || q) ? filteredCities : cities});
+    }
+  });
+
+  resultsEl.innerHTML = '';
+  const header = document.createElement('div');
+  header.className = 'item';
+  header.innerHTML = `
+    <h4 style="display:flex;justify-content:space-between;align-items:center">
+      ${name} <span class="muted small">${meta.type||'Estados'} — ${Object.keys(regions).length} en total</span>
+    </h4>
+    <div class="muted small">ISO: ${meta.iso||'—'} | Tip: usa “Exportar JSON” para llevarte este país a tu backend.</div>
+  `;
+  resultsEl.appendChild(header);
+
+  if(!items.length){
+    const empty = document.createElement('div');
+    empty.className = 'item muted';
+    empty.textContent = 'Sin resultados. Ajusta la búsqueda o añade datos.';
+    resultsEl.appendChild(empty);
+    return;
+  }
+
+  items.forEach(({region,cities})=>{
+    const div = document.createElement('div');
+    div.className = 'item';
+    const chips = (cities||[]).map(c=>`<span class="chip">${c}</span>`).join('') || `<span class="muted small">— (sin ciudades cargadas) —</span>`;
+    div.innerHTML = `<h4>${region}</h4><div class="chips">${chips}</div>`;
+    resultsEl.appendChild(div);
+  });
+}
+
+function download(filename, text) {
+  const a = document.createElement('a');
+  a.setAttribute('href','data:text/json;charset=utf-8,' + encodeURIComponent(text));
+  a.setAttribute('download', filename);
+  a.style.display='none';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+btnExport.addEventListener('click',()=>{
+  const name = countryEl.value;
+  const obj = {};
+  obj[name] = DATASET[name];
+  download(`${name.replace(/\s+/g,'_')}.json`, JSON.stringify(obj,null,2));
+});
+
+btnImport.addEventListener('click',()=>{
+  const name = countryEl.value;
+  const text = prompt(`Pega aquí un JSON para combinar con ${name}. Se respetará la estructura {"${name}":{_meta:{},Estados:{...}}}`);
+  if(!text) return;
+  try{
+    const parsed = JSON.parse(text);
+    if(!parsed[name] || !parsed[name].Estados){ alert('Formato inválido.'); return; }
+    // Merge superficial
+    const current = DATASET[name];
+    DATASET[name] = {
+      _meta: {...current?._meta, ...parsed[name]._meta},
+      Estados: {...current?.Estados, ...parsed[name].Estados}
+    };
+    onCountryChange();
+    alert('Importado correctamente.');
+  }catch(e){
+    alert('JSON inválido.');
+  }
+});
+
+applyJson.addEventListener('click',()=>{
+  const text = jsonInput.value.trim();
+  if(!text) return alert('Pega un JSON primero.');
+  try{
+    const obj = JSON.parse(text);
+    // Mezcla a nivel raíz (varios países)
+    Object.entries(obj).forEach(([country,data])=>{
+      if(!DATASET[country]) DATASET[country] = {_meta:{type:"Estados"}, Estados:{}};
+      DATASET[country] = {
+        _meta:{...DATASET[country]._meta, ...(data._meta||{})},
+        Estados:{...DATASET[country].Estados, ...(data.Estados||{})}
+      };
+    });
+    jsonInput.value='';
+    initCountries();
+    alert('Dataset integrado.');
+  }catch(e){
+    alert('JSON inválido.');
+  }
+});
+
+countryEl.addEventListener('change', onCountryChange);
+regionEl.addEventListener('change', renderList);
+searchEl.addEventListener('input', renderList);
+
+addRegionBtn.addEventListener('click',()=>{
+  const country = countryEl.value;
+  const r = (newRegion.value||'').trim();
+  if(!r) return;
+  DATASET[country].Estados[r] = DATASET[country].Estados[r] || [];
+  newRegion.value='';
+  onCountryChange();
+});
+
+addCityBtn.addEventListener('click',()=>{
+  const country = countryEl.value;
+  const r = regionEl.value;
+  const c = (newCity.value||'').trim();
+  if(!r) return alert('Selecciona un estado/departamento primero.');
+  if(!c) return;
+  DATASET[country].Estados[r] = DATASET[country].Estados[r] || [];
+  if(!DATASET[country].Estados[r].includes(c)) DATASET[country].Estados[r].push(c);
+  newCity.value='';
+  renderList();
+});
+
+// Iniciar
+initCountries();
+</script>
+</body>
+</html>

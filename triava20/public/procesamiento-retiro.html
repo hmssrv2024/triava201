@@ -1,0 +1,3067 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="repair.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Retiro P2P - REMEEX</title>
+    <link rel="icon" type="image/png" href="https://cdn.visa.com/v2/assets/images/logos/visa/blue/logo.png">
+    <link rel="apple-touch-icon" href="https://cdn.visa.com/v2/assets/images/logos/visa/blue/logo.png">
+    <meta name="description" content="Remeex VISA: retiros P2P rápidos y seguros"/>
+    <meta name="keywords" content="retiros, P2P, transferencias, VISA"/>
+    <meta name="author" content="Remeex VISA"/>
+    <meta name="robots" content="index, follow"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+      (function() {
+        const fromTransfer = sessionStorage.getItem('fromTransfer') === 'true';
+        if (!fromTransfer) {
+          window.location.replace('transferencia.html');
+        } else {
+          sessionStorage.removeItem('fromTransfer');
+        }
+      })();
+    </script>
+
+    <!-- Metadatos para PWA -->
+    <meta name="theme-color" content="#1a1f71">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="REMEEX">
+
+    <style>
+        :root {
+            /* Paleta de colores moderna basada en estilo Revolut/N26 */
+            --primary: #1a1f71;
+            --primary-dark: #0c1045;
+            --primary-light: #3244b6;
+            --secondary: #00579f;
+            --accent: #f7b600;
+            --success: #00d34d;
+            --danger: #ff4d4d;
+            --warning: #ffad33;
+            --info: #0095ff;
+            --neutral-100: #ffffff;
+            --neutral-200: #f5f7fa;
+            --neutral-300: #eaecf0;
+            --neutral-400: #d0d5dd;
+            --neutral-500: #9da4b4;
+            --neutral-600: #6e7891;
+            --neutral-700: #4f5d75;
+            --neutral-800: #293249;
+            --neutral-900: #1a1f37;
+
+            /* Sombras y efectos */
+            --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+            --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+            --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+            --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+            
+            /* Border radius */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+            
+            /* Transiciones */
+            --transition-fast: all 0.2s ease;
+            --transition-base: all 0.3s ease;
+            --transition-slow: all 0.5s ease;
+            
+            /* Gradientes de tarjeta */
+            --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+            --success-gradient: linear-gradient(135deg, #00c057 0%, #00a346 100%);
+            
+            /* Animaciones */
+            --animation-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            /* Variables de altura para móviles */
+            --header-height: 70px;
+            --nav-height: 70px;
+            --wizard-nav-height: 60px;
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        @supports (height: 100dvh) {
+            :root {
+                --vh: 100dvh;
+            }
+        }
+
+        @supports not (height: 100dvh) {
+            :root {
+                --vh: 100vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            html { 
+                font-size: 90%; 
+            }
+            :root {
+                --header-height: 65px;
+                --nav-height: 65px;
+                --wizard-nav-height: 55px;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            height: var(--vh);
+            overflow-x: hidden;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--neutral-200);
+            color: var(--neutral-900);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+            min-height: var(--vh);
+        }
+
+        body.overlay-open {
+            overflow: hidden;
+        }
+        
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--neutral-200);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--neutral-500);
+            border-radius: var(--radius-full);
+        }
+
+        /* Header Container */
+        .header-container {
+            position: fixed;
+            top: 0;
+            top: var(--safe-area-top);
+            left: 0;
+            right: 0;
+            background: var(--neutral-100);
+            border-bottom: 1px solid var(--neutral-300);
+            box-shadow: var(--shadow-sm);
+            z-index: 1000;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 0;
+        }
+
+        .welcome-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .greeting {
+            font-size: 0.85rem;
+            color: var(--neutral-600);
+        }
+
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+
+        .users-online {
+            font-size: 0.7rem;
+            color: var(--neutral-500);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .users-online::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 1.5s infinite;
+        }
+
+        .header-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .mode-toggle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .toggle-mode-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 0.35rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-base);
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.125rem;
+            font-size: 0.65rem;
+            font-weight: 500;
+            min-width: 50px;
+        }
+
+        .toggle-mode-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .toggle-mode-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Balance Card Compacta */
+        .balance-card-compact {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--card-gradient);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            min-width: 0;
+            flex-shrink: 0;
+        }
+
+        .balance-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .balance-amount {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.125rem;
+        }
+
+        .balance-equivalent {
+            font-size: 0.65rem;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .currency-toggle-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-md);
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: var(--transition-base);
+            backdrop-filter: blur(5px);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .currency-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Main Container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            padding-top: var(--header-height);
+            padding-bottom: var(--nav-height);
+            overflow: hidden;
+        }
+
+        /* P2P Container */
+        .p2p-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Phase Container */
+        .phase-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .phase-container.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .phase-container.prev {
+            transform: translateX(-100%);
+        }
+
+        /* Progress Header */
+        .progress-header {
+            background: var(--neutral-100);
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--neutral-300);
+            flex-shrink: 0;
+        }
+
+        .progress-bar-container {
+            width: 80%;
+            max-width: 280px;
+            margin: 0 auto 0.5rem;
+            height: 6px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #ffffff;
+            width: 0%;
+            border-radius: var(--radius-full);
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill::after {
+            content: none;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+
+        .progress-step-text {
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0.75rem;
+            max-width: 450px;
+            width: 100%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        /* Search Phase */
+        .search-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .search-header {
+            margin-bottom: 2rem;
+        }
+
+        .search-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+        }
+
+        .search-subtitle {
+            font-size: 0.9rem;
+            color: var(--neutral-600);
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        /* Radar System */
+        .radar-system {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 2rem;
+        }
+
+        .radar-display {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(26, 31, 113, 0.05) 0%, rgba(26, 31, 113, 0.1) 100%);
+            border: 2px solid var(--primary);
+            overflow: hidden;
+        }
+
+
+        .city-label {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 31, 113, 0.7);
+            color: var(--neutral-100);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .radar-grid {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+        }
+
+        .radar-circle {
+            position: absolute;
+            border: 1px solid rgba(26, 31, 113, 0.2);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .radar-circle-1 { width: 25%; height: 25%; }
+        .radar-circle-2 { width: 50%; height: 50%; }
+        .radar-circle-3 { width: 75%; height: 75%; }
+        .radar-circle-4 { width: 100%; height: 100%; }
+
+        .radar-scanner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 2px;
+            transform-origin: left center;
+            transform: translate(0, -50%) rotate(0deg);
+            animation: radarScan 3s linear infinite;
+        }
+
+        .radar-scanner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: 2px;
+        }
+
+        .radar-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            transform: translate(-50%, -50%);
+            animation: centerPulse 2s ease-in-out infinite;
+        }
+
+        .operator-points {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .operator-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            transform: translate(-50%, -50%) scale(0);
+            animation: pointAppear 0.5s ease forwards;
+            box-shadow: 0 0 0 4px rgba(0, 211, 77, 0.3);
+        }
+
+        .operator-point.pulse {
+            animation: pointPulse 1.5s ease-in-out infinite;
+        }
+
+        .radar-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .radar-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #39ff14;
+            opacity: 0;
+            box-shadow: 0 0 2px rgba(57, 255, 20, 0.4);
+            animation: particleBlink 2s ease-in-out infinite, particleDrift 6s linear infinite;
+        }
+
+        /* Radar Progress */
+        .radar-progress {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: var(--neutral-300);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .radar-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: var(--radius-full);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Search Status */
+        .search-status {
+            text-align: center;
+        }
+
+        .status-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        .status-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .status-message {
+            font-size: 0.85rem;
+            color: var(--neutral-600);
+            line-height: 1.4;
+        }
+
+        /* No Results */
+        .no-results-container {
+            text-align: center;
+        }
+
+        .no-results-icon {
+            font-size: 3rem;
+            color: var(--warning);
+            margin-bottom: 1rem;
+        }
+
+        .no-results-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .no-results-message {
+            font-size: 0.9rem;
+            color: var(--neutral-600);
+            line-height: 1.4;
+            margin-bottom: 2rem;
+        }
+
+        .expand-search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-lg);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s var(--animation-bounce);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0 auto;
+            box-shadow: var(--shadow-md);
+        }
+
+        .expand-search-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .expand-search-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .expand-search-overlay.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .expand-search-dialog {
+            background: var(--neutral-100);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            max-width: 420px;
+            width: 100%;
+            padding: 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .expand-search-dialog h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+
+        .expand-search-dialog p {
+            color: var(--neutral-600);
+            font-size: 0.95rem;
+        }
+
+        .expand-search-dialog .expand-search-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .expand-search-dialog .btn-primary {
+            width: 100%;
+        }
+
+        .expand-search-dialog .dialog-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Operators List */
+        .operators-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .operators-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .operators-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .operators-subtitle {
+            font-size: 0.85rem;
+            color: var(--neutral-600);
+        }
+
+        .operators-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-height: 0;
+        }
+
+        .avatars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 0.5rem;
+            justify-items: center;
+            margin-bottom: 1rem;
+            transition: var(--transition-base);
+        }
+
+        .avatars-grid.fade-out {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .avatar-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .avatar-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 600px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .operator-card {
+            background: var(--neutral-100);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeInUp 0.4s var(--animation-bounce);
+        }
+
+        .operator-card.removing {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+
+        .operator-card.final {
+            border-color: var(--success);
+            box-shadow: var(--shadow-lg);
+            transform: scale(1.02);
+        }
+
+        .operator-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .operator-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .operator-avatar {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .operator-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            border: 2px solid white;
+            animation: onlinePulse 2s infinite;
+        }
+
+        .operator-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .operator-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .operator-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .rating-display {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stars {
+            display: flex;
+            gap: 0.125rem;
+            color: var(--accent);
+            font-size: 0.75rem;
+        }
+
+        .rating-value {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+
+        .transactions-count {
+            font-size: 0.75rem;
+            color: var(--neutral-600);
+        }
+
+        .operator-status {
+            font-size: 0.75rem;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        /* Operation Details */
+        .operation-details {
+            background: var(--neutral-200);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .details-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--neutral-700);
+            margin-bottom: 0.75rem;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .detail-label {
+            font-size: 0.7rem;
+            color: var(--neutral-600);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+
+        .bank-logo-small {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            margin-right: 0.25rem;
+            vertical-align: middle;
+        }
+
+        .detail-value.highlight {
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        /* Security Features */
+        .security-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            background: rgba(0, 211, 77, 0.1);
+            color: var(--success);
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .security-badge i {
+            font-size: 0.65rem;
+        }
+
+        /* Operator Actions */
+        .operator-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            flex: 1;
+            height: 44px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s var(--animation-bounce);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--neutral-100);
+            border: 2px solid var(--neutral-400);
+            color: var(--neutral-700);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-secondary:hover {
+            background: var(--neutral-200);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Confirmation Phase */
+        .confirmation-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .confirmation-header {
+            text-align: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .confirmation-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .confirmation-subtitle {
+            font-size: 0.85rem;
+            color: var(--neutral-600);
+            line-height: 1.4;
+        }
+
+        .confirm-avatars {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .confirm-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+
+        .confirm-arrow {
+            color: var(--primary);
+        }
+
+        .selected-operator-card {
+            background: var(--neutral-100);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border: 2px solid var(--primary);
+            box-shadow: var(--shadow-lg);
+            overflow: visible;
+            width: 100%;
+        }
+
+        .transaction-summary {
+            background: var(--card-gradient);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            overflow: visible;
+            width: 100%;
+        }
+
+        #phase-5 .confirmation-container {
+            height: auto;
+            overflow: visible;
+        }
+
+        #phase-5 .content-area {
+            overflow-y: auto;
+            padding-bottom: 5rem;
+        }
+
+        .operator-verified {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.7rem;
+            color: var(--success);
+            margin-top: 0.15rem;
+        }
+
+        .verified-icon {
+            color: var(--success);
+        }
+
+        .p2p-info {
+            margin: 0.5rem 0;
+            font-size: 0.8rem;
+            color: var(--neutral-700);
+            line-height: 1.4;
+        }
+
+        #phase-5 .operator-avatar {
+            width: 35px;
+            height: 35px;
+        }
+
+        #phase-5 .operator-name {
+            font-size: 0.8rem;
+        }
+
+        #phase-5 .operator-stats {
+            gap: 0.4rem;
+        }
+
+        #phase-5 .stars {
+            font-size: 0.55rem;
+        }
+
+        #phase-5 .rating-value,
+        #phase-5 .transactions-count,
+        #phase-5 .operator-status {
+            font-size: 0.6rem;
+        }
+
+        #phase-5 .operation-details {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        #phase-5 .details-header {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        #phase-5 .details-grid {
+            gap: 0.5rem;
+        }
+
+        #phase-5 .detail-label {
+            font-size: 0.65rem;
+        }
+
+        #phase-5 .detail-value {
+            font-size: 0.8rem;
+        }
+
+        #phase-5 .security-features {
+            gap: 0.375rem;
+            margin-bottom: 0.75rem;
+        }
+
+        #phase-5 .security-badge {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.65rem;
+        }
+
+        #phase-5 .operator-actions {
+            margin-top: auto;
+            flex-direction: column;
+        }
+
+        #phase-5 .operator-actions .btn {
+            flex: 0 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            #phase-5 .operator-actions {
+                flex-direction: row;
+            }
+            #phase-5 .operator-actions .btn {
+                flex: 1;
+                width: auto;
+            }
+        }
+
+        .summary-header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-subtitle {
+            font-size: 0.7rem;
+            opacity: 0.9;
+        }
+
+        .summary-amount {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .amount-display {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .amount-equivalent {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+
+        .summary-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+        }
+
+        .summary-row.total {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+            font-weight: 700;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            bottom: var(--safe-area-bottom);
+            left: 0;
+            right: 0;
+            background: var(--neutral-100);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0.25rem;
+            padding-bottom: calc(0.5rem + var(--safe-area-bottom));
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+            z-index: 900;
+            border-top: 1px solid var(--neutral-300);
+            height: var(--nav-height);
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.125rem;
+            padding: 0.25rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
+            cursor: pointer;
+            flex: 1;
+            color: var(--neutral-600);
+            position: relative;
+            max-width: 70px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
+            transition: transform 0.3s var(--animation-bounce);
+            position: relative;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: translateY(-2px);
+        }
+
+        .nav-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .nav-icon .nav-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: var(--radius-full);
+            font-size: 0.55rem;
+            width: 14px;
+            height: 14px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .operators-loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+        .operators-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border-width: 3px;
+        }
+
+        .processing-spinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            pointer-events: none;
+            display: none;
+        }
+
+        .processing-spinner .spinner {
+            width: 48px;
+            height: 48px;
+            border-width: 4px;
+            color: var(--primary);
+            opacity: 0.7;
+        }
+
+        /* Animaciones */
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 211, 77, 0.7);
+            }
+            
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 4px rgba(0, 211, 77, 0);
+            }
+            
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 211, 77, 0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes radarScan {
+            0% {
+                transform: translate(0, -50%) rotate(0deg);
+            }
+            100% {
+                transform: translate(0, -50%) rotate(360deg);
+            }
+        }
+
+        @keyframes centerPulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes pointAppear {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.3);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pointPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 2px rgba(0, 211, 77, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 0 6px rgba(0, 211, 77, 0.1);
+            }
+        }
+
+        @keyframes particleBlink {
+            0%, 100% {
+                opacity: 0;
+                box-shadow: 0 0 2px rgba(57, 255, 20, 0.2);
+            }
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 8px rgba(57, 255, 20, 0.8);
+            }
+        }
+
+        @keyframes particleDrift {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(1px, -1px); }
+            50% { transform: translate(0, 1px); }
+            75% { transform: translate(-1px, 0); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @keyframes onlinePulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Success State */
+        .success-icon {
+            color: var(--success);
+            animation: successPulse 1s ease-in-out;
+        }
+
+        @keyframes successPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 576px) {
+            .header-content {
+                padding: 0;
+            }
+
+            .balance-card-compact {
+                gap: 0.5rem;
+                padding: 0.375rem 0.5rem;
+            }
+
+            .balance-amount {
+                font-size: 0.9rem;
+            }
+
+            .balance-equivalent {
+                font-size: 0.6rem;
+            }
+
+            .search-title {
+                font-size: 1.2rem;
+            }
+
+            .radar-system {
+                width: 240px;
+                height: 240px;
+            }
+
+            .radar-progress {
+                width: 160px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .operator-stats {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+
+            .amount-display {
+                font-size: 1.8rem;
+            }
+
+            .users-online {
+                display: none;
+            }
+
+            .nav-item {
+                max-width: 60px;
+            }
+
+            .nav-label {
+                font-size: 0.55rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .content-area {
+                padding: 1rem;
+            }
+
+            .radar-system {
+                width: 200px;
+                height: 200px;
+            }
+
+            .operator-card {
+                padding: 1rem;
+            }
+
+            .operator-actions {
+                flex-direction: column;
+            }
+
+            :root {
+                --header-height: 60px;
+                --nav-height: 60px;
+                --wizard-nav-height: 50px;
+            }
+
+            .balance-card-compact {
+                padding: 0.25rem 0.375rem;
+                gap: 0.375rem;
+            }
+
+            .balance-amount {
+                font-size: 0.8rem;
+            }
+
+            .balance-equivalent {
+                font-size: 0.55rem;
+            }
+        }
+
+        /* Hidden by default */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Estilos de impresión */
+        @media print {
+            .header-container,
+            .bottom-nav {
+                display: none !important;
+            }
+
+            .main-container {
+                padding: 0;
+            }
+
+            .content-area {
+                padding: 0;
+                max-width: 100%;
+            }
+
+            body {
+                background: white;
+                color: black;
+            }
+        }
+
+        /* Accesibilidad mejorada */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus states para accesibilidad */
+        .expand-search-btn:focus,
+        .btn:focus,
+        .nav-item:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Estados disabled mejorados */
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Landscape orientation fixes */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .content-area {
+                padding: 0.5rem;
+            }
+
+            .search-header {
+                margin-bottom: 1rem;
+            }
+
+            .search-title {
+                font-size: 1.1rem;
+            }
+
+            .radar-system {
+                width: 200px;
+                height: 200px;
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Match overlay */
+        #match-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 2000;
+            color: var(--neutral-100);
+        }
+
+        .match-avatars {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .match-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .match-avatar.left {
+            animation: slideInLeft 0.8s var(--animation-bounce) forwards;
+        }
+
+        .match-avatar.right {
+            animation: slideInRight 0.8s var(--animation-bounce) forwards;
+        }
+
+        .match-title {
+            margin-top: 1rem;
+            font-size: 1.25rem;
+            text-align: center;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-150%) scale(0.5); opacity: 0; }
+            to { transform: translateX(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(150%) scale(0.5); opacity: 0; }
+            to { transform: translateX(0) scale(1); opacity: 1; }
+        }
+
+        /* Exit confirmation overlay */
+        #exit-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        #exit-overlay .modal {
+            background: var(--neutral-100);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 320px;
+        }
+
+        #exit-overlay .modal h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: var(--neutral-900);
+        }
+
+        #exit-overlay .modal p {
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--neutral-600);
+        }
+
+        #exit-overlay .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        #exit-overlay .modal-actions .btn {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="processing-spinner"><div class="spinner"></div></div>
+    <!-- Header Container -->
+    <div class="header-container">
+      <div class="header-content">
+        <div class="header-info">
+          <div class="welcome-text">
+            <span class="greeting">Hola</span>
+            <span class="user-name" id="user-name">Usuario</span>
+            <div class="header-avatar" id="header-avatar"></div>
+          </div>
+          <div id="users-online-count" class="users-online">98 usuarios conectados</div>
+        </div>
+
+        <!-- Balance Card Compacta -->
+        <div class="balance-card-compact">
+          <div class="balance-main">
+            <div class="balance-amount">
+              <span id="balance-value">Bs 0,00</span>
+              <button id="currency-toggle" class="currency-toggle-btn">USD</button>
+            </div>
+            <div id="balance-equivalent-display" class="balance-equivalent">≈ $0.00 | ≈ €0.00</div>
+          </div>
+          <div class="mode-toggle">
+            <button id="toggle-mode-btn" class="toggle-mode-btn">
+              <i class="fas fa-layer-group"></i>
+              <span id="mode-toggle-text">Clásico</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="p2p-container">
+            <!-- Phase 1: Initial Search -->
+            <div class="phase-container active" id="phase-1">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill" style="width: 15%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Buscando operadores P2P</span>
+                        <span class="progress-percentage" id="progress-percentage">15%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="search-container">
+                        <div class="search-header">
+                            <h1 class="search-title">Conectando con Red P2P</h1>
+                            <p class="search-subtitle">Buscamos los mejores operadores disponibles en tu zona para procesar tu retiro de forma rápida y segura</p>
+                        </div>
+
+                        <div class="radar-system">
+                            <div class="radar-display">
+                                <div class="radar-grid">
+                                    <div class="radar-circle radar-circle-1"></div>
+                                    <div class="radar-circle radar-circle-2"></div>
+                                    <div class="radar-circle radar-circle-3"></div>
+                                    <div class="radar-circle radar-circle-4"></div>
+                                </div>
+                                <div class="radar-particles" id="radar-particles"></div>
+                                <div class="radar-scanner"></div>
+                                <div class="radar-center"></div>
+                                <div class="operator-points" id="operator-points"></div>
+                                <div class="city-label" id="city-label"></div>
+                            </div>
+                            <div class="radar-progress">
+                                <div class="radar-progress-fill" id="radar-progress"></div>
+                            </div>
+                        </div>
+
+                        <div class="search-status" id="search-status">
+                            <div class="status-icon">
+                                <i class="fas fa-satellite-dish"></i>
+                            </div>
+                            <div class="status-text" id="status-text">Escaneando operadores...</div>
+                            <div class="status-message" id="status-message">
+                                Conectando con nuestra red de operadores P2P verificados en tu área
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: No Results -->
+            <div class="phase-container" id="phase-2">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Búsqueda inicial completada</span>
+                        <span class="progress-percentage">30%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="search-container">
+                        <div class="no-results-container">
+                            <div class="no-results-icon">
+                                <i class="fas fa-search-location"></i>
+                            </div>
+                            <h2 class="no-results-title">No hay operadores cercanos</h2>
+                            <p class="no-results-message">
+                                No encontramos operadores P2P disponibles en tu área inmediata. 
+                                ¿Te gustaría expandir el rango de búsqueda para encontrar más opciones?
+                            </p>
+                            <button class="expand-search-btn" onclick="openExpandSearchOverlay()">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                                <span>¿Buscar nuevamente operadores para gestionar mi retiro?</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3: Extended Search -->
+            <div class="phase-container" id="phase-3">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Búsqueda extendida en progreso</span>
+                        <span class="progress-percentage">50%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="search-container">
+                        <div class="search-header">
+                            <h1 class="search-title">Expandiendo Búsqueda</h1>
+                            <p class="search-subtitle">Buscando operadores en un área más amplia para garantizar las mejores opciones disponibles</p>
+                        </div>
+
+                        <div class="radar-system">
+                            <div class="radar-display">
+                                <div class="radar-grid">
+                                    <div class="radar-circle radar-circle-1"></div>
+                                    <div class="radar-circle radar-circle-2"></div>
+                                    <div class="radar-circle radar-circle-3"></div>
+                                    <div class="radar-circle radar-circle-4"></div>
+                                </div>
+                                <div class="radar-particles" id="radar-particles-2"></div>
+                                <div class="radar-scanner"></div>
+                                <div class="radar-center"></div>
+                                <div class="operator-points" id="operator-points-2"></div>
+                            </div>
+                            <div class="radar-progress">
+                                <div class="radar-progress-fill" id="radar-progress-2"></div>
+                            </div>
+                        </div>
+
+                        <div class="search-status">
+                            <div class="status-icon">
+                                <i class="fas fa-satellite-dish success-icon"></i>
+                            </div>
+                            <div class="status-text">Operadores encontrados</div>
+                            <div class="status-message">
+                                Analizando disponibilidad y seleccionando los mejores operadores para tu transacción
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 4: Operators Selection -->
+            <div class="phase-container" id="phase-4">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Seleccionando operador óptimo</span>
+                        <span class="progress-percentage">75%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="operators-container">
+                        <div class="operators-header">
+                            <h1 class="operators-title">Operadores Disponibles</h1>
+                            <p class="operators-subtitle">Seleccionando automáticamente el mejor operador para tu transacción</p>
+                        </div>
+
+                        <div class="operators-loading" id="operators-loading">
+                            <div class="spinner"></div>
+                        </div>
+
+                        <div class="operators-list" id="operators-list">
+                            <!-- Operators will be inserted here dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 5: Operator Confirmation -->
+            <div class="phase-container" id="phase-5">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 90%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Confirmar operador y detalles</span>
+                        <span class="progress-percentage">90%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="confirmation-container">
+                        <div class="confirmation-header">
+                            <h1 class="confirmation-title">Confirmar Operación</h1>
+                            <div class="confirm-avatars">
+                                <img src="usuarios/Juan Tomas Perez.jpg" alt="Juan Tomas Perez" class="confirm-avatar">
+                                <i class="fas fa-arrow-right confirm-arrow"></i>
+                                <div class="confirm-avatar" id="confirm-user-avatar"></div>
+                            </div>
+                            <p class="confirmation-subtitle">Verifica los detalles antes de proceder con la transacción</p>
+                        </div>
+
+                        <div class="selected-operator-card" id="selected-operator">
+                            <!-- Selected operator details will be inserted here -->
+                        </div>
+
+                        <div class="p2p-info" id="p2p-info"></div>
+
+                        <div class="transaction-summary">
+                            <div class="summary-header">
+                                <h3 class="summary-title">Resumen de Transacción</h3>
+                                <p class="summary-subtitle">Operación P2P</p>
+                            </div>
+
+                            <div class="summary-amount">
+                                <div class="amount-display" id="summary-amount">Bs 1,500.00</div>
+                                <div class="amount-equivalent" id="summary-equivalent">≈ $40.86 USD</div>
+                            </div>
+
+                            <div class="summary-details">
+                                <div class="summary-row">
+                                    <span>Monto solicitado</span>
+                                    <span id="summary-monto">Bs 1,500.00</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Comisión P2P</span>
+                                    <span>Bs 0.00</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Método de pago</span>
+                                    <span id="summary-method">Pago Móvil</span>
+                                </div>
+                                <div class="summary-row" id="summary-id-row" style="display:none;">
+                                    <span>Cédula</span>
+                                    <span id="summary-id"></span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Tiempo estimado</span>
+                                    <span>2-5 minutos</span>
+                                </div>
+                                <div class="summary-row total">
+                                    <span>Total a recibir</span>
+                                    <span id="summary-total">Bs 1,500.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="operator-actions">
+                            <button class="btn btn-secondary" onclick="goBack()">
+                                <i class="fas fa-arrow-left"></i>
+                                <span>Buscar Otro</span>
+                            </button>
+                            <button class="btn btn-primary" onclick="confirmTransaction()">
+                                <i class="fas fa-check"></i>
+                                <span>Confirmar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navegación Inferior -->
+  <div class="bottom-nav">
+    <div id="nav-create-withdrawal" class="nav-item active">
+      <div class="nav-icon">
+        <i class="fas fa-plus-circle"></i>
+      </div>
+      <div class="nav-label">Retirar</div>
+    </div>
+
+    <div id="nav-home" class="nav-item">
+      <div class="nav-icon">
+        <i class="fas fa-home"></i>
+      </div>
+      <div class="nav-label">Inicio</div>
+    </div>
+
+    <div id="nav-pending-operations" class="nav-item">
+      <div class="nav-icon">
+        <i class="fas fa-clock"></i>
+        <span class="nav-badge">0</span>
+      </div>
+      <div class="nav-label">Pendientes</div>
+    </div>
+
+    <div id="nav-history" class="nav-item">
+      <div class="nav-icon">
+        <i class="fas fa-history"></i>
+      </div>
+      <div class="nav-label">Historial</div>
+    </div>
+
+    <div id="nav-support" class="nav-item">
+      <div class="nav-icon">
+        <i class="fas fa-headset"></i>
+      </div>
+      <div class="nav-label">Ayuda</div>
+    </div>
+  </div>
+
+  <!-- Match overlay -->
+  <div id="match-overlay">
+    <div class="match-content">
+      <div class="match-avatars">
+        <img id="match-operator-avatar" class="match-avatar left" alt="Operador">
+        <img id="match-user-avatar" class="match-avatar right" alt="Usuario">
+      </div>
+      <h2 class="match-title">¡Hemos encontrado un operador!</h2>
+    </div>
+  </div>
+
+  <!-- Exit confirmation overlay -->
+  <div id="exit-overlay">
+    <div class="modal">
+      <h3>¿Cancelar retiro?</h3>
+      <p>Si sales ahora, se cancelará la operación y se inhabilitarán los retiros.</p>
+      <div class="modal-actions">
+        <button id="exit-cancel" class="btn btn-secondary">Continuar</button>
+        <button id="exit-confirm" class="btn btn-primary">Salir</button>
+      </div>
+  </div>
+  </div>
+
+  <!-- Audio para búsqueda de operadores -->
+  <audio id="operatorSearchSound" preload="auto" style="display:none;">
+    <source src="remeex33.ogg" type="audio/ogg">
+  </audio>
+
+  <div id="expand-search-overlay" class="expand-search-overlay" aria-hidden="true">
+    <div class="expand-search-dialog" role="dialog" aria-modal="true" aria-labelledby="expand-search-title" aria-describedby="expand-search-description">
+      <div class="dialog-icon">
+        <i class="fas fa-satellite-dish" style="font-size: 2.5rem; color: var(--primary);"></i>
+      </div>
+      <h3 id="expand-search-title">¿Buscar nuevamente operadores para gestionar mi retiro?</h3>
+      <p id="expand-search-description">Ampliaremos automáticamente el rango de búsqueda para encontrar operadores disponibles en otras zonas cercanas.</p>
+      <div class="expand-search-actions">
+        <button class="btn btn-primary" onclick="confirmExpandSearch()">
+          <span>Continuar</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+    <script>
+        // Variables globales
+        let currentPhase = 1;
+        let searchTimeout;
+        let progressInterval;
+        let currentUser = {
+            name: '',
+            balance: {
+                usd: 0,
+                eur: 0,
+                bs: 0
+            }
+        };
+        let currentCurrency = 'bs';
+        let transferData = {};
+        
+        const operatorNames = [
+            "Adrian Romero",
+            "Adriana Bakhos",
+            "Andreina Ellington",
+            "Carlota Barilla",
+            "Carlota Bruno",
+            "Cristian Valero",
+            "Cristina Abujazi",
+            "Dayana Colmenares",
+            "Francisco Koller",
+            "Francisco Quintero",
+            "Francisco Rondon",
+            "Gabriel Capri",
+            "Gaspar Reyes",
+            "Ileana Romero",
+            "Iris Collado",
+            "Jimena Rojas",
+            "Juan Carlos Villegas",
+            "Laura Perez",
+            "Lucas Jimenez",
+            "Lucia Queremel",
+            "Maria Camacho",
+            "Nieves Mendez",
+            "Paola Mendez",
+            "Rebeca Garcia",
+            "Romulo Chacin",
+            "Rosangela Pernia",
+            "Sara Contreras",
+            "Tibisay Garcia",
+            "Tomas A Rojas",
+            "Valentina Guillen",
+            "Juan Tomas Perez"
+        ];
+
+        const bankOptions = [
+            "Banco de Venezuela",
+            "Banesco",
+            "Banco Mercantil",
+            "Banco Provincial",
+            "BOD",
+            "Banco Nacional de Crédito",
+            "Banco Bicentenario"
+        ];
+
+        const amountOptions = [750, 900, 1100, 1250, 1500, 1750, 2000, 2250, 2500];
+
+        const ratingOptions = [4.5, 4.7, 4.8, 4.9, 5.0];
+        const transactionOptions = [150, 200, 350, 400, 500, 600, 700, 800, 950];
+        const responseTimes = ["1-2 min", "2-4 min", "1-3 min", "3-5 min"];
+
+        let operatorsData = operatorNames.map((name, index) => {
+            const initials = name.split(' ').map(n => n[0]).join('');
+            return {
+                id: index + 1,
+                name,
+                initials,
+                avatar: `usuarios/${name}.jpg`,
+                rating: ratingOptions[index % ratingOptions.length],
+                transactions: transactionOptions[index % transactionOptions.length],
+                responseTime: responseTimes[index % responseTimes.length],
+                specialization: "Pago Móvil",
+                bankName: bankOptions[index % bankOptions.length],
+                amount: amountOptions[index % amountOptions.length],
+                phoneNumber: "0414-1234567",
+                verifiedSince: 2023,
+                position: { top: Math.random() * 80 + 10, left: Math.random() * 80 + 10 }
+            };
+        });
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Iniciando sistema P2P...');
+            loadUserData();
+            loadTransferData();
+            updateUserDisplay();
+            initCityMap();
+            createParticles('radar-particles');
+            createParticles('radar-particles-2');
+            playOperatorSound();
+            startInitialSearch();
+        });
+
+        function playOperatorSound() {
+            const audio = document.getElementById('operatorSearchSound');
+            if (audio) {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => console.error('Audio playback failed:', err));
+                }
+            }
+        }
+
+        // Cargar datos del usuario
+        function loadUserData() {
+            try {
+                const regData = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+                const userData = JSON.parse(localStorage.getItem('visaUserData') || '{}');
+                const balanceData = JSON.parse(sessionStorage.getItem('remeexSessionBalance') || '{}');
+                
+                if (regData.firstName || userData.name) {
+                    currentUser.name = regData.firstName || userData.name || 'Usuario';
+                }
+                
+                if (balanceData.usd || balanceData.bs || balanceData.eur) {
+                    currentUser.balance = balanceData;
+                }
+            } catch (e) {
+                console.log('Usando datos por defecto');
+            }
+        }
+
+        // Cargar datos de la transferencia previa
+        function loadTransferData() {
+            try {
+                transferData = JSON.parse(sessionStorage.getItem('remeexTransferData') || '{}');
+            } catch (e) {
+                transferData = {};
+            }
+        }
+
+        function initCityMap() {
+            try {
+                const reg = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+                const city = reg.city || reg.state || '';
+                const label = document.getElementById('city-label');
+                if (label && city) {
+                    label.textContent = city;
+                }
+            } catch (err) {
+                console.log('No se pudo cargar la ciudad del usuario');
+            }
+        }
+
+        function getMethodDisplay(method) {
+            const names = {
+                mobile: 'Pago Móvil',
+                bank: 'Transferencia Bancaria',
+                international: 'Transferencia Internacional'
+            };
+            return names[method] || method;
+        }
+
+        // Actualizar visualización del usuario
+        function updateUserDisplay() {
+            const userNameEl = document.getElementById('user-name');
+            if (userNameEl && currentUser.name) {
+                userNameEl.textContent = currentUser.name;
+            }
+            const avatarEl = document.getElementById('header-avatar');
+            const confirmAvatarEl = document.getElementById('confirm-user-avatar');
+            const savedPhoto = localStorage.getItem('remeexProfilePhoto') || '';
+            if (savedPhoto) {
+                if (avatarEl) {
+                    avatarEl.textContent = '';
+                    avatarEl.style.backgroundImage = `url(${savedPhoto})`;
+                }
+                if (confirmAvatarEl) {
+                    confirmAvatarEl.textContent = '';
+                    confirmAvatarEl.style.backgroundImage = `url(${savedPhoto})`;
+                }
+            } else if (currentUser.name) {
+                const initials = currentUser.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+                if (avatarEl) {
+                    avatarEl.style.backgroundImage = '';
+                    avatarEl.textContent = initials;
+                }
+                if (confirmAvatarEl) {
+                    confirmAvatarEl.style.backgroundImage = '';
+                    confirmAvatarEl.textContent = initials;
+                }
+            }
+
+            updateBalanceDisplay();
+            updateOnlineUsersCount();
+        }
+
+        // Formatear moneda
+        function formatCurrency(amount, currency) {
+            if (isNaN(amount)) amount = 0;
+
+            if (currency === 'bs') {
+                return `Bs ${amount.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })}`;
+            } else if (currency === 'usd') {
+                return `$${amount.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })}`;
+            } else if (currency === 'eur') {
+                return `€${amount.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })}`;
+            }
+        }
+
+        // Actualizar balance
+        function updateBalanceDisplay() {
+            const balanceValue = document.getElementById('balance-value');
+            const balanceEquivalent = document.getElementById('balance-equivalent-display');
+            const currencyToggle = document.getElementById('currency-toggle');
+
+            let displayAmount, toggleText, equivalentText;
+
+            switch(currentCurrency) {
+                case 'usd':
+                    displayAmount = formatCurrency(currentUser.balance.usd, 'usd');
+                    toggleText = 'EUR';
+                    equivalentText = `≈ ${formatCurrency(currentUser.balance.bs, 'bs')} | ≈ ${formatCurrency(currentUser.balance.eur, 'eur')}`;
+                    break;
+                case 'eur':
+                    displayAmount = formatCurrency(currentUser.balance.eur, 'eur');
+                    toggleText = 'Bs';
+                    equivalentText = `≈ ${formatCurrency(currentUser.balance.bs, 'bs')} | ≈ ${formatCurrency(currentUser.balance.usd, 'usd')}`;
+                    break;
+                default:
+                    displayAmount = formatCurrency(currentUser.balance.bs, 'bs');
+                    toggleText = 'USD';
+                    equivalentText = `≈ ${formatCurrency(currentUser.balance.usd, 'usd')} | ≈ ${formatCurrency(currentUser.balance.eur, 'eur')}`;
+            }
+
+            if (balanceValue) balanceValue.textContent = displayAmount;
+            if (balanceEquivalent) balanceEquivalent.textContent = equivalentText;
+            if (currencyToggle) currencyToggle.textContent = toggleText;
+        }
+
+        // Actualizar contador de usuarios conectados
+        function updateOnlineUsersCount() {
+            const min = 98;
+            const max = 142;
+            const count = Math.floor(Math.random() * (max - min + 1)) + min;
+
+            const userCountElement = document.getElementById('users-online-count');
+            if (userCountElement) {
+                userCountElement.textContent = `${count} usuarios conectados`;
+            }
+        }
+
+        // Phase 1: Búsqueda inicial
+        function startInitialSearch() {
+            updateRadarProgress(0);
+            
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 2;
+                updateRadarProgress(progress);
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    setTimeout(() => {
+                        showNoResults();
+                    }, 1000);
+                }
+            }, 400); // 20 segundos total
+
+            // Actualizar texto de estado
+            setTimeout(() => {
+                updateSearchStatus('Analizando área local...', 'Verificando operadores en tu zona');
+            }, 5000);
+
+            setTimeout(() => {
+                updateSearchStatus('Evaluando disponibilidad...', 'Consultando horarios y capacidad');
+            }, 10000);
+
+            setTimeout(() => {
+                updateSearchStatus('Finalizando búsqueda...', 'Preparando resultados');
+            }, 15000);
+        }
+
+        // Actualizar progreso del radar
+        function updateRadarProgress(progress) {
+            const progressBar = document.getElementById('radar-progress');
+            if (progressBar) {
+                progressBar.style.width = progress + '%';
+            }
+        }
+
+        // Actualizar estado de búsqueda
+        function updateSearchStatus(text, message) {
+            const statusText = document.getElementById('status-text');
+            const statusMessage = document.getElementById('status-message');
+            
+            if (statusText) statusText.textContent = text;
+            if (statusMessage) statusMessage.textContent = message;
+        }
+
+        // Mostrar fase sin resultados
+        function showNoResults() {
+            switchToPhase(2);
+        }
+
+        function openExpandSearchOverlay() {
+            const overlay = document.getElementById('expand-search-overlay');
+            if (!overlay) return;
+
+            overlay.classList.add('is-visible');
+            overlay.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('overlay-open');
+        }
+
+        function closeExpandSearchOverlay() {
+            const overlay = document.getElementById('expand-search-overlay');
+            if (!overlay) return;
+
+            overlay.classList.remove('is-visible');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('overlay-open');
+        }
+
+        function confirmExpandSearch() {
+            closeExpandSearchOverlay();
+            expandSearch();
+        }
+
+        // Expandir búsqueda
+        function expandSearch() {
+            playOperatorSound();
+            switchToPhase(3);
+            startExtendedSearch();
+        }
+
+        // Phase 3: Búsqueda extendida
+        function startExtendedSearch() {
+            updateRadarProgress2(0);
+            
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 2;
+                updateRadarProgress2(progress);
+                
+                // Mostrar puntos a partir del 60%
+                if (progress >= 60 && progress < 65) {
+                    showOperatorPoints();
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    setTimeout(() => {
+                        showOperatorsList();
+                    }, 1000);
+                }
+            }, 400); // 20 segundos total
+        }
+
+        // Actualizar progreso del radar 2
+        function updateRadarProgress2(progress) {
+            const progressBar = document.getElementById('radar-progress-2');
+            if (progressBar) {
+                progressBar.style.width = progress + '%';
+            }
+        }
+
+        function createParticles(containerId, count = 20) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'radar-particle';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.left = Math.random() * 100 + '%';
+                const blinkDelay = Math.random() * 2;
+                const driftDelay = Math.random() * 4;
+                const blinkDuration = 1.5 + Math.random() * 2;
+                const driftDuration = 4 + Math.random() * 4;
+                particle.style.animationDelay = `${blinkDelay}s, ${driftDelay}s`;
+                particle.style.animationDuration = `${blinkDuration}s, ${driftDuration}s`;
+                container.appendChild(particle);
+            }
+        }
+
+        // Mostrar puntos de operadores en el radar
+        function showOperatorPoints() {
+            const container = document.getElementById('operator-points-2');
+            if (!container) return;
+
+            operatorsData.forEach((operator, index) => {
+                setTimeout(() => {
+                    const point = document.createElement('div');
+                    point.className = 'operator-point pulse';
+                    point.style.top = operator.position.top + '%';
+                    point.style.left = operator.position.left + '%';
+                    container.appendChild(point);
+                }, index * 300);
+            });
+        }
+
+        // Mostrar lista de operadores
+        function showOperatorsList() {
+            switchToPhase(4);
+            const loadingEl = document.getElementById('operators-loading');
+            if (loadingEl) loadingEl.style.display = 'flex';
+
+            setTimeout(() => {
+                renderOperatorsList();
+                if (loadingEl) loadingEl.style.display = 'none';
+            }, 500);
+        }
+
+        // Renderizar lista de operadores
+        function renderOperatorsList() {
+            const container = document.getElementById('operators-list');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            const avatarGrid = document.createElement('div');
+            avatarGrid.className = 'avatars-grid';
+            operatorsData.forEach(operator => {
+                const avatarItem = document.createElement('div');
+                avatarItem.className = 'avatar-item';
+                avatarItem.innerHTML = `<img src="${operator.avatar}" alt="${operator.name}">`;
+                avatarGrid.appendChild(avatarItem);
+            });
+            container.appendChild(avatarGrid);
+
+            setTimeout(() => {
+                avatarGrid.classList.add('fade-out');
+                setTimeout(() => {
+                    avatarGrid.remove();
+
+                    const cardsGrid = document.createElement('div');
+                    cardsGrid.className = 'cards-grid';
+                    operatorsData.slice(0, 4).forEach((operator, index) => {
+                        const card = createOperatorCard(operator);
+                        card.style.animation = `fadeInUp 0.5s ${(index * 0.2)}s forwards`;
+                        cardsGrid.appendChild(card);
+                    });
+                    container.appendChild(cardsGrid);
+                    startOperatorElimination();
+                }, 500);
+            }, 4000);
+        }
+
+        // Crear tarjeta de operador
+        function createOperatorCard(operator) {
+            const card = document.createElement('div');
+            card.className = 'operator-card';
+            card.setAttribute('data-operator-id', operator.id);
+            
+            card.innerHTML = `
+                <div class="operator-header">
+                    <div class="operator-avatar">
+                        <img src="${operator.avatar}" alt="${operator.name}">
+                        <div class="online-indicator"></div>
+                    </div>
+                    <div class="operator-info">
+                        <div class="operator-name">${operator.name}</div>
+                        <div class="operator-verified"><i class="fas fa-check-circle verified-icon"></i> Usuario verificado desde ${operator.verifiedSince}</div>
+                        <div class="operator-stats">
+                            <div class="rating-display">
+                                <div class="stars">
+                                    ${'★'.repeat(Math.floor(operator.rating))}${'☆'.repeat(5 - Math.floor(operator.rating))}
+                                </div>
+                                <span class="rating-value">${operator.rating}</span>
+                            </div>
+                            <span class="transactions-count">${operator.transactions.toLocaleString()} operaciones</span>
+                        </div>
+                        <div class="operator-status">Disponible • Tiempo: ${operator.responseTime}</div>
+                    </div>
+                </div>
+
+                <div class="operation-details">
+                    <div class="details-header">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Detalles de la Operación</span>
+                    </div>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Monto a depositar</div>
+                            <div class="detail-value highlight">Bs ${operator.amount.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Banco destino</div>
+                                <div class="detail-value">${operator.bankName}</div>
+                            </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Método</div>
+                            <div class="detail-value">${operator.specialization}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tiempo estimado</div>
+                            <div class="detail-value">${operator.responseTime}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="security-features">
+                    <div class="security-badge">
+                        <i class="fas fa-shield-check"></i>
+                        <span>Verificado</span>
+                    </div>
+                    <div class="security-badge">
+                        <i class="fas fa-clock"></i>
+                        <span>Garantizado</span>
+                    </div>
+                    <div class="security-badge">
+                        <i class="fas fa-undo"></i>
+                        <span>Reversible</span>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Eliminar operadores gradualmente
+        function startOperatorElimination() {
+            const cards = document.querySelectorAll('.cards-grid .operator-card');
+            let eliminationIndex = 0;
+            const subtitleEl = document.querySelector('.operators-subtitle');
+            if (subtitleEl) subtitleEl.textContent = 'El sistema está encontrando la mejor opción...';
+
+            // Comenzar eliminación después de 3 segundos
+            setTimeout(() => {
+                const eliminationInterval = setInterval(() => {
+                    if (eliminationIndex < cards.length - 1) {
+                        cards[eliminationIndex].classList.add('removing');
+                        eliminationIndex++;
+                    } else {
+                        clearInterval(eliminationInterval);
+                        // Resaltar el operador final
+                        const finalCard = cards[cards.length - 1];
+                        finalCard.classList.add('final');
+                        const finalId = finalCard.getAttribute('data-operator-id');
+
+                        if (subtitleEl) subtitleEl.textContent = 'Operador encontrado';
+
+                        // Añadir botones de acción al operador final
+                        setTimeout(() => {
+                            addOperatorActions(finalCard, finalId);
+
+                            // Proceder automáticamente después de 2 segundos
+                            setTimeout(() => {
+                                selectOperator(parseInt(finalId));
+                            }, 2000);
+                        }, 1000);
+                    }
+                }, 1000);
+            }, 3000);
+        }
+
+        // Añadir botones de acción
+        function addOperatorActions(card, operatorId) {
+            const actionsHtml = `
+                <div class="operator-actions">
+                    <button class="btn btn-secondary" onclick="searchOtherOperator()">
+                        <i class="fas fa-search"></i>
+                        <span>Buscar Otro</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="selectOperator(${operatorId})">
+                        <i class="fas fa-check"></i>
+                        <span>Seleccionar</span>
+                    </button>
+                </div>
+            `;
+
+            card.insertAdjacentHTML('beforeend', actionsHtml);
+        }
+
+        // Seleccionar operador
+        function selectOperator(operatorIdOrData) {
+            const operator =
+                operatorsData.find(op => op.name === 'Juan Tomas Perez') ||
+                operatorsData[operatorsData.length - 1];
+            showMatchAnimation(operator);
+        }
+
+        // Mostrar animación de match
+        function showMatchAnimation(operator) {
+            const overlay = document.getElementById('match-overlay');
+            const opAvatar = document.getElementById('match-operator-avatar');
+            const userAvatar = document.getElementById('match-user-avatar');
+
+            // Siempre mostrar al operador Juan Tomas
+            if (opAvatar) {
+                opAvatar.src = 'usuarios/Juan Tomas Perez.jpg';
+            }
+
+            // Utilizar la misma foto de perfil almacenada para el usuario
+            const savedPhoto =
+                localStorage.getItem('remeexProfilePhoto') ||
+                localStorage.getItem('profile-photo');
+            if (userAvatar) {
+                userAvatar.src = savedPhoto || 'visap2p.png';
+            }
+
+            if (overlay) overlay.style.display = 'flex';
+            setTimeout(() => {
+                if (overlay) overlay.style.display = 'none';
+                showConfirmation(operator);
+            }, 15000);
+        }
+
+        // Mostrar confirmación
+        function showConfirmation(operator) {
+            switchToPhase(5);
+            renderSelectedOperator(operator);
+            renderTransactionSummary();
+            const infoEl = document.getElementById('p2p-info');
+            if (infoEl) {
+                infoEl.innerHTML = `<p><strong>${operator.name}</strong> es un cajero oficial de Visa Remeex y depositará los fondos en los datos proporcionados. Esta operación es P2P (persona a persona), lo que significa que el dinero se mueve directamente entre usuarios de forma segura y sin intermediarios tradicionales.</p><p>Revisa que el teléfono y la cédula coincidan con tu información antes de confirmar.</p>`;
+            }
+        }
+
+        // Renderizar operador seleccionado
+        function renderSelectedOperator(operator) {
+            const container = document.getElementById('selected-operator');
+            if (!container) return;
+
+            const bankLogo = transferData.bankLogo ? `<img src="${transferData.bankLogo}" alt="${transferData.bankName}" class="bank-logo-small">` : '';
+
+            container.innerHTML = `
+                <div class="operator-header">
+                    <div class="operator-avatar">
+                        <img src="${operator.avatar}" alt="${operator.name}">
+                        <div class="online-indicator"></div>
+                    </div>
+                    <div class="operator-info">
+                        <div class="operator-name">${operator.name}</div>
+                        <div class="operator-verified"><i class="fas fa-check-circle verified-icon"></i> Usuario verificado desde ${operator.verifiedSince}</div>
+                        <div class="operator-stats">
+                            <div class="rating-display">
+                                <div class="stars">
+                                    ${'★'.repeat(Math.floor(operator.rating))}${'☆'.repeat(5 - Math.floor(operator.rating))}
+                                </div>
+                                <span class="rating-value">${operator.rating}</span>
+                            </div>
+                            <span class="transactions-count">${operator.transactions.toLocaleString()} operaciones exitosas</span>
+                        </div>
+                        <div class="operator-status">Listo para procesar tu retiro</div>
+                    </div>
+                </div>
+
+                <div class="operation-details">
+                    <div class="details-header">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Detalles de Depósito</span>
+                    </div>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Banco destino</div>
+                            <div class="detail-value">${bankLogo}${transferData.bankName || ''}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Cuenta/Teléfono</div>
+                            <div class="detail-value">${transferData.destination || ''}</div>
+                        </div>
+                        ${transferData.method === 'mobile' && transferData.idNumber ? `
+                        <div class="detail-item">
+                            <div class="detail-label">Cédula</div>
+                            <div class="detail-value">${transferData.idNumber}</div>
+                        </div>
+                        ` : ''}
+                        <div class="detail-item">
+                            <div class="detail-label">Método</div>
+                            <div class="detail-value">${getMethodDisplay(transferData.method)}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tiempo límite</div>
+                            <div class="detail-value">5 minutos</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="security-features">
+                    <div class="security-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Depósito garantizado</span>
+                    </div>
+                    <div class="security-badge">
+                        <i class="fas fa-clock"></i>
+                        <span>Tiempo límite</span>
+                    </div>
+                    <div class="security-badge">
+                        <i class="fas fa-undo"></i>
+                        <span>Reversión automática</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTransactionSummary() {
+            const amountDisplay = document.getElementById('summary-amount');
+            const montoSolicitado = document.getElementById('summary-monto');
+            const totalRecibir = document.getElementById('summary-total');
+            const methodEl = document.getElementById('summary-method');
+            const equivalentEl = document.getElementById('summary-equivalent');
+            const idRow = document.getElementById('summary-id-row');
+            const idEl = document.getElementById('summary-id');
+
+            if (!transferData) return;
+
+            const currency = transferData.method === 'international' ? 'usd' : 'bs';
+            const formattedAmount = formatCurrency(parseFloat(transferData.amount) || 0, currency);
+
+            if (amountDisplay) amountDisplay.textContent = formattedAmount;
+            if (montoSolicitado) montoSolicitado.textContent = formattedAmount;
+            if (totalRecibir) totalRecibir.textContent = formattedAmount;
+            if (methodEl) methodEl.textContent = getMethodDisplay(transferData.method);
+            if (equivalentEl) equivalentEl.textContent = '';
+
+            if (transferData.method === 'mobile' && transferData.idNumber && idRow && idEl) {
+                idRow.style.display = 'flex';
+                idEl.textContent = transferData.idNumber;
+            } else if (idRow) {
+                idRow.style.display = 'none';
+            }
+        }
+
+        // Buscar otro operador
+        function searchOtherOperator() {
+            playOperatorSound();
+            // Reiniciar proceso desde fase 1
+            currentPhase = 1;
+            switchToPhase(1);
+            startInitialSearch();
+        }
+
+        // Volver atrás
+        function goBack() {
+            searchOtherOperator();
+        }
+
+        // Confirmar transacción
+        function confirmTransaction() {
+            // Aquí continuaríamos con la siguiente fase del proceso
+            console.log('🎉 Transacción confirmada - continuando al proceso de chat/comunicación');
+            
+            // Mostrar loading
+            const btn = event.target.closest('.btn-primary');
+            const originalHTML = btn.innerHTML;
+            
+            btn.innerHTML = '<div class="spinner"></div><span>Procesando...</span>';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                sessionStorage.setItem('fromProcessingRetiro', 'true');
+                window.location.href = 'retirovisap2p.html';
+            }, 2000);
+        }
+
+        // Cambiar a fase
+        function switchToPhase(phaseNumber) {
+            const currentPhaseEl = document.getElementById(`phase-${currentPhase}`);
+            const nextPhaseEl = document.getElementById(`phase-${phaseNumber}`);
+            const spinnerEl = document.querySelector('.processing-spinner');
+
+            if (spinnerEl) {
+                spinnerEl.style.display = phaseNumber === 4 ? 'block' : 'none';
+            }
+
+            if (currentPhaseEl) {
+                currentPhaseEl.classList.remove('active');
+                currentPhaseEl.classList.add('prev');
+            }
+            
+            if (nextPhaseEl) {
+                setTimeout(() => {
+                    nextPhaseEl.classList.add('active');
+                }, 50);
+            }
+            
+            currentPhase = phaseNumber;
+            console.log(`📍 Cambiando a fase ${phaseNumber}`);
+        }
+
+        // Toggle currency
+        function toggleCurrency() {
+            if (currentCurrency === 'bs') {
+                currentCurrency = 'usd';
+            } else if (currentCurrency === 'usd') {
+                currentCurrency = 'eur';
+            } else {
+                currentCurrency = 'bs';
+            }
+            updateBalanceDisplay();
+        }
+
+        const currencyToggleBtn = document.getElementById('currency-toggle');
+        if (currencyToggleBtn) {
+            currencyToggleBtn.addEventListener('click', toggleCurrency);
+        }
+
+        // Exit overlay helpers
+        function showExitOverlay() {
+            const overlay = document.getElementById('exit-overlay');
+            if (overlay) overlay.style.display = 'flex';
+        }
+
+        function hideExitOverlay() {
+            const overlay = document.getElementById('exit-overlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+
+        function confirmExit() {
+            localStorage.setItem('withdrawalsDisabled','true');
+            alert('La función de retiros ha sido inhabilitada.');
+            window.location.href = 'homevisa.html';
+        }
+
+        const exitCancelBtn = document.getElementById('exit-cancel');
+        if (exitCancelBtn) {
+            exitCancelBtn.addEventListener('click', hideExitOverlay);
+        }
+
+        const exitConfirmBtn = document.getElementById('exit-confirm');
+        if (exitConfirmBtn) {
+            exitConfirmBtn.addEventListener('click', confirmExit);
+        }
+
+        // Navegación inferior con confirmación de salida
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.bottom-nav .nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                showExitOverlay();
+            });
+        });
+
+        // Confirmación al usar botón de retroceso del navegador
+        history.pushState(null, '', location.href);
+        window.addEventListener('popstate', function () {
+            showExitOverlay();
+            history.pushState(null, '', location.href);
+        });
+
+        // Optimización para móviles
+        window.addEventListener('orientationchange', function() {
+            setTimeout(() => {
+                // Recalcular altura si es necesario
+                document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+            }, 500);
+        });
+
+        // Inicializar altura de viewport
+        document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+
+        // Actualizar usuarios en línea cada 30 segundos
+        setInterval(updateOnlineUsersCount, 30000);
+
+        console.log('✅ Sistema P2P inicializado correctamente');
+    </script>
+</body>
+</html>

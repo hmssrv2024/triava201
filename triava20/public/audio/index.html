@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Generador de audio TTS · Gemini</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="../env-config.js" defer></script>
+    <script src="../env-config.local.js" defer></script>
+    <script type="module" src="./app.js" defer></script>
+  </head>
+  <body>
+    <main class="app" aria-labelledby="app-title">
+      <header class="app__header">
+        <h1 id="app-title">Generador de audio con Gemini 2.5 Pro (preview)</h1>
+        <p class="app__intro">
+          Escribe tu guion, elige el estilo lingüístico y genera una locución con
+          la voz <strong>Zephyr</strong>. Puedes preescuchar el resultado y
+          descargarlo como <abbr title="MPEG Layer III">MP3</abbr>.
+        </p>
+      </header>
+
+      <form class="tts-form" novalidate>
+        <div class="form-field">
+          <label for="script-text">
+            Texto a convertir en audio
+            <span class="help-text">(máx. 2&nbsp;400 caracteres)</span>
+          </label>
+          <textarea
+            id="script-text"
+            name="script-text"
+            maxlength="2400"
+            rows="8"
+            placeholder="Hola, este es un ejemplo de guion. Puedes pedir saludos, anuncios o instrucciones; Gemini cuidará la entonación con la voz Zephyr."
+            required
+          ></textarea>
+          <div class="field-footer">
+            <span id="char-count" aria-live="polite">0 / 2400</span>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="style-select">Estilo lingüístico</label>
+          <select id="style-select" name="style-select">
+            <option value="neutral" selected>Español neutro (recomendado)</option>
+            <option value="es-es">Español (España)</option>
+            <option value="en-us">Inglés (Estados Unidos)</option>
+            <option value="pt-br">Portugués (Brasil)</option>
+          </select>
+          <p class="help-text">
+            Se usa la misma voz Zephyr; esta opción solo ajusta el tono y el
+            idioma mediante instrucciones al modelo.
+          </p>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="generate-button" class="button button--primary">
+            Generar audio
+          </button>
+          <button type="button" id="download-button" class="button" disabled>
+            Descargar MP3
+          </button>
+        </div>
+      </form>
+
+      <section class="status" aria-live="polite">
+        <p id="status-message" data-tone="idle">Listo para generar audio.</p>
+      </section>
+
+      <section class="player" aria-label="Previsualización de audio">
+        <audio id="audio-player" controls preload="none" hidden>
+          Tu navegador no soporta la etiqueta de audio.
+        </audio>
+      </section>
+    </main>
+  </body>
+</html>

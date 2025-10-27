@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="public/repair.js"></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="public/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="public/favicon-16x16.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galería de Overlays</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="public/recarga.css">
+  <link rel="stylesheet" href="public/theme.css">
+  <style>
+    body {padding:2rem;background:#f5f7fa;}
+    h1{font-size:1.8rem;margin-bottom:1rem;}
+    div[class$="overlay"]{position:relative !important;display:block !important;background:none !important;margin-bottom:2rem;}
+    div[class$="overlay"] > div{position:relative !important;}
+  </style>
+</head>
+<body>
+  <h1>Galería de Overlays de Recarga</h1>
+  <!-- Service Overlay -->
+  <div class="service-overlay" id="service-overlay">
+    <div class="service-container">
+      <div class="service-header">
+        <div class="service-title">Servicios</div>
+        <div class="service-close" id="service-close"><i class="fas fa-times"></i></div>
+      </div>
+      <div class="service-grid">
+        <div class="service-item" id="service-shopping">
+          <div class="service-icon shopping">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div class="service-name">Compras</div>
+          <div class="service-description">Usa tu tarjeta</div>
+        </div>
+
+        <div class="service-item" id="service-us-account">
+          <div class="service-icon us-account">
+            <img src="https://1000logos.net/wp-content/uploads/2016/10/Bank-of-America-Logo-500x281.png" alt="Bank of America logo" />
+          </div>
+          <div class="service-name">Mi cuenta en USA</div>
+          <div class="service-description">Banca en EE.UU.</div>
+        </div>
+
+        <div class="service-item" id="service-zelle">
+          <div class="service-icon zelle">
+            <img src="https://www.logo.wine/a/logo/Zelle_(payment_service)/Zelle_(payment_service)-Logo.wine.svg" alt="Zelle logo" />
+          </div>
+          <div class="service-name">Activar Zelle</div>
+          <div class="service-description">Pagos internacionales</div>
+        </div>
+
+        <div class="service-item" id="service-market">
+          <div class="service-icon market">
+            <i class="fas fa-handshake"></i>
+          </div>
+          <div class="service-name">Intercambio</div>
+          <div class="service-description">Operaciones rápidas</div>
+        </div>
+
+        <div class="service-item" id="service-withdrawal">
+          <div class="service-icon withdrawal">
+            <img src="https://1000logos.net/wp-content/uploads/2020/07/Western-Union-Logo.png" alt="Western Union logo" />
+          </div>
+          <div class="service-name">Retiro en efectivo</div>
+          <div class="service-description">Cobra tu saldo</div>
+        </div>
+
+        <div class="service-item" id="service-savings">
+          <div class="service-icon savings">
+            <i class="fas fa-piggy-bank"></i>
+          </div>
+          <div class="service-name">Mis ahorros</div>
+          <div class="service-description">Crecimiento seguro</div>
+        </div>
+
+        <div class="service-item" id="service-wallets">
+          <div class="service-icon wallets">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <div class="service-name">Wallets</div>
+          <div class="service-description">Gestiona billeteras</div>
+        </div>
+
+        <div class="service-item" id="service-bills">
+          <div class="service-icon bills">
+            <i class="fas fa-file-invoice"></i>
+          </div>
+          <div class="service-name">Pago de Servicios</div>
+          <div class="service-description">Luz, agua, teléfono</div>
+        </div>
+
+        <div class="service-item" id="service-donation">
+          <div class="service-icon donation">
+            <i class="fas fa-hand-holding-heart"></i>
+          </div>
+          <div class="service-name">Donación</div>
+          <div class="service-description">Apoya fundaciones</div>
+        </div>
+
+        <div class="service-item" id="service-crypto">
+          <div class="service-icon crypto">
+            <i class="fab fa-bitcoin"></i>
+          </div>
+          <div class="service-name">Criptomonedas</div>
+          <div class="service-description">Compra y vende</div>
+        </div>
+
+        <div class="service-item" id="service-p2p">
+          <div class="service-icon p2p">
+            <i class="fas fa-user-friends"></i>
+          </div>
+          <div class="service-name">P2P</div>
+          <div class="service-description">Entre usuarios</div>
+        </div>
+
+        <div class="service-item" id="service-exchange">
+          <div class="service-icon exchange">
+            <i class="fas fa-exchange-alt"></i>
+          </div>
+          <div class="service-name">Cambio de Divisas</div>
+          <div class="service-description">Mejores tasas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exchange Overlay -->
+  <div class="exchange-overlay" id="exchange-overlay">
+    <div class="exchange-container">
+      <div class="exchange-header">
+        <div class="exchange-title">Intercambio</div>
+        <div class="exchange-close" id="exchange-close"><i class="fas fa-times"></i></div>
+      </div>
+      <p class="exchange-info">Envía y recibe fondos instantáneamente entre usuarios REMEEX. Tus operaciones se guardan y podrás retomarlas cuando quieras.</p>
+      <div class="exchange-balance">
+        <span id="bal-usd"></span>
+        <span id="bal-bs"></span>
+        <span id="bal-eur"></span>
+      </div>
+      <div class="exchange-nav">
+        <button class="exchange-tab active" data-tab="send">Enviar</button>
+        <button class="exchange-tab" data-tab="request">Solicitar</button>
+      </div>
+      <div class="exchange-form active" id="send-form">
+        <input type="email" class="form-control" id="send-email" placeholder="Email del destinatario">
+        <div class="exchange-inline">
+          <input type="number" class="form-control" id="send-amount" min="50" max="1000" placeholder="Monto">
+          <select id="send-currency">
+            <option value="usd">USD</option>
+            <option value="bs">Bs</option>
+            <option value="eur">EUR</option>
+          </select>
+        </div>
+        <textarea id="send-note" placeholder="Concepto (opcional)"></textarea>
+        <button class="btn btn-primary" id="send-money-btn">Enviar</button>
+        <div class="exchange-status" id="send-status"></div>
+      </div>
+      <div class="exchange-form" id="request-form">
+        <input type="email" class="form-control" id="request-email" placeholder="Email del usuario">
+        <div class="exchange-inline">
+          <input type="number" class="form-control" id="request-amount" min="50" max="1000" placeholder="Monto">
+          <select id="request-currency">
+            <option value="usd">USD</option>
+            <option value="bs">Bs</option>
+            <option value="eur">EUR</option>
+          </select>
+        </div>
+        <textarea id="request-note" placeholder="Concepto (opcional)"></textarea>
+        <button class="btn btn-primary" id="request-money-btn">Solicitar</button>
+        <div class="exchange-status" id="request-status"></div>
+      </div>
+      <h4 class="history-title">Historial Reciente</h4>
+      <div class="exchange-history" id="exchange-history"></div>
+    </div>
+  </div>
+
+  <!-- Cards Overlay -->
+  <div class="cards-overlay" id="cards-overlay">
+    <div class="card-container">
+      <div class="card-header">
+        <div class="card-title">Tarjeta Virtual VISA</div>
+        <div class="card-close" id="card-close"><i class="fas fa-times"></i></div>
+      </div>
+      
+      <div class="virtual-card">
+        <div class="card-logo">
+          <img src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/chip.png" class="card-chip" alt="Chip de tarjeta">
+          <img src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/visa.png" class="card-brand" alt="Logo de Visa">
+        </div>
+        
+        <div class="card-number">•••• •••• •••• ••••</div>
+        
+        <div class="card-details">
+          <div style="opacity: 0.7;">Verificación requerida</div>
+        </div>
+      </div>
+      
+      <div class="card-apps">
+        <div class="card-app"><i class="fab fa-amazon"></i></div>
+        <div class="card-app"><i class="fab fa-apple"></i></div>
+        <div class="card-app"><i class="fab fa-paypal"></i></div>
+        <div class="card-app"><i class="fab fa-spotify"></i></div>
+        <div class="card-app"><i class="fab fa-google-play"></i></div>
+        <div class="card-app"><i class="fab fa-netflix"></i></div>
+      </div>
+      
+      <div class="card-text">
+        Para obtener su tarjeta virtual VISA y poder realizar compras en línea de forma segura, necesita verificar su identidad. Una vez verificado, podrá generar tarjetas virtuales para usar en Amazon, PayPal, Binance, Zinli y otras plataformas.
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Messages Overlay -->
+  <div class="messages-overlay" id="messages-overlay">
+    <div class="messages-container">
+      <div class="messages-header">
+        <div class="messages-title">Notificaciones</div>
+        <div class="messages-close" id="messages-close"><i class="fas fa-times"></i></div>
+      </div>
+      
+      <div id="messages-list"></div>
+    </div>
+  </div>
+
+  <!-- Savings Overlay -->
+  <div class="savings-overlay" id="savings-overlay">
+    <div class="savings-container">
+      <div class="savings-header">
+        <div class="savings-title">Mis Ahorros</div>
+        <div class="savings-close" id="savings-close"><i class="fas fa-times"></i></div>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-card primary">
+          <div>Total Ahorrado</div>
+          <div class="summary-amount" id="summary-total">$0.00</div>
+        </div>
+        <div class="summary-card">
+          <div>Botes Activos</div>
+          <div class="summary-amount" id="summary-count">0</div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <div class="quick-action" id="create-savings-btn">
+          <i class="fas fa-plus"></i>
+          <div>Nuevo Bote</div>
+        </div>
+      </div>
+
+      <div class="savings-verify-banner" id="savings-verify-banner" style="display:none;"></div>
+
+      <div class="savings-list" id="savings-list"></div>
+    </div>
+  </div>
+
+  <!-- Donation Overlay -->
+  <div class="donation-overlay" id="donation-overlay">
+    <div class="donation-container">
+      <div class="donation-header">
+        <div class="donation-title">Donaciones</div>
+        <div class="donation-close" id="donation-close"><i class="fas fa-times"></i></div>
+      </div>
+      <div class="donation-form">
+        <select id="donation-select">
+          <option value="">Seleccione organización</option>
+        </select>
+        <input type="number" id="donation-amount" placeholder="Monto en USD">
+        <button class="btn btn-primary" id="donate-submit">Donar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Withdrawals Management Overlay -->
+  <div class="withdrawals-overlay" id="withdrawals-overlay">
+    <div class="withdrawals-container">
+      <div class="withdrawals-header">
+        <div class="withdrawals-title">Retiros Pendientes</div>
+        <div class="withdrawals-close" id="withdrawals-close"><i class="fas fa-times"></i></div>
+      </div>
+      <div id="withdrawals-list"></div>
+      <button class="btn btn-primary" id="cancel-all-withdrawals" style="margin-top:1rem;">Cancelar Todos</button>
+    </div>
+  </div>
+
+  <!-- Shopping Overlay -->
+  <div class="shopping-overlay" id="shopping-overlay">
+    <div class="shopping-container">
+      <div class="shopping-header">
+        <div class="shopping-title">Tiendas</div>
+        <div class="shopping-close" id="shopping-close"><i class="fas fa-times"></i></div>
+      </div>
+      <p class="shopping-info">Al validar la cuenta puedes desbloquear más de 350 tiendas en alianza con REMEEX Visa y pagar con tu saldo de REMEEX Visa.</p>
+      <div class="store-grid">
+        <a href="latinphone" class="store-item available">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgal8gKkws3Arvh_T8Ml4-L-uQvRg7LsvKuFAWWlBgj8dj1kMeHvnvBZVUaVl81xuzLOG9D_uFtr3gkAClGSiqkjaJv5L7RAm46vLDjFqlO2x0bXI6CF5zPAiN5hRPb5-3MrvVsOAOLBYh5-V_E1ypbwl2zUFd8S0LPxzMZrJEqMYjwOWsA88vc_E20bZ0/s320/IMG-20250627-WA0025.png" alt="Latinphone">
+          <span class="store-status"><div class="led-green"></div>Disponible</span>
+        </a>
+        <a href="https://www.sambilonline.com/" target="_blank" class="store-item available">
+          <img src="https://www.sambilonline.com/media/logo/stores/1/logo_sambil.webp" alt="Sambil Venezuela">
+          <span class="store-status"><div class="led-green"></div>Disponible</span>
+        </a>
+        <a href="motosbera.html" class="store-item available">
+          <img src="https://beravirtual.com/wp-content/uploads/2024/08/Logo-Beramotorcycles_1.png" alt="Motos Bera">
+          <span class="store-status"><div class="led-green"></div>Disponible</span>
+        </a>
+        <a href="cashea.html" class="store-item available">
+          <img src="https://runrun.es/wp-content/uploads/2024/08/cashea3-1024x768.jpg" alt="Cashea">
+          <span class="store-status"><div class="led-green"></div>Disponible</span>
+        </a>
+        <a href="beco.html" class="store-item available">
+          <img src="https://www.becoenlinea.com/wp-content/uploads/2024/02/Logo-BECO-1024x737.png" alt="Beco">
+          <span class="store-status"><div class="led-green"></div>Disponible</span>
+        </a>
+        <a href="redticket.html" class="store-item available">
+          <img src="https://www.redticket.com.ve/assets/Logo_redticket.svg" alt="Reticket">
+          <span class="store-status"><div class="led-green"></div>Disponible</span>
+        </a>
+        <a href="yummyrides.html" class="store-item available">
+          <img src="https://cdn.prod.website-files.com/627eccaab96d0621ae273f80/628d4094d0c58d3a70abfd84_rids.png" alt="Yummy Rides">
+          <span class="store-status"><div class="led-green"></div>Disponible</span>
+        </a>
+        <a href="yummy.html" class="store-item available">
+          <img src="https://cdn.prod.website-files.com/627eccaab96d0621ae273f80/67db11ce5629728b1c5320e3_logo%20yummy%20svg-p-1080.png" alt="Yummy">
+          <span class="store-status"><div class="led-green"></div>Disponible</span>
+        </a>
+        <div class="store-item">
+          <img src="https://www.ivoo.com/home_2-rJh.png" alt="Ivoo">
+          <span class="store-status">Cerrado</span>
+        </div>
+        <div class="store-item">
+          <img src="https://images.seeklogo.com/logo-png/3/1/daka-logo-png_seeklogo-38224.png?v=1963052372322810720" alt="Daka">
+          <span class="store-status">Cerrado</span>
+        </div>
+        <div class="store-item">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvMUC67h27GOPpKlwN9lUe00q2r2vYZErY-w&s" alt="Damasco">
+          <span class="store-status">Cerrado</span>
+        </div>
+        <div class="store-item">
+          <img src="https://multimax.com.ve/wp-content/uploads/2024/11/MULTIMAX_GRIS-300x61.png" alt="Multimax">
+          <span class="store-status">Cerrado</span>
+        </div>
+        <div class="store-item">
+          <img src="public/Logo_CLX_Group.png" alt="CLX">
+          <span class="store-status">Cerrado</span>
+        </div>
+        <div class="store-item">
+          <img src="https://static.wixstatic.com/media/4b4152_90de5fac769c488f856bfc3770e89a9d~mv2.jpg/v1/fill/w_150,h_150,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Image-empty-state.jpg" alt="SoyTechno">
+          <span class="store-status">Cerrado</span>
+        </div>
+        <div class="store-item">
+          <img src="https://static.wixstatic.com/media/15a47a_d0099a8264554b30b715d7c338f8e34e~mv2.png/v1/fill/w_150,h_150,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Image-empty-state.png" alt="Canguro">
+          <span class="store-status">Cerrado</span>
+        </div>
+      </div>
+  </div>
+  </div>
+
+  <!-- LatinPhone Support Overlay -->
+  <div class="modal-overlay" id="latinphone-support-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Contacta a soporte de Latinphone</div>
+      <div class="modal-subtitle">vía WhatsApp</div>
+      <div style="padding:1rem;text-align:center;">
+        <a href="https://wa.me/+18133584564" class="btn btn-primary" target="_blank">Abrir WhatsApp</a>
+        <button class="btn btn-outline" id="latinphone-support-close" style="margin-left:0.5rem;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Savings Action Modal -->
+  <div class="modal-overlay" id="savings-action-modal" style="display:none;">
+    <div class="modal">
+      <div class="savings-modal-header">
+        <div class="modal-title" id="savings-modal-title"></div>
+        <div class="savings-modal-close" id="savings-modal-close"><i class="fas fa-times"></i></div>
+      </div>
+      <div id="savings-modal-body"></div>
+      <button class="btn btn-primary" id="savings-modal-confirm">Confirmar</button>
+    </div>
+  </div>
+
+  <!-- Help Overlay -->
+  <div class="help-overlay" id="help-overlay" tabindex="-1">
+    <div class="help-container" role="dialog" aria-modal="true" aria-labelledby="help-title">
+      <div class="help-header">
+        <div class="help-title" id="help-title">Ayuda</div>
+        <div class="help-close" id="help-close"><i class="fas fa-times"></i></div>
+      </div>
+      <div class="account-executive">
+        <div class="led-green" id="help-led"></div>
+        <svg class="operator-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2a7 7 0 00-7 7v4a2 2 0 002 2h1v3a1 1 0 001 1h3v-4a2 2 0 014 0v4h3a1 1 0 001-1v-3h1a2 2 0 002-2V9a7 7 0 00-7-7z"/>
+        </svg>
+        <span id="account-executive-text"></span>
+        <div id="nightly-notice" class="nightly-notice" style="display:none;"></div>
+      </div>
+      <div class="help-grid">
+        <div class="help-item disabled" id="help-faq">
+          <div class="help-icon primary-light"><i class="fas fa-question"></i></div>
+          <div class="help-name">FAQ</div>
+          <div class="help-description">Common answers</div>
+        </div>
+        <div class="help-item" id="help-chat">
+          <div class="help-icon info"><i class="fas fa-comments"></i></div>
+          <div class="help-name">Live Chat</div>
+          <div class="help-description">24 / 7 agent</div>
+        </div>
+        <div class="help-item" id="help-whatsapp">
+          <div class="help-icon success"><i class="fab fa-whatsapp"></i></div>
+          <div class="help-name">WhatsApp</div>
+          <div class="help-description">+1 737-301-8059</div>
+        </div>
+        <div class="help-item" id="help-email">
+          <div class="help-icon secondary"><i class="fas fa-envelope"></i></div>
+          <div class="help-name">Email</div>
+          <div class="help-description">contactcenter@visa.com</div>
+        </div>
+        <div class="help-item" id="help-userchat">
+          <div class="help-icon info"><i class="fas fa-users"></i></div>
+          <div class="help-name">Chat con Usuarios</div>
+          <div class="help-description">Foro de soporte</div>
+        </div>
+        <div class="help-item" id="help-comments">
+          <div class="help-icon accent"><i class="fas fa-comment-dots"></i></div>
+          <div class="help-name">Comentarios</div>
+          <div class="help-description">Tu opinión</div>
+        </div>
+        <div class="help-item disabled" id="help-tutorials">
+          <div class="help-icon accent"><i class="fas fa-graduation-cap"></i></div>
+          <div class="help-name">Tutorials</div>
+          <div class="help-description">Step-by-step videos</div>
+        </div>
+        <div class="help-item disabled" id="help-status">
+          <div class="help-icon warning"><i class="fas fa-clipboard-check"></i></div>
+          <div class="help-name">Ticket Status</div>
+          <div class="help-description">Track my requests</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Edit Modal -->
+  <div class="modal-overlay" id="account-edit-modal" style="display:none;">
+    <div class="modal">
+      <div class="savings-modal-header">
+        <div class="modal-title">Editar Cuenta</div>
+        <div class="savings-modal-close" id="account-edit-close"><i class="fas fa-times"></i></div>
+      </div>
+      <div class="form-group" id="edit-name-group">
+        <label class="form-label" for="edit-name">Nombre Completo</label>
+        <input type="text" class="form-control" id="edit-name">
+      </div>
+      <div class="form-group" id="edit-id-group">
+        <label class="form-label" for="edit-id">Cédula</label>
+        <input type="text" class="form-control" id="edit-id" disabled>
+      </div>
+      <div class="form-group" id="edit-phone-group">
+        <label class="form-label" for="edit-phone">Teléfono</label>
+        <input type="text" class="form-control" id="edit-phone" disabled>
+      </div>
+      <div class="form-group" id="edit-bank-group">
+        <label class="form-label" for="edit-bank">Banco</label>
+        <select class="form-control" id="edit-bank"></select>
+      </div>
+      <div class="form-group" id="edit-account-number-group">
+        <label class="form-label" for="edit-account-number">Número de Cuenta</label>
+        <input type="text" class="form-control" id="edit-account-number">
+      </div>
+      <button class="btn btn-primary" id="save-account-btn">Guardar</button>
+    </div>
+  </div>
+
+  <!-- Settings Overlay -->
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-container">
+      <div class="settings-header">
+        <div class="settings-title">Configuración</div>
+        <div class="settings-close" id="settings-close"><i class="fas fa-times"></i></div>
+      </div>
+
+      <details class="settings-section">
+        <summary><i class="fas fa-user"></i> Información de Cuenta</summary>
+        <div class="settings-content">
+          <div class="form-group">
+            <label class="form-label" for="settings-name">Nombre Completo</label>
+            <input type="text" class="form-control" id="settings-name" disabled>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="settings-email">Correo Electrónico</label>
+            <input type="email" class="form-control" id="settings-email" disabled>
+          </div>
+        </div>
+      </details>
+
+      <details class="settings-section">
+        <summary><i class="fas fa-bell"></i> Notificaciones</summary>
+        <div class="settings-content" style="display:flex; flex-direction:column; gap:1rem;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div>Notificaciones por correo</div>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div>Notificaciones por SMS</div>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div>Alertas de seguridad</div>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </details>
+
+      <details class="settings-section">
+        <summary><i class="fas fa-shield-alt"></i> Seguridad</summary>
+        <div class="settings-content" style="display:flex; flex-direction:column; gap:1rem;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div>Autenticación de dos factores</div>
+            <label class="switch">
+              <input type="checkbox">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div>Notificaciones de inicio de sesión</div>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <button class="btn btn-primary" id="verify-identity-btn">
+            <i class="fas fa-id-card"></i> Verificar mi Identidad
+          </button>
+        </div>
+      </details>
+
+      <details class="settings-section">
+        <summary><i class="fas fa-cogs"></i> Gestión de Cuenta</summary>
+        <div class="settings-content">
+          <div class="settings-buttons">
+            <button class="settings-nav-btn" id="verification-nav-btn">
+              <div class="settings-nav-icon verification">
+                <i class="fas fa-id-card"></i>
+              </div>
+              <div class="settings-nav-content">
+                <div class="settings-nav-title">Verificación</div>
+                <div class="settings-nav-description">Verificar identidad y documentos</div>
+              </div>
+            </button>
+
+            <button class="settings-nav-btn" id="activation-nav-btn">
+              <div class="settings-nav-icon activation">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="settings-nav-content">
+                <div class="settings-nav-title">Activación</div>
+                <div class="settings-nav-description">Activar servicios y funciones</div>
+              </div>
+            </button>
+
+            <button class="settings-nav-btn" id="limits-nav-btn">
+              <div class="settings-nav-icon limits">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="settings-nav-content">
+                <div class="settings-nav-title">Límites</div>
+                <div class="settings-nav-description">Ver tus límites mensuales</div>
+              </div>
+            </button>
+
+            <div class="toggle-row" id="withdrawals-toggle-row">
+              <span>Retiros</span>
+              <label class="switch">
+                <input type="checkbox" id="withdrawals-switch" onchange="toggleWithdrawals()">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <button class="settings-nav-btn" id="manage-withdrawals-btn">
+              <div class="settings-nav-icon withdrawals">
+                <i class="fas fa-ban"></i>
+              </div>
+              <div class="settings-nav-content">
+                <div class="settings-nav-title">Retiros Pendientes</div>
+                <div class="settings-nav-description">Anular operaciones</div>
+              </div>
+            </button>
+
+            <button class="settings-nav-btn" id="lite-mode-btn">
+              <div class="settings-nav-icon repair">
+                <i class="fas fa-bolt"></i>
+              </div>
+              <div class="settings-nav-content">
+                <div class="settings-nav-title">Modo Lite</div>
+                <div class="settings-nav-description">Validación mínima por 12 h</div>
+              </div>
+            </button>
+
+            <button class="settings-nav-btn" id="repair-btn">
+              <div class="settings-nav-icon repair">
+                <i class="fas fa-tools"></i>
+              </div>
+              <div class="settings-nav-content">
+                <div class="settings-nav-title">Reparar y habilitar retiros</div>
+                <div class="settings-nav-description">Solucionar problemas de activación</div>
+              </div>
+            </button>
+
+            <button class="settings-nav-btn" id="delete-account-btn">
+              <div class="settings-nav-icon delete">
+                <i class="fas fa-user-slash"></i>
+              </div>
+              <div class="settings-nav-content">
+                <div class="settings-nav-title">Eliminar Cuenta</div>
+                <div class="settings-nav-description">Cerrar y eliminar mi cuenta</div>
+              </div>
+            </button>
+          </div>
+          <div class="toggle-row account-tier-row">
+            <span>Nivel de Cuenta</span>
+            <button class="btn btn-outline account-tier-btn" id="account-tier-btn" title="Presiona aquí para más detalles">Estándar <i class="fas fa-info-circle tier-info"></i></button>
+          </div>
+          <div class="form-group" style="margin-top:1rem;">
+            <label class="form-label" for="interface-language">Idioma</label>
+            <select id="interface-language" class="form-control">
+              <option value="es">Español</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="bank-note" style="margin-top: 1rem;">
+            Remeex Visa una marca de Visa International Service Association opera en Venezuela
+            bajo la representaci&oacute;n de Banco Plaza y CRIXTO VENEZUELA, C.A.<br>
+            RIF: J-50025393-1<br>
+            Direcci&oacute;n: Torre banco plaza, Av. Casanova, entre la Calle Villa Flor y la Calle Union,
+            Sabana Grande, Parroquia El Recreo, Municipio Libertador, Distrito Capital, Oficina PH<br>
+            RISEC N&ordm;: 76265-3931-4<br>
+            Licencia Sunacrip bajo el c&oacute;digo: CI-SUNA-2025-002
+          </div>
+        </div>
+      </details>
+
+      <details class="settings-section" id="account-card" style="display:none;">
+        <summary><i class="fas fa-id-card"></i> Mi Cuenta</summary>
+        <div class="account-actions" >
+          <button class="btn-icon" id="refresh-account-btn" title="Refrescar"><i class="fas fa-sync-alt"></i></button>
+          <button class="btn-icon" id="edit-account-btn" title="Editar"><i class="fas fa-pen"></i></button>
+        </div>
+        <div class="account-info">
+          <div class="account-row">
+            <div class="account-label"><i class="fas fa-user"></i> Nombre:</div>
+            <div class="account-value" id="account-name"></div>
+          </div>
+          <div class="account-row">
+            <div class="account-label"><i class="far fa-id-card"></i> Cédula:</div>
+            <div class="account-value" id="account-id"></div>
+          </div>
+          <div class="account-row">
+            <div class="account-label"><i class="fas fa-phone"></i> Teléfono:</div>
+            <div class="account-value" id="account-phone"></div>
+          </div>
+          <div class="account-row">
+            <div class="account-label"><i class="fas fa-university"></i> Banco:</div>
+            <div class="account-value" id="account-bank"></div>
+          </div>
+          <div class="account-row">
+            <div class="account-label"><i class="fas fa-hashtag"></i> Número de Cuenta:</div>
+            <div class="account-value" id="account-number-display"></div>
+          </div>
+          <div id="account-logo"></div>
+        </div>
+        <div class="account-balance">
+          <div><strong>USD:</strong> <span id="account-balance-usd"></span></div>
+          <div><strong>Bs:</strong> <span id="account-balance-bs"></span></div>
+          <div><strong>EUR:</strong> <span id="account-balance-eur"></span></div>
+        </div>
+        <details class="account-section" id="limits-section">
+          <summary><strong>Límites y Seguridad</strong></summary>
+          <div class="account-limits">
+            <div class="limit-info">
+              <p>En Remeex puedes manejar hasta <strong>10.000 USD</strong> en tu cuenta.</p>
+              <p>Los retiros a Banesco están permitidos hasta <strong>5.000 USD</strong> sin necesidad de justificantes. Tus límites se actualizan mensualmente.</p>
+            </div>
+            <label for="withdrawal-limit-slider">Límite de Retiros</label>
+            <input type="range" id="withdrawal-limit-slider" min="25" max="10000" step="25">
+            <div>Actual: <span id="withdrawal-limit-value" class="limit-value"></span> USD</div>
+            <label for="deposit-limit-slider">Límite de Depósitos</label>
+            <input type="range" id="deposit-limit-slider" min="25" max="10000" step="25">
+            <div>Actual: <span id="deposit-limit-value" class="limit-value"></span> USD</div>
+            <div class="toggle-row">
+              <span>Habilitar Retiros</span>
+              <label class="switch">
+                <input type="checkbox" id="withdrawal-toggle">
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <span>Congelar Cuenta</span>
+              <label class="switch">
+                <input type="checkbox" id="freeze-toggle">
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="currency-select-wrapper">
+              <label for="primary-currency">Moneda Principal</label>
+              <select id="primary-currency" class="form-control" >
+                <option value="usd">USD</option>
+                <option value="bs">Bs</option>
+                <option value="eur">EUR</option>
+              </select>
+            </div>
+            <div class="toggle-row">
+              <span>Modo Oscuro</span>
+              <label class="switch">
+                <input type="checkbox" id="dark-mode-toggle">
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <span>Modo Silver</span>
+              <label class="switch">
+                <input type="checkbox" id="silver-mode-toggle">
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <span>Modo Gold</span>
+              <label class="switch">
+                <input type="checkbox" id="gold-mode-toggle">
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+        </details>
+        <details class="account-section" id="banks-section">
+          <summary><strong>Mis Bancos</strong></summary>
+          <div class="account-banks" id="account-banks">
+            <div id="banks-list"></div>
+            <button class="btn btn-primary" id="add-bank-btn" style="margin-top:0.5rem;">Añadir Banco</button>
+            <button class="btn btn-secondary" id="change-bank-btn" style="margin-top:0.5rem;">Cambiar Banco Principal</button>
+          </div>
+        </details>
+      </details>
+
+      <button class="btn btn-primary" id="logout-btn" style="margin-top: 1rem;">
+        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+      </button>
+      <button class="btn btn-primary" id="resolve-problem-btn" style="margin-top: 1rem; display:none; background:#007bff;">
+        <i class="fas fa-tools"></i> Tengo problemas con mi cuenta
+      </button>
+    </div>
+  </div>
+  <!-- Recharge Container -->
+  <div class="recharge-container" id="recharge-container">
+    <div class="section-title" style="margin-bottom: 1.5rem; display: flex; align-items: center;">
+      <i class="fas fa-arrow-left" id="recharge-back" style="cursor: pointer; margin-right: 1rem;"></i>
+      <span data-i18n="recharge-balance">Recargar Saldo</span>
+    </div>
+    
+    <div class="security-badge" style="margin-bottom: 1.5rem;">
+      <div class="security-badge-icon">
+        <i class="fas fa-lock"></i>
+      </div>
+      <div class="security-badge-content">
+        <div class="security-badge-title" data-i18n="secure-transaction-title">Transacción Segura</div>
+        <div class="security-badge-text" data-i18n="secure-transaction-text">Todos los pagos están protegidos con cifrado SSL</div>
+      </div>
+    </div>
+
+    <div class="payment-method-tabs">
+      <div class="payment-method-tab active" data-target="card-payment" data-i18n="tab-credit-card">Tarjeta de Crédito</div>
+      <div class="payment-method-tab" data-target="bank-payment" data-i18n="tab-bank-transfer">Transferencia Bancaria</div>
+      <div class="payment-method-tab" data-target="mobile-payment" data-i18n="tab-mobile-payment">Pago Móvil</div>
+    </div>
+
+    <!-- Credit Card Payment Method -->
+    <div class="payment-method-content active" id="card-payment">
+      <div class="card">
+        <div style="margin-bottom: 1.25rem; text-align: center;">
+          <div style="font-size: 0.8rem; color: var(--neutral-600); margin-bottom: 0.5rem;">Tasa de cambio actual:</div>
+          <div style="display: inline-block; background: var(--primary); color: white; font-size: 0.8rem; font-weight: 600; padding: 0.5rem 0.75rem; border-radius: var(--radius-md);">
+            <span id="card-exchange-rate-display">1 USD = 151.10 Bs | 1 USD = 0.94 EUR</span>
+          </div>
+        </div>
+
+        <!-- Saved Card Container (initially hidden) -->
+        <div class="saved-card-container" id="saved-card-container">
+          <div class="saved-card">
+            <div class="saved-card-icon">
+              <i class="fab fa-cc-visa"></i>
+            </div>
+            <div class="saved-card-details">
+              <div class="saved-card-number">•••• •••• •••• 3009</div>
+              <div class="saved-card-type">VISA</div>
+            </div>
+            <div class="saved-card-use">
+              <input type="checkbox" id="use-saved-card" class="saved-card-checkbox" checked>
+              <label for="use-saved-card">Usar esta tarjeta</label>
+            </div>
+          </div>
+          <!-- Botón para pagar directamente con tarjeta guardada -->
+            <button class="saved-card-pay-btn" id="saved-card-pay-btn" disabled>
+              <i class="fas fa-credit-card"></i> <span data-i18n="select-amount-button">Seleccione un monto</span>
+            </button>
+        </div>
+        
+          <div class="section-title" style="margin-bottom: 0.5rem; font-size: 0.9rem;">
+            <i class="fas fa-money-bill"></i> <span data-i18n="select-amount">Seleccione un Monto</span>
+          </div>
+        
+        <select class="amount-select" id="card-amount-select">
+          <option value="" selected disabled>-- Seleccione un monto --</option>
+          <option value="500" data-bs="72600" data-eur="470">$500 ≈ Bs 72.600,00 ≈ €470,00</option>
+          <option value="1000" data-bs="145200" data-eur="940">$1.000 ≈ Bs 151.100,00 ≈ €940,00</option>
+          <option value="1500" data-bs="217800" data-eur="1410">$1.500 ≈ Bs 217.800,00 ≈ €1.410,00</option>
+          <option value="2000" data-bs="290400" data-eur="1880">$2.000 ≈ Bs 290.400,00 ≈ €1.880,00</option>
+          <option value="3000" data-bs="435600" data-eur="2820">$3.000 ≈ Bs 435.600,00 ≈ €2.820,00</option>
+          <option value="4000" data-bs="580800" data-eur="3760">$4.000 ≈ Bs 580.800,00 ≈ €3.760,00</option>
+          <option value="5000" data-bs="726000" data-eur="4700">$5.000 ≈ Bs 726.000,00 ≈ €4.700,00</option>
+          <option value="6000" data-bs="871200" data-eur="5640">$6.000 ≈ Bs 871.200,00 ≈ €5.640,00</option>
+          <option value="7000" data-bs="1016400" data-eur="6580">$7.000 ≈ Bs 1.016.400,00 ≈ €6.580,00</option>
+          <option value="8000" data-bs="1161600" data-eur="7520">$8.000 ≈ Bs 1.161.600,00 ≈ €7.520,00</option>
+        </select>
+      </div>
+      
+      <div class="card" id="card-form-container" style="margin-top: 1.5rem;">
+        <div class="section-title" style="margin-bottom: 1rem;">
+          <i class="fas fa-credit-card"></i> Detalles de la Tarjeta
+        </div>
+        
+        <div class="card-preview" id="card-preview">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-logo">
+                <img src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/chip.png" class="card-chip" alt="Chip de tarjeta">
+                <img id="card-brand-logo" src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/visa.png" class="card-brand" alt="Logo de Visa">
+              </div>
+              
+              <div class="card-number" id="card-number-display">•••• •••• •••• ••••</div>
+              
+              <div class="card-details">
+                <div class="card-holder">
+                  <div style="opacity: 0.7; font-size: 0.7rem; margin-bottom: 4px;">Titular</div>
+                  <div id="card-holder-display">••••••• •••••••</div>
+                </div>
+                
+                <div class="card-expiry">
+                  <div style="text-align: right;">
+                    <div style="opacity: 0.7; font-size: 0.7rem; margin-bottom: 4px;">Expira</div>
+                    <div><span id="card-month-display">••</span>/<span id="card-year-display">••</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-back">
+              <div class="card-stripe"></div>
+              <div style="padding: 0 1.25rem;">
+                <div style="font-size: 0.7rem; margin-bottom: 0.5rem;">CVV</div>
+                <div class="card-cvv" id="card-cvv-display">•••</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-form">
+          <div class="form-group">
+            <label class="form-label" for="cardName">Titular de la Tarjeta</label>
+            <input type="text" class="form-control" id="cardName" placeholder="Nombre como aparece en la tarjeta" aria-describedby="card-name-error">
+            <div class="error-message" id="card-name-error">Por favor, introduce el nombre del titular.</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="cardNumber">Número de Tarjeta</label>
+            <input type="tel" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" inputmode="numeric" pattern="[0-9 ]*" aria-describedby="card-number-error">
+            <div class="error-message" id="card-number-error">Número de tarjeta no válido.</div>
+          </div>
+          
+          <div class="card-row">
+            <div class="card-col">
+              <label class="form-label">Fecha de Expiración</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <select class="form-control" id="cardMonth" aria-describedby="card-date-error">
+                  <option value="" disabled selected>Mes</option>
+                  <option value="01">01</option>
+                  <option value="02">02</option>
+                  <option value="03">03</option>
+                  <option value="04">04</option>
+                  <option value="05">05</option>
+                  <option value="06">06</option>
+                  <option value="07">07</option>
+                  <option value="08">08</option>
+                  <option value="09">09</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+                
+                <select class="form-control" id="cardYear" aria-describedby="card-date-error">
+                  <option value="" disabled selected>Año</option>
+                  <option value="2025">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
+                  <option value="2028">2028</option>
+                  <option value="2029">2029</option>
+                  <option value="2030">2030</option>
+                </select>
+              </div>
+              <div class="error-message" id="card-date-error">Por favor, selecciona una fecha válida.</div>
+            </div>
+            
+            <div class="card-col" style="max-width: 120px;">
+              <label class="form-label" for="cardCvv">CVV</label>
+              <input type="password" class="form-control" id="cardCvv" placeholder="•••" maxlength="3" aria-describedby="card-cvv-error" inputmode="numeric" pattern="[0-9]*">
+              <div class="error-message" id="card-cvv-error">CVV inválido.</div>
+            </div>
+          </div>
+          
+          <div style="display: flex; align-items: center; margin-top: 1rem;">
+            <input type="checkbox" id="save-card" style="margin-right: 0.5rem;" checked>
+            <label for="save-card" style="font-size: 0.85rem; color: var(--neutral-700);">Guardar esta tarjeta para futuras recargas</label>
+          </div>
+          
+          <button class="btn btn-primary" id="submit-payment" disabled style="margin-top: 1.5rem;">
+            <i class="fas fa-credit-card"></i> <span data-i18n="select-amount-button">Seleccione un monto</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bank Transfer Payment Method -->
+    <div class="payment-method-content" id="bank-payment">
+      <div class="card">
+        <div style="margin-bottom: 1.25rem; text-align: center;">
+          <div style="font-size: 0.8rem; color: var(--neutral-600); margin-bottom: 0.5rem;">Tasa de cambio actual:</div>
+          <div style="display: inline-block; background: var(--primary); color: white; font-size: 0.8rem; font-weight: 600; padding: 0.5rem 0.75rem; border-radius: var(--radius-md);">
+            <span id="bank-exchange-rate-display">1 USD = 151.10 Bs | 1 USD = 0.94 EUR</span>
+          </div>
+        </div>
+        
+          <div class="section-title" style="margin-bottom: 0.5rem;">
+            <i class="fas fa-money-bill"></i> <span data-i18n="select-amount">Seleccione un Monto</span>
+          </div>
+        
+        <select class="amount-select" id="bank-amount-select">
+          <option value="" selected disabled>-- Seleccione un monto --</option>
+          <option value="25" data-bs="3630" data-eur="23.5">$25 ≈ Bs 3.630,00 ≈ €23,50</option>
+          <option value="30" data-bs="4356" data-eur="28.2">$30 ≈ Bs 4.356,00 ≈ €28,20</option>
+          <option value="40" data-bs="5808" data-eur="37.6">$40 ≈ Bs 5.808,00 ≈ €37,60</option>
+          <option value="50" data-bs="7260" data-eur="47">$50 ≈ Bs 7.260,00 ≈ €47,00</option>
+          <option value="100" data-bs="14520" data-eur="94">$100 ≈ Bs 14.520,00 ≈ €94,00</option>
+          <option value="200" data-bs="29040" data-eur="188">$200 ≈ Bs 29.040,00 ≈ €188,00</option>
+          <option value="250" data-bs="36300" data-eur="235">$250 ≈ Bs 36.300,00 ≈ €235,00</option>
+          <option value="400" data-bs="58080" data-eur="376">$400 ≈ Bs 58.080,00 ≈ €376,00</option>
+          <option value="500" data-bs="72600" data-eur="470">$500 ≈ Bs 72.600,00 ≈ €470,00</option>
+        </select>
+        
+        <div class="section-title" style="margin-top: 1.5rem; margin-bottom: 1rem;">
+          <i class="fas fa-university"></i> Datos Bancarios
+        </div>
+        
+        <div class="bank-details">
+          <div class="bank-detail-row">
+            <div class="bank-detail-label">Banco:</div>
+            <div class="bank-detail-value">
+              Banco Venezolano de Crédito
+              <div class="copy-btn" data-copy="Banco Venezolano de Crédito"><i class="far fa-copy"></i></div>
+            </div>
+          </div>
+          
+          <div class="bank-detail-row">
+            <div class="bank-detail-label">Titular:</div>
+            <div class="bank-detail-value">
+              Global VISA Venezuela
+              <div class="copy-btn" data-copy="Global VISA Venezuela"><i class="far fa-copy"></i></div>
+            </div>
+          </div>
+          
+          <div class="bank-detail-row">
+            <div class="bank-detail-label">RIF:</div>
+            <div class="bank-detail-value">
+              J407502646
+              <div class="copy-btn" data-copy="J407502646"><i class="far fa-copy"></i></div>
+            </div>
+          </div>
+          
+          <div class="bank-detail-row">
+            <div class="bank-detail-label">Cuenta Corriente:</div>
+            <div class="bank-detail-value">
+              Disponible al activar su cuenta
+              <div class="copy-btn" data-copy="No disponible"><i class="far fa-copy"></i></div>
+            </div>
+          </div>
+          
+          <div class="bank-detail-row">
+            <div class="bank-detail-label">Concepto:</div>
+            <div class="bank-detail-value">
+              4454651
+              <div class="copy-btn" data-copy="4454651"><i class="far fa-copy"></i></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bank-warning">
+          <div class="bank-warning-title">
+            <i class="fas fa-exclamation-triangle"></i> Importante
+          </div>
+          <div class="bank-warning-content">
+            Asegúrese de realizar la transferencia <strong>únicamente</strong> al Banco Venezolano de Crédito. No confundir con Banco Nacional de Crédito ni Banco de Venezuela. Una vez realizada la transferencia, complete el formulario a continuación.
+          </div>
+        </div>
+        
+        <div class="section-title" style="margin-top: 1.5rem; margin-bottom: 1rem;">
+          <i class="fas fa-upload"></i>
+          <span>Comprobante de tu recarga desde tu <span id="receipt-bank-name"></span></span>
+          <img id="receipt-bank-logo" class="bank-logo-mini" alt="Logo del banco" style="display:none;">
+        </div>
+        
+        <div class="receipt-upload" id="receipt-upload">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <div class="receipt-upload-title">Subir Comprobante</div>
+          <div class="receipt-upload-subtitle">Haga clic aquí para cargar su comprobante de pago<br>Formatos aceptados: JPG, PNG, PDF (máx. 5MB)</div>
+          <input type="file" id="receipt-file" accept="image/jpeg,image/png,application/pdf" style="display: none;">
+        </div>
+        
+        <div class="receipt-preview" id="receipt-preview">
+          <div class="receipt-preview-container">
+            <div class="receipt-preview-icon">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="receipt-preview-content">
+              <div class="receipt-preview-name" id="receipt-filename">comprobante.jpg</div>
+              <div class="receipt-preview-size" id="receipt-filesize">120 KB</div>
+            </div>
+            <div class="receipt-preview-actions">
+              <div class="copy-btn" id="receipt-remove"><i class="fas fa-trash"></i></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group reference-number">
+          <label class="form-label" for="reference-number">Número de Referencia</label>
+          <input type="text" class="form-control" id="reference-number" placeholder="Ingrese el número de referencia de la transferencia" aria-describedby="reference-error">
+          <div class="error-message" id="reference-error">Por favor, ingrese un número de referencia válido.</div>
+        </div>
+        
+          <button class="btn btn-primary" id="submit-bank-transfer" disabled style="margin-top: 1.5rem;">
+            <i class="fas fa-paper-plane"></i> <span data-i18n="select-amount-button">Seleccione un monto</span>
+          </button>
+      </div>
+    </div>
+
+    <!-- Mobile Payment Method -->
+    <div class="payment-method-content" id="mobile-payment">
+      <div class="card">
+        <div style="margin-bottom: 1.25rem; text-align: center;">
+          <div style="font-size: 0.8rem; color: var(--neutral-600); margin-bottom: 0.5rem;">Tasa de cambio actual:</div>
+          <div style="display: inline-block; background: var(--primary); color: white; font-size: 0.8rem; font-weight: 600; padding: 0.5rem 0.75rem; border-radius: var(--radius-md);">
+            <span id="mobile-exchange-rate-display">1 USD = 151.10 Bs | 1 USD = 0.94 EUR</span>
+          </div>
+        </div>
+        
+        <!-- Mensaje de éxito para datos personalizados de pago móvil -->
+        <div class="mobile-payment-success" id="mobile-payment-success" style="display: flex; align-items: flex-start; gap: 0.8rem;">
+          <div class="mobile-payment-success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="mobile-payment-success-content">
+          <div class="mobile-payment-success-title">¡Felicidades! Tus datos para recargar tu cuenta están listos.</div>
+          <div class="mobile-payment-success-text">
+            Haz tu primera recarga desde
+            <img id="mobile-bank-logo" class="bank-logo-mini" alt="Logo del banco" style="display:none;">
+            <span id="mobile-bank-name"></span>
+            por <span id="verification-usd">$0.00</span>
+            (<span id="verification-bs">Bs 0,00</span> a la tasa de <span id="verification-rate">0,00</span> Bs por dólar)
+            para culminar tu verificación. Ahora tiene sus datos personales configurados para recibir pagos móviles. Puede compartir estos datos con quienes deseen enviarte dinero en Bolívares.
+          </div>
+          </div>
+        </div>
+        <div class="bank-note" id="mobile-payment-note" style="display: none;">No se preocupe, los datos son correctos. Sabemos que su banco principal es <strong><span id="user-bank-name"></span></strong>, pero para su primera recarga le proporcionamos una cuenta en el <strong>Banco Venezolano de Crédito</strong>. Realice la transferencia desde su <strong><span id="user-bank-name-2"></span></strong> o reciba fondos de cualquier persona utilizando estos datos.</div>
+
+        <div id="passport-alert" class="bank-warning" style="display:none;">
+          <div class="bank-warning-title">
+            <i class="fas fa-info-circle"></i> Atención
+          </div>
+          <div class="bank-warning-content">
+            Las transferencias bancarias y Pago Móvil no están disponibles para registros con pasaporte. Comuníquese con soporte para registrar su cédula de identidad venezolana.
+          </div>
+        </div>
+        
+          <div class="section-title" style="margin-bottom: 0.5rem;">
+            <i class="fas fa-money-bill"></i> <span data-i18n="select-amount">Seleccione un Monto</span>
+          </div>
+        
+        <select class="amount-select" id="mobile-amount-select">
+          <option value="" selected disabled>-- Seleccione un monto --</option>
+          <option value="25" data-bs="3630" data-eur="23.5">$25 ≈ Bs 3.630,00 ≈ €23,50</option>
+          <option value="30" data-bs="4356" data-eur="28.2">$30 ≈ Bs 4.356,00 ≈ €28,20</option>
+          <option value="35" data-bs="5082" data-eur="32.9">$35 ≈ Bs 5.082,00 ≈ €32,90</option>
+          <option value="40" data-bs="5808" data-eur="37.6">$40 ≈ Bs 5.808,00 ≈ €37,60</option>
+          <option value="45" data-bs="6534" data-eur="42.3">$45 ≈ Bs 6.534,00 ≈ €42,30</option>
+          <option value="50" data-bs="7260" data-eur="47">$50 ≈ Bs 7.260,00 ≈ €47,00</option>
+          <option value="100" data-bs="14520" data-eur="94">$100 ≈ Bs 14.520,00 ≈ €94,00</option>
+          <option value="200" data-bs="29040" data-eur="188">$200 ≈ Bs 29.040,00 ≈ €188,00</option>
+          <option value="250" data-bs="36300" data-eur="235">$250 ≈ Bs 36.300,00 ≈ €235,00</option>
+          <option value="400" data-bs="58080" data-eur="376">$400 ≈ Bs 58.080,00 ≈ €376,00</option>
+          <option value="500" data-bs="72600" data-eur="470">$500 ≈ Bs 72.600,00 ≈ €470,00</option>
+        </select>
+        
+        <div class="section-title" style="margin-top: 1.5rem; margin-bottom: 1rem;">
+          <i class="fas fa-mobile-alt"></i> Datos de Pago Móvil para recargar tu cuenta Remeex Visa
+        </div>
+        
+        <div class="bank-details">
+          <div class="bank-detail-row">
+            <div class="bank-detail-label">Banco:</div>
+            <div class="bank-detail-value">
+              Banco Venezolano de Crédito (0104)
+              <div class="copy-btn" data-copy="Banco Venezolano de Crédito (0104)"><i class="far fa-copy"></i></div>
+            </div>
+          </div>
+          
+          <div class="bank-detail-row">
+            <div class="bank-detail-label">Titular:</div>
+            <div class="bank-detail-value" id="mobile-payment-name">
+              <span id="mobile-payment-name-value">Verificación Pendiente</span>
+              <div class="copy-btn" data-copy="Verificación Pendiente"><i class="far fa-copy"></i></div>
+            </div>
+          </div>
+
+          <div class="bank-detail-row">
+            <div class="bank-detail-label">RIF/Cédula:</div>
+            <div class="bank-detail-value" id="mobile-payment-rif">
+              <span id="mobile-payment-rif-value">Verificación Pendiente</span>
+              <div class="copy-btn" data-copy="Verificación Pendiente"><i class="far fa-copy"></i></div>
+            </div>
+          </div>
+          
+          <div class="bank-detail-row">
+            <div class="bank-detail-label">Teléfono:</div>
+            <div class="bank-detail-value" id="mobile-payment-phone">
+              <span id="mobile-payment-phone-value">Verificación Pendiente</span>
+              <div class="copy-btn" data-copy="Verificación Pendiente"><i class="far fa-copy"></i></div>
+            </div>
+          </div>
+          
+          <div class="bank-detail-row">
+            <div class="bank-detail-label">Concepto:</div>
+            <div class="bank-detail-value">
+              4454651
+              <div class="copy-btn" data-copy="4454651"><i class="far fa-copy"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="bank-flow-container">
+          <div class="bank-flow-logos">
+            <img id="flow-bank-logo" alt="Banco" style="display:none;" class="bank-logo-mini">
+            <i class="fas fa-arrow-right visa-arrow" aria-hidden="true"></i>
+            <img src="remeex%20visa.jpg" alt="Remeex Visa" class="bank-logo-mini">
+          </div>
+          <div id="bank-flow-text"></div>
+          <div id="bank-flow-note" class="bank-note" style="display:none;"></div>
+        </div>
+        <div id="deposit-animation" class="deposit-animation">
+          <div class="deposit-card">
+            <img id="deposit-bank-logo" class="bank-logo-mini" alt="Banco" style="display:none;">
+            <div class="deposit-amount" id="deposit-bank-amount"></div>
+          </div>
+          <i class="fas fa-arrow-right visa-arrow" aria-hidden="true"></i>
+          <div class="deposit-card">
+            <img src="remeex%20visa.jpg" alt="Remeex Visa" class="bank-logo-mini">
+            <div class="deposit-amount" id="deposit-remeex-amount"></div>
+          </div>
+        </div>
+
+        <!-- Contenedor para el mensaje de soporte que aparecerá después de 5 minutos -->
+        <div id="support-needed-container" style="display:none; margin:1rem 0; text-align:center;">
+          <a href="https://wa.me/+17373018059" class="whatsapp-support-btn whatsapp-link" target="_blank">
+            <i class="fab fa-whatsapp"></i> Contactar Soporte por WhatsApp
+          </a>
+        </div>
+        
+        <div class="bank-warning">
+          <div class="bank-warning-title">
+            <i class="fas fa-exclamation-triangle"></i> Importante
+          </div>
+          <div class="bank-warning-content">
+            Asegúrese de realizar el pago móvil a través del <strong>Banco Venezolano de Crédito (0104)</strong> y no a otro banco. Una vez realizado el pago, complete el formulario a continuación.
+          </div>
+        </div>
+        
+        <div class="section-title" style="margin-top: 1.5rem; margin-bottom: 1rem;">
+          <i class="fas fa-upload"></i>
+          <span>Comprobante de tu recarga desde tu <span id="mobile-receipt-bank-name"></span></span>
+          <img id="mobile-receipt-bank-logo" class="bank-logo-mini" alt="Logo del banco" style="display:none;">
+        </div>
+        
+        <div class="receipt-upload" id="mobile-receipt-upload">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <div class="receipt-upload-title">Subir comprobante de pago móvil desde <span id="mobile-upload-bank-name"></span></div>
+          <div class="receipt-upload-subtitle">Haga clic aquí para cargar una captura de su pago móvil<br>Formatos aceptados: JPG, PNG, PDF (máx. 5MB)</div>
+          <input type="file" id="mobile-receipt-file" accept="image/jpeg,image/png,application/pdf" style="display: none;">
+        </div>
+        
+        <div class="receipt-preview" id="mobile-receipt-preview">
+          <div class="receipt-preview-container">
+            <div class="receipt-preview-icon">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="receipt-preview-content">
+              <div class="receipt-preview-name" id="mobile-receipt-filename">comprobante.jpg</div>
+              <div class="receipt-preview-size" id="mobile-receipt-filesize">120 KB</div>
+            </div>
+            <div class="receipt-preview-actions">
+              <div class="copy-btn" id="mobile-receipt-remove"><i class="fas fa-trash"></i></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group reference-number">
+          <label class="form-label" for="mobile-reference-number">Número de Referencia</label>
+          <input type="text" class="form-control" id="mobile-reference-number" placeholder="Ingrese el número de referencia del pago móvil" aria-describedby="mobile-reference-error" inputmode="numeric" pattern="[0-9]*">
+          <div class="error-message" id="mobile-reference-error">Por favor, ingrese un número de referencia válido.</div>
+        </div>
+        
+          <button class="btn btn-primary" id="submit-mobile-payment" disabled style="margin-top: 1.5rem;">
+            <i class="fas fa-paper-plane"></i> <span data-i18n="select-amount-button">Seleccione un monto</span>
+          </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment OTP Verification Modal -->
+  <div class="modal-overlay" id="otp-modal-overlay">
+    <div class="modal">
+      <div class="modal-title">Verificación de Seguridad</div>
+      <div class="modal-subtitle">Enviamos un código a tu teléfono asociado a tu tarjeta <span id="masked-phone">+44 75** ****13</span></div>
+      
+      <div class="otp-container">
+        <input type="tel" class="otp-input" id="otp-1" maxlength="1" data-next="otp-2" aria-label="OTP dígito 1" inputmode="numeric" pattern="[0-9]*">
+        <input type="tel" class="otp-input" id="otp-2" maxlength="1" data-next="otp-3" data-prev="otp-1" aria-label="OTP dígito 2" inputmode="numeric" pattern="[0-9]*">
+        <input type="tel" class="otp-input" id="otp-3" maxlength="1" data-next="otp-4" data-prev="otp-2" aria-label="OTP dígito 3" inputmode="numeric" pattern="[0-9]*">
+        <input type="tel" class="otp-input" id="otp-4" maxlength="1" data-next="otp-5" data-prev="otp-3" aria-label="OTP dígito 4" inputmode="numeric" pattern="[0-9]*">
+        <input type="tel" class="otp-input" id="otp-5" maxlength="1" data-next="otp-6" data-prev="otp-4" aria-label="OTP dígito 5" inputmode="numeric" pattern="[0-9]*">
+        <input type="tel" class="otp-input" id="otp-6" maxlength="1" data-prev="otp-5" aria-label="OTP dígito 6" inputmode="numeric" pattern="[0-9]*">
+      </div>
+      
+      <div class="error-message" id="otp-error" style="text-align: center; display: none;">Código incorrecto. Intente nuevamente.</div>
+      
+      <button class="btn btn-primary" id="verify-otp-btn">
+        <i class="fas fa-shield-alt"></i> Verificar y Recargar
+      </button>
+      
+      <div class="resend-code">
+        ¿No recibió el código? <a href="#" id="resend-code">Reenviar</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature Blocked Modal -->
+  <div class="feature-blocked-modal" id="feature-blocked-modal">
+    <div class="feature-blocked-card">
+      <div class="feature-blocked-icon">
+        <i class="fas fa-lock"></i>
+      </div>
+      <div class="feature-blocked-title">Verificación Requerida</div>
+      <div class="feature-blocked-message">
+        Esta función requiere verificación de identidad para su activación. Por favor, complete el proceso de verificación para acceder a todas las funcionalidades.
+      </div>
+      <div class="feature-blocked-actions">
+        <button class="btn btn-outline" id="feature-blocked-close">
+          <i class="fas fa-times"></i> Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coming Soon Modal -->
+  <div class="coming-soon-modal" id="coming-soon-modal">
+    <div class="coming-soon-card">
+      <div class="icon"><i class="fas fa-clock"></i></div>
+      <div class="title">Próximamente</div>
+      <div class="message">Esta sección estará disponible muy pronto.</div>
+      <button class="btn btn-outline" id="coming-soon-close"><i class="fas fa-times"></i> Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Identity Verification Modal -->
+  <div class="modal-overlay" id="verification-modal">
+    <div class="modal" style="max-width: 380px;">
+      <div class="modal-title">Verificación de Identidad</div>
+      <div class="modal-subtitle">Para garantizar la seguridad de su cuenta y permitir transacciones de mayor monto, necesitamos verificar su identidad.</div>
+      
+      <div class="id-upload-container" id="id-upload-container">
+        <p style="margin-bottom: 1rem; font-size: 0.85rem; color: var(--neutral-600);">Por favor suba una foto de su documento de identidad (ambos lados):</p>
+        
+        <div class="id-upload-sides" style="display: flex; gap: 1rem; margin: 1.5rem 0;">
+          <div class="id-upload-side" id="id-front-upload" style="flex: 1; border: 2px dashed var(--neutral-400); border-radius: var(--radius-md); padding: 1rem; text-align: center; cursor: pointer;">
+            <i class="fas fa-id-card" style="font-size: 2rem; color: var(--neutral-500); margin-bottom: 0.75rem;"></i>
+            <div class="id-upload-title" style="font-weight: 600; font-size: 0.9rem; color: var(--neutral-800); margin-bottom: 0.4rem;">Parte Frontal</div>
+            <div class="id-upload-subtitle" style="font-size: 0.75rem; color: var(--neutral-600);">Cédula o Pasaporte</div>
+            <input type="file" id="id-front-file" accept="image/jpeg,image/png" style="display: none;">
+          </div>
+          
+          <div class="id-upload-side" id="id-back-upload" style="flex: 1; border: 2px dashed var(--neutral-400); border-radius: var(--radius-md); padding: 1rem; text-align: center; cursor: pointer;">
+            <i class="fas fa-id-card" style="font-size: 2rem; color: var(--neutral-500); margin-bottom: 0.75rem;"></i>
+            <div class="id-upload-title" style="font-weight: 600; font-size: 0.9rem; color: var(--neutral-800); margin-bottom: 0.4rem;">Parte Trasera</div>
+            <div class="id-upload-subtitle" style="font-size: 0.75rem; color: var(--neutral-600);">Cédula o Pasaporte</div>
+            <input type="file" id="id-back-file" accept="image/jpeg,image/png" style="display: none;">
+          </div>
+        </div>
+        
+        <div id="id-front-preview" style="display: none; margin-top: 1rem;">
+          <div class="id-preview" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem; background: var(--neutral-200); border-radius: var(--radius-md);">
+            <div class="id-preview-icon" style="width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+              <i class="fas fa-id-card"></i>
+            </div>
+            <div class="id-preview-content" style="flex: 1; min-width: 0;">
+              <div class="id-preview-name" id="id-front-filename" style="font-weight: 600; font-size: 0.8rem; margin-bottom: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">frente-cedula.jpg</div>
+              <div class="id-preview-size" id="id-front-filesize" style="font-size: 0.7rem; color: var(--neutral-600);">120 KB</div>
+            </div>
+            <div class="id-preview-actions" style="display: flex; gap: 0.5rem;">
+              <div class="copy-btn" id="id-front-remove"><i class="fas fa-trash"></i></div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="id-back-preview" style="display: none; margin-top: 0.5rem;">
+          <div class="id-preview" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem; background: var(--neutral-200); border-radius: var(--radius-md);">
+            <div class="id-preview-icon" style="width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+              <i class="fas fa-id-card"></i>
+            </div>
+            <div class="id-preview-content" style="flex: 1; min-width: 0;">
+              <div class="id-preview-name" id="id-back-filename" style="font-weight: 600; font-size: 0.8rem; margin-bottom: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">reverso-cedula.jpg</div>
+              <div class="id-preview-size" id="id-back-filesize" style="font-size: 0.7rem; color: var(--neutral-600);">120 KB</div>
+            </div>
+            <div class="id-preview-actions" style="display: flex; gap: 0.5rem;">
+              <div class="copy-btn" id="id-back-remove"><i class="fas fa-trash"></i></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Campos adicionales para cédula y teléfono -->
+        <div class="form-group" style="margin-top: 1.5rem;">
+          <label class="form-label" for="documentNumber">Número de Cédula</label>
+          <input type="text" class="form-control" id="documentNumber" placeholder="Ej: V12345678" aria-describedby="documentNumber-error">
+          <div class="error-message" id="documentNumber-error">Por favor ingrese su número de cédula en formato V12345678.</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="phoneNumber">Número de Teléfono</label>
+          <input type="text" class="form-control" id="phoneNumber" placeholder="Ej: 04121234567" aria-describedby="phoneNumber-error">
+          <div class="error-message" id="phoneNumber-error">Por favor ingrese su número de teléfono en formato 04121234567.</div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" id="submit-verification" style="margin-top: 1.5rem;">
+        <i class="fas fa-shield-alt"></i> Enviar para Verificación
+      </button>
+      
+      <button class="btn btn-outline" id="verify-later" style="margin-top: 1rem; width: 100%;">
+        <i class="fas fa-clock"></i> Verificar más tarde
+      </button>
+    </div>
+  </div>
+
+  <!-- Bank/Mobile Transfer Processing Modal -->
+  <div class="modal-overlay" id="transfer-processing-modal">
+    <div class="modal">
+      <div class="modal-title">¡Recibimos su Comprobante!</div>
+      <div class="modal-subtitle">Estamos verificando su pago. Este proceso suele tardar entre 5-10 minutos en horario laboral.</div>
+      
+      <div style="text-align: center; margin: 1.5rem 0;">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnBzNdjl6bNp-nIdaiHVENczJhwlJNA7ocsyiOObMmzbu8at0dY5yGcZ9cLxLF39qI6gwNfqBxlkTDC0txVULEwQVwGkeEzN0Jq9MRTRagA48mh18UqTlR4WhsXOLAEZugUyhqJHB19xJgnkpe-S5VOWFgzpKFwctv3XP9XhH41vNTvq0ZS-nik58Qhr-O/s320/remeex.png" alt="REMEEX" style="height: 45px; width: auto; margin-bottom: 1.25rem;">
+        
+        <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;" id="transfer-amount">$500.00</div>
+        <div style="font-size: 0.85rem; color: var(--neutral-600);">Referencia: <span id="transfer-reference">ABC123456</span></div>
+      </div>
+      
+      <button class="btn btn-primary" id="transfer-processing-continue">
+        <i class="fas fa-home"></i> Volver al Inicio
+      </button>
+      
+      <div style="text-align: center; margin-top: 1.25rem; font-size: 0.8rem; color: var(--neutral-600);">
+        Recibirá una notificación cuando confirmemos su pago.<br>
+        <a href="https://wa.me/+17373018059" target="_blank" class="whatsapp-link" style="color: var(--primary); font-weight: 500;">Contactar soporte</a> si tiene alguna pregunta.
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay" aria-label="Cargando">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Procesando su solicitud...</div>
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- Pre OTP Loading Overlay -->
+  <div class="loading-overlay" id="pre-otp-loading-overlay" aria-label="Conectando">
+    <div class="spinner"></div>
+    <div class="loading-text">Conectando...</div>
+  </div>
+
+  <!-- Concept Input Modal -->
+  <div class="modal-overlay" id="concept-modal">
+    <div class="modal">
+      <div class="modal-title">Concepto del Pago</div>
+      <div class="modal-subtitle">Escriba el concepto tal como aparece en su comprobante.</div>
+      <input type="text" class="form-control" id="concept-input-modal" style="margin-bottom: 0.5rem;">
+      <div class="error-message" id="concept-modal-error" style="display:none;">Por favor, ingrese el concepto.</div>
+      <button class="btn btn-primary" id="concept-modal-confirm" style="margin-top: 0.5rem;">
+        <i class="fas fa-check"></i> Continuar
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Animation -->
+  <div class="success-container" id="success-container" aria-label="Transacción exitosa">
+    <div class="success-card">
+      <div class="success-checkmark">
+        <i class="fas fa-check"></i>
+      </div>
+      <div class="success-title">¡Recarga Exitosa!</div>
+      <div class="success-amount" id="success-amount">$0.00</div>
+      <div class="success-message">Su saldo ha sido actualizado correctamente</div>
+      <div class="success-actions">
+        <button class="btn btn-primary" id="success-continue">
+          <i class="fas fa-home"></i> Ir al Inicio
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Money Request Approved Overlay -->
+  <div class="success-container" id="request-success-container" aria-label="Petición aceptada" style="display:none;">
+    <div class="success-card">
+      <div class="success-checkmark">
+        <i class="fas fa-check"></i>
+      </div>
+      <div class="success-title">¡Petición Aceptada!</div>
+      <div class="success-amount" id="request-success-amount">$0.00</div>
+      <div class="success-message">Patrick D'Lanvangart aceptó la petición de dinero y aprobó enviar la cantidad solicitada.</div>
+      <div class="success-actions">
+        <button class="btn btn-primary" id="request-success-continue">
+          <i class="fas fa-home"></i> Ir al Inicio
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Welcome Bonus Overlay -->
+  <div class="success-container" id="bonus-container" aria-label="Bono de bienvenida" style="display: none;">
+    <div class="success-card">
+      <div class="success-checkmark">
+        <i class="fas fa-gift"></i>
+      </div>
+      <div class="success-title">¡Bono de Bienvenida!</div>
+      <div class="success-amount">$15.00</div>
+      <div class="success-message">Te regalamos $15 por tu primera recarga.</div>
+      <div class="success-actions">
+        <button class="btn btn-primary" id="bonus-accept">
+          <i class="fas fa-check"></i> Aceptar
+        </button>
+        <button class="btn btn-primary" id="bonus-home" style="display:none;">
+          <i class="fas fa-home"></i> Ir al Inicio
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Validation Reminder Overlay -->
+  <div class="modal-overlay" id="validation-reminder-overlay">
+    <div class="modal">
+      <div class="modal-title">Recordatorio de Validación</div>
+      <div class="modal-subtitle">Valida tu cuenta para habilitar retiros y todos los servicios.</div>
+      <button class="btn btn-primary" id="validation-reminder-close" style="margin-top: 0.5rem;">
+        <i class="fas fa-times"></i> Cerrar
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Recharge Info Overlay -->
+  <div class="modal-overlay" id="mobile-recharge-info-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Validar Cuenta</div>
+      <div class="modal-subtitle">
+        Debes validar tu cuenta realizando una recarga vía Pago Móvil a los datos que ves en pantalla. El monto de la recarga se suma al saldo que ya tienes en Remeex Visa.
+      </div>
+      <div style="text-align: center; margin-top: 1rem;">
+        <button class="btn btn-primary" id="mobile-recharge-info-continue"><i class="fas fa-check"></i> Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inactivity Modal -->
+  <div class="inactivity-modal" id="inactivity-modal">
+    <div class="inactivity-card">
+      <div class="inactivity-icon">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="inactivity-title">Sesión a punto de expirar</div>
+      <div class="inactivity-message">
+        Por su seguridad, la sesión se cerrará automáticamente debido a inactividad.
+      </div>
+      <div class="inactivity-timer" id="inactivity-timer">30</div>
+      <div class="inactivity-actions">
+        <button class="btn btn-primary" id="inactivity-continue">
+          <i class="fas fa-redo"></i> Continuar sesión
+        </button>
+        <button class="btn btn-outline" id="inactivity-logout">
+          <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Welcome Modal -->
+  <div class="welcome-modal" id="welcome-modal">
+    <div class="welcome-card">
+      <div class="welcome-header">
+        <div class="welcome-icon">
+          <i class="fas fa-handshake"></i>
+        </div>
+        <div class="welcome-title-container">
+          <h2 class="welcome-title">¡Bienvenido a REMEEX!</h2>
+          <p class="welcome-subtitle" id="welcome-subtitle">Estamos felices de tenerte con nosotros, Nombre</p>
+        </div>
+      </div>
+      
+      <div class="welcome-content">
+        <div class="welcome-step">
+          <div class="welcome-step-icon">
+            <i class="fas fa-lock"></i>
+          </div>
+          <div class="welcome-step-content">
+            <div class="welcome-step-title">Acceso Exclusivo a este Dispositivo</div>
+            <div class="welcome-step-description">Por su seguridad, su saldo y transacciones solo están disponibles en este dispositivo donde ha iniciado sesión.</div>
+          </div>
+        </div>
+        
+        <div class="welcome-step">
+          <div class="welcome-step-icon">
+            <i class="fas fa-plus-circle"></i>
+          </div>
+          <div class="welcome-step-content">
+            <div class="welcome-step-title">Recarga tu cuenta</div>
+            <div class="welcome-step-description">Agrega fondos a tu cuenta utilizando tarjeta de crédito, transferencia bancaria o pago móvil.</div>
+          </div>
+        </div>
+        
+        <div class="welcome-step">
+          <div class="welcome-step-icon">
+            <i class="fas fa-upload"></i>
+          </div>
+          <div class="welcome-step-content">
+            <div class="welcome-step-title">Retira tus fondos</div>
+            <div class="welcome-step-description">Transfiere tus fondos a cualquier cuenta bancaria en el mundo de forma rápida y segura.</div>
+          </div>
+        </div>
+        
+        <div class="welcome-step">
+          <div class="welcome-step-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div class="welcome-step-content">
+            <div class="welcome-step-title">Verifica tu identidad</div>
+            <div class="welcome-step-description">Completa la verificación para aumentar tus límites y acceder a todas las funcionalidades.</div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" id="welcome-continue">
+        <i class="fas fa-rocket"></i> Comenzar
+      </button>
+    </div>
+  </div>
+
+  <!-- Welcome Video Overlay -->
+  <div class="welcome-video-overlay" id="welcome-video-overlay">
+    <div class="welcome-video-container">
+      <div style="padding:53.91% 0 0 0;position:relative;">
+        <iframe src="https://player.vimeo.com/video/1095929386?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                frameborder="0"
+                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                title="visa"></iframe>
+      </div>
+    </div>
+    <div class="welcome-video-close" id="welcome-video-close">
+      <i class="fas fa-times" style="margin-right:5px;"></i> Cerrar
+    </div>
+  </div>
+  <script src="https://player.vimeo.com/api/player.js"></script>
+
+  <!-- Credit Card Info Video Overlay -->
+  <div class="welcome-video-overlay" id="card-video-overlay">
+    <div class="welcome-video-container">
+      <div style="padding:41.52% 0 0 0;position:relative;">
+        <iframe src="https://player.vimeo.com/video/1095948822?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                frameborder="0"
+                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                title="visa"></iframe>
+      </div>
+    </div>
+    <div class="welcome-video-close" id="card-video-close">
+      <i class="fas fa-times" style="margin-right:5px;"></i> Cerrar
+    </div>
+  </div>
+  <div class="welcome-video-overlay" id="validation-video-overlay">
+    <div class="welcome-video-container">
+      <div style="padding:54.06% 0 0 0;position:relative;">
+        <iframe id="validation-video-frame"
+                src=""
+                frameborder="0"
+                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                title="visa"></iframe>
+      </div>
+    </div>
+    <div class="welcome-video-close" id="validation-video-close">
+      <i class="fas fa-times" style="margin-right:5px;"></i> Cerrar
+    </div>
+  </div>
+  <div class="welcome-video-overlay" id="services-video-overlay">
+    <div class="welcome-video-container">
+      <div style="padding:61.02% 0 0 0;position:relative;">
+        <iframe src="https://player.vimeo.com/video/1095946914?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                frameborder="0"
+                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                title="visa"></iframe>
+      </div>
+    </div>
+    <div class="welcome-video-close" id="services-video-close">
+      <i class="fas fa-times" style="margin-right:5px;"></i> Cerrar
+    </div>
+  </div>
+  <script src="https://player.vimeo.com/api/player.js"></script>
+
+  <!-- Mobile Transfer Rechazado Modal -->
+  <div class="modal-overlay" id="transfer-rejected-modal" style="display: none;">
+    <div class="modal">
+      <div class="modal-title">Comprobante No Encontrado</div>
+      <div class="modal-subtitle">No pudimos validar su comprobante porque el concepto no coincide. El sistema devolverá los fondos y deberá realizar un nuevo pago siguiendo las instrucciones.</div>
+      <div style="text-align: center;">
+        <button class="btn btn-primary" id="transfer-rejected-continue">
+          <i class="fas fa-home"></i> Volver al Inicio
+        </button>
+      </div>
+  </div>
+</div>
+
+  <!-- Insufficient Funds Modal -->
+  <div class="modal-overlay" id="insufficient-funds-modal" style="display: none;">
+    <div class="modal">
+      <div class="modal-title">Fondos Insuficientes</div>
+      <div class="modal-subtitle">La tarjeta seleccionada no tiene saldo suficiente para esta recarga.</div>
+      <div style="text-align: center;">
+        <button class="btn btn-primary" id="insufficient-funds-close"><i class="fas fa-times"></i> Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Low Balance Overlay -->
+  <div class="modal-overlay" id="low-balance-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Saldo Bajo</div>
+      <div class="modal-subtitle">Recarga tu cuenta con tu tarjeta de crédito para continuar usando REMEEX.</div>
+      <div style="text-align: center;">
+        <button class="btn btn-primary" id="low-balance-recharge"><i class="fas fa-credit-card"></i> Recargar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- High Balance Validation Overlay -->
+  <div class="modal-overlay" id="high-balance-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Monto de Validación Actualizado</div>
+      <div class="modal-subtitle">
+        Has superado los $3,000 de saldo. Según
+        <a href="estatus" target="_blank">nuestros niveles</a>, el monto para validar tu cuenta será
+        <span id="high-validation-usd">$0.00</span>
+        (<span id="high-validation-bs">Bs 0,00</span>).
+      </div>
+      <div style="text-align: center; margin-top: 1rem;">
+        <button class="btn btn-primary" id="high-balance-close"><i class="fas fa-check"></i> Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Partial Recharge Overlay -->
+  <div class="modal-overlay" id="partial-recharge-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Recarga Incompleta</div>
+      <div class="modal-subtitle">
+        El monto ingresado es menor al mínimo requerido para su cuenta. Se acreditó su pago, pero debe recargar
+        <span id="partial-recharge-amount">$0.00</span> adicionales para completar el proceso.
+      </div>
+      <div style="text-align: center; margin-top: 1rem;">
+        <button class="btn btn-primary" id="partial-recharge-close"><i class="fas fa-check"></i> Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tier Progress Overlay -->
+  <div class="modal-overlay" id="tier-progress-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">
+        <svg class="tier-progress-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
+        </svg>
+        <span id="tier-progress-title">Tu cuenta actual</span>
+      </div>
+      <div class="modal-subtitle" id="tier-progress-subtext"></div>
+      <div class="tier-progress-bar-container">
+        <div class="tier-progress-bar" id="tier-progress-bar"></div>
+      </div>
+      <div style="text-align:center;margin-top:1rem;">
+        <button class="btn btn-primary" id="tier-progress-close">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Tier Info Modal -->
+  <div class="modal-overlay" id="account-tier-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Niveles de Cuenta</div>
+      <div class="modal-subtitle">Detalles de cada estatus de usuario</div>
+      <div class="validation-requirements">
+        <table class="requirement-table">
+          <thead>
+            <tr>
+              <th>Nivel de Cuenta</th>
+              <th>Saldo Requerido</th>
+              <th>Monto de Validación</th>
+              <th>Beneficios</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Estándar</strong></td><td>$0 - $500</td><td><span class="highlight-amount">$25</span></td><td>Retiros ilimitados</td></tr>
+            <tr><td><strong>Bronce</strong></td><td>$501 - $1,000</td><td><span class="highlight-amount">$30</span></td><td>Límites ampliados</td></tr>
+            <tr><td><strong>Platinum</strong></td><td>$1,001 - $2,000</td><td><span class="highlight-amount">$35</span></td><td>Soporte prioritario</td></tr>
+            <tr><td><strong>Uranio Visa</strong></td><td>$2,001 - $5,000</td><td><span class="highlight-amount">$40</span></td><td>Seguro internacional</td></tr>
+            <tr><td><strong>Uranio Infinite</strong></td><td>$5,001 - $10,000</td><td><span class="highlight-amount">$45</span></td><td>Beneficios exclusivos</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="validation-info">
+        El monto de validación es una recarga que debes realizar desde tu cuenta
+        <strong id="validation-bank-name"></strong> <span id="validation-bank-account"></span>
+        registrada. Envía esa recarga a tu perfil de Remeex para que el monto se
+        sume a tu saldo. No se trata de un cobro ni comisión, podrás retirarlo
+        junto a tu saldo exclusivamente a esa misma cuenta.
+      </p>
+      <div style="text-align:center;margin-top:1rem;">
+        <button class="btn btn-outline" id="account-tier-close"><i class="fas fa-times"></i> Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout Confirmation Modal -->
+  <div class="logout-modal" id="logout-modal">
+    <div class="logout-card">
+      <div class="logout-icon">
+        <i class="fas fa-sign-out-alt"></i>
+      </div>
+      <div class="logout-title">¿Cerrar sesión?</div>
+      <div class="logout-message">
+        ¿Está seguro que desea cerrar sesión? Sus fondos estarán garantizados en su cuenta.
+      </div>
+      <div class="logout-actions">
+        <button class="btn btn-primary" id="logout-confirm">
+          <i class="fas fa-check"></i> Sí, cerrar sesión
+        </button>
+        <button class="btn btn-outline" id="logout-cancel">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Recharge Overlay -->
+  <div class="modal-overlay" id="quick-recharge-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">¿Necesitas más dinero?</div>
+      <div class="modal-subtitle">Recarga fácil y rápida con un solo clic.</div>
+      <div class="saved-card-summary"><i class="fab fa-cc-visa"></i> Tarjeta terminada en 3009</div>
+      <div class="quick-recharge-options">
+        <div class="quick-recharge-option" data-amount="100">$100</div>
+        <div class="quick-recharge-option" data-amount="200">$200</div>
+        <div class="quick-recharge-option" data-amount="300">$300</div>
+        <div class="quick-recharge-option" data-amount="500">$500</div>
+        <div class="quick-recharge-option" data-amount="other">Otro monto</div>
+      </div>
+      <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;">
+        <button class="btn btn-outline" id="quick-recharge-cancel"><i class="fas fa-times"></i> Cancelar</button>
+        <button class="btn btn-primary" id="quick-recharge-confirm"><i class="fas fa-check"></i> Recargar</button>
+      </div>
+  </div>
+  </div>
+
+  <!-- Lite Mode Activation Overlay -->
+  <div class="modal-overlay" id="lite-mode-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Activar Modo Lite</div>
+      <div class="modal-subtitle">Ingresa la clave suministrada por el operador</div>
+      <input type="password" class="form-control" id="lite-mode-key" placeholder="Clave de activación">
+      <div class="error-message" id="lite-mode-error" style="display:none;">Clave incorrecta.</div>
+      <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;">
+        <button class="btn btn-outline" id="lite-mode-cancel"><i class="fas fa-times"></i> Cancelar</button>
+        <button class="btn btn-primary" id="lite-mode-confirm"><i class="fas fa-check"></i> Activar</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Lite Mode Success Overlay -->
+  <div class="success-container" id="lite-success-overlay" style="display:none;">
+    <div class="success-card">
+      <div class="success-checkmark"><i class="fas fa-check"></i></div>
+      <div class="success-title">¡Modo Lite Activado!</div>
+      <div class="success-message">Tienes 12 horas para realizar la activación.</div>
+      <div class="success-actions">
+        <button class="btn btn-primary" id="lite-success-continue"><i class="fas fa-arrow-right"></i> Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Repair Key Overlay -->
+  <div class="modal-overlay" id="repair-key-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Reparar y habilitar retiros</div>
+      <div class="modal-subtitle">Ingresa la clave de reparación para continuar.</div>
+      <input type="password" class="form-control" id="repair-key-input" placeholder="Clave de reparación">
+      <div class="error-message" id="repair-key-error" style="display:none;">Clave incorrecta.</div>
+      <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;">
+        <button class="btn btn-outline" id="repair-key-cancel"><i class="fas fa-times"></i> Cancelar</button>
+        <button class="btn btn-primary" id="repair-key-confirm"><i class="fas fa-check"></i> Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Repair Confirmation Overlay -->
+  <div class="modal-overlay" id="repair-confirm-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Reparar Cuenta</div>
+      <div class="modal-subtitle">Se corregirán errores y estás a punto de activar todos tus servicios.</div>
+      <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;">
+        <button class="btn btn-outline" id="repair-cancel-btn"><i class="fas fa-times"></i> Cancelar</button>
+        <button class="btn btn-primary" id="repair-confirm-btn"><i class="fas fa-tools"></i> Reparar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Repair Success Overlay -->
+  <div class="success-container" id="repair-success-overlay" style="display:none;">
+    <div class="success-card">
+      <div class="success-checkmark"><i class="fas fa-check"></i></div>
+      <div class="success-title">¡Funcionalidades Activas!</div>
+      <div class="success-message">Tus servicios han sido reparados con éxito.</div>
+      <div class="success-actions">
+        <button class="btn btn-primary" id="repair-success-continue"><i class="fas fa-arrow-right"></i> Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Temporary Block Overlay -->
+  <div class="temp-block-overlay" id="temporary-block-overlay">
+    <div class="temp-block-card">
+      <div class="temp-block-icon"><i class="fas fa-ban"></i></div>
+      <div class="temp-block-title">Bloqueo Temporal</div>
+      <div class="temp-block-message">Tu cuenta está bloqueada temporalmente por inactividad y falta de validación. Tus fondos están resguardados y tu saldo no se ve afectado.</div>
+      <div class="block-balance">Saldo actual: <span id="temp-block-balance-bs">Bs 0,00</span> (<span id="temp-block-balance-usd">$0.00</span>)</div>
+      <input type="password" class="form-control temp-block-input" id="block-unlock-key" placeholder="Clave de desbloqueo">
+      <div class="error-message" id="block-unlock-error" style="display:none;">Clave incorrecta.</div>
+      <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;">
+        <button class="btn btn-primary" id="block-unlock-btn"><i class="fas fa-unlock"></i> Desbloquear</button>
+        <button class="btn btn-outline" id="block-support-btn"><i class="fab fa-whatsapp"></i> Soporte</button>
+        <button class="btn btn-outline" id="block-logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Block Overlay -->
+  <div class="modal-overlay" id="login-block-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Bloqueo Temporal</div>
+      <div class="modal-subtitle">Tu cuenta tiene un bloqueo temporal por no haber validado tu identidad. Tus fondos están resguardados y tu saldo no se ve afectado. Comunícate con soporte para obtener la clave de desbloqueo.</div>
+      <div class="block-balance">Saldo actual: <span id="login-block-balance-bs">Bs 0,00</span> (<span id="login-block-balance-usd">$0.00</span>)</div>
+      <input type="password" class="form-control" id="login-block-code" placeholder="Código de desbloqueo">
+      <div class="error-message" id="login-block-error" style="display:none;">Código incorrecto.</div>
+      <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;">
+        <button class="btn btn-primary" id="login-block-confirm"><i class="fas fa-unlock"></i> Desbloquear</button>
+        <button class="btn btn-outline" id="login-block-support"><i class="fab fa-whatsapp"></i> Soporte</button>
+        <button class="btn btn-outline" id="login-block-logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Validation Warning Overlay -->
+  <div class="modal-overlay" id="validation-warning-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Validación Pendiente</div>
+      <div class="modal-subtitle">Si no validas tu cuenta en las próximas horas será bloqueada por prevención de fraudes y legitimación de capitales.</div>
+      <button class="btn btn-primary" id="validation-warning-close" style="margin-top:0.5rem;"><i class="fas fa-check"></i> Aceptar</button>
+    </div>
+  </div>
+
+  <!-- Resolve Problem Overlay -->
+  <div class="modal-overlay" id="resolve-problem-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Soporte de Cuenta</div>
+      <div class="modal-subtitle">Ingresa la clave proporcionada por soporte para continuar.</div>
+      <input type="password" class="form-control" id="resolve-problem-key" placeholder="Clave de soporte">
+      <div class="error-message" id="resolve-problem-error" style="display:none;">Clave incorrecta.</div>
+      <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;">
+        <button class="btn btn-outline" id="resolve-problem-cancel"><i class="fas fa-times"></i> Cancelar</button>
+        <button class="btn btn-primary" id="resolve-problem-confirm"><i class="fas fa-check"></i> Continuar</button>
+      </div>
+    </div>
+  </div>
+  <!-- Page Overlay -->
+  <div class="page-overlay" id="page-overlay">
+    <div class="page-container">
+      <div class="page-close" id="page-close"><i class="fas fa-times"></i></div>
+      <iframe id="page-frame" class="page-frame" title="Servicio"></iframe>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- iPhone Promo Overlay -->
+  <div class="iphone-ad-overlay" id="iphone-ad-overlay">
+    <div class="iphone-overlay-container">
+      <video autoplay muted loop playsinline class="iphone-video-bg">
+        <source src="https://www.apple.com/105/media/ww/iphone/family/2025/e7ff365a-cb59-4ce9-9cdf-4cb965455b69/anim/welcome/medium.mp4" type="video/mp4">
+        Tu navegador no soporta videos HTML5.
+      </video>
+      <div class="iphone-overlay-text">
+        <div class="iphone-overlay-close" id="iphone-overlay-close">&times;</div>
+        <h1>
+          Si eres de Venezuela...<br>
+          ¡Ya puedes <span class="highlight">comprar tu iPhone</span> con<br>
+          <span class="highlight">LatinPhone</span> y tu saldo <span class="highlight">Remeex Visa</span>!
+        </h1>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tawk.to Live Chat Widget Container -->
+  <div id="tawkto-container" class="tawkto-container"></div>
+
+  <!-- Improved Tawk.to Script Implementation -->
+</body>
+</html>

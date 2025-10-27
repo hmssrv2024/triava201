@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cambio de Divisas - REMEEX</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a1f71;
+            --primary-dark: #0c1045;
+            --primary-light: #3244b6;
+            --secondary: #00579f;
+            --accent: #f7b600;
+            --success: #00d34d;
+            --danger: #ff4d4d;
+            --warning: #ffad33;
+            --info: #0095ff;
+            --neutral-100: #ffffff;
+            --neutral-200: #f5f7fa;
+            --neutral-300: #eaecf0;
+            --neutral-400: #d0d5dd;
+            --neutral-500: #9da4b4;
+            --neutral-600: #6e7891;
+            --neutral-700: #4f5d75;
+            --neutral-800: #293249;
+            --neutral-900: #1a1f37;
+
+            --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+            --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+            --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+            --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+            
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+            
+            --transition-fast: all 0.2s ease;
+            --transition-base: all 0.3s ease;
+            --transition-slow: all 0.5s ease;
+            
+            --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+            --success-gradient: linear-gradient(135deg, #00c057 0%, #00a346 100%);
+            
+            --animation-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--neutral-200);
+            color: var(--neutral-900);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .exchange-container {
+            min-height: 100vh;
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .exchange-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--neutral-300);
+        }
+
+        .exchange-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: var(--neutral-200);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .back-btn:hover {
+            background: var(--neutral-300);
+        }
+
+        .exchange-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+        }
+
+        .exchange-subtitle {
+            font-size: 0.9rem;
+            color: var(--neutral-600);
+            margin-top: 0.25rem;
+        }
+
+        .live-rates-badge {
+            background: var(--success);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 1; }
+            70% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+
+        .section-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .section-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .section-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .card {
+            background: var(--neutral-100);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            transition: transform 0.3s var(--animation-bounce), box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s var(--animation-bounce);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(26, 31, 113, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .currency-converter {
+            position: relative;
+        }
+
+        .converter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .currency-input-group {
+            position: relative;
+        }
+
+        .currency-input-container {
+            display: flex;
+            align-items: center;
+            background: var(--neutral-200);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .currency-select {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 120px;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
+        }
+
+        .currency-select:hover {
+            background: var(--neutral-300);
+        }
+
+        .currency-flag {
+            width: 24px;
+            height: 18px;
+            border-radius: 3px;
+            object-fit: cover;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .currency-code {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--neutral-900);
+        }
+
+        .currency-name {
+            font-size: 0.75rem;
+            color: var(--neutral-600);
+        }
+
+        .amount-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+            text-align: right;
+            outline: none;
+        }
+
+        .amount-input::placeholder {
+            color: var(--neutral-500);
+        }
+
+        .swap-button {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: var(--primary);
+            color: white;
+            border: 3px solid var(--neutral-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-base);
+            z-index: 2;
+        }
+
+        .swap-button:hover {
+            background: var(--primary-light);
+            transform: translate(-50%, -50%) rotate(180deg);
+        }
+
+        .exchange-rate-display {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(26, 31, 113, 0.05);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+        }
+
+        .rate-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .rate-info {
+            font-size: 0.8rem;
+            color: var(--neutral-600);
+        }
+
+        .wallets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .wallet-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wallet-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            100% { left: 200%; }
+        }
+
+        .wallet-header {
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            margin-bottom: 1rem;
+        }
+
+        .wallet-currency {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .wallet-flag {
+            width: 32px;
+            height: 24px;
+            border-radius: 4px;
+            object-fit: cover;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .wallet-code {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .wallet-name {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .wallet-balance {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .wallet-equivalent {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .wallet-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .wallet-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: var(--radius-md);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .wallet-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .add-wallet-card {
+            background: var(--neutral-200);
+            border: 2px dashed var(--neutral-400);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: var(--transition-base);
+            color: var(--neutral-600);
+        }
+
+        .add-wallet-card:hover {
+            border-color: var(--primary);
+            background: rgba(26, 31, 113, 0.05);
+            color: var(--primary);
+        }
+
+        .add-wallet-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: var(--neutral-300);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .add-wallet-card:hover .add-wallet-icon {
+            background: var(--primary);
+            color: white;
+        }
+
+        .transaction-history {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--neutral-300);
+            transition: var(--transition-base);
+        }
+
+        .transaction-item:hover {
+            background: var(--neutral-200);
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .transaction-content {
+            flex: 1;
+        }
+
+        .transaction-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .transaction-subtitle {
+            font-size: 0.8rem;
+            color: var(--neutral-600);
+        }
+
+        .transaction-amount {
+            text-align: right;
+        }
+
+        .transaction-main-amount {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--success);
+        }
+
+        .transaction-equivalent {
+            font-size: 0.75rem;
+            color: var(--neutral-600);
+        }
+
+        .rates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .rate-card {
+            background: var(--neutral-100);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            text-align: center;
+            transition: var(--transition-base);
+        }
+
+        .rate-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .rate-card-currency {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .rate-card-flag {
+            width: 24px;
+            height: 18px;
+            border-radius: 3px;
+            object-fit: cover;
+        }
+
+        .rate-card-code {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .rate-card-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .rate-card-change {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .rate-change-positive {
+            color: var(--success);
+        }
+
+        .rate-change-negative {
+            color: var(--danger);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal {
+            background: var(--neutral-100);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+            animation: scaleIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            background: var(--neutral-200);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .modal-close:hover {
+            background: var(--neutral-300);
+        }
+
+        .currency-search {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--neutral-400);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            background: var(--neutral-100);
+            transition: var(--transition-base);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neutral-500);
+        }
+
+        .currency-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .currency-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
+        }
+
+        .currency-option:hover {
+            background: var(--neutral-200);
+        }
+
+        .currency-option-flag {
+            width: 32px;
+            height: 24px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .currency-option-info {
+            flex: 1;
+        }
+
+        .currency-option-code {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.125rem;
+        }
+
+        .currency-option-name {
+            font-size: 0.8rem;
+            color: var(--neutral-600);
+        }
+
+        .currency-option-rate {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--neutral-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--neutral-400);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            color: var(--neutral-900);
+            background: var(--neutral-100);
+            transition: var(--transition-base);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.15);
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .toast {
+            background: var(--neutral-900);
+            color: white;
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            min-width: 250px;
+            max-width: 320px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast-icon {
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .toast-message {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .no-transactions {
+            text-align: center;
+            padding: 2rem;
+            color: var(--neutral-600);
+        }
+
+        .no-transactions i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .no-transactions h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-transactions p {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .exchange-container {
+                padding: 0.5rem;
+            }
+
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .wallets-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rates-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .currency-input-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .currency-select {
+                min-width: auto;
+                justify-content: center;
+            }
+
+            .amount-input {
+                text-align: center;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+    <div class="exchange-container">
+        <!-- Header -->
+        <div class="exchange-header">
+            <div class="exchange-header-left">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div>
+                    <h1 class="exchange-title">Cambio de Divisas</h1>
+                    <p class="exchange-subtitle">Intercambia entre más de 20 monedas al mejor precio</p>
+                </div>
+            </div>
+            <div class="live-rates-badge">
+                <div class="pulse-dot"></div>
+                <span>Tasas en vivo</span>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="section-grid">
+            <!-- Currency Converter -->
+            <div class="card currency-converter">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-exchange-alt"></i>
+                        Conversor de Divisas
+                    </h2>
+                </div>
+
+                <div class="converter-form">
+                    <!-- From Currency -->
+                    <div class="currency-input-group">
+                        <div class="currency-input-container">
+                            <div class="currency-select" onclick="openCurrencySelector('from')">
+                                <img src="https://flagcdn.com/us.svg" alt="USD" class="currency-flag" id="from-flag">
+                                <div>
+                                    <div class="currency-code" id="from-code">USD</div>
+                                    <div class="currency-name" id="from-name">Dólar Estadounidense</div>
+                                </div>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <input type="number" class="amount-input" id="from-amount" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                    </div>
+
+                    <!-- Swap Button -->
+                    <button class="swap-button" onclick="swapCurrencies()">
+                        <i class="fas fa-exchange-alt"></i>
+                    </button>
+
+                    <!-- To Currency -->
+                    <div class="currency-input-group">
+                        <div class="currency-input-container">
+                            <div class="currency-select" onclick="openCurrencySelector('to')">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/Flag_of_Europe.svg" alt="EUR" class="currency-flag" id="to-flag">
+                                <div>
+                                    <div class="currency-code" id="to-code">EUR</div>
+                                    <div class="currency-name" id="to-name">Euro</div>
+                                </div>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <input type="number" class="amount-input" id="to-amount" placeholder="0.00" step="0.01" min="0" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exchange Rate Display -->
+                <div class="exchange-rate-display">
+                    <div class="rate-value" id="rate-display">1 USD = 0.94 EUR</div>
+                    <div class="rate-info">Tasa actualizada hace menos de 1 minuto • Sin comisiones</div>
+                </div>
+
+                <!-- Exchange Button -->
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="performExchange()">
+                    <i class="fas fa-exchange-alt"></i>
+                    Realizar Intercambio
+                </button>
+            </div>
+
+            <!-- Live Rates -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        Tasas en Vivo
+                    </h2>
+                    <button class="btn btn-outline btn-small" onclick="refreshRates()">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualizar
+                    </button>
+                </div>
+
+                <div class="rates-grid" id="rates-grid">
+                    <!-- Rates will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- User Wallets -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-wallet"></i>
+                    Mis Billeteras
+                </h2>
+                <button class="btn btn-outline btn-small" onclick="openAddWalletModal()">
+                    <i class="fas fa-plus"></i>
+                    Añadir Billetera
+                </button>
+            </div>
+
+            <div class="wallets-grid" id="wallets-grid">
+                <!-- Wallets will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-history"></i>
+                    Historial de Intercambios
+                </h2>
+            </div>
+
+            <div class="transaction-history" id="transaction-history">
+                <!-- Transactions will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Currency Selector Modal -->
+    <div class="modal-overlay" id="currency-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Seleccionar Moneda</h3>
+                <button class="modal-close" onclick="closeCurrencyModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="currency-search">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="currency-search" placeholder="Buscar moneda...">
+            </div>
+
+            <div class="currency-list" id="currency-list">
+                <!-- Currency options will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Wallet Modal -->
+    <div class="modal-overlay" id="add-wallet-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Crear Nueva Billetera</h3>
+                <button class="modal-close" onclick="closeAddWalletModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="add-wallet-form">
+                <div class="form-group">
+                    <label class="form-label" for="wallet-currency">Moneda</label>
+                    <div class="currency-select" onclick="openCurrencySelector('wallet')" style="border: 1px solid var(--neutral-400); padding: 0.75rem;">
+                        <img src="https://flagcdn.com/us.svg" alt="USD" class="currency-flag" id="wallet-flag">
+                        <div style="flex: 1;">
+                            <div class="currency-code" id="wallet-code">USD</div>
+                            <div class="currency-name" id="wallet-name">Dólar Estadounidense</div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="wallet-alias">Nombre de la Billetera (Opcional)</label>
+                    <input type="text" class="form-control" id="wallet-alias" placeholder="Ej: Ahorros en Euros">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="initial-amount">Monto Inicial (Opcional)</label>
+                    <input type="number" class="form-control" id="initial-amount" placeholder="0.00" step="0.01" min="0">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-plus"></i>
+                    Crear Billetera
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // Global variables
+        let currentSelector = null;
+        let exchangeRates = {};
+        let userWallets = [];
+        let exchangeHistory = [];
+
+        // Currency data
+        const currencies = {
+            'USD': { name: 'Dólar Estadounidense', flag: 'https://flagcdn.com/us.svg', symbol: '$' },
+            'EUR': { name: 'Euro', flag: 'https://upload.wikimedia.org/wikipedia/commons/b/b7/Flag_of_Europe.svg', symbol: '€' },
+            'VES': { name: 'Bolívar Venezolano', flag: 'https://upload.wikimedia.org/wikipedia/commons/0/06/Flag_of_Venezuela.svg', symbol: 'Bs' },
+            'GBP': { name: 'Libra Esterlina', flag: 'https://flagcdn.com/gb.svg', symbol: '£' },
+            'JPY': { name: 'Yen Japonés', flag: 'https://flagcdn.com/jp.svg', symbol: '¥' },
+            'CAD': { name: 'Dólar Canadiense', flag: 'https://flagcdn.com/ca.svg', symbol: 'C$' },
+            'AUD': { name: 'Dólar Australiano', flag: 'https://flagcdn.com/au.svg', symbol: 'A$' },
+            'CHF': { name: 'Franco Suizo', flag: 'https://flagcdn.com/ch.svg', symbol: 'CHF' },
+            'CNY': { name: 'Yuan Chino', flag: 'https://flagcdn.com/cn.svg', symbol: '¥' },
+            'BRL': { name: 'Real Brasileño', flag: 'https://flagcdn.com/br.svg', symbol: 'R$' },
+            'MXN': { name: 'Peso Mexicano', flag: 'https://flagcdn.com/mx.svg', symbol: '$' },
+            'ARS': { name: 'Peso Argentino', flag: 'https://flagcdn.com/ar.svg', symbol: '$' },
+            'COP': { name: 'Peso Colombiano', flag: 'https://flagcdn.com/co.svg', symbol: '$' },
+            'CLP': { name: 'Peso Chileno', flag: 'https://flagcdn.com/cl.svg', symbol: '$' },
+            'PEN': { name: 'Sol Peruano', flag: 'https://flagcdn.com/pe.svg', symbol: 'S/' },
+            'RUB': { name: 'Rublo Ruso', flag: 'https://flagcdn.com/ru.svg', symbol: '₽' },
+            'KRW': { name: 'Won Surcoreano', flag: 'https://flagcdn.com/kr.svg', symbol: '₩' },
+            'INR': { name: 'Rupia India', flag: 'https://flagcdn.com/in.svg', symbol: '₹' },
+            'SGD': { name: 'Dólar de Singapur', flag: 'https://flagcdn.com/sg.svg', symbol: 'S$' },
+            'HKD': { name: 'Dólar de Hong Kong', flag: 'https://flagcdn.com/hk.svg', symbol: 'HK$' },
+            'NOK': { name: 'Corona Noruega', flag: 'https://flagcdn.com/no.svg', symbol: 'kr' },
+            'SEK': { name: 'Corona Sueca', flag: 'https://flagcdn.com/se.svg', symbol: 'kr' },
+            'DKK': { name: 'Corona Danesa', flag: 'https://flagcdn.com/dk.svg', symbol: 'kr' },
+            'PLN': { name: 'Zloty Polaco', flag: 'https://flagcdn.com/pl.svg', symbol: 'zł' },
+            'TRY': { name: 'Lira Turca', flag: 'https://flagcdn.com/tr.svg', symbol: '₺' }
+        };
+
+        // Initialize exchange rates (mock data)
+        const baseRates = {
+            'USD': 1.0,
+            'EUR': 0.94,
+            'VES': 151.10,
+            'GBP': 0.82,
+            'JPY': 149.50,
+            'CAD': 1.35,
+            'AUD': 1.52,
+            'CHF': 0.91,
+            'CNY': 7.31,
+            'BRL': 5.12,
+            'MXN': 17.45,
+            'ARS': 875.50,
+            'COP': 4125.30,
+            'CLP': 890.75,
+            'PEN': 3.68,
+            'RUB': 92.45,
+            'KRW': 1320.80,
+            'INR': 83.25,
+            'SGD': 1.35,
+            'HKD': 7.82,
+            'NOK': 10.85,
+            'SEK': 10.92,
+            'DKK': 7.01,
+            'PLN': 4.35,
+            'TRY': 28.75
+        };
+
+        // Initialize the application
+        function initApp() {
+            loadUserData();
+            initializeRates();
+            renderWallets();
+            renderTransactionHistory();
+            renderLiveRates();
+            setupEventListeners();
+            
+            // Auto-refresh rates every 30 seconds
+            setInterval(refreshRates, 30000);
+        }
+
+        function loadUserData() {
+            // Load wallets from localStorage
+            const savedWallets = localStorage.getItem('currencyWallets');
+            if (savedWallets) {
+                userWallets = JSON.parse(savedWallets);
+            } else {
+                // Initialize with default wallets
+                userWallets = [
+                    { id: 'wallet-1', currency: 'USD', balance: 1250.00, alias: 'Dólares Principal' },
+                    { id: 'wallet-2', currency: 'EUR', balance: 850.50, alias: 'Euros de Ahorro' },
+                    { id: 'wallet-3', currency: 'VES', balance: 167800.00, alias: 'Bolívares Local' }
+                ];
+                saveUserData();
+            }
+
+            // Load exchange history
+            const savedHistory = localStorage.getItem('exchangeHistory');
+            if (savedHistory) {
+                exchangeHistory = JSON.parse(savedHistory);
+            }
+        }
+
+        function saveUserData() {
+            localStorage.setItem('currencyWallets', JSON.stringify(userWallets));
+            localStorage.setItem('exchangeHistory', JSON.stringify(exchangeHistory));
+        }
+
+        function initializeRates() {
+            // Initialize with base rates and add some realistic fluctuation
+            exchangeRates = { ...baseRates };
+            
+            // Add small random fluctuations to make it more realistic
+            Object.keys(exchangeRates).forEach(currency => {
+                if (currency !== 'USD') {
+                    const fluctuation = (Math.random() - 0.5) * 0.02; // ±1% fluctuation
+                    exchangeRates[currency] *= (1 + fluctuation);
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // Amount input listeners
+            document.getElementById('from-amount').addEventListener('input', calculateConversion);
+            document.getElementById('currency-search').addEventListener('input', filterCurrencies);
+            
+            // Form submission
+            document.getElementById('add-wallet-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                createWallet();
+            });
+
+            // Close modals when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal-overlay')) {
+                    closeAllModals();
+                }
+            });
+        }
+
+        function calculateConversion() {
+            const fromAmount = parseFloat(document.getElementById('from-amount').value) || 0;
+            const fromCurrency = document.getElementById('from-code').textContent;
+            const toCurrency = document.getElementById('to-code').textContent;
+            
+            if (fromAmount > 0) {
+                const rate = getExchangeRate(fromCurrency, toCurrency);
+                const toAmount = fromAmount * rate;
+                document.getElementById('to-amount').value = toAmount.toFixed(2);
+                
+                // Update rate display
+                document.getElementById('rate-display').textContent = 
+                    `1 ${fromCurrency} = ${rate.toFixed(4)} ${toCurrency}`;
+            } else {
+                document.getElementById('to-amount').value = '';
+                const rate = getExchangeRate(fromCurrency, toCurrency);
+                document.getElementById('rate-display').textContent = 
+                    `1 ${fromCurrency} = ${rate.toFixed(4)} ${toCurrency}`;
+            }
+        }
+
+        function getExchangeRate(from, to) {
+            if (from === to) return 1;
+            
+            // Convert to USD first, then to target currency
+            const fromRate = exchangeRates[from] || 1;
+            const toRate = exchangeRates[to] || 1;
+            
+            return toRate / fromRate;
+        }
+
+        function openCurrencySelector(type) {
+            currentSelector = type;
+            const modal = document.getElementById('currency-modal');
+            modal.style.display = 'flex';
+            
+            renderCurrencyList();
+            document.getElementById('currency-search').value = '';
+        }
+
+        function closeCurrencyModal() {
+            document.getElementById('currency-modal').style.display = 'none';
+            currentSelector = null;
+        }
+
+        function closeAddWalletModal() {
+            document.getElementById('add-wallet-modal').style.display = 'none';
+            document.getElementById('add-wallet-form').reset();
+        }
+
+        function closeAllModals() {
+            closeCurrencyModal();
+            closeAddWalletModal();
+        }
+
+        function renderCurrencyList(filter = '') {
+            const currencyList = document.getElementById('currency-list');
+            currencyList.innerHTML = '';
+            
+            const filteredCurrencies = Object.entries(currencies).filter(([code, data]) => {
+                const searchTerm = filter.toLowerCase();
+                return code.toLowerCase().includes(searchTerm) || 
+                       data.name.toLowerCase().includes(searchTerm);
+            });
+            
+            filteredCurrencies.forEach(([code, data]) => {
+                const option = document.createElement('div');
+                option.className = 'currency-option';
+                option.onclick = () => selectCurrency(code);
+                
+                const rate = exchangeRates[code] || 1;
+                const rateText = code === 'USD' ? '1.0000' : rate.toFixed(4);
+                
+                option.innerHTML = `
+                    <img src="${data.flag}" alt="${code}" class="currency-option-flag">
+                    <div class="currency-option-info">
+                        <div class="currency-option-code">${code}</div>
+                        <div class="currency-option-name">${data.name}</div>
+                    </div>
+                    <div class="currency-option-rate">${rateText}</div>
+                `;
+                
+                currencyList.appendChild(option);
+            });
+        }
+
+        function filterCurrencies() {
+            const filter = document.getElementById('currency-search').value;
+            renderCurrencyList(filter);
+        }
+
+        function selectCurrency(code) {
+            const currency = currencies[code];
+            
+            if (currentSelector === 'from') {
+                document.getElementById('from-flag').src = currency.flag;
+                document.getElementById('from-code').textContent = code;
+                document.getElementById('from-name').textContent = currency.name;
+            } else if (currentSelector === 'to') {
+                document.getElementById('to-flag').src = currency.flag;
+                document.getElementById('to-code').textContent = code;
+                document.getElementById('to-name').textContent = currency.name;
+            } else if (currentSelector === 'wallet') {
+                document.getElementById('wallet-flag').src = currency.flag;
+                document.getElementById('wallet-code').textContent = code;
+                document.getElementById('wallet-name').textContent = currency.name;
+            }
+            
+            closeCurrencyModal();
+            calculateConversion();
+        }
+
+        function swapCurrencies() {
+            // Get current values
+            const fromCode = document.getElementById('from-code').textContent;
+            const fromName = document.getElementById('from-name').textContent;
+            const fromFlag = document.getElementById('from-flag').src;
+            const fromAmount = document.getElementById('from-amount').value;
+            
+            const toCode = document.getElementById('to-code').textContent;
+            const toName = document.getElementById('to-name').textContent;
+            const toFlag = document.getElementById('to-flag').src;
+            const toAmount = document.getElementById('to-amount').value;
+            
+            // Swap them
+            document.getElementById('from-code').textContent = toCode;
+            document.getElementById('from-name').textContent = toName;
+            document.getElementById('from-flag').src = toFlag;
+            document.getElementById('from-amount').value = toAmount;
+            
+            document.getElementById('to-code').textContent = fromCode;
+            document.getElementById('to-name').textContent = fromName;
+            document.getElementById('to-flag').src = fromFlag;
+            document.getElementById('to-amount').value = fromAmount;
+            
+            calculateConversion();
+        }
+
+        function performExchange() {
+            const fromAmount = parseFloat(document.getElementById('from-amount').value);
+            const fromCurrency = document.getElementById('from-code').textContent;
+            const toCurrency = document.getElementById('to-code').textContent;
+            const toAmount = parseFloat(document.getElementById('to-amount').value);
+            
+            if (!fromAmount || fromAmount <= 0) {
+                showToast('error', 'Error', 'Por favor ingrese un monto válido');
+                return;
+            }
+            
+            // Check if user has enough balance in from currency
+            const fromWallet = userWallets.find(w => w.currency === fromCurrency);
+            if (!fromWallet || fromWallet.balance < fromAmount) {
+                showToast('error', 'Saldo Insuficiente', `No tiene suficiente saldo en ${fromCurrency}`);
+                return;
+            }
+            
+            // Perform the exchange
+            fromWallet.balance -= fromAmount;
+            
+            // Find or create destination wallet
+            let toWallet = userWallets.find(w => w.currency === toCurrency);
+            if (!toWallet) {
+                toWallet = {
+                    id: `wallet-${Date.now()}`,
+                    currency: toCurrency,
+                    balance: 0,
+                    alias: `${currencies[toCurrency].name}`
+                };
+                userWallets.push(toWallet);
+            }
+            
+            toWallet.balance += toAmount;
+            
+            // Add to history
+            const exchange = {
+                id: `exchange-${Date.now()}`,
+                date: new Date().toLocaleString('es-ES'),
+                fromCurrency,
+                toCurrency,
+                fromAmount,
+                toAmount,
+                rate: getExchangeRate(fromCurrency, toCurrency)
+            };
+            
+            exchangeHistory.unshift(exchange);
+            
+            // Save data
+            saveUserData();
+            
+            // Update UI
+            renderWallets();
+            renderTransactionHistory();
+            
+            // Clear form
+            document.getElementById('from-amount').value = '';
+            document.getElementById('to-amount').value = '';
+            
+            showToast('success', 'Intercambio Exitoso', 
+                `Intercambiaste ${fromAmount} ${fromCurrency} por ${toAmount.toFixed(2)} ${toCurrency}`);
+        }
+
+        function renderWallets() {
+            const walletsGrid = document.getElementById('wallets-grid');
+            walletsGrid.innerHTML = '';
+            
+            // Render existing wallets
+            userWallets.forEach(wallet => {
+                const currency = currencies[wallet.currency];
+                const usdValue = wallet.balance / (exchangeRates[wallet.currency] || 1);
+                
+                const walletCard = document.createElement('div');
+                walletCard.className = 'wallet-card';
+                walletCard.innerHTML = `
+                    <div class="wallet-header">
+                        <div class="wallet-currency">
+                            <img src="${currency.flag}" alt="${wallet.currency}" class="wallet-flag">
+                            <div>
+                                <div class="wallet-code">${wallet.currency}</div>
+                                <div class="wallet-name">${wallet.alias || currency.name}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wallet-balance">${formatCurrency(wallet.balance, wallet.currency)}</div>
+                    <div class="wallet-equivalent">≈ ${formatCurrency(usdValue, 'USD')}</div>
+                    <div class="wallet-actions">
+                        <button class="wallet-btn" onclick="depositToWallet('${wallet.id}')">
+                            <i class="fas fa-plus"></i> Depositar
+                        </button>
+                        <button class="wallet-btn" onclick="withdrawFromWallet('${wallet.id}')">
+                            <i class="fas fa-minus"></i> Retirar
+                        </button>
+                    </div>
+                `;
+                walletsGrid.appendChild(walletCard);
+            });
+            
+            // Add wallet card
+            const addWalletCard = document.createElement('div');
+            addWalletCard.className = 'wallet-card add-wallet-card';
+            addWalletCard.onclick = openAddWalletModal;
+            addWalletCard.innerHTML = `
+                <div class="add-wallet-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div>
+                    <strong>Añadir Billetera</strong>
+                    <div>Crear una nueva billetera en otra moneda</div>
+                </div>
+            `;
+            walletsGrid.appendChild(addWalletCard);
+        }
+
+        function renderTransactionHistory() {
+            const historyContainer = document.getElementById('transaction-history');
+            
+            if (exchangeHistory.length === 0) {
+                historyContainer.innerHTML = `
+                    <div class="no-transactions">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h3>Sin intercambios recientes</h3>
+                        <p>Cuando realices intercambios de divisas aparecerán aquí</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            historyContainer.innerHTML = '';
+            
+            exchangeHistory.slice(0, 10).forEach(exchange => {
+                const transaction = document.createElement('div');
+                transaction.className = 'transaction-item';
+                transaction.innerHTML = `
+                    <div class="transaction-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="transaction-content">
+                        <div class="transaction-title">
+                            ${exchange.fromCurrency} → ${exchange.toCurrency}
+                        </div>
+                        <div class="transaction-subtitle">
+                            ${exchange.date} • Tasa: ${exchange.rate.toFixed(4)}
+                        </div>
+                    </div>
+                    <div class="transaction-amount">
+                        <div class="transaction-main-amount">
+                            +${formatCurrency(exchange.toAmount, exchange.toCurrency)}
+                        </div>
+                        <div class="transaction-equivalent">
+                            -${formatCurrency(exchange.fromAmount, exchange.fromCurrency)}
+                        </div>
+                    </div>
+                `;
+                historyContainer.appendChild(transaction);
+            });
+        }
+
+        function renderLiveRates() {
+            const ratesGrid = document.getElementById('rates-grid');
+            ratesGrid.innerHTML = '';
+            
+            // Show main currencies with their rates against USD
+            const mainCurrencies = ['EUR', 'VES', 'GBP', 'JPY', 'CAD', 'AUD'];
+            
+            mainCurrencies.forEach(code => {
+                const currency = currencies[code];
+                const rate = exchangeRates[code];
+                const change = (Math.random() - 0.5) * 2; // Random change for demo
+                const isPositive = change >= 0;
+                
+                const rateCard = document.createElement('div');
+                rateCard.className = 'rate-card';
+                rateCard.innerHTML = `
+                    <div class="rate-card-currency">
+                        <img src="${currency.flag}" alt="${code}" class="rate-card-flag">
+                        <span class="rate-card-code">${code}/USD</span>
+                    </div>
+                    <div class="rate-card-value">${rate.toFixed(4)}</div>
+                    <div class="rate-card-change ${isPositive ? 'rate-change-positive' : 'rate-change-negative'}">
+                        <i class="fas fa-arrow-${isPositive ? 'up' : 'down'}"></i>
+                        ${Math.abs(change).toFixed(2)}%
+                    </div>
+                `;
+                ratesGrid.appendChild(rateCard);
+            });
+        }
+
+        function openAddWalletModal() {
+            document.getElementById('add-wallet-modal').style.display = 'flex';
+        }
+
+        function createWallet() {
+            const currency = document.getElementById('wallet-code').textContent;
+            const alias = document.getElementById('wallet-alias').value.trim();
+            const initialAmount = parseFloat(document.getElementById('initial-amount').value) || 0;
+            
+            // Check if wallet already exists
+            if (userWallets.find(w => w.currency === currency)) {
+                showToast('error', 'Error', `Ya tienes una billetera en ${currency}`);
+                return;
+            }
+            
+            const newWallet = {
+                id: `wallet-${Date.now()}`,
+                currency,
+                balance: initialAmount,
+                alias: alias || currencies[currency].name
+            };
+            
+            userWallets.push(newWallet);
+            saveUserData();
+            renderWallets();
+            closeAddWalletModal();
+            
+            showToast('success', 'Billetera Creada', 
+                `Se creó tu billetera en ${currency} exitosamente`);
+        }
+
+        function refreshRates() {
+            // Simulate rate updates
+            Object.keys(exchangeRates).forEach(currency => {
+                if (currency !== 'USD') {
+                    const fluctuation = (Math.random() - 0.5) * 0.01; // ±0.5% fluctuation
+                    exchangeRates[currency] *= (1 + fluctuation);
+                }
+            });
+            
+            renderLiveRates();
+            calculateConversion();
+            
+            showToast('success', 'Tasas Actualizadas', 'Las tasas de cambio se han actualizado');
+        }
+
+        function formatCurrency(amount, currency) {
+            const currencyData = currencies[currency] || { symbol: currency };
+            return `${currencyData.symbol}${amount.toLocaleString('es-ES', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+            })}`;
+        }
+
+        function showToast(type, title, message) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${iconClass}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // Fallback for direct access
+                window.location.href = '';
+            }
+        }
+
+        function depositToWallet(walletId) {
+            // In a real app, this would open a deposit modal
+            showToast('info', 'Funcionalidad en desarrollo', 'La función de depósito estará disponible próximamente');
+        }
+
+        function withdrawFromWallet(walletId) {
+            // In a real app, this would open a withdrawal modal
+            showToast('info', 'Funcionalidad en desarrollo', 'La función de retiro estará disponible próximamente');
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+<div id="bottom-nav-container"></div>
+<script src="bottom-nav.js"></script>
+</body>
+</html>
+  <script src="preload.js"></script>

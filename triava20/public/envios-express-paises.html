@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Selecciona el país de destino - Visa Envíos Express</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="apple-touch-icon" href="visabluapple.png" />
+  <meta name="description" content="Selecciona el país de destino para personalizar tu envío express." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="registro.css" />
+  <link rel="stylesheet" href="envios-express.css" />
+  <link rel="stylesheet" href="responsive.css" />
+</head>
+<body class="envios-express-selector">
+  <div class="selector-wrapper">
+    <header class="selector-header">
+      <div class="selector-brand">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" class="selector-logo" />
+        <div class="selector-title">Visa Envíos Express</div>
+      </div>
+      <a class="selector-exit" href="homevisa.html" aria-label="Volver al inicio">Salir</a>
+    </header>
+
+    <main class="selector-main" id="countrySelectorApp">
+      <h1>Selecciona el país de destino</h1>
+      <p class="selector-description">
+        Contamos con 23 países disponibles, incluido Venezuela. Elige el destino para personalizar la planilla con los requisitos
+        específicos de ese país.
+      </p>
+
+      <div class="selector-grid" id="selectorCountryGrid" role="listbox" aria-label="Listado de países disponibles"></div>
+
+      <div class="selector-actions">
+        <button class="btn btn-primary" type="button" id="selectorContinueButton" disabled>
+          Continuar con el país seleccionado
+        </button>
+        <button class="btn btn-secondary" type="button" id="selectorClearButton">Limpiar selección</button>
+      </div>
+    </main>
+
+    <footer class="selector-footer">
+      <p>Remeex VISA · Envíos internacionales rápidos y seguros</p>
+    </footer>
+  </div>
+
+  <script type="module" src="envios-express-selector.js"></script>
+</body>
+</html>

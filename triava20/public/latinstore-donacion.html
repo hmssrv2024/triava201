@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donaciones - REMEEX</title>
+  <link rel="icon" href="https://w7.pngwing.com/pngs/400/28/png-transparent-credit-card-computer-icons-visa-electron-bank-curio-blue-text-rectangle-thumbnail.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --secondary: #00579f;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --danger: #ff4d4d;
+      --warning: #ffad33;
+      --info: #0095ff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+      
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+      
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      
+      --transition-fast: all 0.2s ease;
+      --transition-base: all 0.3s ease;
+      --transition-slow: all 0.5s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--neutral-200);
+      color: var(--neutral-900);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Header */
+    .donations-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      padding: 4rem 0 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .donations-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><circle cx="30" cy="30" r="1.5"/></g></svg>');
+      opacity: 0.3;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .donations-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .donations-subtitle {
+      font-size: 1.25rem;
+      text-align: center;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .donations-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Navigation */
+    .back-nav {
+      padding: 1rem 0;
+      background: var(--neutral-100);
+      border-bottom: 1px solid var(--neutral-300);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition-base);
+    }
+
+    .back-link:hover {
+      color: var(--primary-light);
+      transform: translateX(-3px);
+    }
+
+    /* Main Content */
+    .donations-content {
+      padding: 3rem 0;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .section-description {
+      font-size: 1.1rem;
+      color: var(--neutral-600);
+      text-align: center;
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Foundation Grid */
+    .foundations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .foundation-card {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      transition: var(--transition-base);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .foundation-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .foundation-logo {
+      height: 120px;
+      background: var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .foundation-logo img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
+
+    .foundation-content {
+      padding: 1.5rem;
+    }
+
+    .foundation-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.75rem;
+    }
+
+    .foundation-description {
+      font-size: 0.9rem;
+      color: var(--neutral-600);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .foundation-impact {
+      background: rgba(26, 31, 113, 0.05);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .impact-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .impact-text {
+      font-size: 0.8rem;
+      color: var(--neutral-700);
+    }
+
+    .donate-btn {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .donate-btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    /* Donation Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+
+    .donation-modal {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-foundation-logo {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      padding: 0.5rem;
+    }
+
+    .modal-foundation-logo img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .modal-foundation-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-foundation-mission {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .modal-content {
+      padding: 2rem;
+    }
+
+    .donation-step {
+      margin-bottom: 2rem;
+    }
+
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      background: var(--primary);
+      color: white;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    /* Amount Selection */
+    .amount-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .amount-option {
+      background: var(--neutral-200);
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+      position: relative;
+    }
+
+    .amount-option:hover {
+      background: var(--neutral-300);
+    }
+
+    .amount-option.selected {
+      border-color: var(--primary);
+      background: rgba(26, 31, 113, 0.05);
+    }
+
+    .amount-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .amount-code {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      font-family: monospace;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--neutral-700);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--neutral-400);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      transition: var(--transition-base);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.15);
+    }
+
+    .code-display {
+      background: var(--neutral-200);
+      border: 1px solid var(--neutral-300);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .code-label {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      margin-bottom: 0.5rem;
+    }
+
+    .code-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      font-family: monospace;
+      letter-spacing: 2px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition-base);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #00b841;
+      transform: translateY(-2px);
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    /* Success Animation */
+    .success-container {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--success);
+      color: white;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    @keyframes successPulse {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .success-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.75rem;
+    }
+
+    .success-message {
+      font-size: 0.9rem;
+      color: var(--neutral-600);
+      margin-bottom: 1.5rem;
+    }
+
+    .donation-summary {
+      background: var(--neutral-200);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-row:last-child {
+      margin-bottom: 0;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--neutral-300);
+      font-weight: 600;
+    }
+
+    /* Trust Indicators */
+    .trust-section {
+      background: var(--neutral-100);
+      padding: 3rem 0;
+      margin-top: 3rem;
+    }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .trust-item {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .trust-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--primary);
+      color: white;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1rem;
+    }
+
+    .trust-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .trust-description {
+      font-size: 0.9rem;
+      color: var(--neutral-600);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .donations-title {
+        font-size: 2rem;
+      }
+
+      .foundations-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .amount-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .donations-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Loading State */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--neutral-300);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.6s ease-out;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="donations-header">
+    <div class="container">
+      <h1 class="donations-title">Donaciones REMEEX</h1>
+      <p class="donations-subtitle">
+        Conectando corazones solidarios con causas que transforman Venezuela
+      </p>
+      
+      <div class="donations-stats">
+        <div class="stat-card">
+          <div class="stat-number">$2.5M+</div>
+          <div class="stat-label">Donaciones procesadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">15,000+</div>
+          <div class="stat-label">Familias beneficiadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">10</div>
+          <div class="stat-label">Fundaciones aliadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Transparencia garantizada</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="back-nav">
+    <div class="container">
+      <a href="homevisa.html" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Volver a REMEEX
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="donations-content">
+    <div class="container">
+      <h2 class="section-title">Elige una causa que te inspire</h2>
+      <p class="section-description">
+        Cada donación cuenta una historia de esperanza. Selecciona la fundación con la que deseas colaborar 
+        y sé parte del cambio que Venezuela necesita.
+      </p>
+
+      <!-- Foundations Grid -->
+      <div class="foundations-grid">
+        <!-- Fe y Alegría -->
+        <div class="foundation-card" data-foundation="fe-alegria">
+          <div class="foundation-logo">
+            <img src="https://provea.org/wp-content/uploads/2017/02/logo-fe-y-alegri%CC%81a.gif" alt="Fe y Alegría">
+          </div>
+          <div class="foundation-content">
+            <h3 class="foundation-name">Fe y Alegría</h3>
+            <p class="foundation-description">
+              Movimiento de Educación Popular Integral que promueve la formación de personas conscientes, 
+              competentes, compasivas y comprometidas.
+            </p>
+            <div class="foundation-impact">
+              <div class="impact-title">Tu donación será destinada a:</div>
+              <div class="impact-text">
+                Programas educativos, formación de docentes, infraestructura escolar 
+                y becas de estudio para niños y jóvenes en situación vulnerable.
+              </div>
+            </div>
+            <button class="donate-btn">
+              <i class="fas fa-heart"></i>
+              Donar Ahora
+            </button>
+          </div>
+        </div>
+
+        <!-- Cáritas Venezuela -->
+        <div class="foundation-card" data-foundation="caritas">
+          <div class="foundation-logo">
+            <img src="https://www.caritas.org/wordpress/wp-content/uploads/2017/05/Logo-Caritas-Venezuela-grande-02.png" alt="Cáritas Venezuela">
+          </div>
+          <div class="foundation-content">
+            <h3 class="foundation-name">Cáritas Venezuela</h3>
+            <p class="foundation-description">
+              Organización de la Iglesia Católica dedicada a la promoción humana y el desarrollo integral 
+              de las comunidades más vulnerables.
+            </p>
+            <div class="foundation-impact">
+              <div class="impact-title">Tu donación será destinada a:</div>
+              <div class="impact-text">
+                Programas de nutrición infantil, atención médica básica, apoyo a adultos mayores 
+                y proyectos de desarrollo comunitario.
+              </div>
+            </div>
+            <button class="donate-btn">
+              <i class="fas fa-heart"></i>
+              Donar Ahora
+            </button>
+          </div>
+        </div>
+
+        <!-- Provea -->
+        <div class="foundation-card" data-foundation="provea">
+          <div class="foundation-logo">
+            <img src="https://provea.org/wp-content/uploads/2021/02/logo-provea-web-c.png" alt="Provea">
+          </div>
+          <div class="foundation-content">
+            <h3 class="foundation-name">Provea</h3>
+            <p class="foundation-description">
+              Programa Venezolano de Educación-Acción en Derechos Humanos que promueve y defiende 
+              los derechos económicos, sociales y culturales.
+            </p>
+            <div class="foundation-impact">
+              <div class="impact-title">Tu donación será destinada a:</div>
+              <div class="impact-text">
+                Programas de educación en derechos humanos, asistencia legal gratuita, 
+                investigación social y defensa de comunidades vulnerables.
+              </div>
+            </div>
+            <button class="donate-btn">
+              <i class="fas fa-heart"></i>
+              Donar Ahora
+            </button>
+          </div>
+        </div>
+
+        <!-- Foro Penal -->
+        <div class="foundation-card" data-foundation="foro-penal">
+          <div class="foundation-logo">
+            <img src="https://foropenal.com/wp-content/uploads/2018/03/LogoFP-3.jpg" alt="Foro Penal">
+          </div>
+          <div class="foundation-content">
+            <h3 class="foundation-name">Foro Penal</h3>
+            <p class="foundation-description">
+              Organización no gubernamental que defiende los derechos humanos y brinda asistencia legal 
+              a personas privadas de libertad por motivos políticos.
+            </p>
+            <div class="foundation-impact">
+              <div class="impact-title">Tu donación será destinada a:</div>
+              <div class="impact-text">
+                Asistencia legal gratuita, defensa de presos políticos, programas de reinserción social 
+                y apoyo a familiares de detenidos.
+              </div>
+            </div>
+            <button class="donate-btn">
+              <i class="fas fa-heart"></i>
+              Donar Ahora
+            </button>
+          </div>
+        </div>
+
+        <!-- Venezuela sin Límites -->
+        <div class="foundation-card" data-foundation="venezuela-sin-limites">
+          <div class="foundation-logo">
+            <img src="https://venezuelasinlimites.org/wp-content/uploads/2018/06/cropped-Logo-VSL-sin-rif-01-1-1320x496.png" alt="Venezuela sin Límites">
+          </div>
+          <div class="foundation-content">
+            <h3 class="foundation-name">Venezuela sin Límites</h3>
+            <p class="foundation-description">
+              Fundación que apoya a organizaciones no gubernamentales para maximizar su impacto social 
+              en comunidades vulnerables de Venezuela.
+            </p>
+            <div class="foundation-impact">
+              <div class="impact-title">Tu donación será destinada a:</div>
+              <div class="impact-text">
+                Fortalecimiento de ONGs locales, programas de desarrollo comunitario, 
+                capacitación organizacional y proyectos de impacto social.
+              </div>
+            </div>
+            <button class="donate-btn">
+              <i class="fas fa-heart"></i>
+              Donar Ahora
+            </button>
+          </div>
+        </div>
+
+        <!-- Fundación La Salle -->
+        <div class="foundation-card" data-foundation="fundacion-la-salle">
+          <div class="foundation-logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2OZxZrs99gRUleIbdDECakRtVvqfRb2dl0A&s" alt="Fundación La Salle">
+          </div>
+          <div class="foundation-content">
+            <h3 class="foundation-name">Fundación La Salle</h3>
+            <p class="foundation-description">
+              Institución educativa y de investigación que promueve el desarrollo integral de la persona 
+              y la transformación social de comunidades rurales y urbanas.
+            </p>
+            <div class="foundation-impact">
+              <div class="impact-title">Tu donación será destinada a:</div>
+              <div class="impact-text">
+                Programas educativos técnicos, becas estudiantiles, proyectos de investigación aplicada 
+                y desarrollo rural sostenible.
+              </div>
+            </div>
+            <button class="donate-btn">
+              <i class="fas fa-heart"></i>
+              Donar Ahora
+            </button>
+          </div>
+        </div>
+
+        <!-- Hogar Bambí -->
+        <div class="foundation-card" data-foundation="hogar-bambi">
+          <div class="foundation-logo">
+            <img src="https://hogarbambi.org/wp-content/uploads/2022/11/HBV_logo_2022_verde.png" alt="Hogar Bambí">
+          </div>
+          <div class="foundation-content">
+            <h3 class="foundation-name">Hogar Bambí</h3>
+            <p class="foundation-description">
+              Fundación dedicada al cuidado, protección y desarrollo integral de niños, niñas y adolescentes 
+              en situación de vulnerabilidad.
+            </p>
+            <div class="foundation-impact">
+              <div class="impact-title">Tu donación será destinada a:</div>
+              <div class="impact-text">
+                Atención integral a menores, programas de reinserción familiar, educación especializada 
+                y apoyo psicológico a niños vulnerables.
+              </div>
+            </div>
+            <button class="donate-btn">
+              <i class="fas fa-heart"></i>
+              Donar Ahora
+            </button>
+          </div>
+        </div>
+
+        <!-- Fundana -->
+        <div class="foundation-card" data-foundation="fundana">
+          <div class="foundation-logo">
+            <img src="data:image/png;base64,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" alt="Fundana">
+          </div>
+          <div class="foundation-content">
+            <h3 class="foundation-name">Fundana</h3>
+            <p class="foundation-description">
+              Fundación dedicada a la preservación del ambiente, la sostenibilidad y la educación 
+              ambiental para las presentes y futuras generaciones.
+            </p>
+            <div class="foundation-impact">
+              <div class="impact-title">Tu donación será destinada a:</div>
+              <div class="impact-text">
+                Proyectos de conservación ambiental, educación ecológica, reforestación 
+                y desarrollo sostenible en comunidades rurales.
+              </div>
+            </div>
+            <button class="donate-btn">
+              <i class="fas fa-heart"></i>
+              Donar Ahora
+            </button>
+          </div>
+        </div>
+
+        <!-- Aldeas Infantiles de Venezuela -->
+        <div class="foundation-card" data-foundation="aldeas-infantiles">
+          <div class="foundation-logo">
+            <img src="https://www.aldeasinfantiles.org.ve/getmedia/79193c63-6ce6-42d7-b366-28d7b338ae46/Aldeas-Infantiles-SOS-Venezuela.png?width=242&height=80&ext=.png" alt="Aldeas Infantiles SOS Venezuela">
+          </div>
+          <div class="foundation-content">
+            <h3 class="foundation-name">Aldeas Infantiles SOS Venezuela</h3>
+            <p class="foundation-description">
+              Organización internacional que brinda cuidado alternativo a niños que han perdido 
+              el cuidado de sus familias o están en riesgo de perderlo.
+            </p>
+            <div class="foundation-impact">
+              <div class="impact-title">Tu donación será destinada a:</div>
+              <div class="impact-text">
+                Cuidado de niños sin familia, programas de fortalecimiento familiar, 
+                educación de calidad y apoyo a jóvenes en transición a la vida independiente.
+              </div>
+            </div>
+            <button class="donate-btn">
+              <i class="fas fa-heart"></i>
+              Donar Ahora
+            </button>
+          </div>
+        </div>
+
+        <!-- Fundación Amigos del Niño con Cáncer -->
+        <div class="foundation-card" data-foundation="amigos-nino-cancer">
+          <div class="foundation-logo">
+            <img src="https://fninoscancer.org/wp-content/uploads/2024/12/Group-125.svg" alt="Fundación Amigos del Niño con Cáncer">
+          </div>
+          <div class="foundation-content">
+            <h3 class="foundation-name">Fundación Amigos del Niño con Cáncer</h3>
+            <p class="foundation-description">
+              Organización que brinda apoyo integral a niños y adolescentes con cáncer y sus familias, 
+              mejorando su calidad de vida durante el tratamiento.
+            </p>
+            <div class="foundation-impact">
+              <div class="impact-title">Tu donación será destinada a:</div>
+              <div class="impact-text">
+                Tratamientos oncológicos, hospedaje para familias, apoyo psicológico, 
+                medicamentos especializados y programas de rehabilitación integral.
+              </div>
+            </div>
+            <button class="donate-btn">
+              <i class="fas fa-heart"></i>
+              Donar Ahora
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Trust Section -->
+  <section class="trust-section">
+    <div class="container">
+      <h2 class="section-title">¿Por qué donar a través de REMEEX?</h2>
+      
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 class="trust-title">100% Seguro</h3>
+          <p class="trust-description">
+            Todas las transacciones están protegidas con cifrado de nivel bancario 
+            y sistemas de seguridad avanzados.
+          </p>
+        </div>
+        
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-eye"></i>
+          </div>
+          <h3 class="trust-title">Transparencia Total</h3>
+          <p class="trust-description">
+            Recibe comprobantes detallados y seguimiento de cómo se utiliza 
+            tu donación en cada fundación.
+          </p>
+        </div>
+        
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <h3 class="trust-title">Procesamiento Inmediato</h3>
+          <p class="trust-description">
+            Tu donación llega inmediatamente a la fundación elegida, 
+            maximizando el impacto de tu gesto solidario.
+          </p>
+        </div>
+        
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-certificate"></i>
+          </div>
+          <h3 class="trust-title">Certificado de Donación</h3>
+          <p class="trust-description">
+            Obtén un certificado oficial para fines fiscales y como 
+            constancia de tu contribución social.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Donation Modal -->
+  <div class="modal-overlay" id="donationModal">
+    <div class="donation-modal">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <button class="modal-close" id="closeModal">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-foundation-logo" id="modalFoundationLogo">
+          <img src="" alt="">
+        </div>
+        <h2 class="modal-foundation-name" id="modalFoundationName"></h2>
+        <p class="modal-foundation-mission" id="modalFoundationMission"></p>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="modal-content">
+        <!-- Step 1: Amount Selection -->
+        <div class="donation-step" id="step1">
+          <h3 class="step-title">
+            <span class="step-number">1</span>
+            Selecciona el monto de tu donación
+          </h3>
+          
+          <div class="amount-grid">
+            <div class="amount-option" data-amount="500" data-code="548446A">
+              <div class="amount-value">$500,00</div>
+              <div class="amount-code">Código: 548446A</div>
+            </div>
+            <div class="amount-option" data-amount="750" data-code="675847B">
+              <div class="amount-value">$750,00</div>
+              <div class="amount-code">Código: 675847B</div>
+            </div>
+            <div class="amount-option" data-amount="1000" data-code="823159C">
+              <div class="amount-value">$1.000,00</div>
+              <div class="amount-code">Código: 823159C</div>
+            </div>
+            <div class="amount-option" data-amount="1250" data-code="941236D">
+              <div class="amount-value">$1.250,00</div>
+              <div class="amount-code">Código: 941236D</div>
+            </div>
+            <div class="amount-option" data-amount="1500" data-code="157842E">
+              <div class="amount-value">$1.500,00</div>
+              <div class="amount-code">Código: 157842E</div>
+            </div>
+            <div class="amount-option" data-amount="2000" data-code="263975F">
+              <div class="amount-value">$2.000,00</div>
+              <div class="amount-code">Código: 263975F</div>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary btn-block" id="continueStep2" disabled>
+            <i class="fas fa-arrow-right"></i>
+            Continuar
+          </button>
+        </div>
+
+        <!-- Step 2: Donation Code -->
+        <div class="donation-step" id="step2" style="display: none;">
+          <h3 class="step-title">
+            <span class="step-number">2</span>
+            Código de donación generado
+          </h3>
+          
+          <div class="code-display">
+            <div class="code-label">Tu código único de donación es:</div>
+            <div class="code-value" id="generatedCode"></div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="donorEmail">
+              <i class="fas fa-envelope"></i>
+              Correo electrónico (para certificado)
+            </label>
+            <input type="email" class="form-control" id="donorEmail" placeholder="ejemplo@correo.com" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="donorMessage">
+              <i class="fas fa-heart"></i>
+              Mensaje personal (opcional)
+            </label>
+            <textarea class="form-control" id="donorMessage" rows="3" placeholder="Escribe un mensaje de esperanza o motivación..."></textarea>
+          </div>
+          
+          <button class="btn btn-success btn-block" id="processDonation">
+            <i class="fas fa-hand-holding-heart"></i>
+            Procesar Donación
+          </button>
+          
+          <button class="btn btn-outline btn-block" id="backStep1" style="margin-top: 0.5rem;">
+            <i class="fas fa-arrow-left"></i>
+            Cambiar Monto
+          </button>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+          <div class="spinner"></div>
+          <p>Procesando tu donación...</p>
+        </div>
+
+        <!-- Success State -->
+        <div class="success-container" id="successState">
+          <div class="success-icon">
+            <i class="fas fa-heart"></i>
+          </div>
+          <h2 class="success-title">¡Donación Exitosa!</h2>
+          <p class="success-message">
+            Tu donación ha sido procesada correctamente. 
+            Recibirás un certificado por correo electrónico.
+          </p>
+          
+          <div class="donation-summary">
+            <div class="summary-row">
+              <span>Fundación:</span>
+              <span id="summaryFoundation"></span>
+            </div>
+            <div class="summary-row">
+              <span>Monto:</span>
+              <span id="summaryAmount"></span>
+            </div>
+            <div class="summary-row">
+              <span>Código:</span>
+              <span id="summaryCode"></span>
+            </div>
+            <div class="summary-row">
+              <span>Total donado:</span>
+              <span id="summaryTotal"></span>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary btn-block" id="newDonation">
+            <i class="fas fa-plus"></i>
+            Hacer Otra Donación
+          </button>
+          
+          <button class="btn btn-outline btn-block" id="backToRemeex" style="margin-top: 0.5rem;">
+            <i class="fas fa-home"></i>
+            Volver a REMEEX
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuración de las fundaciones
+    const foundations = {
+      'fe-alegria': {
+        name: 'Fe y Alegría',
+        logo: 'https://provea.org/wp-content/uploads/2017/02/logo-fe-y-alegri%CC%81a.gif',
+        mission: 'Educación popular integral para todos'
+      },
+      'caritas': {
+        name: 'Cáritas Venezuela',
+        logo: 'https://www.caritas.org/wordpress/wp-content/uploads/2017/05/Logo-Caritas-Venezuela-grande-02.png',
+        mission: 'Promoción humana y desarrollo integral'
+      },
+      'provea': {
+        name: 'Provea',
+        logo: 'https://provea.org/wp-content/uploads/2021/02/logo-provea-web-c.png',
+        mission: 'Educación y defensa de derechos humanos'
+      },
+      'foro-penal': {
+        name: 'Foro Penal',
+        logo: 'https://foropenal.com/wp-content/uploads/2018/03/LogoFP-3.jpg',
+        mission: 'Defensa de derechos humanos y asistencia legal'
+      },
+      'venezuela-sin-limites': {
+        name: 'Venezuela sin Límites',
+        logo: 'https://venezuelasinlimites.org/wp-content/uploads/2018/06/cropped-Logo-VSL-sin-rif-01-1-1320x496.png',
+        mission: 'Fortalecimiento del tercer sector'
+      },
+      'fundacion-la-salle': {
+        name: 'Fundación La Salle',
+        logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2OZxZrs99gRUleIbdDECakRtVvqfRb2dl0A&s',
+        mission: 'Educación integral y desarrollo comunitario'
+      },
+      'hogar-bambi': {
+        name: 'Hogar Bambí',
+        logo: 'https://hogarbambi.org/wp-content/uploads/2022/11/HBV_logo_2022_verde.png',
+        mission: 'Protección integral de la niñez'
+      },
+      'fundana': {
+        name: 'Fundana',
+        logo: 'data:image/png;base64,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',
+        mission: 'Preservación ambiental y sustentabilidad'
+      },
+      'aldeas-infantiles': {
+        name: 'Aldeas Infantiles SOS Venezuela',
+        logo: 'https://www.aldeasinfantiles.org.ve/getmedia/79193c63-6ce6-42d7-b366-28d7b338ae46/Aldeas-Infantiles-SOS-Venezuela.png?width=242&height=80&ext=.png',
+        mission: 'Cuidado alternativo para niños sin familia'
+      },
+      'amigos-nino-cancer': {
+        name: 'Fundación Amigos del Niño con Cáncer',
+        logo: 'https://fninoscancer.org/wp-content/uploads/2024/12/Group-125.svg',
+        mission: 'Apoyo integral a niños con cáncer'
+      }
+    };
+
+    // Códigos de donación según el monto
+    const donationCodes = {
+      500: '548446A',
+      750: '675847B',
+      1000: '823159C',
+      1250: '941236D',
+      1500: '157842E',
+      2000: '263975F'
+    };
+
+    // Variables globales
+    let selectedFoundation = null;
+    let selectedAmount = null;
+    let selectedCode = null;
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Cards de fundaciones
+      document.querySelectorAll('.foundation-card').forEach(card => {
+        card.addEventListener('click', function() {
+          openDonationModal(this.dataset.foundation);
+        });
+      });
+
+      // Cierre del modal
+      document.getElementById('closeModal').addEventListener('click', closeDonationModal);
+      document.getElementById('donationModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDonationModal();
+      });
+
+      // Selección de montos
+      document.querySelectorAll('.amount-option').forEach(option => {
+        option.addEventListener('click', function() {
+          selectAmount(this);
+        });
+      });
+
+      // Botones de navegación
+      document.getElementById('continueStep2').addEventListener('click', showStep2);
+      document.getElementById('backStep1').addEventListener('click', showStep1);
+      document.getElementById('processDonation').addEventListener('click', processDonation);
+      document.getElementById('newDonation').addEventListener('click', resetModal);
+      document.getElementById('backToRemeex').addEventListener('click', function() {
+        window.location.href = 'homevisa.html';
+      });
+
+      // Animaciones de entrada
+      animateOnScroll();
+    });
+
+    // Abrir modal de donación
+    function openDonationModal(foundationKey) {
+      selectedFoundation = foundationKey;
+      const foundation = foundations[foundationKey];
+      
+      if (!foundation) return;
+
+      // Actualizar información del modal
+      document.getElementById('modalFoundationName').textContent = foundation.name;
+      document.getElementById('modalFoundationMission').textContent = foundation.mission;
+      document.getElementById('modalFoundationLogo').querySelector('img').src = foundation.logo;
+      document.getElementById('modalFoundationLogo').querySelector('img').alt = foundation.name;
+
+      // Mostrar modal con animación
+      const modal = document.getElementById('donationModal');
+      modal.style.display = 'flex';
+      
+      // Reset al step 1
+      showStep1();
+      
+      // Animación de entrada
+      setTimeout(() => {
+        modal.querySelector('.donation-modal').classList.add('fade-in');
+      }, 50);
+    }
+
+    // Cerrar modal de donación
+    function closeDonationModal() {
+      const modal = document.getElementById('donationModal');
+      modal.style.display = 'none';
+      resetModal();
+    }
+
+    // Seleccionar monto
+    function selectAmount(option) {
+      // Remover selección anterior
+      document.querySelectorAll('.amount-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+
+      // Seleccionar nuevo monto
+      option.classList.add('selected');
+      selectedAmount = parseInt(option.dataset.amount);
+      selectedCode = option.dataset.code;
+
+      // Habilitar botón de continuar
+      document.getElementById('continueStep2').disabled = false;
+    }
+
+    // Mostrar paso 2
+    function showStep2() {
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('step2').style.display = 'block';
+      
+      // Mostrar código generado
+      document.getElementById('generatedCode').textContent = selectedCode;
+    }
+
+    // Mostrar paso 1
+    function showStep1() {
+      document.getElementById('step1').style.display = 'block';
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('successState').style.display = 'none';
+    }
+
+    // Procesar donación
+    function processDonation() {
+      const email = document.getElementById('donorEmail').value;
+      const message = document.getElementById('donorMessage').value;
+
+      // Validar email
+      if (!email || !isValidEmail(email)) {
+        alert('Por favor, ingresa un correo electrónico válido.');
+        return;
+      }
+
+      // Mostrar loading
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('loadingState').style.display = 'block';
+
+      // Simular procesamiento
+      setTimeout(() => {
+        showSuccessState();
+      }, 3000);
+    }
+
+    // Mostrar estado de éxito
+    function showSuccessState() {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('successState').style.display = 'block';
+
+      // Actualizar resumen
+      const foundation = foundations[selectedFoundation];
+      document.getElementById('summaryFoundation').textContent = foundation.name;
+      document.getElementById('summaryAmount').textContent = `$${selectedAmount.toLocaleString()},00`;
+      document.getElementById('summaryCode').textContent = selectedCode;
+      document.getElementById('summaryTotal').textContent = `$${selectedAmount.toLocaleString()},00`;
+
+      // Efecto de confetti (si está disponible)
+      if (typeof confetti !== 'undefined') {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    // Reset modal
+    function resetModal() {
+      // Limpiar selecciones
+      document.querySelectorAll('.amount-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+
+      selectedFoundation = null;
+      selectedAmount = null;
+      selectedCode = null;
+
+      // Limpiar formulario
+      document.getElementById('donorEmail').value = '';
+      document.getElementById('donorMessage').value = '';
+      
+      // Deshabilitar botón
+      document.getElementById('continueStep2').disabled = true;
+
+      // Volver al step 1
+      showStep1();
+    }
+
+    // Validar email
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    // Animaciones al hacer scroll
+    function animateOnScroll() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('fade-in');
+          }
+        });
+      });
+
+      document.querySelectorAll('.foundation-card, .trust-item').forEach(el => {
+        observer.observe(el);
+      });
+    }
+
+    // Actualizar estadísticas dinámicamente
+    function updateStats() {
+      const stats = document.querySelectorAll('.stat-number');
+      stats.forEach(stat => {
+        const finalValue = stat.textContent;
+        const numValue = parseInt(finalValue.replace(/[^0-9]/g, ''));
+        
+        if (numValue > 0) {
+          animateNumber(stat, 0, numValue, 2000);
+        }
+      });
+    }
+
+    // Animar números
+    function animateNumber(element, start, end, duration) {
+      const startTime = Date.now();
+      const timer = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = Math.floor(start + (end - start) * progress);
+        
+        if (element.textContent.includes('$')) {
+          element.textContent = `$${current.toLocaleString()}${element.textContent.includes('+') ? '+' : ''}`;
+        } else if (element.textContent.includes('%')) {
+          element.textContent = `${current}%`;
+        } else {
+          element.textContent = `${current.toLocaleString()}${element.textContent.includes('+') ? '+' : ''}`;
+        }
+        
+        if (progress === 1) {
+          clearInterval(timer);
+        }
+      }, 16);
+    }
+
+    // Inicializar animaciones cuando se carga la página
+    window.addEventListener('load', () => {
+      setTimeout(updateStats, 500);
+    });
+  </script>
+</body>
+</html>

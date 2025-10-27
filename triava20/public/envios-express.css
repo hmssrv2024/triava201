@@ -1,0 +1,485 @@
+:root {
+  --express-accent: #f7b500;
+}
+
+.selected-country-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(26, 31, 113, 0.1), rgba(26, 31, 113, 0.03));
+  border: 1px solid rgba(26, 31, 113, 0.18);
+  color: var(--text-primary);
+}
+
+.selected-country-banner[hidden] {
+  display: none;
+}
+
+.selected-country-text {
+  font-weight: 600;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.link-button {
+  appearance: none;
+  border: none;
+  background: none;
+  font: inherit;
+  color: var(--visa-blue);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.link-button:hover,
+.link-button:focus-visible {
+  background: rgba(26, 31, 113, 0.12);
+  color: var(--visa-blue-dark);
+  outline: none;
+}
+
+.form-hint {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  min-height: 18px;
+}
+
+.form-hint:empty {
+  display: none;
+}
+
+.country-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.country-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.country-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 2px solid rgba(26, 31, 113, 0.12);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 12px 30px rgba(26, 31, 113, 0.08),
+    0 2px 10px rgba(26, 31, 113, 0.05);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.country-card:focus-visible {
+  outline: none;
+  border-color: var(--visa-blue);
+  box-shadow: 0 0 0 4px rgba(26, 31, 113, 0.12);
+}
+
+.country-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(26, 31, 113, 0.28);
+}
+
+.country-card__flag {
+  font-size: 24px;
+  margin-right: 14px;
+}
+
+.country-card__label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.country-card__name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.country-card__subtle {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.country-card__indicator {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(26, 31, 113, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.country-card.country-card--selected {
+  border-color: var(--visa-blue);
+  background: linear-gradient(135deg, rgba(26, 31, 113, 0.1), rgba(26, 31, 113, 0.03));
+}
+
+.country-card.country-card--selected .country-card__indicator {
+  background: var(--visa-blue);
+  border-color: var(--visa-blue);
+  color: #fff;
+}
+
+.form {
+  width: 100%;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px 16px;
+}
+
+.form-group--full {
+  grid-column: 1 / -1;
+}
+
+.form-feedback {
+  margin-top: 12px;
+  color: var(--error);
+  font-size: 14px;
+  min-height: 20px;
+}
+
+.envios-express-selector {
+  min-height: 100vh;
+  background: linear-gradient(145deg, rgba(20, 28, 65, 0.92), rgba(26, 31, 113, 0.85));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.selector-wrapper {
+  width: min(1040px, 100%);
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px);
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 24px 64px rgba(7, 11, 48, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.selector-header,
+.selector-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.selector-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.selector-logo {
+  height: 28px;
+}
+
+.selector-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.selector-exit {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.selector-exit:hover,
+.selector-exit:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  outline: none;
+}
+
+.selector-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.selector-main h1 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.selector-description {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.6;
+}
+
+.selector-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.selector-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.selector-footer p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.summary-card {
+  border-radius: 20px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(26, 31, 113, 0.14);
+  box-shadow:
+    0 14px 34px rgba(26, 31, 113, 0.1),
+    0 4px 12px rgba(26, 31, 113, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.summary-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-list {
+  display: grid;
+  gap: 12px;
+}
+
+.summary-item {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 12px;
+}
+
+.summary-item dt {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.summary-item dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.payment-card {
+  border-radius: 24px;
+  padding: 28px;
+  background: linear-gradient(135deg, rgba(26, 31, 113, 0.92), rgba(26, 31, 113, 0.78));
+  color: #fff;
+  box-shadow:
+    0 24px 48px rgba(13, 17, 66, 0.35),
+    0 8px 20px rgba(13, 17, 66, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.payment-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.payment-highlight {
+  font-size: 18px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 16px;
+  border-radius: 16px;
+}
+
+.payment-highlight span {
+  color: #fff;
+}
+
+.payment-details {
+  display: grid;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.payment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.payment-note {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+}
+
+/* PayPal container spacing */
+#paypal-button-container { margin-top: 24px; }
+
+@media (max-width: 768px) {
+  .summary-item {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-card {
+    padding: 24px;
+  }
+}
+@media (min-width: 1024px) {
+  .registration-app {
+    max-width: min(1200px, 95vw);
+    margin: 48px auto;
+    padding: 48px 72px;
+    border-radius: 32px;
+    background: linear-gradient(135deg, rgba(26, 31, 113, 0.08), rgba(26, 31, 113, 0.02));
+    box-shadow:
+      0 40px 80px rgba(13, 17, 66, 0.18),
+      0 12px 32px rgba(13, 17, 66, 0.12);
+  }
+
+  .registration-app .header,
+  .registration-app .progress-container,
+  .registration-app .content {
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 28px;
+    box-shadow: 0 24px 48px rgba(13, 17, 66, 0.12);
+  }
+
+  .registration-app .header {
+    padding: 32px 40px;
+    text-align: left;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .registration-app .logo-container {
+    justify-content: flex-start;
+  }
+
+  .registration-app .progress-container {
+    padding: 28px 40px;
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .registration-app .progress-bar {
+    margin-bottom: 0;
+  }
+
+  .registration-app .progress-text {
+    width: 100%;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+
+  .registration-app .content {
+    padding: 40px;
+    gap: 40px;
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
+  }
+
+  .registration-app .content .step {
+    position: relative;
+    padding: 0;
+    background: transparent;
+    min-height: auto;
+    gap: 40px;
+    align-content: start;
+  }
+
+  .registration-app .content .step.active {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    column-gap: 48px;
+    row-gap: 40px;
+    opacity: 1;
+    transform: none;
+  }
+
+  .registration-app .content .step-info {
+    position: sticky;
+    top: 48px;
+    align-self: start;
+    padding: 32px;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+    gap: 24px;
+  }
+
+  .registration-app .content .step-content {
+    padding: 36px 40px;
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+    gap: 32px;
+  }
+
+  .registration-app .welcome-screen {
+    align-items: flex-start;
+    text-align: left;
+    padding: 0;
+    gap: 24px;
+  }
+
+  .registration-app .welcome-video {
+    max-width: 640px;
+    width: 100%;
+    border-radius: 24px;
+    box-shadow: 0 28px 56px rgba(15, 23, 42, 0.18);
+  }
+
+  .registration-app .button-group {
+    justify-content: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .registration-app .button-group .btn {
+    min-width: 200px;
+  }
+}

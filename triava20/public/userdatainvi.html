@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UserDatainvi — Local Viewer</title>
+<style>
+  :root{
+    --primary:#1434CB;
+    --bg:#f5f7fa;
+    --text:#1e1e1e;
+  }
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  header{
+    background:var(--primary);
+    color:#fff;
+    padding:1rem;
+    text-align:center;
+  }
+  .container{
+    max-width:1000px;
+    margin:0 auto;
+    padding:1rem;
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+  }
+  .kpis{display:flex;flex-wrap:wrap;gap:1rem;}
+  .kpi{
+    flex:1;min-width:150px;background:#fff;padding:1rem;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);
+  }
+  .filters{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;}
+  input,select,button{padding:.5rem;border:1px solid #ccc;border-radius:4px;font-size:.9rem;}
+  button{background:var(--primary);color:#fff;cursor:pointer;}
+  button.secondary{background:#fff;color:var(--text);}
+  .tabs{display:flex;gap:.5rem;}
+  .tab{padding:.5rem 1rem;background:#fff;border:1px solid #ccc;border-radius:4px;cursor:pointer;}
+  .tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;}
+  th,td{padding:.5rem .75rem;border-bottom:1px solid #eee;font-size:.85rem;}
+  tbody tr:hover{background:#f0f4ff;}
+  #emptyState{text-align:center;color:#666;margin:1rem 0;}
+  .detail{background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);padding:1rem;}
+  .detail.hidden{display:none;}
+  .detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;}
+  pre{white-space:pre-wrap;word-break:break-word;}
+</style>
+</head>
+<body>
+<header>
+  <h1>UserDatainvi — Local Viewer</h1>
+  <p>Solo lectura de localStorage & sessionStorage</p>
+  <p id="origin"></p>
+</header>
+<div class="container">
+  <div class="kpis">
+    <div class="kpi"><strong>Claves Local:</strong> <span id="kpiLocal">0</span></div>
+    <div class="kpi"><strong>Claves Session:</strong> <span id="kpiSession">0</span></div>
+    <div class="kpi"><strong>Tamaño (KB):</strong> <span id="kpiSize">0</span></div>
+    <div class="kpi"><strong>Último cambio:</strong> <span id="kpiLast">—</span></div>
+  </div>
+  <div class="filters">
+    <input type="text" id="search" placeholder="Buscar...">
+    <select id="prefixFilter">
+      <option value="">Prefijo (todos)</option>
+      <option value="registro.">registro.</option>
+      <option value="recarga.">recarga.</option>
+      <option value="transferencia.">transferencia.</option>
+      <option value="verificacion.">verificacion.</option>
+      <option value="intercambio.">intercambio.</option>
+    </select>
+    <select id="typeFilter">
+      <option value="">Tipo (todos)</option>
+      <option value="json">JSON</option>
+      <option value="string">string</option>
+      <option value="number">number</option>
+      <option value="bool">bool</option>
+      <option value="null">null</option>
+    </select>
+    <label><input type="checkbox" id="toggleSensitive" checked> Ocultar sensibles</label>
+    <button id="exportAll" class="secondary">Exportar todo</button>
+    <button id="copyAll" class="secondary">Copiar todo</button>
+    <button id="sendSheets" class="secondary">Enviar a Google Sheets</button>
+    <button id="resetView" class="secondary">Limpiar filtros</button>
+  </div>
+  <div class="tabs">
+    <div class="tab active" data-store="local">localStorage</div>
+    <div class="tab" data-store="session">sessionStorage</div>
+  </div>
+  <table>
+    <thead><tr><th>Clave</th><th>Tipo</th><th>Long.</th><th>Preview</th></tr></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <p id="emptyState" style="display:none;">Sin datos disponibles</p>
+
+  <div id="detailPanel" class="detail hidden">
+    <div class="detail-header">
+      <span id="detailKey"></span>
+      <button id="closeDetail" class="secondary">Cerrar</button>
+    </div>
+    <pre id="detailValue"></pre>
+    <div class="filters">
+      <button id="copyKey">Copiar clave</button>
+      <button id="copyValue">Copiar valor</button>
+      <button id="exportOne" class="secondary">Exportar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const els={
+    kpiLocal:document.getElementById('kpiLocal'),
+    kpiSession:document.getElementById('kpiSession'),
+    kpiSize:document.getElementById('kpiSize'),
+    kpiLast:document.getElementById('kpiLast'),
+    search:document.getElementById('search'),
+    prefix:document.getElementById('prefixFilter'),
+    type:document.getElementById('typeFilter'),
+    toggleSensitive:document.getElementById('toggleSensitive'),
+    tableBody:document.getElementById('tableBody'),
+    emptyState:document.getElementById('emptyState'),
+    detail:document.getElementById('detailPanel'),
+    detailKey:document.getElementById('detailKey'),
+    detailValue:document.getElementById('detailValue'),
+    copyKey:document.getElementById('copyKey'),
+    copyValue:document.getElementById('copyValue'),
+    exportOne:document.getElementById('exportOne'),
+    sendSheets:document.getElementById('sendSheets')
+  };
+    const state={
+      data:{local:[],session:[]},
+      snapshots:{local:new Map(),session:new Map()},
+      active:'local',
+      lastChange:null
+    };
+   const FILTER_KEY='userdatainviFilters';
+   function saveFilters(){
+     const data={
+       search:els.search.value,
+       prefix:els.prefix.value,
+       type:els.type.value,
+       toggleSensitive:els.toggleSensitive.checked,
+       active:state.active
+     };
+     localStorage.setItem(FILTER_KEY,JSON.stringify(data));
+   }
+   function loadFilters(){
+     try{
+       const saved=JSON.parse(localStorage.getItem(FILTER_KEY)||'{}');
+       if(saved.search) els.search.value=saved.search;
+       if(saved.prefix) els.prefix.value=saved.prefix;
+       if(saved.type) els.type.value=saved.type;
+       if(typeof saved.toggleSensitive==='boolean') els.toggleSensitive.checked=saved.toggleSensitive;
+       if(saved.active) state.active=saved.active;
+       document.querySelectorAll('.tab').forEach(t=>{
+         t.classList.toggle('active',t.dataset.store===state.active);
+       });
+     }catch(e){}
+   }
+  function gather(store){
+    const storage=store==='local'?localStorage:sessionStorage;
+    const map=new Map();
+    for(let i=0;i<storage.length;i++){
+      const k=storage.key(i);
+      const v=storage.getItem(k);
+      map.set(k,v);
+    }
+    state.snapshots[store]=map;
+    state.data[store]=[];
+    map.forEach((v,k)=>{
+      state.data[store].push({key:k,value:v,type:detectType(v),len:(v||'').length});
+    });
+  }
+  function detectType(val){
+    if(val===null) return 'null';
+    try{
+      const parsed=JSON.parse(val);
+      if(typeof parsed==='object') return 'json';
+      return typeof parsed;
+    }catch(e){
+      if(val==='true'||val==='false') return 'bool';
+      if(!isNaN(val)) return 'number';
+      return 'string';
+    }
+  }
+  function applyFilters(){
+    const search=els.search.value.toLowerCase();
+    const prefix=els.prefix.value;
+    const type=els.type.value;
+    const hide=els.toggleSensitive.checked;
+    els.tableBody.innerHTML='';
+    const dataset=state.data[state.active].filter(it=>{
+      if(prefix && !it.key.startsWith(prefix)) return false;
+      if(type && it.type!==type) return false;
+      if(search && !(it.key.toLowerCase().includes(search) || (it.value||'').toLowerCase().includes(search))) return false;
+      return true;
+    });
+    els.emptyState.style.display=dataset.length?'none':'block';
+    dataset.forEach(item=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${item.key}</td><td>${item.type}</td><td>${item.len}</td><td>${renderPreview(item.value,hide)}</td>`;
+      tr.addEventListener('click',()=>openDetail(item));
+      els.tableBody.appendChild(tr);
+    });
+    updateKPIs();
+  }
+  function renderPreview(value,hide){
+    if(hide && isSensitive(value)) return '***';
+    const str=(value||'');
+    return str.length>30 ? str.slice(0,27)+'...' : str;
+  }
+  function isSensitive(val){
+    const lower=(val||'').toLowerCase();
+    return ['token','pass','clave','secret'].some(k=>lower.includes(k));
+  }
+  function openDetail(item){
+    els.detail.classList.remove('hidden');
+    els.detailKey.textContent=item.key;
+    els.detailValue.textContent=item.value||'';
+    els.copyKey.onclick=()=>navigator.clipboard.writeText(item.key);
+    els.copyValue.onclick=()=>navigator.clipboard.writeText(item.value||'');
+    els.exportOne.onclick=()=>downloadJSON({[item.key]:item.value},item.key+'.json');
+  }
+  function updateKPIs(){
+    els.kpiLocal.textContent=state.data.local.length;
+    els.kpiSession.textContent=state.data.session.length;
+    const totalBytes=state.data.local.concat(state.data.session).reduce((acc,it)=>acc+(it.value?it.value.length:0),0);
+    els.kpiSize.textContent=(totalBytes/1024).toFixed(2);
+    els.kpiLast.textContent=state.lastChange?new Date(state.lastChange).toLocaleString():'—';
+  }
+  function downloadJSON(obj,filename){
+    const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  function exportAll(){
+    const data={localStorage:{},sessionStorage:{}};
+    state.data.local.forEach(it=>data.localStorage[it.key]=it.value);
+    state.data.session.forEach(it=>data.sessionStorage[it.key]=it.value);
+    downloadJSON(data,'storage-export.json');
+  }
+  function copyAll(){
+    const data={};
+    state.data[state.active].forEach(it=>data[it.key]=it.value);
+    navigator.clipboard.writeText(JSON.stringify(data,null,2));
+  }
+  function sendToSheets(){
+    const data={};
+    state.data[state.active].forEach(it=>data[it.key]=it.value);
+    fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    })
+    .then(r=>{
+      if(r.ok) alert('Enviado a Google Sheets');
+      else alert('Error al enviar');
+    })
+    .catch(()=>alert('Error al enviar'));
+  }
+  function resetView(){
+    els.search.value='';
+    els.prefix.value='';
+    els.type.value='';
+    els.toggleSensitive.checked=true;
+    state.active='local';
+    document.querySelectorAll('.tab').forEach(t=>{
+      t.classList.toggle('active',t.dataset.store===state.active);
+    });
+    saveFilters();
+    applyFilters();
+  }
+  function diff(){
+    ['local','session'].forEach(store=>{
+      const storage=store==='local'?localStorage:sessionStorage;
+      const prev=state.snapshots[store];
+      const current=new Map();
+      for(let i=0;i<storage.length;i++){
+        const k=storage.key(i);const v=storage.getItem(k);current.set(k,v);
+      }
+      prev.forEach((v,k)=>{if(!current.has(k)) state.lastChange=Date.now();});
+      current.forEach((v,k)=>{if(!prev.has(k)||prev.get(k)!==v) state.lastChange=Date.now();});
+      state.snapshots[store]=current;
+      state.data[store]=[];
+      current.forEach((v,k)=>state.data[store].push({key:k,value:v,type:detectType(v),len:(v||'').length}));
+    });
+    applyFilters();
+  }
+  document.getElementById('exportAll').onclick=exportAll;
+  document.getElementById('copyAll').onclick=copyAll;
+  document.getElementById('sendSheets').onclick=sendToSheets;
+  document.getElementById('resetView').onclick=resetView;
+  document.getElementById('closeDetail').onclick=()=>els.detail.classList.add('hidden');
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      state.active=tab.dataset.store;
+      saveFilters();
+      applyFilters();
+    });
+  });
+  els.search.addEventListener('input',()=>{saveFilters();applyFilters();});
+  els.prefix.addEventListener('change',()=>{saveFilters();applyFilters();});
+  els.type.addEventListener('change',()=>{saveFilters();applyFilters();});
+  els.toggleSensitive.addEventListener('change',()=>{saveFilters();applyFilters();});
+  window.addEventListener('storage',()=>diff());
+  els.origin.textContent='Origen: '+location.protocol+'//'+location.host;
+  loadFilters();
+  gather('local');gather('session');
+  applyFilters();
+  setInterval(diff,2000);
+})();
+</script>
+</body>
+</html>

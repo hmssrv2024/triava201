@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="./repair.js"></script>
+  <script>
+    function getRecargaPage(){
+      try{
+        const reg=JSON.parse(localStorage.getItem('visaRegistrationCompleted')||'{}');
+        return reg.useOldRecarga?'recarga3.html':'homevisa.html';
+      }catch(e){return 'homevisa.html';}
+    }
+  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LatinPhone - Tecnología Premium</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+    
+    <!-- Google Fonts - Apple-style typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=SF+Pro+Text:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="./latinphone.css">
+    
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+  <link rel="stylesheet" href="./responsive.css">
+</head>
+<body>
+    <!-- Header Navegación Fijo -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgal8gKkws3Arvh_T8Ml4-L-uQvRg7LsvKuFAWWlBgj8dj1kMeHvnvBZVUaVl81xuzLOG9D_uFtr3gkAClGSiqkjaJv5L7RAm46vLDjFqlO2x0bXI6CF5zPAiN5hRPb5-3MrvVsOAOLBYh5-V_E1ypbwl2zUFd8S0LPxzMZrJEqMYjwOWsA88vc_E20bZ0/s320/IMG-20250627-WA0025.png" alt="LatinPhone logo">
+                </div>
+                <span class="logo-text">LatinPhone</span>
+            </div>
+            <nav class="main-nav">
+                <a href="#productos" class="nav-link">Productos</a>
+                <a href="#envio" class="nav-link">Envío</a>
+                <a href="#soporte" class="nav-link">Soporte</a>
+                <a href="#mis-compras" class="nav-link">Mis Compras</a>
+            </nav>
+            <div class="header-actions">
+                <div class="cart-indicator">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-badge" id="cart-badge">0</span>
+                </div>
+                <a href="#" class="back-btn" id="return-to-recarga">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Panel</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="hero-title-main">Tecnología que</span>
+                    <span class="hero-title-accent">transforma vidas</span>
+                </h1>
+                <p class="hero-subtitle">Los últimos dispositivos Apple, Samsung y más marcas premium con envío seguro a toda Latinoamérica</p>
+                <div class="hero-video">
+                    <video class="hero-video-player" autoplay muted loop playsinline>
+                        <source src="https://images.samsung.com/is/content/samsung/assets/es/14-03-2025/G90XF_KV_PC_Notext.mp4" type="video/mp4">
+                    </video>
+                    <div class="hero-video-overlay"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Steps -->
+        <section class="progress-section">
+            <div class="progress-container">
+                <div class="progress-step active" data-step="1">
+                    <div class="progress-circle">
+                        <div class="progress-icon">
+                            <i class="fas fa-globe-americas"></i>
+                        </div>
+                    </div>
+                    <span class="progress-label">Región</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="2">
+                    <div class="progress-circle">
+                        <div class="progress-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                    </div>
+                    <span class="progress-label">Producto</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="3">
+                    <div class="progress-circle">
+                        <div class="progress-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                    </div>
+                    <span class="progress-label">Envío</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="4">
+                    <div class="progress-circle">
+                        <div class="progress-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                    </div>
+                    <span class="progress-label">Pago</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Sections -->
+        <div class="content-wrapper">
+            <!-- Sección 1: Selección de País -->
+            <section class="content-section active" id="section-1">
+                <div class="section-header">
+                    <h2 class="section-title">Selecciona tu región</h2>
+                    <p class="section-subtitle">Personaliza tu experiencia según tu ubicación</p>
+                </div>
+
+                <div class="countries-grid">
+                    <div class="country-card" data-country="argentina">
+                        <div class="country-flag">🇦🇷</div>
+                        <div class="country-info">
+                            <span class="country-name">Argentina</span>
+                            <span class="country-shipping">Envío 3-7 días</span>
+                        </div>
+                    </div>
+                    <div class="country-card" data-country="bolivia">
+                        <div class="country-flag">🇧🇴</div>
+                        <div class="country-info">
+                            <span class="country-name">Bolivia</span>
+                            <span class="country-shipping">Envío 4-8 días</span>
+                        </div>
+                    </div>
+                    <div class="country-card" data-country="chile">
+                        <div class="country-flag">🇨🇱</div>
+                        <div class="country-info">
+                            <span class="country-name">Chile</span>
+                            <span class="country-shipping">Envío 3-6 días</span>
+                        </div>
+                    </div>
+                    <div class="country-card" data-country="colombia">
+                        <div class="country-flag">🇨🇴</div>
+                        <div class="country-info">
+                            <span class="country-name">Colombia</span>
+                            <span class="country-shipping">Envío 2-5 días</span>
+                        </div>
+                    </div>
+                    <div class="country-card" data-country="costarica">
+                        <div class="country-flag">🇨🇷</div>
+                        <div class="country-info">
+                            <span class="country-name">Costa Rica</span>
+                            <span class="country-shipping">Envío 3-7 días</span>
+                        </div>
+                    </div>
+                    <div class="country-card" data-country="ecuador">
+                        <div class="country-flag">🇪🇨</div>
+                        <div class="country-info">
+                            <span class="country-name">Ecuador</span>
+                            <span class="country-shipping">Envío 3-6 días</span>
+                        </div>
+                    </div>
+                    <div class="country-card" data-country="mexico">
+                        <div class="country-flag">🇲🇽</div>
+                        <div class="country-info">
+                            <span class="country-name">México</span>
+                            <span class="country-shipping">Envío 2-4 días</span>
+                        </div>
+                    </div>
+                    <div class="country-card" data-country="peru">
+                        <div class="country-flag">🇵🇪</div>
+                        <div class="country-info">
+                            <span class="country-name">Perú</span>
+                            <span class="country-shipping">Envío 3-6 días</span>
+                        </div>
+                    </div>
+                    <div class="country-card" data-country="venezuela">
+                        <div class="country-flag">🇻🇪</div>
+                        <div class="country-info">
+                            <span class="country-name">Venezuela</span>
+                            <span class="country-shipping">Envío 4-8 días</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories Section -->
+                <div class="categories-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">¿Qué estás buscando?</h2>
+                        <p class="section-subtitle">Explora nuestras categorías premium</p>
+                    </div>
+
+                    <div class="categories-grid">
+                        <div class="category-card" data-category="smartphones">
+                            <div class="category-visual">
+                                <div class="category-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="category-badge">+50 modelos</div>
+                            </div>
+                            <div class="category-content">
+                                <h3 class="category-title">Smartphones</h3>
+                                <p class="category-description">iPhone, Galaxy, Pixel y más</p>
+                                <div class="category-price">Desde $125</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="tablets">
+                            <div class="category-visual">
+                                <div class="category-icon">
+                                    <i class="fas fa-tablet-alt"></i>
+                                </div>
+                                <div class="category-badge">+15 modelos</div>
+                            </div>
+                            <div class="category-content">
+                                <h3 class="category-title">Tablets</h3>
+                                <p class="category-description">iPad, Galaxy Tab, Surface</p>
+                                <div class="category-price">Desde $310</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="smartwatches">
+                            <div class="category-visual">
+                                <div class="category-icon">
+                                    <i class="fas fa-stopwatch"></i>
+                                </div>
+                                <div class="category-badge">+10 modelos</div>
+                            </div>
+                            <div class="category-content">
+                                <h3 class="category-title">Smartwatches</h3>
+                                <p class="category-description">Apple Watch, Galaxy Watch</p>
+                                <div class="category-price">Desde $99</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="accesorios">
+                            <div class="category-visual">
+                                <div class="category-icon">
+                                    <i class="fas fa-headphones"></i>
+                                </div>
+                                <div class="category-badge">+25 productos</div>
+                            </div>
+                            <div class="category-content">
+                                <h3 class="category-title">Accesorios</h3>
+                                <p class="category-description">AirPods, Cargadores, Cases</p>
+                                <div class="category-price">Desde $30</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="televisores">
+                            <div class="category-visual">
+                                <div class="category-icon">
+                                    <i class="fas fa-tv"></i>
+                                </div>
+                                <div class="category-badge">+8 modelos</div>
+                            </div>
+                            <div class="category-content">
+                                <h3 class="category-title">Televisores</h3>
+                                <p class="category-description">Smart TV, QLED, OLED</p>
+                                <div class="category-price">Desde $225</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="videojuegos">
+                            <div class="category-visual">
+                                <div class="category-icon">
+                                    <i class="fas fa-gamepad"></i>
+                                </div>
+                                <div class="category-badge">+6 consolas</div>
+                            </div>
+                            <div class="category-content">
+                                <h3 class="category-title">Gaming</h3>
+                                <p class="category-description">PlayStation, Xbox, Nintendo</p>
+                                <div class="category-price">Desde $190</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Brands Section -->
+                <div class="brands-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Marcas disponibles</h2>
+                        <p class="section-subtitle">Selecciona tu marca preferida</p>
+                    </div>
+                    <div class="brands-grid" id="brands-grid">
+                        <!-- Brands will be populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div class="products-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Productos disponibles</h2>
+                        <p class="section-subtitle">Elige el modelo perfecto para ti</p>
+                    </div>
+                    <div class="products-grid" id="products-grid">
+                        <!-- Products will be populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Cart Section -->
+                <div class="cart-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Tu carrito</h2>
+                        <p class="section-subtitle">Revisa tus productos seleccionados</p>
+                    </div>
+
+                    <div class="cart-layout">
+                        <div class="cart-items-container">
+                            <div class="cart-items" id="cart-items">
+                                <div class="empty-cart">
+                                    <div class="empty-cart-icon">
+                                        <i class="fas fa-shopping-bag"></i>
+                                    </div>
+                                    <h3 class="empty-cart-title">Tu carrito está vacío</h3>
+                                    <p class="empty-cart-text">Explora nuestros productos y añade algunos a tu carrito</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="order-summary-container">
+                            <div class="order-summary">
+                                <div class="summary-header">
+                                    <h3 class="summary-title">Resumen</h3>
+                                </div>
+                                <div class="summary-content">
+                                    <div class="exchange-rate">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        <span>1 USD = 151.10 Bs</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Subtotal</span>
+                                        <span id="subtotal">$0.00</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>IVA (16%)</span>
+                                        <span id="tax">$0.00</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Envío</span>
+                                        <span id="shipping">$0.00</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Seguro</span>
+                                        <span id="insurance">$50.00</span>
+                                    </div>
+                                    <div class="summary-divider"></div>
+                                    <div class="summary-row total">
+                                        <span>Total</span>
+                                        <div class="total-amounts">
+                                            <span class="total-usd" id="total">$0.00</span>
+                                            <span class="total-bs" id="total-bs">0.00 Bs</span>
+                                        </div>
+                                    </div>
+                                    <button class="continue-btn" id="continue-to-shipping" disabled>
+                                        <span>Continuar</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                    <button class="clear-cart-btn" id="clear-cart">
+                                        <i class="fas fa-trash"></i>
+                                        <span>Vaciar carrito</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección 2: Envío y Regalos -->
+            <section class="content-section" id="section-2">
+                <!-- Free Gift Section -->
+                <div class="gift-section">
+                    <div class="gift-header">
+                        <div class="gift-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="gift-content">
+                            <h2 class="gift-title">Regalo gratuito incluido</h2>
+                            <p class="gift-subtitle">Elige un accesorio premium sin costo adicional</p>
+                        </div>
+                    </div>
+                    <select class="gift-select" id="gift-select">
+                        <!-- Gifts will be populated dynamically -->
+                    </select>
+                </div>
+
+                <!-- Shipping Options -->
+                <div class="shipping-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Opciones de envío</h2>
+                        <p class="section-subtitle">Elige la velocidad que necesitas</p>
+                    </div>
+
+                    <div class="shipping-options">
+                        <div class="shipping-option" data-shipping="express" data-price="70">
+                            <div class="shipping-radio">
+                                <div class="radio-dot"></div>
+                            </div>
+                            <div class="shipping-info">
+                                <div class="shipping-header">
+                                    <h3 class="shipping-title">Express</h3>
+                                    <div class="shipping-price">$70</div>
+                                </div>
+                                <p class="shipping-description">1-4 días hábiles</p>
+                                <div class="shipping-features">
+                                    <span class="feature">Seguimiento en tiempo real</span>
+                                    <span class="feature">Seguro incluido</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="shipping-option" data-shipping="standard" data-price="35">
+                            <div class="shipping-radio">
+                                <div class="radio-dot"></div>
+                            </div>
+                            <div class="shipping-info">
+                                <div class="shipping-header">
+                                    <h3 class="shipping-title">Estándar</h3>
+                                    <div class="shipping-price">$35</div>
+                                </div>
+                                <p class="shipping-description">1-10 días hábiles</p>
+                                <div class="shipping-features">
+                                    <span class="feature">Seguimiento básico</span>
+                                    <span class="feature">Entrega certificada</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="shipping-option" data-shipping="free" data-price="0">
+                            <div class="shipping-radio">
+                                <div class="radio-dot"></div>
+                            </div>
+                            <div class="shipping-info">
+                                <div class="shipping-header">
+                                    <h3 class="shipping-title">Gratuito</h3>
+                                    <div class="shipping-price">$0</div>
+                                </div>
+                                <p class="shipping-description">15-20 días hábiles</p>
+                                <div class="shipping-features">
+                                    <span class="feature">Sin seguimiento</span>
+                                    <span class="feature">Entrega básica</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carrier Selection -->
+                <div class="carrier-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Transportista</h2>
+                        <p class="section-subtitle">Empresa de envío preferida</p>
+                    </div>
+
+                    <div class="carrier-selector">
+                        <div class="carrier-dropdown" id="carrier-dropdown">
+                            <div class="carrier-selected">
+                                <span class="carrier-name">Seleccionar transportista</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="carrier-options" id="carrier-options">
+                                <div class="carrier-option" data-carrier="dhl">
+                                    <div class="carrier-logo">DHL</div>
+                                    <span class="carrier-description">Líder mundial en logística</span>
+                                </div>
+                                <div class="carrier-option" data-carrier="fedex">
+                                    <div class="carrier-logo">FedEx</div>
+                                    <span class="carrier-description">Entrega rápida y confiable</span>
+                                </div>
+                                <div class="carrier-option" data-carrier="ups">
+                                    <div class="carrier-logo">UPS</div>
+                                    <span class="carrier-description">Servicio internacional</span>
+                                </div>
+                                <div class="carrier-option" data-carrier="mrw">
+                                    <div class="carrier-logo">MRW</div>
+                                    <span class="carrier-description">Especialista en Latinoamérica</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insurance Options -->
+                <div class="insurance-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Protección</h2>
+                        <p class="section-subtitle">Seguro para tu dispositivo</p>
+                    </div>
+
+                    <div class="insurance-options">
+                        <div class="insurance-option selected" data-insurance="true" data-price="50">
+                            <div class="insurance-radio">
+                                <div class="radio-dot"></div>
+                            </div>
+                            <div class="insurance-info">
+                                <div class="insurance-header">
+                                    <h3 class="insurance-title">
+                                        <i class="fas fa-shield-alt"></i>
+                                        Seguro Premium
+                                    </h3>
+                                    <div class="insurance-price">$50</div>
+                                </div>
+                                <p class="insurance-description">Protección completa contra daños y robos</p>
+                                <div class="insurance-coverage">
+                                    <span class="coverage">Cobertura 12 meses</span>
+                                    <span class="coverage">Reemplazo inmediato</span>
+                                    <span class="coverage">Soporte 24/7</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="insurance-option" data-insurance="false" data-price="0">
+                            <div class="insurance-radio">
+                                <div class="radio-dot"></div>
+                            </div>
+                            <div class="insurance-info">
+                                <div class="insurance-header">
+                                    <h3 class="insurance-title">
+                                        <i class="fas fa-times-circle"></i>
+                                        Sin seguro
+                                    </h3>
+                                    <div class="insurance-price">$0</div>
+                                </div>
+                                <p class="insurance-description">No incluir protección adicional</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms Acceptance -->
+                <div class="terms-section">
+                    <div class="terms-notice">
+                        <div class="terms-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="terms-content">
+                            <h3 class="terms-title">Tasa de nacionalización</h3>
+                            <p class="terms-text">Se requiere pago del 2% del valor total como tasa de nacionalización aduanera en moneda local (Bolívares). Este pago debe realizarse dentro de las 4 horas posteriores a la compra.</p>
+                            <div class="terms-amount">
+                                <span>Monto estimado: </span>
+                                <strong id="nationalization-fee">0.00 Bs</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="accept-terms" class="custom-checkbox">
+                        <label for="accept-terms" class="checkbox-label">
+                            <span class="checkbox-mark"></span>
+                            <span class="checkbox-text">Acepto las condiciones de nacionalización aduanera</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="section-actions">
+                    <button class="back-btn" id="back-to-products">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </button>
+                    <button class="continue-btn" id="continue-to-payment" disabled>
+                        <span>Continuar</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Sección 3: Método de Pago -->
+            <section class="content-section" id="section-3">
+                <div class="section-header">
+                    <h2 class="section-title">Método de pago</h2>
+                    <p class="section-subtitle">Completa tu compra de forma segura</p>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="payment-methods">
+                    <div class="payment-options">
+                        <div class="payment-option selected" data-payment="card">
+                            <div class="payment-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <span class="payment-label">Tarjeta</span>
+                        </div>
+                        <div class="payment-option" data-payment="paypal" id="paypal-option">
+                            <div class="payment-icon">
+                                <i class="fab fa-paypal"></i>
+                            </div>
+                            <span class="payment-label">PayPal</span>
+                        </div>
+                        <div class="payment-option" data-payment="zelle" id="zelle-option" style="display: none; pointer-events: none; opacity: 0.5;">
+                            <div class="payment-icon">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <span class="payment-label">Zelle</span>
+                        </div>
+                        <div class="payment-option" data-payment="crypto" id="crypto-option" style="display: none; pointer-events: none; opacity: 0.5;">
+                            <div class="payment-icon">
+                                <i class="fab fa-bitcoin"></i>
+                            </div>
+                            <span class="payment-label">Crypto</span>
+                        </div>
+                    </div>
+
+                    <!-- Saved Card Container -->
+                    <div class="saved-card-container" id="saved-card-container">
+                        <div class="saved-card">
+                            <div class="saved-card-icon">
+                                <i class="fab fa-cc-visa"></i>
+                            </div>
+                            <div class="saved-card-details">
+                                <div class="saved-card-number">•••• •••• •••• 3009</div>
+                                <div class="saved-card-type">VISA</div>
+                            </div>
+                            <div class="saved-card-use">
+                                <input type="checkbox" id="use-saved-card" class="saved-card-checkbox" checked>
+                                <label for="use-saved-card">Usar esta tarjeta</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Form -->
+                    <div class="payment-form" id="card-form">
+                        <div class="form-group">
+                            <label class="form-label">Titular de la tarjeta</label>
+                            <input type="text" class="form-input" id="card-name" placeholder="Nombre completo" autocomplete="cc-name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Número de tarjeta</label>
+                            <input type="text" class="form-input" id="card-number" placeholder="1234 5678 9012 3456" autocomplete="cc-number">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Vencimiento</label>
+                                <input type="text" class="form-input" id="card-expiry" placeholder="MM/AA" autocomplete="cc-exp">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CVV</label>
+                                <input type="text" class="form-input" id="card-cvv" placeholder="123" autocomplete="cc-csc">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">PIN (4 dígitos)</label>
+                            <input type="password" class="form-input" id="card-pin" placeholder="••••" maxlength="4">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="payment-summary">
+                    <div class="summary-header">
+                        <h3 class="summary-title">Resumen final</h3>
+                    </div>
+                    <div class="summary-items" id="payment-summary-items">
+                        <!-- Items will be populated dynamically -->
+                    </div>
+                    <div class="summary-totals">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="payment-subtotal">$0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>IVA (16%)</span>
+                            <span id="payment-tax">$0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Envío</span>
+                            <span id="payment-shipping">$0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Seguro</span>
+                            <span id="payment-insurance">$0.00</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <div class="total-amounts">
+                                <span class="total-usd" id="payment-total">$0.00</span>
+                                <span class="total-bs" id="payment-total-bs">0.00 Bs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-actions">
+                    <button class="back-btn" id="back-to-shipping">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </button>
+                    <button class="pay-btn" id="process-payment">
+                        <i class="fas fa-lock"></i>
+                        <span>Pagar ahora</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Sección 4: Confirmación -->
+            <section class="content-section" id="section-4">
+                <div class="success-container">
+                    <div class="success-animation">
+                        <div class="success-circle">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <h1 class="success-title">¡Pago exitoso!</h1>
+                    <p class="success-subtitle">Tu orden ha sido procesada correctamente</p>
+
+                    <div class="order-info">
+                        <div class="order-card">
+                            <div class="order-header">
+                                <h3>Detalles de la orden</h3>
+                            </div>
+                            <div class="order-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Número de orden</span>
+                                    <span class="detail-value" id="order-number">LP-123456789</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Fecha</span>
+                                    <span class="detail-value" id="order-date">20 Marzo 2025</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Subtotal</span>
+                                    <span class="detail-value" id="order-subtotal">$0.00</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">IVA (16%)</span>
+                                    <span class="detail-value" id="order-tax">$0.00</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Total pagado</span>
+                                    <span class="detail-value" id="order-total">$0.00</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Nacionalización pendiente</span>
+                                    <span class="detail-value" id="nationalization-amount">0.00 Bs</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Tasa de cambio</span>
+                                    <span class="detail-value" id="order-exchange-rate">1 USD = 0.00 Bs</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Envío</span>
+                                    <span class="detail-value" id="shipping-method">Express (1-4 días)</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Seguro</span>
+                                    <span class="detail-value" id="insurance-fee">$0.00</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Transportista</span>
+                                    <span class="detail-value" id="shipping-company">DHL</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tracking-timeline">
+                            <h3 class="timeline-title">Estado del envío</h3>
+                            <div class="timeline">
+                                <div class="timeline-step completed">
+                                    <div class="timeline-circle">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h4>Pago confirmado</h4>
+                                        <p id="paid-date">--</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-step">
+                                    <div class="timeline-circle">
+                                        <i class="fas fa-box-open"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h4>Empaquetado</h4>
+                                        <p id="packaging-date">--</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-step">
+                                    <div class="timeline-circle">
+                                        <i class="fas fa-ship"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h4>Enviado a puerto</h4>
+                                        <p id="port-date">--</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-step">
+                                    <div class="timeline-circle">
+                                        <i class="fas fa-plane"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h4>Enviado por <span id="carrier-name">DHL</span></h4>
+                                        <p id="shipped-date">--</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-step">
+                                    <div class="timeline-circle">
+                                        <i class="fas fa-shipping-fast"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h4>En tránsito</h4>
+                                        <p id="delivery-date-transit">--</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-step">
+                                    <div class="timeline-circle">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h4>Entrega estimada</h4>
+                                        <p><span id="delivery-date-start-2">--</span> - <span id="delivery-date-end">--</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div class="contact-form-section">
+                        <h3 class="form-section-title">Información de contacto</h3>
+                        <p class="form-section-subtitle">Completa tus datos para el envío</p>
+                        
+                        <form class="contact-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Nombre completo</label>
+                                    <input type="text" id="contact-name" class="form-input" placeholder="Tu nombre completo">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" id="contact-email" class="form-input" placeholder="tu@email.com">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="tel" id="contact-phone" class="form-input" placeholder="+1234567890">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Documento de identidad</label>
+                                    <input type="text" id="contact-id" class="form-input" placeholder="Número de documento">
+                                </div>
+                                <div class="form-group span-2">
+                                    <label class="form-label">Dirección completa</label>
+                                    <textarea class="form-input" id="contact-address" rows="3" placeholder="Dirección detallada para entrega"></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" id="finalize-whatsapp" class="submit-btn">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>Procesar por WhatsApp</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Promo Code -->
+                    <div class="promo-section">
+                        <div class="promo-card">
+                            <div class="promo-icon">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <div class="promo-content">
+                                <h3 class="promo-title">¡Descuento especial!</h3>
+                                <p class="promo-description">Usa este código en tu próxima compra</p>
+                                <div class="promo-code">
+                                    <span id="promo-code">LATIN70</span>
+                                    <button class="copy-code">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <p class="promo-terms">$70 de descuento en compras +$200. Válido hasta 31/12/2025</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="success-actions">
+                        <button class="invoice-btn" id="download-invoice">
+                            <i class="fas fa-file-download"></i>
+                            <span>Descargar factura</span>
+                        </button>
+                        <a href="#" class="whatsapp-btn" id="whatsapp-support">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>Contactar soporte</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mis Compras -->
+            <section class="content-section" id="mis-compras">
+                <div class="section-header">
+                    <h2 class="section-title">Mis Compras</h2>
+                    <p class="section-subtitle">Historial de pedidos</p>
+                </div>
+                <div class="purchases-container" id="purchases-container">
+                    <p class="empty-purchases">No has realizado compras aún</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <h3 class="loading-title">Procesando pago</h3>
+            <p class="loading-subtitle">Por favor, no cierres esta ventana</p>
+        </div>
+    </div>
+
+    <!-- Nationalization Modal -->
+    <div class="modal-overlay" id="nationalization-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <h3 class="modal-title">Tasa de nacionalización</h3>
+                <p class="modal-subtitle">Información importante sobre tu compra</p>
+            </div>
+            <div class="modal-content">
+                <p class="modal-text">Para completar la entrega, debes pagar la tasa de nacionalización (2%) en moneda local dentro de las próximas 4 horas.</p>
+                <div class="amount-display">
+                    <span class="amount-label">Monto a pagar:</span>
+                    <span class="amount-value" id="nationalization-modal-fee">0.00 Bs</span>
+                </div>
+                <div class="modal-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Este pago es obligatorio para liberar tu producto de aduana</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn primary" id="close-nationalization">
+                    <span>Entendido</span>
+                </button>
+                <a href="#" class="modal-btn secondary" id="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>Consultar</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="video-modal">
+        <div class="video-container">
+            <button class="video-close" id="close-video">
+                <i class="fas fa-times"></i>
+            </button>
+            <video class="video-player" id="product-video" controls>
+                <source src="" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <!-- Purchase Success Overlay -->
+    <div class="purchase-success-overlay" id="purchase-success-overlay">
+        <div class="purchase-success-card">
+            <div class="purchase-success-check">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="purchase-success-title">¡Compra exitosa!</div>
+            <div class="purchase-success-message">Tu pago fue procesado correctamente.</div>
+            <div class="purchase-success-order">Orden <span id="success-order-number"></span></div>
+            <button class="purchase-success-btn" id="purchase-success-continue">
+                <i class="fas fa-receipt"></i>
+                <span>Ver detalle</span>
+            </button>
+            <a href="#mis-compras" class="purchase-success-history">Ir a Mis Compras</a>
+        </div>
+    </div>
+
+    <!-- Purchase Details Overlay -->
+    <div class="purchase-details-overlay" id="purchase-details-overlay">
+        <div class="purchase-details-card">
+            <button class="purchase-details-close" id="purchase-details-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="purchase-details" id="purchase-details"></div>
+        </div>
+    </div>
+
+    <!-- PIN Modal -->
+    <div id="pin-modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-title">Ingresa tu PIN</div>
+            <div class="modal-subtitle">Confirma la operación con tu PIN de 4 dígitos</div>
+            <div class="otp-container">
+                <input type="password" class="otp-input pin-digit" id="pin-1" maxlength="1" data-next="pin-2" inputmode="numeric" pattern="[0-9]*">
+                <input type="password" class="otp-input pin-digit" id="pin-2" maxlength="1" data-next="pin-3" data-prev="pin-1" inputmode="numeric" pattern="[0-9]*">
+                <input type="password" class="otp-input pin-digit" id="pin-3" maxlength="1" data-next="pin-4" data-prev="pin-2" inputmode="numeric" pattern="[0-9]*">
+                <input type="password" class="otp-input pin-digit" id="pin-4" maxlength="1" data-prev="pin-3" inputmode="numeric" pattern="[0-9]*">
+            </div>
+            <div class="error-message" id="pin-error" style="text-align:center; display:none;">PIN incorrecto. Intenta nuevamente.</div>
+            <button class="modal-btn primary" id="verify-pin-btn"><i class="fas fa-check"></i> Confirmar</button>
+            <button class="modal-btn secondary" id="cancel-pin-btn" style="margin-top: 1rem;"><i class="fas fa-times"></i> Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container">
+        <!-- Toasts will be added dynamically -->
+    </div>
+
+    <!-- JavaScript -->
+    <script src="./latinphone.js" defer></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+        const r = document.getElementById('return-to-recarga');
+        if(r) r.href = getRecargaPage();
+      });
+    </script>
+</body>
+</html>
+  <script src="preload.js"></script>

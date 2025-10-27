@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - REMEEX (inviinvi201)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background-color: #f4f5f7; color: #333; }
+        .container { display: flex; height: 100vh; }
+        #sidebar { width: 350px; background: #fff; border-right: 1px solid #ddd; overflow-y: auto; display: flex; flex-direction: column; }
+        #main-content { flex: 1; padding: 20px; overflow-y: auto; }
+        #user-list { list-style: none; padding: 0; margin: 0; flex-grow: 1; }
+        #user-list li { padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; }
+        #user-list li:hover, #user-list li.active { background-color: #e0e7ff; }
+        #user-list li strong { font-size: 1.1em; color: #1a1f71; }
+        #user-list li small { color: #666; display: block; }
+        #user-detail { display: none; }
+        h1, h2, h3 { color: #1a1f71; border-bottom: 2px solid #e0e7ff; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; white-space: nowrap; }
+        th { background-color: #f0f0f0; }
+        td { white-space: normal; word-break: break-word; }
+        .loader, .initial-state { text-align: center; padding: 50px; }
+        .api-setup { padding: 20px; background: #fff; border-radius: 8px; margin: 20px auto; text-align: center; max-width: 600px; }
+        input[type="url"], input[type="text"] { width: 80%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        button { background-color: #1a1f71; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
+        button:hover { background-color: #3244b6; }
+        a { color: #1a1f71; text-decoration: none; font-weight: bold; }
+        a:hover { text-decoration: underline; }
+        .sidebar-header { padding: 15px; border-bottom: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+    <div class="api-setup" id="api-setup">
+        <h2>Configuración del Panel de Control</h2>
+        <p>Pega la URL de tu aplicación web de Google Apps Script para cargar los datos.</p>
+        <input type="url" id="api-url-input" placeholder="https://script.google.com/macros/s/...">
+        <br><br>
+        <button onclick="loadData()">Cargar Datos de Usuarios</button>
+    </div>
+
+    <div class="container" id="dashboard-container" style="display:none;">
+        <div id="sidebar">
+            <div class="sidebar-header">
+                <h3>Usuarios Registrados</h3>
+                <input type="text" id="search-bar" placeholder="Buscar por email o nombre..." style="width: 95%;">
+            </div>
+            <ul id="user-list"></ul>
+        </div>
+        <div id="main-content">
+            <div id="loader" class="loader">Cargando datos...</div>
+            <div class="initial-state" id="initial-state"><p>Selecciona un usuario de la lista para ver sus detalles.</p></div>
+            <div id="user-detail">
+                <h2 id="detail-name"></h2>
+                
+                <h3>Perfil del Usuario</h3>
+                <table>
+                    <tbody id="profile-table"></tbody>
+                </table>
+
+                <h3>Actividad Reciente</h3>
+                <table id="activity-table">
+                    <thead><tr><th>Fecha</th><th>Tipo</th><th>Página</th><th>Detalles</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+
+                <h3>Transacciones</h3>
+                <table id="transactions-table">
+                    <thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Método</th><th>Estado</th><th>Comprobante</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allData = {};
+
+        const apiUrlInput = document.getElementById('api-url-input');
+        const savedApiUrl = localStorage.getItem('remeexApiUrl_v2'); 
+        if (savedApiUrl) {
+            apiUrlInput.value = savedApiUrl;
+            loadData();
+        }
+
+        async function loadData() {
+            const apiUrl = apiUrlInput.value.trim();
+            if (!apiUrl) { alert('Por favor, ingresa la URL de la API.'); return; }
+            localStorage.setItem('remeexApiUrl_v2', apiUrl);
+
+            document.getElementById('api-setup').style.display = 'none';
+            document.getElementById('dashboard-container').style.display = 'flex';
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('user-detail').style.display = 'none';
+            document.getElementById('initial-state').style.display = 'block';
+
+            try {
+                const response = await fetch(`${apiUrl}?cachebust=${new Date().getTime()}`);
+                if (!response.ok) throw new Error(`Error de red: ${response.statusText}`);
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+                
+                allData = data;
+                renderUserList(allData.profiles);
+                document.getElementById('loader').style.display = 'none';
+            } catch (error) {
+                document.getElementById('loader').innerHTML = `<h3>Error al Cargar Datos</h3><p>${error.message}</p><p><b>Posibles Soluciones:</b></p><ol style="text-align: left; display: inline-block;"><li>Asegúrate de estar logueado en Google con la cuenta de administrador (<b>henrymoisesrojasia@gmail.com</b>).</li><li>Verifica que la URL de la API sea correcta y no tenga espacios.</li><li>Vuelve a implementar tu Google Apps Script (elige "Nueva versión").</li></ol>`;
+            }
+        }
+
+        function renderUserList(profiles) {
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = '';
+            profiles.sort((a, b) => new Date(b.UltimaActualizacion) - new Date(a.UltimaActualizacion));
+            
+            profiles.forEach(profile => {
+                const li = document.createElement('li');
+                li.dataset.userid = profile.UserID;
+                li.innerHTML = `<strong>${profile.NombreCompleto || profile.Email || 'Usuario sin nombre'}</strong><small>${profile.Email || 'Sin email'}</small>`;
+                li.addEventListener('click', () => {
+                    document.querySelectorAll('#user-list li').forEach(item => item.classList.remove('active'));
+                    li.classList.add('active');
+                    showUserDetails(profile.UserID);
+                });
+                userList.appendChild(li);
+            });
+        }
+
+        function showUserDetails(userId) {
+            const profile = allData.profiles.find(p => p.UserID === userId);
+            if (!profile) return;
+            
+            document.getElementById('initial-state').style.display = 'none';
+            document.getElementById('detail-name').textContent = profile.NombreCompleto || 'Usuario sin nombre';
+
+            const profileTable = document.querySelector('#profile-table tbody');
+            profileTable.innerHTML = `
+                <tr><td>UserID</td><td>${profile.UserID}</td></tr>
+                <tr><td>Email</td><td>${profile.Email}</td></tr>
+                <tr><td>Teléfono</td><td>${profile.Telefono}</td></tr>
+                <tr><td>Documento</td><td>${profile.TipoDocumento}: ${profile.NumeroDocumento}</td></tr>
+                <tr><td>Saldo</td><td>USD ${parseFloat(profile.SaldoUSD || 0).toFixed(2)} / BS ${parseFloat(profile.SaldoBS || 0).toFixed(2)}</td></tr>
+                <tr><td>Verificación</td><td>${profile.VerificationStatus}</td></tr>
+                <tr><td>Selfie</td><td>${profile.SelfieURL ? `<a href="${profile.SelfieURL}" target="_blank">Ver Selfie</a>` : 'No disponible'}</td></tr>
+            `;
+
+            populateTable('activity-table', allData.activity.filter(a => a.UserID === userId), ['Timestamp', 'EventType', 'PageURL', 'EventDetails']);
+            populateTable('transactions-table', allData.transactions.filter(t => t.UserID === userId), ['Timestamp', 'Type', 'Amount', 'Method', 'Status', 'ReceiptURL']);
+
+            document.getElementById('user-detail').style.display = 'block';
+        }
+
+        function populateTable(tableId, data, columns) {
+            const tableBody = document.querySelector(`#${tableId} tbody`);
+            tableBody.innerHTML = '';
+            data.sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+            
+            data.forEach(item => {
+                const row = tableBody.insertRow();
+                columns.forEach(col => {
+                    const cell = row.insertCell();
+                    let value = item[col] || '';
+                    if (col === 'Timestamp') value = new Date(value).toLocaleString('es-VE');
+                    else if (col === 'ReceiptURL' && value) cell.innerHTML = `<a href="${value}" target="_blank">Ver Comprobante</a>`;
+                    else cell.textContent = value;
+                });
+            });
+        }
+        
+        document.getElementById('search-bar').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredProfiles = allData.profiles.filter(p => 
+                (p.NombreCompleto && p.NombreCompleto.toLowerCase().includes(searchTerm)) ||
+                (p.Email && p.Email.toLowerCase().includes(searchTerm))
+            );
+            renderUserList(filteredProfiles);
+        });
+    </script>
+</body>
+</html>

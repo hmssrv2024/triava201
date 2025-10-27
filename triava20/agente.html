@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agente de Voz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1f3c88, #39a0ed);
+      color: #fff;
+    }
+
+    main {
+      text-align: center;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2.5rem 3rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+      max-width: 480px;
+      width: 90%;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Habla con nuestro agente</h1>
+    <p>Pulsa el botón para iniciar una conversación con el asistente inteligente.</p>
+    <elevenlabs-convai agent-id="agent_9201k6xm54wjexhtw4waxzv1qnt7"></elevenlabs-convai>
+  </main>
+
+  <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>

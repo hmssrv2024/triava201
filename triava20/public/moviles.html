@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Móviles Premium | LatinPhone - El Distribuidor #1 en Latinoamérica</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="img/favicon.png">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    
+    <!-- Meta tags SEO -->
+    <meta name="description" content="Explora nuestra amplia selección de móviles premium: Samsung, Apple, Google y más. Envíos garantizados a toda Latinoamérica.">
+    <meta name="keywords" content="smartphones, móviles premium, Samsung, iPhone, Google Pixel, Xiaomi, envíos, Venezuela, Latinoamérica">
+    <meta name="author" content="LatinPhone">
+    <meta name="robots" content="index, follow">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="moviles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="latinphone.png" alt="LatinPhone">
+                <h1>LatinPhone</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="latinphonestorehome.html">Inicio</a></li>
+                <li><a href="moviles.html" class="active">Móviles</a></li>
+                <li><a href="#">Accesorios</a></li>
+                <li><a href="#">Soporte</a></li>
+                <li><a href="#">Contacto</a></li>
+            </ul>
+            <div class="nav-icons">
+                <a href="#" id="search-toggle"><i class="fas fa-search"></i></a>
+                <a href="#" id="cart-toggle"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
+                <a href="#" class="mobile-menu-btn"><i class="fas fa-bars"></i></a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Barra de búsqueda expandible -->
+    <div class="search-bar">
+        <div class="container">
+            <form action="#" method="get">
+                <input type="text" placeholder="Buscar productos, marcas, modelos...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Carrito de compra lateral -->
+    <div class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Tu Carrito</h3>
+            <button class="close-cart"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-items">
+            <!-- Los items del carrito se cargarán dinámicamente -->
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Tu carrito está vacío</p>
+                <a href="#" class="btn btn-primary">Explorar Productos</a>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total</span>
+                <span class="total-price">$0.00 USD</span>
+            </div>
+            <button class="btn btn-primary checkout-btn">Proceder al pago</button>
+        </div>
+    </div>
+    <div class="cart-overlay"></div>
+    
+    <!-- Banner de la categoría -->
+    <section class="category-banner">
+        <video autoplay loop muted playsinline>
+            <source src="https://storage.googleapis.com/mannequin/blobs/b99f6bf8-5fa2-4b24-b555-96400dd0c6e8.mp4" type="video/mp4">
+        </video>
+        <div class="banner-content">
+            <h1>Dispositivos Premium</h1>
+            <p>Descubre la mayor selección de smartphones de última generación</p>
+        </div>
+    </section>
+    
+    <!-- Filtros y categorías -->
+    <section class="filters-section">
+        <div class="container">
+            <div class="filters-wrapper">
+                <div class="filter-categories">
+                    <button class="filter-btn active" data-category="all">Todos</button>
+                    <button class="filter-btn" data-category="smartphone">Smartphones</button>
+                    <button class="filter-btn" data-category="foldable">Plegables</button>
+                    <button class="filter-btn" data-category="accessories">Accesorios</button>
+                    <button class="filter-btn" data-category="computers">Computadores</button>
+                </div>
+                <div class="filter-sort">
+                    <select id="sort-options">
+                        <option value="featured">Destacados</option>
+                        <option value="price-low">Precio: Menor a Mayor</option>
+                        <option value="price-high">Precio: Mayor a Menor</option>
+                        <option value="newest">Más recientes</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Productos en grid -->
+    <section class="products-grid">
+        <div class="container">
+            <div class="products-wrapper">
+                <!-- Samsung S25 Ultra -->
+                <div class="product-card" data-category="smartphone" data-price="1299.99">
+                    <div class="product-badge">Nuevo</div>
+                    <div class="product-media">
+                        <video autoplay loop muted playsinline>
+                            <source src="https://images.samsung.com/es/smartphones/galaxy-s25-ultra/videos/galaxy-s25-ultra-features-form-factor.webm?imbypass=true" type="video/webm">
+                        </video>
+                    </div>
+                    <div class="product-info">
+                        <h3>Samsung Galaxy S25 Ultra</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> Snapdragon 8 Gen 4</span>
+                            <span><i class="fas fa-memory"></i> 12GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 512GB</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$1,299.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #000000;" title="Negro"></span>
+                            <span class="color-option" style="background-color: #7851A9;" title="Morado"></span>
+                            <span class="color-option" style="background-color: #FFD700;" title="Oro"></span>
+                            <span class="color-option" style="background-color: #FFFFFF; border: 1px solid #E0E0E0;" title="Blanco"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="s25ultra" data-name="Samsung Galaxy S25 Ultra" data-price="1299.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- iPhone 16 Pro Ultra -->
+                <div class="product-card" data-category="smartphone" data-price="1499.99">
+                    <div class="product-badge">Nuevo</div>
+                    <div class="product-media">
+                        <img src="https://www.apple.com/v/iphone/home/cb/images/overview/select/iphone_16pro__erw9alves2qa_medium.png" alt="iPhone 16 Pro Ultra">
+                    </div>
+                    <div class="product-info">
+                        <h3>iPhone 16 Pro Ultra</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> A18 Pro</span>
+                            <span><i class="fas fa-memory"></i> 8GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 1TB</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$1,499.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #2E3641;" title="Titanio Negro"></span>
+                            <span class="color-option" style="background-color: #F9E5C9;" title="Titanio Natural"></span>
+                            <span class="color-option" style="background-color: #7D7C7A;" title="Titanio Gris"></span>
+                            <span class="color-option" style="background-color: #3E3429;" title="Titanio Marrón"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="iphone16pro" data-name="iPhone 16 Pro Ultra" data-price="1499.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Google Pixel 10 Pro -->
+                <div class="product-card" data-category="smartphone" data-price="1099.99">
+                    <div class="product-badge">Nuevo</div>
+                    <div class="product-media">
+                        <video autoplay loop muted playsinline>
+                            <source src="https://storage.googleapis.com/mannequin/blobs/2fa171fa-0cc3-4d48-b853-d6370784b957.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="product-info">
+                        <h3>Google Pixel 10 Pro</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> Google Tensor G6</span>
+                            <span><i class="fas fa-memory"></i> 16GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 256GB</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$1,099.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #000000;" title="Obsidiana"></span>
+                            <span class="color-option" style="background-color: #F5F5F5;" title="Porcelana"></span>
+                            <span class="color-option" style="background-color: #9BB7CE;" title="Cielo"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="pixel10pro" data-name="Google Pixel 10 Pro" data-price="1099.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- iPhone 15 Pro -->
+                <div class="product-card" data-category="smartphone" data-price="1099.99">
+                    <div class="product-media">
+                        <img src="https://www.apple.com/v/iphone/home/cb/images/overview/select/iphone_16__c5bvots96jee_medium.png" alt="iPhone 15 Pro">
+                    </div>
+                    <div class="product-info">
+                        <h3>iPhone 15 Pro</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> A17 Pro</span>
+                            <span><i class="fas fa-memory"></i> 8GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 512GB</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="old-price">$1,199.99 USD</span>
+                            <span class="price">$1,099.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #2E3641;" title="Titanio Negro"></span>
+                            <span class="color-option" style="background-color: #F9E5C9;" title="Titanio Natural"></span>
+                            <span class="color-option" style="background-color: #7D7C7A;" title="Titanio Gris"></span>
+                            <span class="color-option" style="background-color: #3E3429;" title="Titanio Azul"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="iphone15pro" data-name="iPhone 15 Pro" data-price="1099.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Xiaomi 15 Ultra -->
+                <div class="product-card" data-category="smartphone" data-price="999.99">
+                    <div class="product-badge">Nuevo</div>
+                    <div class="product-media">
+                        <img src="https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-15-ultra/pc/492448be03b17c1d78c43790d4d21eee.jpg" alt="Xiaomi 15 Ultra">
+                    </div>
+                    <div class="product-info">
+                        <h3>Xiaomi 15 Ultra</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> Snapdragon 8 Gen 3</span>
+                            <span><i class="fas fa-memory"></i> 16GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 512GB</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$999.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #000000;" title="Negro"></span>
+                            <span class="color-option" style="background-color: #FFFFFF; border: 1px solid #E0E0E0;" title="Blanco"></span>
+                            <span class="color-option" style="background-color: #004D40;" title="Verde"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="xiaomi15ultra" data-name="Xiaomi 15 Ultra" data-price="999.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Samsung Galaxy Z Fold 6 -->
+                <div class="product-card" data-category="foldable" data-price="1799.99">
+                    <div class="product-badge">Nuevo</div>
+                    <div class="product-media">
+                        <video autoplay loop muted playsinline>
+                            <source src="https://images.samsung.com/is/content/samsung/assets/es/smartphones/galaxy-z-fold6/videos/galaxy-z-fold6-features-form-factor.mp4?imbypass=true" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="product-info">
+                        <h3>Samsung Galaxy Z Fold 6</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> Snapdragon 8 Gen 3</span>
+                            <span><i class="fas fa-memory"></i> 12GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 512GB</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$1,799.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #000000;" title="Negro"></span>
+                            <span class="color-option" style="background-color: #7851A9;" title="Morado"></span>
+                            <span class="color-option" style="background-color: #E0E0E0;" title="Plata"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="zfold6" data-name="Samsung Galaxy Z Fold 6" data-price="1799.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Samsung Galaxy Z Flip 6 -->
+                <div class="product-card" data-category="foldable" data-price="1299.99">
+                    <div class="product-badge">Nuevo</div>
+                    <div class="product-media">
+                        <video autoplay loop muted playsinline>
+                            <source src="https://images.samsung.com/es/smartphones/galaxy-z-flip6/videos/galaxy-z-flip6-features-highlights-design.webm?imbypass=true" type="video/webm">
+                        </video>
+                    </div>
+                    <div class="product-info">
+                        <h3>Samsung Galaxy Z Flip 6</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> Snapdragon 8 Gen 3</span>
+                            <span><i class="fas fa-memory"></i> 8GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 256GB</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$1,299.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #000000;" title="Negro"></span>
+                            <span class="color-option" style="background-color: #7851A9;" title="Morado"></span>
+                            <span class="color-option" style="background-color: #4CAF50;" title="Verde"></span>
+                            <span class="color-option" style="background-color: #FFC107;" title="Amarillo"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="zflip6" data-name="Samsung Galaxy Z Flip 6" data-price="1299.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Xiaomi Mix Flip -->
+                <div class="product-card" data-category="foldable" data-price="1199.99">
+                    <div class="product-badge">Nuevo</div>
+                    <div class="product-media">
+                        <video autoplay loop muted playsinline>
+                            <source src="https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-mix-flip/global/pc/pc-view.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="product-info">
+                        <h3>Xiaomi Mix Flip</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> Snapdragon 8 Gen 3</span>
+                            <span><i class="fas fa-memory"></i> 12GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 512GB</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$1,199.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #000000;" title="Negro"></span>
+                            <span class="color-option" style="background-color: #E0E0E0;" title="Plata"></span>
+                            <span class="color-option" style="background-color: #FFD700;" title="Oro"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="mixflip" data-name="Xiaomi Mix Flip" data-price="1199.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fundas para Galaxy Z Flip 6 -->
+                <div class="product-card" data-category="accessories" data-price="49.99">
+                    <div class="product-media">
+                        <img src="https://images.samsung.com/es/smartphones/galaxy-z-flip6/accessories/images/galaxy-z-flip6-accessories-kv.jpg?imbypass=true" alt="Fundas Galaxy Z Flip 6">
+                    </div>
+                    <div class="product-info">
+                        <h3>Fundas Galaxy Z Flip 6</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-shield-alt"></i> Protección Premium</span>
+                            <span><i class="fas fa-palette"></i> Múltiples diseños</span>
+                            <span><i class="fas fa-check-circle"></i> Original Samsung</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$49.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #000000;" title="Negro"></span>
+                            <span class="color-option" style="background-color: #FFFFFF; border: 1px solid #E0E0E0;" title="Blanco"></span>
+                            <span class="color-option" style="background-color: #4CAF50;" title="Verde"></span>
+                            <span class="color-option" style="background-color: #FFC107;" title="Amarillo"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="zflip6case" data-name="Fundas Galaxy Z Flip 6" data-price="49.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Galaxy Book5 Pro -->
+                <div class="product-card" data-category="computers" data-price="1499.99">
+                    <div class="product-badge">Nuevo</div>
+                    <div class="product-media">
+                        <img src="https://images.samsung.com/is/image/samsung/assets/es/home/Galaxy-Book5-Pro_Home-Latest-Deals-Large_684x684_UK_PC.jpg?$684_684_JPG$" alt="Galaxy Book5 Pro">
+                    </div>
+                    <div class="product-info">
+                        <h3>Samsung Galaxy Book5 Pro</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> Intel Core Ultra 9</span>
+                            <span><i class="fas fa-memory"></i> 32GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 1TB SSD</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$1,499.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #000000;" title="Negro"></span>
+                            <span class="color-option" style="background-color: #E0E0E0;" title="Plata"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="galaxybook5" data-name="Samsung Galaxy Book5 Pro" data-price="1499.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- OnePlus Pad -->
+                <div class="product-card" data-category="computers" data-price="499.99">
+                    <div class="product-media">
+                        <img src="https://image01-eu.oneplus.net/media/202502/11/b3c115c086af4684e803827886a183bb.png?x-amz-process=image/format,webp/quality,Q_80" alt="OnePlus Pad">
+                    </div>
+                    <div class="product-info">
+                        <h3>OnePlus Pad</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> Dimensity 9000</span>
+                            <span><i class="fas fa-memory"></i> 8GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 128GB</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$499.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #004D40;" title="Verde"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="onepluspad" data-name="OnePlus Pad" data-price="499.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Poco X7 Pro -->
+                <div class="product-card" data-category="smartphone" data-price="349.99">
+                    <div class="product-media">
+                        <video autoplay loop muted playsinline>
+                            <source src="https://i02.appmifile.com/mi-com-product/fly-birds/poco-x7-pro/pc-video/3200nits.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="product-info">
+                        <h3>Poco X7 Pro</h3>
+                        <div class="product-specs">
+                            <span><i class="fas fa-microchip"></i> Dimensity 8100</span>
+                            <span><i class="fas fa-memory"></i> 8GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> 256GB</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">$349.99 USD</span>
+                        </div>
+                        <div class="product-colors">
+                            <span class="color-option" style="background-color: #000000;" title="Negro"></span>
+                            <span class="color-option" style="background-color: #E0E0E0;" title="Plata"></span>
+                            <span class="color-option" style="background-color: #4169E1;" title="Azul"></span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart" data-id="pocox7pro" data-name="Poco X7 Pro" data-price="349.99">Añadir al carrito</button>
+                            <a href="#" class="btn btn-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Sección de destacados plegables con video -->
+    <section class="featured-section">
+        <div class="container">
+            <h2 class="section-title">Revolución Plegable</h2>
+            <div class="featured-content">
+                <div class="featured-info">
+                    <h3>Redescubre la Experiencia Móvil</h3>
+                    <p>Los dispositivos plegables están transformando la manera en que interactuamos con la tecnología, combinando la portabilidad de un smartphone con la versatilidad de una tablet.</p>
+                    <ul class="featured-benefits">
+                        <li><i class="fas fa-check"></i> Pantalla flexible de última generación</li>
+                        <li><i class="fas fa-check"></i> Multitarea avanzada con múltiples ventanas</li>
+                        <li><i class="fas fa-check"></i> Versatilidad inigualable para trabajo y entretenimiento</li>
+                        <li><i class="fas fa-check"></i> Cámaras profesionales con modos exclusivos</li>
+                        <li><i class="fas fa-check"></i> Inteligencia artificial adaptativa</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary">Explorar Plegables</a>
+                </div>
+                <div class="featured-video">
+                    <video autoplay loop muted playsinline>
+                        <source src="https://images.samsung.com/es/smartphones/galaxy-z-flip6/videos/galaxy-z-flip6-features-flex-window-01-a.webm?imbypass=true" type="video/webm">
+                    </video>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Comparativa de dispositivos -->
+    <section class="device-comparison">
+        <div class="container">
+            <h2 class="section-title">Comparativa Flagship 2025</h2>
+            <div class="comparison-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Características</th>
+                            <th>
+                                <img src="https://images.samsung.com/is/image/samsung/p6pim/es/2501/gallery/es-galaxy-s25-s938-sm-s938bzbdeub-thumb-544741244?$310_N_PNG$" alt="Samsung S25 Ultra">
+                                <span>Samsung S25 Ultra</span>
+                            </th>
+                            <th>
+                                <img src="https://www.apple.com/v/iphone/home/cb/images/overview/select/iphone_16pro__erw9alves2qa_medium.png" alt="iPhone 16 Pro Ultra">
+                                <span>iPhone 16 Pro Ultra</span>
+                            </th>
+                            <th>
+                                <video autoplay loop muted playsinline>
+                                    <source src="https://storage.googleapis.com/mannequin/blobs/503e2730-0d4c-4071-ba66-dee0cfa726fd.webm" type="video/webm">
+                                </video>
+                                <span>Google Pixel 10 Pro</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Procesador</td>
+                            <td>Snapdragon 8 Gen 4</td>
+                            <td>A18 Pro</td>
+                            <td>Google Tensor G6</td>
+                        </tr>
+                        <tr>
+                            <td>Pantalla</td>
+                            <td>6.8" QHD+ 144Hz</td>
+                            <td>6.9" Super Retina XDR 120Hz</td>
+                            <td>6.7" LTPO OLED 120Hz</td>
+                        </tr>
+                        <tr>
+                            <td>Cámara Principal</td>
+                            <td>200MP OIS</td>
+                            <td>48MP Quad-Pixel</td>
+                            <td>50MP Octa-PD</td>
+                        </tr>
+                        <tr>
+                            <td>Batería</td>
+                            <td>5,500 mAh</td>
+                            <td>4,900 mAh</td>
+                            <td>5,100 mAh</td>
+                        </tr>
+                        <tr>
+                            <td>Capacidad</td>
+                            <td>512GB / 1TB</td>
+                            <td>256GB / 512GB / 1TB</td>
+                            <td>256GB / 512GB</td>
+                        </tr>
+                        <tr>
+                            <td>IA</td>
+                            <td>Galaxy AI</td>
+                            <td>Apple Intelligence</td>
+                            <td>Google Gemini</td>
+                        </tr>
+                        <tr>
+                            <td>Precio</td>
+                            <td>$1,299.99 USD</td>
+                            <td>$1,499.99 USD</td>
+                            <td>$1,099.99 USD</td>
+                        </tr>
+                        <tr class="comparison-actions">
+                            <td></td>
+                            <td><button class="btn btn-primary add-to-cart" data-id="s25ultra" data-name="Samsung Galaxy S25 Ultra" data-price="1299.99">Añadir al carrito</button></td>
+                            <td><button class="btn btn-primary add-to-cart" data-id="iphone16pro" data-name="iPhone 16 Pro Ultra" data-price="1499.99">Añadir al carrito</button></td>
+                            <td><button class="btn btn-primary add-to-cart" data-id="pixel10pro" data-name="Google Pixel 10 Pro" data-price="1099.99">Añadir al carrito</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Banner de computadoras y tablets -->
+    <section class="computers-banner">
+        <div class="container">
+            <div class="banner-grid">
+                <div class="banner-card">
+                    <video autoplay loop muted playsinline>
+                        <source src="https://www.apple.com/105/media/us/mac/family/2025/59856fc1-d007-421a-90ee-734ddf3fd25d/anim/welcome/medium.mp4" type="video/mp4">
+                    </video>
+                    <div class="banner-content">
+                        <h3>MacBook Pro 2025</h3>
+                        <p>Potencia inigualable con el nuevo chip M4 Pro</p>
+                        <a href="#" class="btn btn-outline">Explorar</a>
+                    </div>
+                </div>
+                <div class="banner-card">
+                    <video autoplay loop muted playsinline>
+                        <source src="https://www.apple.com/assets-www/en_WW/ipad/welcome/c09534af6_medium.mp4" type="video/mp4">
+                    </video>
+                    <div class="banner-content">
+                        <h3>iPad Pro</h3>
+                        <p>Toda la potencia que necesitas, en cualquier lugar</p>
+                        <a href="#" class="btn btn-outline">Explorar</a>
+                    </div>
+                </div>
+                <div class="banner-card">
+                    <video autoplay loop muted playsinline>
+                        <source src="https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-pad-7/pc/erwsdxcftgvypc.mp4" type="video/mp4">
+                    </video>
+                    <div class="banner-content">
+                        <h3>Xiaomi Pad 7</h3>
+                        <p>Productividad y entretenimiento a un precio imbatible</p>
+                        <a href="#" class="btn btn-outline">Explorar</a>
+                    </div>
+                </div>
+                <div class="banner-card">
+                    <video autoplay loop muted playsinline>
+                        <source src="https://www.apple.com/105/media/es/watch/2024/f0b51c31-e8a5-44d7-b23d-51bd2858454a/anim/hero/medium.mp4" type="video/mp4">
+                    </video>
+                    <div class="banner-content">
+                        <h3>Apple Watch Series 10</h3>
+                        <p>Tu salud al alcance de tu muñeca</p>
+                        <a href="#" class="btn btn-outline">Explorar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Accesorios destacados -->
+    <section class="accessories-section">
+        <div class="container">
+            <h2 class="section-title">Accesorios Imprescindibles</h2>
+            <div class="accessories-grid">
+                <div class="accessory-card">
+                    <div class="accessory-media">
+                        <video autoplay loop muted playsinline>
+                            <source src="https://www.apple.com/105/media/us/airpods-max/2024/e8f376d6-82b2-40ca-8a22-5f87de755d6b/anim/max-loop/medium.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="accessory-info">
+                        <h3>AirPods Max</h3>
+                        <p>Sonido envolvente con cancelación de ruido activa</p>
+                        <span class="price">$549.99 USD</span>
+                        <button class="btn btn-primary add-to-cart" data-id="airpodsmax" data-name="AirPods Max" data-price="549.99">Añadir al carrito</button>
+                    </div>
+                </div>
+                <div class="accessory-card">
+                    <div class="accessory-media">
+                        <video autoplay loop muted playsinline>
+                            <source src="https://i02.appmifile.com/mi-com-product/fly-birds/poco-x7-pro/pc-video/car-run-pc1.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="accessory-info">
+                        <h3>Smart Car Holder</h3>
+                        <p>Soporte inteligente para tu smartphone en el coche</p>
+                        <span class="price">$49.99 USD</span>
+                        <button class="btn btn-primary add-to-cart" data-id="carholder" data-name="Smart Car Holder" data-price="49.99">Añadir al carrito</button>
+                    </div>
+                </div>
+                <div class="accessory-card">
+                    <div class="accessory-media">
+                        <img src="https://www.apple.com/v/tv-home/o/images/overview/hero__dbphk49ymi2q_medium.jpg" alt="Apple TV 4K">
+                    </div>
+                    <div class="accessory-info">
+                        <h3>Apple TV 4K</h3>
+                        <p>Tu centro de entretenimiento para el hogar</p>
+                        <span class="price">$179.99 USD</span>
+                        <button class="btn btn-primary add-to-cart" data-id="appletv" data-name="Apple TV 4K" data-price="179.99">Añadir al carrito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Sección de recomendados personalizados -->
+    <section class="recommended-section">
+        <div class="container">
+            <h2 class="section-title">Recomendados para ti</h2>
+            <div class="recommended-slider">
+                <div class="slider-track">
+                    <!-- Los productos recomendados se cargarán dinámicamente con JavaScript -->
+                </div>
+                <div class="slider-controls">
+                    <button class="prev-slide"><i class="fas fa-chevron-left"></i></button>
+                    <button class="next-slide"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Newsletter & CTA -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter-content">
+                <h2>¿Quieres estar al día?</h2>
+                <p>Suscríbete para recibir alertas de stock, ofertas exclusivas y novedades sobre los últimos lanzamientos.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico">
+                    <button type="submit" class="btn btn-primary">Suscribirse</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <img src="latinphone.png" alt="LatinPhone">
+                        <h3>LatinPhone</h3>
+                    </div>
+                    <p>El distribuidor #1 de móviles de alta gama en Latinoamérica.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Productos</h4>
+                    <ul>
+                        <li><a href="#">Samsung</a></li>
+                        <li><a href="#">Apple</a></li>
+                        <li><a href="#">Google</a></li>
+                        <li><a href="#">Xiaomi</a></li>
+                        <li><a href="#">Accesorios</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Soporte</h4>
+                    <ul>
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Contacto</a></li>
+                        <li><a href="#">Garantía</a></li>
+                        <li><a href="#">Envíos</a></li>
+                        <li><a href="#">Devoluciones</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Empresa</h4>
+                    <ul>
+                        <li><a href="#">Sobre Nosotros</a></li>
+                        <li><a href="#">Carreras</a></li>
+                        <li><a href="#">Prensa</a></li>
+                        <li><a href="#">Responsabilidad Social</a></li>
+                        <li><a href="#">Afiliados</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 LatinPhone. Todos los derechos reservados.</p>
+                <ul class="legal-links">
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Privacidad</a></li>
+                    <li><a href="#">Cookies</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="moviles.js"></script>
+</body>
+</html>

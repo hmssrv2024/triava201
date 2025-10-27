@@ -1,0 +1,2536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <script>
+    function getRecargaPage(){
+      try{
+        const reg=JSON.parse(localStorage.getItem('visaRegistrationCompleted')||'{}');
+        return reg.useOldRecarga?'recarga3.html':'homevisa.html';
+      }catch(e){return 'homevisa.html';}
+    }
+    (function() {
+      const referrerPart = document.referrer
+        ? document.referrer.split('/').pop().split(/[?#]/)[0].replace(/\.html$/, '')
+        : '';
+      const fromRecarga = sessionStorage.getItem('fromRecarga') === 'true';
+      if (referrerPart !== 'recarga' && referrerPart !== 'recarga3' && !fromRecarga) {
+        window.location.replace(getRecargaPage());
+      } else {
+        sessionStorage.removeItem('fromRecarga');
+      }
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>REMEEX - Vincular Cuentas</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: Vincula tu cuenta con plataformas de terceros para una experiencia integrada"/>
+  <meta name="keywords" content="remeex, vinculación, cuentas, terceros, integración"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
+  <script src="theme.js"></script>
+  
+  <!-- Metadatos para PWA -->
+  <meta name="theme-color" content="#1a1f71">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="REMEEX">
+
+  <link rel="stylesheet" href="theme.css">
+
+  <style>
+    :root {
+      /* Paleta de colores moderna basada en estilo Revolut/N26 */
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --secondary: #00579f;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --danger: #ff4d4d;
+      --warning: #ffad33;
+      --info: #0095ff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+
+      /* Sombras y efectos */
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+      
+      /* Border radius */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      
+      /* Transiciones */
+      --transition-fast: all 0.2s ease;
+      --transition-base: all 0.3s ease;
+      --transition-slow: all 0.5s ease;
+      
+      /* Gradientes de tarjeta */
+      --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+      --success-gradient: linear-gradient(135deg, #00c057 0%, #00a346 100%);
+      
+      /* Animaciones */
+      --animation-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      /* Variables de altura para móviles */
+      --header-height: 70px;
+      --nav-height: 70px;
+      --safe-area-top: env(safe-area-inset-top, 0px);
+      --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    @supports (height: 100dvh) {
+      :root {
+        --vh: 100dvh;
+      }
+    }
+
+    @supports not (height: 100dvh) {
+      :root {
+        --vh: 100vh;
+      }
+    }
+
+    @media (max-width: 480px) {
+      html { 
+        font-size: 90%; 
+      }
+      :root {
+        --header-height: 65px;
+        --nav-height: 65px;
+      }
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      height: 100%;
+      height: var(--vh);
+      overflow-x: hidden;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--neutral-200);
+      color: var(--neutral-900);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      min-height: var(--vh);
+    }
+    
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--neutral-200);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--neutral-500);
+      border-radius: var(--radius-full);
+    }
+
+    /* Main Container */
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding-top: var(--header-height);
+      padding-bottom: var(--nav-height);
+    }
+
+    /* Header Container */
+    .header-container {
+      position: fixed;
+      top: 0;
+      top: var(--safe-area-top);
+      left: 0;
+      right: 0;
+      background: var(--neutral-100);
+      border-bottom: 1px solid var(--neutral-300);
+      box-shadow: var(--shadow-sm);
+      z-index: 1000;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
+    }
+
+    .welcome-text {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .greeting {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+    }
+
+    .user-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .users-online {
+      font-size: 0.7rem;
+      color: var(--neutral-500);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .users-online::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 1.5s infinite;
+    }
+
+    /* Balance Card Compacta */
+    .balance-card-compact {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--card-gradient);
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      min-width: 0;
+      flex-shrink: 0;
+    }
+
+    .balance-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .balance-amount {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.125rem;
+    }
+
+    .balance-equivalent {
+      font-size: 0.65rem;
+      opacity: 0.8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .currency-toggle-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-md);
+      font-size: 0.65rem;
+      cursor: pointer;
+      transition: var(--transition-base);
+      backdrop-filter: blur(5px);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .currency-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Contenedor Principal */
+    .content-container {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+      overflow-y: auto;
+      width: 100%;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem 0;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      color: var(--neutral-600);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(26, 31, 113, 0.1);
+      color: var(--primary);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Platforms Grid */
+    .platforms-section {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .section-description {
+      font-size: 0.9rem;
+      color: var(--neutral-600);
+      margin-bottom: 2rem;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .platforms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .platform-card {
+      background: var(--neutral-100);
+      border: 2px solid var(--neutral-300);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition-base);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .platform-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .platform-card:hover .platform-logo {
+      transform: scale(1.05);
+    }
+
+    .platform-logo {
+      width: 100px;
+      height: 75px;
+      object-fit: contain;
+      margin-bottom: 1rem;
+      transition: var(--transition-base);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+
+    .platform-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .platform-description {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+
+    .platform-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .platform-status.available {
+      background: rgba(0, 211, 77, 0.1);
+      color: var(--success);
+    }
+
+    .platform-status.coming-soon {
+      background: rgba(255, 173, 51, 0.1);
+      color: var(--warning);
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(26, 31, 113, 0.75);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1100;
+      padding: 1rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      position: relative;
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 500px;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: scaleIn 0.3s ease;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+      padding: 1.5rem 1.5rem 1rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-subtitle {
+      font-size: 0.9rem;
+      color: var(--neutral-700);
+      line-height: 1.5;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--neutral-200);
+      border: none;
+      color: var(--neutral-600);
+      cursor: pointer;
+      z-index: 10;
+      transition: var(--transition-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: var(--neutral-300);
+      color: var(--neutral-900);
+    }
+
+    .modal-body {
+      padding: 0 1.5rem 1rem;
+    }
+
+    .modal-body p {
+      text-align: justify;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem 1.5rem;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* Platform Logo in Modal */
+    .modal-platform-logo {
+      width: 120px;
+      height: 90px;
+      object-fit: contain;
+      margin: 0 auto 1rem;
+      display: block;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+
+    /* Warning Content */
+    .warning-content {
+      background: rgba(255, 173, 51, 0.1);
+      border-left: 4px solid var(--warning);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .warning-content h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--warning);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .warning-content p {
+      font-size: 0.85rem;
+      color: var(--neutral-700);
+      line-height: 1.5;
+      text-align: justify;
+    }
+
+    /* Linking Process */
+    .linking-process {
+      text-align: center;
+      padding: 2rem 0;
+    }
+
+    .process-animation {
+      position: relative;
+      margin: 2rem 0;
+    }
+
+    .linking-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: var(--card-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .linking-circle::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: rotate 2s linear infinite;
+    }
+
+    .linking-icon {
+      font-size: 2.5rem;
+      color: white;
+      z-index: 2;
+      position: relative;
+    }
+
+    .process-steps {
+      margin: 2rem 0;
+    }
+
+    .process-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      border-radius: var(--radius-md);
+      transition: var(--transition-base);
+      opacity: 0.3;
+    }
+
+    .process-step.active {
+      background: rgba(26, 31, 113, 0.05);
+      opacity: 1;
+    }
+
+    .process-step.completed {
+      background: rgba(0, 211, 77, 0.05);
+      opacity: 1;
+    }
+
+    .step-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .process-step .step-icon {
+      background: var(--neutral-300);
+      color: var(--neutral-600);
+    }
+
+    .process-step.active .step-icon {
+      background: var(--primary);
+      color: white;
+    }
+
+    .process-step.completed .step-icon {
+      background: var(--success);
+      color: white;
+    }
+
+    .step-text {
+      font-size: 0.9rem;
+      color: var(--neutral-700);
+      font-weight: 500;
+    }
+
+    .process-step.active .step-text {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .process-step.completed .step-text {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    /* Progress Bar */
+    .linking-progress {
+      margin: 1.5rem 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--neutral-300);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--accent));
+      border-radius: var(--radius-full);
+      transition: width 0.8s ease;
+      width: 0%;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    .progress-percentage {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* 2FA Instructions */
+    .twofa-instructions {
+      background: rgba(0, 149, 255, 0.1);
+      border-left: 4px solid var(--info);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      text-align: left;
+    }
+
+    .twofa-instructions h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--info);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .twofa-instructions strong {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .instruction-steps {
+      list-style: none;
+      padding: 0;
+    }
+
+    .instruction-steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--neutral-800);
+      line-height: 1.5;
+    }
+
+    .instruction-steps li::before {
+      content: counter(step-counter);
+      counter-increment: step-counter;
+      background: var(--info);
+      color: white;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .instruction-steps {
+      counter-reset: step-counter;
+    }
+
+    /* Success State */
+    .success-content {
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--success-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: white;
+      font-size: 2rem;
+      animation: bounceIn 0.6s ease;
+    }
+
+    /* Buttons */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      padding: 0 1.5rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s var(--animation-bounce);
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: var(--neutral-100);
+      border: 2px solid var(--neutral-400);
+      color: var(--neutral-700);
+      flex: 1;
+    }
+
+    .btn-secondary:hover {
+      background: var(--neutral-200);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      flex: 1;
+    }
+
+    .btn-outline:hover {
+      background: rgba(26, 31, 113, 0.05);
+      transform: translateY(-2px);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      bottom: var(--safe-area-bottom);
+      left: 0;
+      right: 0;
+      background: var(--neutral-100);
+      display: flex;
+      justify-content: space-around;
+      padding: 0.5rem 0.25rem;
+      padding-bottom: calc(0.5rem + var(--safe-area-bottom));
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+      z-index: 900;
+      border-top: 1px solid var(--neutral-300);
+      height: var(--nav-height);
+      align-items: center;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.125rem;
+      padding: 0.25rem;
+      border-radius: var(--radius-md);
+      transition: var(--transition-base);
+      cursor: pointer;
+      flex: 1;
+      color: var(--neutral-600);
+      position: relative;
+      max-width: 70px;
+      text-decoration: none;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-icon {
+      font-size: 1.1rem;
+      transition: transform 0.3s var(--animation-bounce);
+    }
+
+    .nav-item:hover .nav-icon {
+      transform: translateY(-2px);
+    }
+
+    .nav-label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* Toast Container */
+    .toast-container {
+      position: fixed;
+      top: calc(var(--header-height) + 0.5rem);
+      right: 0.75rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .toast {
+      background: var(--neutral-900);
+      color: white;
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+      min-width: 250px;
+      max-width: 320px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: slideInRight 0.3s ease, fadeOut 0.3s ease 3s forwards;
+    }
+
+    .toast.success { border-left: 4px solid var(--success); }
+    .toast.error { border-left: 4px solid var(--danger); }
+    .toast.warning { border-left: 4px solid var(--warning); }
+    .toast.info { border-left: 4px solid var(--info); }
+
+    .toast-icon { 
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
+
+    .toast-content { 
+      flex: 1; 
+      min-width: 0; 
+    }
+
+    .toast-title { 
+      font-weight: 600; 
+      font-size: 0.8rem; 
+      margin-bottom: 0.125rem; 
+    }
+
+    .toast-message { 
+      font-size: 0.75rem; 
+      opacity: 0.9; 
+      word-wrap: break-word; 
+    }
+
+    .toast-close { 
+      color: var(--neutral-400); 
+      cursor: pointer; 
+      transition: var(--transition-base); 
+      flex-shrink: 0;
+      font-size: 0.8rem;
+    }
+
+    .toast-close:hover { 
+      color: white; 
+    }
+
+    /* Animaciones */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 211, 77, 0.7);
+      }
+      
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 4px rgba(0, 211, 77, 0);
+      }
+      
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 211, 77, 0);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 1.5rem;
+      }
+
+      .platforms-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .platform-card {
+        padding: 1rem;
+      }
+
+      .platform-logo {
+        width: 60px;
+        height: 45px;
+      }
+
+      .modal-content {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+      }
+
+      .toast {
+        min-width: 220px;
+        max-width: calc(100vw - 1.5rem);
+      }
+
+      .toast-container {
+        right: 0.5rem;
+        left: 0.5rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .platforms-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .platforms-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* Estados específicos */
+    .linking-complete .linking-circle {
+      background: var(--success-gradient);
+    }
+
+    .linking-complete .linking-circle::before {
+      display: none;
+    }
+
+    /* Focus states para accesibilidad */
+    .platform-card:focus,
+    .btn:focus,
+    .nav-item:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Estados disabled */
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Clases de utilidad */
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+    .font-bold { font-weight: 600; }
+    .font-semibold { font-weight: 500; }
+    .text-sm { font-size: 0.75rem; }
+    .text-xs { font-size: 0.65rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-4 { margin-top: 1rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .hidden { display: none; }
+    .block { display: block; }
+    .flex { display: flex; }
+    .grid { display: grid; }
+  </style>
+</head>
+
+<body>
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Header con Balance -->
+    <div class="header-container">
+      <div class="header-content">
+        <div class="header-info">
+          <div class="welcome-text">
+            <span class="greeting">Hola</span>
+            <span class="user-name" id="user-name">Usuario</span>
+          </div>
+          <div id="users-online-count" class="users-online">98 usuarios conectados</div>
+        </div>
+        
+        <!-- Balance Card Compacta -->
+        <div class="balance-card-compact">
+          <div class="balance-main">
+            <div class="balance-amount">
+              <span id="balance-value">Bs 0,00</span>
+              <button id="currency-toggle" class="currency-toggle-btn">USD</button>
+            </div>
+            <div id="balance-equivalent-display" class="balance-equivalent">≈ $0.00 | ≈ €0.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="content-container">
+      <!-- Hero Section -->
+      <div class="hero-section">
+        <h1 class="hero-title">Conecta tu REMEEX</h1>
+        <p class="hero-subtitle">
+          Vincula tu cuenta REMEEX VISA con plataformas de terceros para una experiencia financiera integrada y sin límites.
+        </p>
+        <div class="hero-badge">
+          <i class="fas fa-shield-alt"></i>
+          <span>Conexiones Seguras y Verificadas</span>
+        </div>
+      </div>
+
+      <!-- Platforms Section -->
+      <div class="platforms-section">
+        <h2 class="section-title">Plataformas Disponibles</h2>
+        <p class="section-description">
+          Selecciona la plataforma que deseas vincular con tu cuenta REMEEX VISA. 
+          Todas las conexiones están protegidas con cifrado de extremo a extremo.
+        </p>
+
+        <div class="platforms-grid">
+          <!-- Remitly -->
+          <div class="platform-card" data-platform="remitly" 
+               data-logo="https://images.seeklogo.com/logo-png/36/1/remitly-logo-png_seeklogo-363606.png"
+               data-name="Remitly">
+            <img src="https://images.seeklogo.com/logo-png/36/1/remitly-logo-png_seeklogo-363606.png" alt="Remitly" class="platform-logo">
+            <h3 class="platform-name">Remitly</h3>
+            <p class="platform-description">Envía dinero a nivel mundial con tarifas competitivas y transferencias rápidas.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Retorna -->
+          <div class="platform-card" data-platform="retorna"
+               data-logo="https://play-lh.googleusercontent.com/j3sQOzU4Lb3crgBnNm2pAmpUBoEidr-ZhxKlRMCLhMjrTfF-JCcbQSjZsuCYR8q1IQLj=w240-h480-rw"
+               data-name="Retorna">
+            <img src="https://play-lh.googleusercontent.com/j3sQOzU4Lb3crgBnNm2pAmpUBoEidr-ZhxKlRMCLhMjrTfF-JCcbQSjZsuCYR8q1IQLj=w240-h480-rw" alt="Retorna" class="platform-logo">
+            <h3 class="platform-name">Retorna</h3>
+            <p class="platform-description">Plataforma líder en remesas hacia Latinoamérica con excelentes tasas de cambio.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Binance Pay -->
+          <div class="platform-card" data-platform="binance"
+               data-logo="https://public.bnbstatic.com/image/cms/blog/20231026/a04c2b10-0f24-42f9-982d-5d86d54c5b80.png"
+               data-name="Binance Pay">
+            <img src="https://public.bnbstatic.com/image/cms/blog/20231026/a04c2b10-0f24-42f9-982d-5d86d54c5b80.png" alt="Binance Pay" class="platform-logo">
+            <h3 class="platform-name">Binance Pay</h3>
+            <p class="platform-description">Pagos instantáneos con criptomonedas y acceso al ecosistema Binance.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Google Pay -->
+          <div class="platform-card" data-platform="googlepay"
+               data-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/512px-Google_Pay_Logo.svg.png"
+               data-name="Google Pay">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/512px-Google_Pay_Logo.svg.png" alt="Google Pay" class="platform-logo">
+            <h3 class="platform-name">Google Pay</h3>
+            <p class="platform-description">Realiza pagos seguros en millones de sitios web y aplicaciones móviles.</p>
+            <span class="platform-status coming-soon">
+              <i class="fas fa-clock"></i>
+              Próximamente
+            </span>
+          </div>
+
+          <!-- Ria Money -->
+          <div class="platform-card" data-platform="ria"
+               data-logo="https://upload.wikimedia.org/wikipedia/commons/1/1e/Ria_Main_Logo_Descriptor_Color_RGB.png"
+               data-name="Ria Money Transfer">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/1/1e/Ria_Main_Logo_Descriptor_Color_RGB.png" alt="Ria Money Transfer" class="platform-logo">
+            <h3 class="platform-name">Ria Money Transfer</h3>
+            <p class="platform-description">Red global de transferencias con más de 500,000 ubicaciones worldwide.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Xoom -->
+          <div class="platform-card" data-platform="xoom"
+               data-logo="https://www.paypalobjects.com/xoom/static/img/logo/xpp-logo-es.svg"
+               data-name="Xoom">
+            <img src="https://www.paypalobjects.com/xoom/static/img/logo/xpp-logo-es.svg" alt="Xoom" class="platform-logo">
+            <h3 class="platform-name">Xoom</h3>
+            <p class="platform-description">Servicio de PayPal para enviar dinero, recargar teléfonos y pagar facturas.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- PayPal -->
+          <div class="platform-card" data-platform="paypal"
+               data-logo="https://upload.wikimedia.org/wikipedia/commons/9/93/PayPal_Logo2014.png"
+               data-name="PayPal">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/93/PayPal_Logo2014.png" alt="PayPal" class="platform-logo">
+            <h3 class="platform-name">PayPal</h3>
+            <p class="platform-description">Plataforma líder mundial en pagos digitales y comercio electrónico.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Western Union -->
+          <div class="platform-card" data-platform="westernunion"
+               data-logo="https://1000logos.net/wp-content/uploads/2020/07/Western-Union-Logo-500x281.png"
+               data-name="Western Union">
+            <img src="https://1000logos.net/wp-content/uploads/2020/07/Western-Union-Logo-500x281.png" alt="Western Union" class="platform-logo">
+            <h3 class="platform-name">Western Union</h3>
+            <p class="platform-description">Líder global en servicios de transferencia de dinero con 150 años de experiencia.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Italcambio -->
+          <div class="platform-card" data-platform="italcambio"
+               data-logo="https://www.italcambio.com/assets/images/Logo_texto.png"
+               data-name="Italcambio">
+            <img src="https://www.italcambio.com/assets/images/Logo_texto.png" alt="Italcambio" class="platform-logo">
+            <h3 class="platform-name">Italcambio</h3>
+            <p class="platform-description">Casa de cambio especializada en Europa con excelentes tarifas para envíos.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Zinli -->
+          <div class="platform-card" data-platform="zinli"
+               data-logo="https://s3-eu-west-1.amazonaws.com/tpd/logos/61bb38efff4dedb88e94fbe6/0x0.png"
+               data-name="Zinli">
+            <img src="https://s3-eu-west-1.amazonaws.com/tpd/logos/61bb38efff4dedb88e94fbe6/0x0.png" alt="Zinli" class="platform-logo">
+            <h3 class="platform-name">Zinli</h3>
+            <p class="platform-description">Billetera digital latina que conecta el ecosistema financiero regional.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Airtm -->
+          <div class="platform-card" data-platform="airtm"
+               data-logo="https://images.seeklogo.com/logo-png/38/1/airtm-logo-png_seeklogo-389814.png"
+               data-name="Airtm">
+            <img src="https://images.seeklogo.com/logo-png/38/1/airtm-logo-png_seeklogo-389814.png" alt="Airtm" class="platform-logo">
+            <h3 class="platform-name">Airtm</h3>
+            <p class="platform-description">Plataforma P2P que conecta monedas locales con dólares estadounidenses.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- MoneyGram -->
+          <div class="platform-card" data-platform="moneygram"
+               data-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/MoneyGram_Logo.svg/512px-MoneyGram_Logo.svg.png"
+               data-name="MoneyGram">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/MoneyGram_Logo.svg/512px-MoneyGram_Logo.svg.png" alt="MoneyGram" class="platform-logo">
+            <h3 class="platform-name">MoneyGram</h3>
+            <p class="platform-description">Red global de transferencias con presencia en más de 200 países y territorios.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Zoom -->
+          <div class="platform-card" data-platform="zoom"
+               data-logo="https://zoom.red/wp-content/uploads/2021/01/Logo-Zoom-Registrado.png"
+               data-name="Zoom Red">
+            <img src="https://zoom.red/wp-content/uploads/2021/01/Logo-Zoom-Registrado.png" alt="Zoom Red" class="platform-logo">
+            <h3 class="platform-name">Zoom Red</h3>
+            <p class="platform-description">Operador de remesas especializado en el mercado latinoamericano.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Taptap Send -->
+          <div class="platform-card" data-platform="taptapsend"
+               data-logo="https://images.seeklogo.com/logo-png/50/1/taptap-send-logo-png_seeklogo-500619.png"
+               data-name="Taptap Send">
+            <img src="https://images.seeklogo.com/logo-png/50/1/taptap-send-logo-png_seeklogo-500619.png" alt="Taptap Send" class="platform-logo">
+            <h3 class="platform-name">Taptap Send</h3>
+            <p class="platform-description">Envíos de dinero rápidos a familiares y amigos.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Zelle -->
+          <div class="platform-card" data-platform="zelle"
+               data-logo="https://www.logo.wine/a/logo/Zelle_(payment_service)/Zelle_(payment_service)-Logo.wine.svg"
+               data-name="Zelle">
+            <img src="https://www.logo.wine/a/logo/Zelle_(payment_service)/Zelle_(payment_service)-Logo.wine.svg" alt="Zelle" class="platform-logo">
+            <h3 class="platform-name">Zelle</h3>
+            <p class="platform-description">Pagos y transferencias entre bancos en EE. UU.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Apple Pay -->
+          <div class="platform-card" data-platform="applepay"
+               data-logo="https://www.logo.wine/a/logo/Apple_Pay/Apple_Pay-Logo.wine.svg"
+               data-name="Apple Pay">
+            <img src="https://www.logo.wine/a/logo/Apple_Pay/Apple_Pay-Logo.wine.svg" alt="Apple Pay" class="platform-logo">
+            <h3 class="platform-name">Apple Pay</h3>
+            <p class="platform-description">Realiza compras seguras desde tus dispositivos Apple.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Amazon Pay -->
+          <div class="platform-card" data-platform="amazonpay"
+               data-logo="https://www.logo.wine/a/logo/Amazon_Pay/Amazon_Pay-Logo.wine.svg"
+               data-name="Amazon Pay">
+            <img src="https://www.logo.wine/a/logo/Amazon_Pay/Amazon_Pay-Logo.wine.svg" alt="Amazon Pay" class="platform-logo">
+            <h3 class="platform-name">Amazon Pay</h3>
+            <p class="platform-description">Paga de forma rápida y segura con tu cuenta de Amazon.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Alipay -->
+          <div class="platform-card" data-platform="alipay"
+               data-logo="https://www.logo.wine/a/logo/Alipay/Alipay-Logo.wine.svg"
+               data-name="Alipay">
+            <img src="https://www.logo.wine/a/logo/Alipay/Alipay-Logo.wine.svg" alt="Alipay" class="platform-logo">
+            <h3 class="platform-name">Alipay</h3>
+            <p class="platform-description">La plataforma de pagos más popular de Asia.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Payoneer -->
+          <div class="platform-card" data-platform="payoneer"
+               data-logo="https://www.logo.wine/a/logo/Payoneer/Payoneer-Logo.wine.svg"
+               data-name="Payoneer">
+            <img src="https://www.logo.wine/a/logo/Payoneer/Payoneer-Logo.wine.svg" alt="Payoneer" class="platform-logo">
+            <h3 class="platform-name">Payoneer</h3>
+            <p class="platform-description">Pagos internacionales para freelancers y negocios.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- HSBC -->
+          <div class="platform-card" data-platform="hsbc"
+               data-logo="https://www.logo.wine/a/logo/HSBC/HSBC-Logo.wine.svg"
+               data-name="HSBC">
+            <img src="https://www.logo.wine/a/logo/HSBC/HSBC-Logo.wine.svg" alt="HSBC" class="platform-logo">
+            <h3 class="platform-name">HSBC</h3>
+            <p class="platform-description">Conecta con tus cuentas globales de HSBC.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Deutsche Bank -->
+          <div class="platform-card" data-platform="deutschebank"
+               data-logo="https://www.logo.wine/a/logo/Deutsche_Bank/Deutsche_Bank-Logo.wine.svg"
+               data-name="Deutsche Bank">
+            <img src="https://www.logo.wine/a/logo/Deutsche_Bank/Deutsche_Bank-Logo.wine.svg" alt="Deutsche Bank" class="platform-logo">
+            <h3 class="platform-name">Deutsche Bank</h3>
+            <p class="platform-description">Servicios financieros de uno de los bancos más grandes de Europa.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Bank of America -->
+          <div class="platform-card" data-platform="bankofamerica"
+               data-logo="https://www.logo.wine/a/logo/Bank_of_America/Bank_of_America-Logo.wine.svg"
+               data-name="Bank of America">
+            <img src="https://www.logo.wine/a/logo/Bank_of_America/Bank_of_America-Logo.wine.svg" alt="Bank of America" class="platform-logo">
+            <h3 class="platform-name">Bank of America</h3>
+            <p class="platform-description">Integra tus cuentas de Bank of America de forma segura.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Citigroup -->
+          <div class="platform-card" data-platform="citigroup"
+               data-logo="https://www.logo.wine/a/logo/Citigroup/Citigroup-Logo.wine.svg"
+               data-name="Citigroup">
+            <img src="https://www.logo.wine/a/logo/Citigroup/Citigroup-Logo.wine.svg" alt="Citigroup" class="platform-logo">
+            <h3 class="platform-name">Citigroup</h3>
+            <p class="platform-description">Accede a los servicios globales de Citi.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Revolut -->
+          <div class="platform-card" data-platform="revolut"
+               data-logo="https://www.logo.wine/a/logo/Revolut/Revolut-Logo.wine.svg"
+               data-name="Revolut">
+            <img src="https://www.logo.wine/a/logo/Revolut/Revolut-Logo.wine.svg" alt="Revolut" class="platform-logo">
+            <h3 class="platform-name">Revolut</h3>
+            <p class="platform-description">Banca digital moderna y transferencias internacionales.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- TD Ameritrade -->
+          <div class="platform-card" data-platform="tdameritrade"
+               data-logo="https://www.logo.wine/a/logo/TD_Ameritrade/TD_Ameritrade-Logo.wine.svg"
+               data-name="TD Ameritrade">
+            <img src="https://www.logo.wine/a/logo/TD_Ameritrade/TD_Ameritrade-Logo.wine.svg" alt="TD Ameritrade" class="platform-logo">
+            <h3 class="platform-name">TD Ameritrade</h3>
+            <p class="platform-description">Invierte y gestiona tu portafolio con TD Ameritrade.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Chase Bank -->
+          <div class="platform-card" data-platform="chase"
+               data-logo="https://www.logo.wine/a/logo/Chase_Bank/Chase_Bank-Logo.wine.svg"
+               data-name="Chase Bank">
+            <img src="https://www.logo.wine/a/logo/Chase_Bank/Chase_Bank-Logo.wine.svg" alt="Chase Bank" class="platform-logo">
+            <h3 class="platform-name">Chase Bank</h3>
+            <p class="platform-description">Conecta tus cuentas del banco Chase fácilmente.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Binance -->
+          <div class="platform-card" data-platform="binanceexchange"
+               data-logo="https://www.logo.wine/a/logo/Binance/Binance-Logo.wine.svg"
+               data-name="Binance">
+            <img src="https://www.logo.wine/a/logo/Binance/Binance-Logo.wine.svg" alt="Binance" class="platform-logo">
+            <h3 class="platform-name">Binance</h3>
+            <p class="platform-description">Accede al mayor exchange de criptomonedas.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Santander Bank -->
+          <div class="platform-card" data-platform="santander"
+               data-logo="https://www.logo.wine/a/logo/Santander_Bank/Santander_Bank-Logo.wine.svg"
+               data-name="Santander Bank">
+            <img src="https://www.logo.wine/a/logo/Santander_Bank/Santander_Bank-Logo.wine.svg" alt="Santander Bank" class="platform-logo">
+            <h3 class="platform-name">Santander Bank</h3>
+            <p class="platform-description">Servicios bancarios internacionales de Santander.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- N26 -->
+          <div class="platform-card" data-platform="n26"
+               data-logo="https://www.logo.wine/a/logo/N26_(bank)/N26_(bank)-Logo.wine.svg"
+               data-name="N26">
+            <img src="https://www.logo.wine/a/logo/N26_(bank)/N26_(bank)-Logo.wine.svg" alt="N26" class="platform-logo">
+            <h3 class="platform-name">N26</h3>
+            <p class="platform-description">Banca móvil europea moderna y flexible.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Coinbase -->
+          <div class="platform-card" data-platform="coinbase"
+               data-logo="https://www.logo.wine/a/logo/Coinbase/Coinbase-Logo.wine.svg"
+               data-name="Coinbase">
+            <img src="https://www.logo.wine/a/logo/Coinbase/Coinbase-Logo.wine.svg" alt="Coinbase" class="platform-logo">
+            <h3 class="platform-name">Coinbase</h3>
+            <p class="platform-description">Compra y vende criptomonedas con Coinbase.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- BBVA USA -->
+          <div class="platform-card" data-platform="bbvausa"
+               data-logo="https://www.logo.wine/a/logo/BBVA_USA/BBVA_USA-Logo.wine.svg"
+               data-name="BBVA USA">
+            <img src="https://www.logo.wine/a/logo/BBVA_USA/BBVA_USA-Logo.wine.svg" alt="BBVA USA" class="platform-logo">
+            <h3 class="platform-name">BBVA USA</h3>
+            <p class="platform-description">Opera con tus cuentas de BBVA en Estados Unidos.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+
+          <!-- Virgin Money UK -->
+          <div class="platform-card" data-platform="virginmoneyuk"
+               data-logo="https://www.logo.wine/a/logo/Virgin_Money_UK/Virgin_Money_UK-Logo.wine.svg"
+               data-name="Virgin Money UK">
+            <img src="https://www.logo.wine/a/logo/Virgin_Money_UK/Virgin_Money_UK-Logo.wine.svg" alt="Virgin Money UK" class="platform-logo">
+            <h3 class="platform-name">Virgin Money UK</h3>
+            <p class="platform-description">Soluciones financieras innovadoras en el Reino Unido.</p>
+            <span class="platform-status available">
+              <i class="fas fa-check-circle"></i>
+              Disponible
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmación de Titular -->
+  <div id="confirmation-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="close-confirmation" class="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+        <img id="modal-platform-logo" class="modal-platform-logo" src="" alt="Platform">
+        <h3 class="modal-title">Verificación de Titular</h3>
+        <p class="modal-subtitle">Antes de proceder con la vinculación</p>
+      </div>
+      <div class="modal-body">
+        <div class="warning-content">
+          <h4>
+            <i class="fas fa-exclamation-triangle"></i>
+            Importante: Solo el Titular
+          </h4>
+          <p>
+            La vinculación de cuentas solo está permitida para el titular registrado en REMEEX VISA. 
+            No se acepta la vinculación de cuentas de terceros por motivos de seguridad y cumplimiento normativo.
+          </p>
+        </div>
+        <p>
+          Al continuar, confirmas que eres el titular de ambas cuentas y que la información proporcionada es verídica. 
+          Cualquier intento de vinculación fraudulenta resultará en la suspensión permanente de la cuenta.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm-linking" class="btn btn-primary">
+          <i class="fas fa-check"></i>
+          Confirmo, soy el titular
+        </button>
+        <button id="cancel-linking" class="btn btn-secondary">
+          <i class="fas fa-times"></i>
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Proceso de Vinculación -->
+  <div id="linking-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <img id="linking-platform-logo" class="modal-platform-logo" src="" alt="Platform">
+        <h3 class="modal-title">Vinculando Cuentas</h3>
+        <p class="modal-subtitle">Estableciendo conexión segura entre plataformas</p>
+      </div>
+      <div class="modal-body">
+        <div class="linking-process">
+          <div class="process-animation">
+            <div class="linking-circle">
+              <i class="fas fa-link linking-icon"></i>
+            </div>
+          </div>
+
+          <div class="linking-progress">
+            <div class="progress-bar">
+              <div id="linking-progress-fill" class="progress-fill"></div>
+            </div>
+            <div class="progress-text">
+              <span id="linking-status">Iniciando vinculación...</span>
+              <span id="linking-percentage" class="progress-percentage">0%</span>
+            </div>
+          </div>
+
+          <div class="process-steps">
+            <div class="process-step" id="step-validate">
+              <div class="step-icon">1</div>
+              <div class="step-text">Validando credenciales de usuario</div>
+            </div>
+            <div class="process-step" id="step-sync">
+              <div class="step-icon">2</div>
+              <div class="step-text">Sincronizando datos personales</div>
+            </div>
+            <div class="process-step" id="step-emails">
+              <div class="step-icon">3</div>
+              <div class="step-text">Verificando direcciones de email</div>
+            </div>
+            <div class="process-step" id="step-accounts">
+              <div class="step-icon">4</div>
+              <div class="step-text">Vinculando números de cuenta</div>
+            </div>
+            <div class="process-step" id="step-security">
+              <div class="step-icon">5</div>
+              <div class="step-text">Configurando protocolos de seguridad</div>
+            </div>
+            <div class="process-step" id="step-testing">
+              <div class="step-icon">6</div>
+              <div class="step-text">Probando conectividad</div>
+            </div>
+            <div class="process-step" id="step-complete">
+              <div class="step-icon">
+                <i class="fas fa-check"></i>
+              </div>
+              <div class="step-text">Vinculación completada</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Instrucciones 2FA -->
+  <div id="twofa-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <img id="twofa-platform-logo" class="modal-platform-logo" src="" alt="Platform">
+        <div class="success-icon">
+          <i class="fas fa-check"></i>
+        </div>
+        <h3 class="modal-title">¡Vinculación Exitosa!</h3>
+        <p class="modal-subtitle">Último paso: Activar autenticación de dos factores</p>
+      </div>
+      <div class="modal-body">
+        <div class="success-content">
+          <p class="mb-4">
+            Tu cuenta ha sido vinculada exitosamente con <strong id="linked-platform-name"></strong>. 
+            Para completar el proceso y garantizar máxima seguridad, debes activar la autenticación de dos factores.
+          </p>
+        </div>
+
+        <div class="twofa-instructions">
+          <h4>
+            <i class="fas fa-shield-alt"></i>
+            Instrucciones para activar 2FA
+          </h4>
+          <ol class="instruction-steps">
+            <li>
+              Ve a la sección <strong>"Ajustes"</strong> en tu aplicación REMEEX VISA
+            </li>
+            <li>
+              Busca y selecciona <strong>"Seguridad"</strong>
+            </li>
+            <li>
+              Encuentra la opción <strong>"Autenticación de dos factores"</strong>
+            </li>
+            <li>
+              Marca la casilla para <strong>activar</strong> la autenticación de dos factores
+            </li>
+            <li>
+              Sigue las instrucciones en pantalla para completar la configuración
+            </li>
+          </ol>
+        </div>
+
+        <div class="warning-content">
+          <h4>
+            <i class="fas fa-info-circle"></i>
+            Importante
+          </h4>
+          <p>
+            La vinculación no estará completamente activa hasta que actives la autenticación de dos factores. 
+            Este paso adicional protege tus transacciones y datos personales.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="go-to-settings" class="btn btn-primary">
+          <i class="fas fa-cog"></i>
+          Ir a Ajustes
+        </button>
+        <button id="close-twofa" class="btn btn-outline">
+          <i class="fas fa-clock"></i>
+          Configurar más tarde
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navegación Inferior -->
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <div class="nav-icon">
+        <i class="fas fa-link"></i>
+      </div>
+      <div class="nav-label">Vincular</div>
+    </div>
+
+    <a href="transferencia.html" id="transfer-btn" class="nav-item">
+      <div class="nav-icon">
+        <i class="fas fa-paper-plane"></i>
+      </div>
+      <div class="nav-label">Transferir</div>
+    </a>
+
+    <a href="#" id="home-btn" class="nav-item">
+      <div class="nav-icon">
+        <i class="fas fa-home"></i>
+      </div>
+      <div class="nav-label">Inicio</div>
+    </a>
+
+    <a href="#" class="nav-item">
+      <div class="nav-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="nav-label">Reportes</div>
+    </a>
+
+    <a href="#" id="settings-btn" class="nav-item">
+      <div class="nav-icon">
+        <i class="fas fa-cog"></i>
+      </div>
+      <div class="nav-label">Ajustes</div>
+    </a>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Script Principal -->
+  <script>
+    // Configuración de la aplicación
+    const CONFIG = {
+      EXCHANGE_RATES: {
+        USD_TO_BS: 151.10,
+        USD_TO_EUR: 0.94
+      },
+      LINKING_DURATION: 60000, // 1 minuto en millisegundos
+      STEPS: [
+        { id: 'step-validate', text: 'Validando credenciales de usuario', duration: 8000 },
+        { id: 'step-sync', text: 'Sincronizando datos personales', duration: 10000 },
+        { id: 'step-emails', text: 'Verificando direcciones de email', duration: 8000 },
+        { id: 'step-accounts', text: 'Vinculando números de cuenta', duration: 12000 },
+        { id: 'step-security', text: 'Configurando protocolos de seguridad', duration: 10000 },
+        { id: 'step-testing', text: 'Probando conectividad', duration: 8000 },
+        { id: 'step-complete', text: 'Vinculación completada', duration: 4000 }
+      ]
+    };
+
+    // Variables globales
+    let currentUser = {
+      name: '',
+      balance: {
+        usd: 0,
+        bs: 0,
+        eur: 0
+      }
+    };
+
+    let currentCurrency = 'bs';
+    let selectedPlatform = null;
+    let linkingInProgress = false;
+    let linkingTimer = null;
+
+    // DOM Ready
+    document.addEventListener('DOMContentLoaded', function() {
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+      window.scrollTo(0, 0);
+      applySavedTheme();
+      initApp();
+      setupEventListeners();
+      loadUserDataFromSession();
+      updateOnlineUsersCount();
+    });
+
+    function applySavedTheme() {
+      if (window.applyTheme) applyTheme();
+    }
+
+    // Inicialización de la aplicación
+    function initApp() {
+      updateBalanceDisplay();
+      updateUserName();
+    }
+
+    // Configurar event listeners principales
+    function setupEventListeners() {
+      setupBalanceToggle();
+      setupPlatformCards();
+      setupModalEvents();
+      setupNavigationEvents();
+    }
+
+    // Setup balance toggle
+    function setupBalanceToggle() {
+      const currencyToggle = document.getElementById('currency-toggle');
+      
+      if (currencyToggle) {
+        currencyToggle.addEventListener('click', function() {
+          if (currentCurrency === 'bs') {
+            currentCurrency = 'usd';
+          } else if (currentCurrency === 'usd') {
+            currentCurrency = 'eur';
+          } else {
+            currentCurrency = 'bs';
+          }
+          updateBalanceDisplay();
+        });
+      }
+    }
+
+    // Setup platform cards
+    function setupPlatformCards() {
+      const platformCards = document.querySelectorAll('.platform-card');
+      
+      platformCards.forEach(card => {
+        card.addEventListener('click', function() {
+          const status = this.querySelector('.platform-status');
+          
+          if (status && status.classList.contains('coming-soon')) {
+            showToast('info', 'Próximamente', 'Esta plataforma estará disponible muy pronto. Te notificaremos cuando esté lista.');
+            return;
+          }
+
+          if (linkingInProgress) {
+            showToast('warning', 'Vinculación en Progreso', 'Ya hay una vinculación en proceso. Por favor, espera a que termine.');
+            return;
+          }
+
+          selectedPlatform = {
+            id: this.getAttribute('data-platform'),
+            name: this.getAttribute('data-name'),
+            logo: this.getAttribute('data-logo')
+          };
+
+          showConfirmationModal();
+        });
+      });
+    }
+
+    // Setup modal events
+    function setupModalEvents() {
+      // Modal de confirmación
+      const confirmationModal = document.getElementById('confirmation-modal');
+      const closeConfirmation = document.getElementById('close-confirmation');
+      const confirmLinking = document.getElementById('confirm-linking');
+      const cancelLinking = document.getElementById('cancel-linking');
+
+      if (closeConfirmation) {
+        closeConfirmation.addEventListener('click', () => {
+          confirmationModal.style.display = 'none';
+        });
+      }
+
+      if (confirmLinking) {
+        confirmLinking.addEventListener('click', () => {
+          confirmationModal.style.display = 'none';
+          startLinkingProcess();
+        });
+      }
+
+      if (cancelLinking) {
+        cancelLinking.addEventListener('click', () => {
+          confirmationModal.style.display = 'none';
+        });
+      }
+
+      // Modal de 2FA
+      const twofaModal = document.getElementById('twofa-modal');
+      const goToSettings = document.getElementById('go-to-settings');
+      const closeTwofa = document.getElementById('close-twofa');
+
+      if (goToSettings) {
+        goToSettings.addEventListener('click', () => {
+          showToast('info', 'Redirigiendo', 'Te llevamos a la sección de ajustes...');
+          setTimeout(() => {
+            sessionStorage.setItem('fromRecarga', 'true');
+            sessionStorage.setItem('openSettingsSection', 'reports');
+            window.location.href = getRecargaPage();
+          }, 1500);
+        });
+      }
+
+      if (closeTwofa) {
+        closeTwofa.addEventListener('click', () => {
+          twofaModal.style.display = 'none';
+          showToast('warning', 'Recordatorio', 'No olvides activar la autenticación de dos factores para completar la vinculación.');
+        });
+      }
+
+      // Cerrar modales al hacer click fuera
+      document.addEventListener('click', function(e) {
+        if (e.target === confirmationModal) {
+          confirmationModal.style.display = 'none';
+        }
+        if (e.target === twofaModal) {
+          twofaModal.style.display = 'none';
+        }
+      });
+
+      // Cerrar modales con Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          confirmationModal.style.display = 'none';
+          twofaModal.style.display = 'none';
+        }
+      });
+    }
+
+    // Setup navigation events
+    function setupNavigationEvents() {
+      // Prevenir envío de formularios
+      document.addEventListener('submit', function(e) {
+        e.preventDefault();
+      });
+
+      const homeBtn = document.getElementById('home-btn');
+      if (homeBtn) {
+        homeBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          window.location.href = getRecargaPage();
+        });
+      }
+
+      const transferBtn = document.getElementById('transfer-btn');
+      if (transferBtn) {
+        transferBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          sessionStorage.setItem('fromRecarga', 'true');
+          window.location.href = 'transferencia.html';
+        });
+      }
+
+      const settingsBtn = document.getElementById('settings-btn');
+      if (settingsBtn) {
+        settingsBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          sessionStorage.setItem('fromRecarga', 'true');
+          sessionStorage.setItem('openSettingsSection', 'reports');
+          window.location.href = getRecargaPage();
+        });
+      }
+    }
+
+    // Mostrar modal de confirmación
+    function showConfirmationModal() {
+      if (!selectedPlatform) return;
+
+      const modal = document.getElementById('confirmation-modal');
+      const logo = document.getElementById('modal-platform-logo');
+      
+      if (logo) {
+        logo.src = selectedPlatform.logo;
+        logo.alt = selectedPlatform.name;
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    // Iniciar proceso de vinculación
+    function startLinkingProcess() {
+      if (!selectedPlatform || linkingInProgress) return;
+
+      linkingInProgress = true;
+      
+      const linkingModal = document.getElementById('linking-modal');
+      const logo = document.getElementById('linking-platform-logo');
+      const progressFill = document.getElementById('linking-progress-fill');
+      const statusText = document.getElementById('linking-status');
+      const percentageText = document.getElementById('linking-percentage');
+
+      if (logo) {
+        logo.src = selectedPlatform.logo;
+        logo.alt = selectedPlatform.name;
+      }
+
+      // Resetear estado
+      progressFill.style.width = '0%';
+      statusText.textContent = 'Iniciando vinculación...';
+      percentageText.textContent = '0%';
+
+      // Resetear pasos
+      const steps = document.querySelectorAll('.process-step');
+      steps.forEach(step => {
+        step.classList.remove('active', 'completed');
+      });
+
+      linkingModal.style.display = 'flex';
+
+      // Iniciar animación de progreso
+      animateLinkingProcess();
+    }
+
+    // Animar proceso de vinculación
+    function animateLinkingProcess() {
+      const progressFill = document.getElementById('linking-progress-fill');
+      const statusText = document.getElementById('linking-status');
+      const percentageText = document.getElementById('linking-percentage');
+      
+      let currentStepIndex = 0;
+      let totalProgress = 0;
+      
+      function executeStep() {
+        if (currentStepIndex >= CONFIG.STEPS.length) {
+          completeLinkingProcess();
+          return;
+        }
+
+        const step = CONFIG.STEPS[currentStepIndex];
+        const stepElement = document.getElementById(step.id);
+        
+        // Marcar paso como activo
+        if (stepElement) {
+          stepElement.classList.add('active');
+        }
+        
+        // Actualizar texto de estado
+        statusText.textContent = step.text;
+        
+        // Animar progreso
+        const stepProgress = 100 / CONFIG.STEPS.length;
+        const targetProgress = (currentStepIndex + 1) * stepProgress;
+        
+        animateProgress(totalProgress, targetProgress, step.duration, (progress) => {
+          progressFill.style.width = `${progress}%`;
+          percentageText.textContent = `${Math.round(progress)}%`;
+        });
+
+        // Cuando termine el paso actual
+        setTimeout(() => {
+          if (stepElement) {
+            stepElement.classList.remove('active');
+            stepElement.classList.add('completed');
+            
+            // Cambiar icono a check si es el último paso
+            if (currentStepIndex === CONFIG.STEPS.length - 1) {
+              const icon = stepElement.querySelector('.step-icon');
+              if (icon) {
+                icon.innerHTML = '<i class="fas fa-check"></i>';
+              }
+            }
+          }
+          
+          totalProgress = targetProgress;
+          currentStepIndex++;
+          
+          // Pequeña pausa entre pasos
+          setTimeout(executeStep, 200);
+        }, step.duration);
+      }
+
+      executeStep();
+    }
+
+    // Animar progreso gradualmente
+    function animateProgress(from, to, duration, callback) {
+      const startTime = Date.now();
+      
+      function update() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Usar easing para suavizar la animación
+        const eased = easeOutCubic(progress);
+        const current = from + (to - from) * eased;
+        
+        callback(current);
+        
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+      
+      requestAnimationFrame(update);
+    }
+
+    // Función de easing
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    // Completar proceso de vinculación
+    function completeLinkingProcess() {
+      const linkingModal = document.getElementById('linking-modal');
+      const linkingCircle = document.querySelector('.linking-circle');
+      const linkingIcon = document.querySelector('.linking-icon');
+      
+      // Cambiar a estado completado
+      if (linkingCircle) {
+        linkingCircle.classList.add('linking-complete');
+      }
+      
+      if (linkingIcon) {
+        linkingIcon.className = 'fas fa-check linking-icon';
+      }
+
+      // Lanzar confetti
+      if (window.confetti) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+
+      // Mostrar toast de éxito
+      showToast('success', '¡Vinculación Exitosa!', `Tu cuenta ha sido vinculada con ${selectedPlatform.name} exitosamente.`);
+
+      // Esperar un poco y mostrar instrucciones de 2FA
+      setTimeout(() => {
+        linkingModal.style.display = 'none';
+        showTwofaInstructions();
+        linkingInProgress = false;
+      }, 2000);
+    }
+
+    // Mostrar instrucciones de 2FA
+    function showTwofaInstructions() {
+      if (!selectedPlatform) return;
+
+      const twofaModal = document.getElementById('twofa-modal');
+      const logo = document.getElementById('twofa-platform-logo');
+      const platformName = document.getElementById('linked-platform-name');
+
+      if (logo) {
+        logo.src = selectedPlatform.logo;
+        logo.alt = selectedPlatform.name;
+      }
+
+      if (platformName) {
+        platformName.textContent = selectedPlatform.name;
+      }
+
+      twofaModal.style.display = 'flex';
+    }
+
+    // Cargar datos del usuario desde sessionStorage
+    function loadUserDataFromSession() {
+      try {
+        let balanceJson = sessionStorage.getItem('remeexSessionBalance');
+        if (!balanceJson) {
+          balanceJson = localStorage.getItem('remeexBalance');
+        }
+        if (balanceJson) {
+          const balance = JSON.parse(balanceJson);
+          currentUser.balance = balance;
+        }
+
+        let userDataJson = sessionStorage.getItem('remeexSessionUserData');
+        if (!userDataJson) {
+          userDataJson = localStorage.getItem('remeexUserData');
+        }
+        if (userDataJson) {
+          const userData = JSON.parse(userDataJson);
+          currentUser.name = userData.name || userData.firstName || userData.fullName || '';
+        }
+
+        // Fallback para datos anteriores
+        if (currentUser.balance.bs === 0) {
+          const legacyBalance = sessionStorage.getItem('remeexBalance');
+          const legacyUserData = sessionStorage.getItem('remeexUserData');
+
+          if (legacyBalance) {
+            try {
+              currentUser.balance = JSON.parse(legacyBalance);
+            } catch (e) {
+              console.error('Error al parsear balance legacy:', e);
+            }
+          }
+
+          if (legacyUserData) {
+            try {
+              const user = JSON.parse(legacyUserData);
+              currentUser.name = user.name || user.firstName || user.fullName || '';
+            } catch (e) {
+              console.error('Error al parsear userData legacy:', e);
+            }
+          }
+        }
+
+      } catch (e) {
+        console.error('Error al cargar datos de sesión:', e);
+      }
+      
+      // Si no hay datos, cargar datos demo
+      if (currentUser.balance.bs === 0) {
+        loadDemoData();
+      }
+
+      updateBalanceDisplay();
+      updateUserName();
+    }
+
+    // Cargar datos simulados para demostración
+    function loadDemoData() {
+      currentUser = {
+        name: 'Juan Pérez',
+        balance: {
+          bs: 30000,
+          usd: 30000 / CONFIG.EXCHANGE_RATES.USD_TO_BS,
+          eur: (30000 / CONFIG.EXCHANGE_RATES.USD_TO_BS) * CONFIG.EXCHANGE_RATES.USD_TO_EUR
+        }
+      };
+      
+      try {
+        sessionStorage.setItem('remeexSessionBalance', JSON.stringify(currentUser.balance));
+        sessionStorage.setItem('remeexSessionUserData', JSON.stringify({
+          name: currentUser.name
+        }));
+      } catch (e) {
+        console.error('Error al guardar datos de demo:', e);
+      }
+      
+      updateBalanceDisplay();
+      updateUserName();
+    }
+
+    // Actualizar display de balance
+    function updateBalanceDisplay() {
+      const balanceValue = document.getElementById('balance-value');
+      const balanceEquivalent = document.getElementById('balance-equivalent-display');
+      const currencyToggle = document.getElementById('currency-toggle');
+      
+      let displayAmount, toggleText, equivalentText;
+      
+      switch(currentCurrency) {
+        case 'usd':
+          displayAmount = formatCurrency(currentUser.balance.usd, 'usd');
+          toggleText = 'EUR';
+          equivalentText = `≈ ${formatCurrency(currentUser.balance.bs, 'bs')} | ≈ ${formatCurrency(currentUser.balance.eur, 'eur')}`;
+          break;
+        case 'eur':
+          displayAmount = formatCurrency(currentUser.balance.eur, 'eur');
+          toggleText = 'Bs';
+          equivalentText = `≈ ${formatCurrency(currentUser.balance.bs, 'bs')} | ≈ ${formatCurrency(currentUser.balance.usd, 'usd')}`;
+          break;
+        default:
+          displayAmount = formatCurrency(currentUser.balance.bs, 'bs');
+          toggleText = 'USD';
+          equivalentText = `≈ ${formatCurrency(currentUser.balance.usd, 'usd')} | ≈ ${formatCurrency(currentUser.balance.eur, 'eur')}`;
+      }
+      
+      if (balanceValue) balanceValue.textContent = displayAmount;
+      if (balanceEquivalent) balanceEquivalent.textContent = equivalentText;
+      if (currencyToggle) currencyToggle.textContent = toggleText;
+    }
+
+    // Actualizar nombre de usuario
+    function updateUserName() {
+      const userName = document.getElementById('user-name');
+      
+      // Intentar obtener nombre de localStorage si no está en currentUser
+      if (!currentUser.name) {
+        try {
+          const regData = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+          const userData = JSON.parse(localStorage.getItem('visaUserData') || '{}');
+          const remeexData = JSON.parse(localStorage.getItem('remeexUserData') || '{}');
+
+          currentUser.name = regData.firstName || userData.name || remeexData.name || regData.preferredName || 'Usuario';
+        } catch (e) {
+          currentUser.name = 'Usuario';
+        }
+      }
+      
+      if (userName && currentUser.name) {
+        userName.textContent = currentUser.name;
+      }
+    }
+
+    // Actualizar contador de usuarios en línea
+    function updateOnlineUsersCount() {
+      const min = 98;
+      const max = 142;
+      const activeUsersCount = Math.floor(Math.random() * (max - min + 1)) + min;
+      
+      const userCountElement = document.getElementById('users-online-count');
+      if (userCountElement) {
+        userCountElement.textContent = `${activeUsersCount} usuarios conectados`;
+      }
+    }
+
+    // Formatear moneda
+    function formatCurrency(amount, currency) {
+      if (isNaN(amount)) amount = 0;
+
+      if (currency === 'bs') {
+        return `Bs ${amount.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })}`;
+      } else if (currency === 'usd') {
+        return `$${amount.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })}`;
+      } else if (currency === 'eur') {
+        return `€${amount.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })}`;
+      }
+      
+      return amount.toLocaleString();
+    }
+
+    // Función para escapar caracteres especiales
+    function escapeHTML(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Mostrar notificación toast
+    function showToast(type, title, message, duration = 4000) {
+      const toastContainer = document.getElementById('toast-container');
+      
+      if (!toastContainer) return;
+      
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const safeTitle = escapeHTML(title);
+      const safeMessage = escapeHTML(message);
+      
+      const content = `
+        <div class="toast-icon">
+          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        </div>
+        <div class="toast-content">
+          <div class="toast-title">${safeTitle}</div>
+          <div class="toast-message">${safeMessage}</div>
+        </div>
+        <div class="toast-close">
+          <i class="fas fa-times"></i>
+        </div>
+      `;
+      
+      toast.innerHTML = content;
+      toastContainer.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, duration);
+      
+      const closeBtn = toast.querySelector('.toast-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+          toast.style.opacity = '0';
+          setTimeout(() => {
+            toast.remove();
+          }, 300);
+        });
+      }
+    }
+
+    // Función de utilidad para logging
+    function log(message, data = null) {
+      if (window.console && window.console.log) {
+        if (data) {
+          console.log(`[REMEEX LINKING] ${message}`, data);
+        } else {
+          console.log(`[REMEEX LINKING] ${message}`);
+        }
+      }
+    }
+
+    // Log de inicialización
+    log('Aplicación de vinculación REMEEX iniciada correctamente');
+    log('Usuario actual:', currentUser);
+
+    // Manejo de errores globales
+    window.addEventListener('error', function(e) {
+      log('Error global capturado:', {
+        message: e.message,
+        filename: e.filename,
+        line: e.lineno,
+        column: e.colno
+      });
+    });
+
+    // Detectar cambios de conectividad
+    function updateConnectionStatus() {
+      if (navigator.onLine) {
+        log('Conexión a internet restaurada');
+        showToast('success', 'Conectado', 'Conexión a internet restaurada');
+      } else {
+        log('Conexión a internet perdida');
+        showToast('warning', 'Sin conexión', 'Verifica tu conexión a internet');
+      }
+    }
+
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+
+    // Función para limpiar datos (desarrollo)
+    function clearAllData() {
+      try {
+        sessionStorage.clear();
+        localStorage.clear();
+        window.location.reload();
+      } catch (e) {
+        console.error('Error al limpiar datos:', e);
+      }
+    }
+
+    // Exponer funciones globales para depuración
+    window.remeexLinkingDebug = {
+      clearData: clearAllData,
+      getCurrentUser: () => currentUser,
+      getConfig: () => CONFIG,
+      getSelectedPlatform: () => selectedPlatform,
+      simulateLinking: (platformName) => {
+        selectedPlatform = {
+          id: 'demo',
+          name: platformName || 'Demo Platform',
+          logo: 'https://via.placeholder.com/100x75?text=Demo'
+        };
+        startLinkingProcess();
+      },
+      skipToTwoFA: () => {
+        if (selectedPlatform) {
+          showTwofaInstructions();
+        }
+      }
+    };
+
+    log('Configuración de eventos y validaciones completada');
+  </script>
+
+  <!-- Script de auto-completado de datos de registro -->
+  <script>
+    (function() {
+      const regData = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+      const userData = JSON.parse(localStorage.getItem('visaUserData') || '{}');
+      
+      // Actualizar nombre de usuario si está disponible
+      if (regData.firstName || userData.name) {
+        const userNameEl = document.getElementById('user-name');
+        if (userNameEl) {
+          userNameEl.textContent = regData.firstName || userData.name || regData.preferredName || 'Usuario';
+        }
+        
+        // Actualizar currentUser
+        currentUser.name = regData.firstName || userData.name || regData.preferredName || 'Usuario';
+      }
+    })();
+  </script>
+</body>
+</html>

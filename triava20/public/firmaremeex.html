@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Identity Verification Portal</title>
+    <script>
+        (function () {
+            var ACCESS_KEY = 'remeexBlockedAccessToken';
+            var ACCESS_VALUE = 'allowed';
+            var ENTRY_PARAM = 'entryToken';
+            var HOME_PAGE = 'homevisa.html';
+            var SIGNATURE_BLOCK_KEY = 'remeexSignatureBlock';
+            var SIGNATURE_BLOCK_VALUE = 'blocked';
+            var sessionStorageFailed = false;
+
+            var redirectToHome = function () {
+                try {
+                    window.location.replace(HOME_PAGE);
+                } catch (error) {
+                    window.location.href = HOME_PAGE;
+                }
+            };
+
+            var isSignatureAccessBlocked = function () {
+                try {
+                    return window.localStorage.getItem(SIGNATURE_BLOCK_KEY) === SIGNATURE_BLOCK_VALUE;
+                } catch (error) {
+                    return false;
+                }
+            };
+
+            var hasValidReferrer = function () {
+                if (!document.referrer) {
+                    return false;
+                }
+
+                try {
+                    var refUrl = new URL(document.referrer);
+                    var path = refUrl.pathname || '';
+                    return path === '/' + HOME_PAGE || path.endsWith('/' + HOME_PAGE) || path === HOME_PAGE;
+                } catch (error) {
+                    return document.referrer.indexOf(HOME_PAGE) !== -1;
+                }
+            };
+
+            var hasUrlToken = function () {
+                try {
+                    var currentUrl = new URL(window.location.href);
+                    return currentUrl.searchParams.get(ENTRY_PARAM) === ACCESS_VALUE;
+                } catch (error) {
+                    var query = window.location.search || '';
+                    return query.indexOf(ENTRY_PARAM + '=' + ACCESS_VALUE) !== -1;
+                }
+            };
+
+            var consumeAccessToken = function () {
+                try {
+                    var storedValue = window.sessionStorage.getItem(ACCESS_KEY);
+                    if (storedValue === ACCESS_VALUE) {
+                        window.sessionStorage.removeItem(ACCESS_KEY);
+                        return true;
+                    }
+
+                    if (storedValue !== null) {
+                        window.sessionStorage.removeItem(ACCESS_KEY);
+                    }
+                } catch (error) {
+                    sessionStorageFailed = true;
+                }
+
+                return false;
+            };
+
+            var removeUrlToken = function () {
+                try {
+                    var currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.delete(ENTRY_PARAM);
+                    var newUrl = currentUrl.pathname + currentUrl.search + currentUrl.hash;
+                    if (typeof window.history.replaceState === 'function') {
+                        window.history.replaceState({}, document.title, newUrl);
+                    }
+                } catch (error) {}
+            };
+
+            if (isSignatureAccessBlocked()) {
+                redirectToHome();
+                return;
+            }
+
+            var tokenValid = consumeAccessToken();
+            var referrerValid = hasValidReferrer();
+            var urlTokenPresent = hasUrlToken();
+
+            if (tokenValid) {
+                if (urlTokenPresent) {
+                    removeUrlToken();
+                }
+                return;
+            }
+
+            if (sessionStorageFailed && referrerValid && urlTokenPresent) {
+                removeUrlToken();
+                return;
+            }
+
+            redirectToHome();
+        })();
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1e3a8a;
+            --secondary-blue: #3b82f6;
+            --light-blue: #dbeafe;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --red: #dc2626;
+            --success: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--light-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--primary-blue);
+        }
+
+        .main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .verification-container {
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .verification-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .verification-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .verification-subtitle {
+            color: var(--gray-600);
+            font-size: 1rem;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-400);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .step.active {
+            color: var(--secondary-blue);
+        }
+
+        .step.completed {
+            color: var(--success);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--gray-300);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .step.active .step-number {
+            background-color: var(--secondary-blue);
+            color: var(--white);
+        }
+
+        .step.completed .step-number {
+            background-color: var(--success);
+            color: var(--white);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            background-color: var(--gray-50);
+        }
+
+        .upload-area:hover {
+            border-color: var(--secondary-blue);
+            background-color: var(--light-blue);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--secondary-blue);
+            background-color: var(--light-blue);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            color: var(--gray-400);
+        }
+
+        .upload-text {
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-container {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .remove-image {
+            margin-top: 0.5rem;
+            background-color: var(--red);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .remove-image:hover {
+            background-color: #b91c1c;
+        }
+
+        .signature-container {
+            background-color: var(--gray-50);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .signature-canvas {
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            width: 100%;
+            height: 200px;
+            background-color: var(--white);
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .signature-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .clear-button {
+            background-color: var(--gray-200);
+            color: var(--gray-700);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .clear-button:hover:not(:disabled) {
+            background-color: var(--gray-300);
+        }
+
+        .clear-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .attempts-counter {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .submit-button {
+            width: 100%;
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background-color: #1e40af;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .animation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .merge-animation {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+
+        .merge-item {
+            position: absolute;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            transition: all 1s ease-in-out;
+        }
+
+        .merge-item.id-card {
+            width: 300px;
+            height: 200px;
+            top: 0;
+            left: 50px;
+            background-color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .merge-item.signature {
+            width: 300px;
+            height: 100px;
+            bottom: 0;
+            left: 50px;
+            background-color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .merge-item.merging {
+            transform: translate(0, 50px);
+            opacity: 0;
+        }
+
+        .loading-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--gray-300);
+            border-top-color: var(--secondary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--white);
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .loading-countdown {
+            color: var(--light-blue);
+            font-size: 1rem;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .result-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 2rem;
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #fee2e2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-icon svg {
+            width: 48px;
+            height: 48px;
+            color: var(--red);
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--red);
+        }
+
+        .result-message {
+            text-align: center;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        .retry-button {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .retry-button:hover {
+            background-color: #1e40af;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 640px) {
+            .verification-container {
+                padding: 1.5rem;
+            }
+
+            .verification-title {
+                font-size: 1.5rem;
+            }
+
+            .step-indicator {
+                gap: 0.5rem;
+            }
+
+            .step-text {
+                display: none;
+            }
+
+            .merge-animation {
+                width: 300px;
+                height: 300px;
+            }
+
+            .merge-item.id-card {
+                width: 250px;
+                height: 150px;
+                left: 25px;
+            }
+
+            .merge-item.signature {
+                width: 250px;
+                height: 80px;
+                left: 25px;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        button:focus,
+        input:focus,
+        canvas:focus {
+            outline: 2px solid var(--secondary-blue);
+            outline-offset: 2px;
+        }
+
+        /* Error states */
+        .error-message {
+            color: var(--red);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .form-section.error .upload-area {
+            border-color: var(--red);
+        }
+
+        .form-section.error .signature-canvas {
+            border-color: var(--red);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.75rem 0;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .security-badge {
+                align-self: stretch;
+                justify-content: center;
+                text-align: center;
+                font-size: 0.75rem;
+                padding: 0.5rem;
+            }
+
+            .logo-text {
+                font-size: 1.25rem;
+            }
+
+            .main {
+                padding: 1.5rem 0;
+            }
+
+            .container {
+                padding: 0 0.75rem;
+            }
+
+            .verification-container {
+                padding: 1.5rem;
+            }
+
+            .verification-title {
+                font-size: 1.5rem;
+            }
+
+            .verification-subtitle {
+                font-size: 0.95rem;
+            }
+
+            .step-indicator {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .step {
+                width: 100%;
+                justify-content: center;
+                font-size: 0.8rem;
+            }
+
+            .step-indicator > svg {
+                display: none;
+            }
+
+            .form-section {
+                margin-bottom: 1.5rem;
+            }
+
+            .upload-area {
+                padding: 1.5rem 1rem;
+            }
+
+            .signature-container {
+                padding: 0.75rem;
+            }
+
+            .signature-canvas {
+                height: 160px;
+            }
+
+            .signature-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+
+            .clear-button {
+                justify-content: center;
+            }
+
+            .submit-button {
+                font-size: 0.95rem;
+                padding: 0.75rem;
+            }
+
+            .result-container {
+                width: 100%;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .verification-title {
+                font-size: 1.35rem;
+            }
+
+            .upload-text {
+                font-size: 0.95rem;
+            }
+
+            .upload-subtext,
+            .attempts-counter,
+            .error-message {
+                font-size: 0.8rem;
+            }
+
+            .step-number {
+                width: 28px;
+                height: 28px;
+            }
+
+            .merge-animation {
+                width: 300px;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="logo-text">SecureVerify</span>
+                </div>
+                <div class="security-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Secure Connection</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="verification-container">
+                <div class="verification-header">
+                    <h1 class="verification-title">Identity Verification</h1>
+                    <p class="verification-subtitle">Please upload your ID card and provide your signature for verification</p>
+                </div>
+
+                <div class="step-indicator">
+                    <div class="step active" id="step1">
+                        <div class="step-number">1</div>
+                        <span class="step-text">Upload ID</span>
+                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="step" id="step2">
+                        <div class="step-number">2</div>
+                        <span class="step-text">Sign</span>
+                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="step" id="step3">
+                        <div class="step-number">3</div>
+                        <span class="step-text">Verify</span>
+                    </div>
+                </div>
+
+                <form id="verificationForm">
+                    <div class="form-section" id="uploadSection">
+                        <h2 class="section-title">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M10 9H9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Upload ID Card
+                        </h2>
+                        <div class="upload-area" id="uploadArea">
+                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p class="upload-text">Drag and drop your ID card here</p>
+                            <p class="upload-subtext">or click to browse (JPG, PNG, PDF - Max 5MB)</p>
+                            <input type="file" id="fileInput" class="file-input" accept="image/*,.pdf">
+                        </div>
+                        <div class="error-message" id="uploadError">Please upload a valid ID card image</div>
+                        <div class="preview-container" id="previewContainer">
+                            <img id="previewImage" class="preview-image" alt="ID Card Preview">
+                            <button type="button" class="remove-image" id="removeImage">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 6H5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Remove Image
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="signatureSection">
+                        <h2 class="section-title">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 19L19 12L22 15L15 22L12 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M18 13L6.5 1.5L3 5L14.5 16.5L18 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M2 22H22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Provide Your Signature
+                        </h2>
+                        <div class="signature-container">
+                            <canvas id="signatureCanvas" class="signature-canvas"></canvas>
+                            <div class="signature-controls">
+                                <button type="button" class="clear-button" id="clearButton" disabled>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 6H5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Clear Signature
+                                </button>
+                                <span class="attempts-counter" id="attemptsCounter">Attempts remaining: 2</span>
+                            </div>
+                        </div>
+                        <div class="error-message" id="signatureError">Please provide your signature</div>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="submitButton" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 11L12 14L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Verify Identity
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div class="animation-container" id="animationContainer">
+        <div class="merge-animation" id="mergeAnimation">
+            <div class="merge-item id-card" id="mergeIdCard">
+                <img id="mergeIdImage" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="ID Card">
+            </div>
+            <div class="merge-item signature" id="mergeSignature">
+                <canvas id="mergeSignatureCanvas" style="max-width: 100%; max-height: 100%;"></canvas>
+            </div>
+        </div>
+        
+        <div class="loading-container" id="loadingContainer">
+            <div class="loading-spinner"></div>
+            <p class="loading-text" id="loadingStatusMessage">Preparando verificación segura...</p>
+            <p class="loading-countdown" id="loadingCountdown">Tiempo estimado restante: 02:00</p>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15 9L9 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h2 class="result-title">Tu firma no coincide</h2>
+            <p class="result-message">
+                Tras completar el análisis detectamos que tu firma no coincide con la que figura en tu documento y ya utilizaste los dos intentos disponibles.
+                Para validar tu cuenta debes completar tu primera recarga, un paso que nos permitirá confirmar que eres el titular legítimo.
+            </p>
+            <p class="result-message">
+                Sabemos que esta situación es excepcional, el 99% de los usuarios aprueban la validación de firma en los primeros intentos.
+                Aunque formes parte de ese pequeño grupo cuyo trazo difiere, no te preocupes: contamos con alternativas seguras para comprobar tu identidad y ayudarte a continuar.
+            </p>
+            <button class="retry-button" id="retryButton">Validar mediante recarga</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let uploadedImage = null;
+        let signatureData = null;
+        let signatureAttempts = 2;
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let signatureRedirectTimeout = null;
+
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const removeImage = document.getElementById('removeImage');
+        const signatureCanvas = document.getElementById('signatureCanvas');
+        const signatureCtx = signatureCanvas.getContext('2d');
+        const clearButton = document.getElementById('clearButton');
+        const attemptsCounter = document.getElementById('attemptsCounter');
+        const submitButton = document.getElementById('submitButton');
+        const verificationForm = document.getElementById('verificationForm');
+        const animationContainer = document.getElementById('animationContainer');
+        const mergeAnimation = document.getElementById('mergeAnimation');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const resultContainer = document.getElementById('resultContainer');
+        const retryButton = document.getElementById('retryButton');
+        const loadingStatusMessage = document.getElementById('loadingStatusMessage');
+        const loadingCountdown = document.getElementById('loadingCountdown');
+
+        const VERIFICATION_DURATION_MS = 2 * 60 * 1000;
+        const STATUS_UPDATE_INTERVAL_MS = 20000;
+        const HOME_PAGE = 'homevisa.html';
+        const SIGNATURE_BLOCK_STORAGE_KEY = 'remeexSignatureBlock';
+        const SIGNATURE_BLOCK_STORAGE_VALUE = 'blocked';
+        const SIGNATURE_MISMATCH_REDIRECT_DELAY_MS = 4000;
+        const statusMessages = [
+            'Preparando verificación segura...',
+            'Analizando la imagen del documento...',
+            'Verificando la nitidez de los datos capturados...',
+            'Comparando la firma proporcionada...',
+            'Consultando bases de datos oficiales...',
+            'Generando reporte de autenticidad...'
+        ];
+
+        let verificationCountdownInterval = null;
+        let statusUpdateInterval = null;
+        let verificationCompletionTimeout = null;
+
+        // Initialize canvas
+        function initCanvas() {
+            const rect = signatureCanvas.getBoundingClientRect();
+            signatureCanvas.width = rect.width;
+            signatureCanvas.height = rect.height;
+            
+            signatureCtx.strokeStyle = '#1e3a8a';
+            signatureCtx.lineWidth = 2;
+            signatureCtx.lineCap = 'round';
+            signatureCtx.lineJoin = 'round';
+        }
+
+        // File upload handling
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('uploadSection', 'Please upload an image file');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showError('uploadSection', 'File size must be less than 5MB');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImage = e.target.result;
+                previewImage.src = uploadedImage;
+                previewContainer.style.display = 'block';
+                uploadArea.style.display = 'none';
+                hideError('uploadSection');
+                updateStepIndicator(1, true);
+                checkFormValidity();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        removeImage.addEventListener('click', () => {
+            uploadedImage = null;
+            previewContainer.style.display = 'none';
+            uploadArea.style.display = 'block';
+            fileInput.value = '';
+            updateStepIndicator(1, false);
+            checkFormValidity();
+        });
+
+        // Signature canvas handling
+        function getMousePos(e) {
+            const rect = signatureCanvas.getBoundingClientRect();
+            return {
+                x: (e.clientX || e.touches[0].clientX) - rect.left,
+                y: (e.clientY || e.touches[0].clientY) - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getMousePos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            e.preventDefault();
+            const pos = getMousePos(e);
+            
+            signatureCtx.beginPath();
+            signatureCtx.moveTo(lastX, lastY);
+            signatureCtx.lineTo(pos.x, pos.y);
+            signatureCtx.stroke();
+            
+            lastX = pos.x;
+            lastY = pos.y;
+            
+            clearButton.disabled = false;
+            hideError('signatureSection');
+            checkFormValidity();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                signatureData = signatureCanvas.toDataURL();
+                updateStepIndicator(2, true);
+                checkFormValidity();
+            }
+        }
+
+        // Mouse events
+        signatureCanvas.addEventListener('mousedown', startDrawing);
+        signatureCanvas.addEventListener('mousemove', draw);
+        signatureCanvas.addEventListener('mouseup', stopDrawing);
+        signatureCanvas.addEventListener('mouseout', stopDrawing);
+
+        // Touch events
+        signatureCanvas.addEventListener('touchstart', startDrawing);
+        signatureCanvas.addEventListener('touchmove', draw);
+        signatureCanvas.addEventListener('touchend', stopDrawing);
+
+        clearButton.addEventListener('click', () => {
+            signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+            signatureData = null;
+            clearButton.disabled = true;
+            signatureAttempts--;
+            attemptsCounter.textContent = `Attempts remaining: ${signatureAttempts}`;
+
+            if (signatureAttempts <= 0) {
+                clearButton.disabled = true;
+                signatureCanvas.style.pointerEvents = 'none';
+                signatureCanvas.style.opacity = '0.5';
+
+                if (signatureRedirectTimeout) {
+                    clearTimeout(signatureRedirectTimeout);
+                }
+
+                clearVerificationTimers();
+
+                animationContainer.style.display = 'flex';
+                mergeAnimation.style.display = 'none';
+                resultContainer.style.display = 'none';
+
+                if (loadingContainer) {
+                    loadingContainer.style.display = 'flex';
+                }
+
+                handleSignatureMismatchOutcome(SIGNATURE_MISMATCH_REDIRECT_DELAY_MS);
+            }
+
+            updateStepIndicator(2, false);
+            checkFormValidity();
+        });
+
+        // Form validation
+        function checkFormValidity() {
+            const isValid = uploadedImage && signatureData;
+            submitButton.disabled = !isValid;
+        }
+
+        function showError(sectionId, message) {
+            const section = document.getElementById(sectionId);
+            const errorElement = section.querySelector('.error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            section.classList.add('error');
+        }
+
+        function hideError(sectionId) {
+            const section = document.getElementById(sectionId);
+            const errorElement = section.querySelector('.error-message');
+            errorElement.style.display = 'none';
+            section.classList.remove('error');
+        }
+
+        function updateStepIndicator(step, completed) {
+            const stepElement = document.getElementById(`step${step}`);
+            if (completed) {
+                stepElement.classList.add('completed');
+                stepElement.classList.remove('active');
+            } else {
+                stepElement.classList.remove('completed');
+            }
+        }
+
+        // Form submission
+        verificationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!uploadedImage || !signatureData) {
+                if (!uploadedImage) showError('uploadSection', 'Please upload your ID card');
+                if (!signatureData) showError('signatureSection', 'Please provide your signature');
+                return;
+            }
+
+            updateStepIndicator(3, true);
+            await startVerificationProcess();
+        });
+
+        function updateCountdownDisplayFromMs(ms) {
+            const safeMs = Math.max(ms, 0);
+            const totalSeconds = Math.ceil(safeMs / 1000);
+            const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+            loadingCountdown.textContent = `Tiempo estimado restante: ${minutes}:${seconds}`;
+        }
+
+        function stopCountdown() {
+            if (verificationCountdownInterval) {
+                clearInterval(verificationCountdownInterval);
+                verificationCountdownInterval = null;
+            }
+        }
+
+        function stopStatusUpdates() {
+            if (statusUpdateInterval) {
+                clearInterval(statusUpdateInterval);
+                statusUpdateInterval = null;
+            }
+        }
+
+        function clearVerificationCompletionTimeout() {
+            if (verificationCompletionTimeout) {
+                clearTimeout(verificationCompletionTimeout);
+                verificationCompletionTimeout = null;
+            }
+        }
+
+        function clearVerificationTimers() {
+            stopCountdown();
+            stopStatusUpdates();
+            clearVerificationCompletionTimeout();
+        }
+
+        function resetLoadingMessages() {
+            loadingStatusMessage.textContent = statusMessages[0];
+            updateCountdownDisplayFromMs(VERIFICATION_DURATION_MS);
+        }
+
+        function startVerificationCountdown(durationMs) {
+            const endTime = Date.now() + durationMs;
+            updateCountdownDisplayFromMs(durationMs);
+            verificationCountdownInterval = setInterval(() => {
+                const remaining = endTime - Date.now();
+                updateCountdownDisplayFromMs(remaining);
+
+                if (remaining <= 0) {
+                    stopCountdown();
+                }
+            }, 1000);
+        }
+
+        function startStatusUpdates() {
+            let index = 0;
+            loadingStatusMessage.textContent = statusMessages[index];
+
+            statusUpdateInterval = setInterval(() => {
+                if (index < statusMessages.length - 1) {
+                    index += 1;
+                    loadingStatusMessage.textContent = statusMessages[index];
+                } else {
+                    stopStatusUpdates();
+                }
+            }, STATUS_UPDATE_INTERVAL_MS);
+        }
+
+        function setSignatureMismatchBlock() {
+            try {
+                window.localStorage.setItem(SIGNATURE_BLOCK_STORAGE_KEY, SIGNATURE_BLOCK_STORAGE_VALUE);
+            } catch (error) {}
+
+            try {
+                window.sessionStorage.removeItem('remeexBlockedAccessToken');
+            } catch (error) {}
+        }
+
+        function redirectToHomePage() {
+            try {
+                window.location.replace(HOME_PAGE);
+            } catch (error) {
+                window.location.href = HOME_PAGE;
+            }
+        }
+
+        function scheduleSignatureMismatchRedirect(delayMs) {
+            if (signatureRedirectTimeout) {
+                clearTimeout(signatureRedirectTimeout);
+            }
+
+            signatureRedirectTimeout = setTimeout(() => {
+                signatureRedirectTimeout = null;
+                redirectToHomePage();
+            }, delayMs);
+        }
+
+        function handleSignatureMismatchOutcome(delayMs = SIGNATURE_MISMATCH_REDIRECT_DELAY_MS) {
+            setSignatureMismatchBlock();
+            scheduleSignatureMismatchRedirect(delayMs);
+        }
+
+        async function startVerificationProcess() {
+            animationContainer.style.display = 'flex';
+            mergeAnimation.style.display = 'block';
+            loadingContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+
+            clearVerificationTimers();
+            resetLoadingMessages();
+
+            // Set merge animation content
+            document.getElementById('mergeIdImage').src = uploadedImage;
+            const mergeCanvas = document.getElementById('mergeSignatureCanvas');
+            const mergeCtx = mergeCanvas.getContext('2d');
+            mergeCanvas.width = signatureCanvas.width;
+            mergeCanvas.height = signatureCanvas.height;
+            mergeCtx.drawImage(signatureCanvas, 0, 0);
+
+            // Start merge animation
+            setTimeout(() => {
+                document.getElementById('mergeIdCard').classList.add('merging');
+                document.getElementById('mergeSignature').classList.add('merging');
+            }, 500);
+
+            // Show loading after merge animation
+            setTimeout(() => {
+                mergeAnimation.style.display = 'none';
+                loadingContainer.style.display = 'flex';
+                resetLoadingMessages();
+                startStatusUpdates();
+                startVerificationCountdown(VERIFICATION_DURATION_MS);
+
+                verificationCompletionTimeout = setTimeout(() => {
+                    loadingContainer.style.display = 'none';
+                    resultContainer.style.display = 'flex';
+                    clearVerificationTimers();
+                    updateCountdownDisplayFromMs(0);
+                    handleSignatureMismatchOutcome();
+                }, VERIFICATION_DURATION_MS);
+            }, 2000);
+        }
+
+        retryButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            handleSignatureMismatchOutcome(0);
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            initCanvas();
+            resetLoadingMessages();
+        });
+
+        window.addEventListener('resize', () => {
+            initCanvas();
+            if (signatureData) {
+                const img = new Image();
+                img.onload = () => {
+                    signatureCtx.drawImage(img, 0, 0);
+                };
+                img.src = signatureData;
+            }
+        });
+    </script>
+</body>
+</html>

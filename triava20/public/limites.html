@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Límites de Cuenta - REMEEX VISA</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1a1f71;
+      --primary-light: #3244b6;
+      --success: #00d34d;
+      --warning: #ffad33;
+      --danger: #ff4d4d;
+      --info: #0095ff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      --transition-base: all 0.3s ease;
+      --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--neutral-200);
+      color: var(--neutral-900);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: var(--card-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: var(--neutral-600);
+      font-size: 1.1rem;
+    }
+
+    .limits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .limit-card {
+      background: var(--neutral-100);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      transition: var(--transition-base);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .limit-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--success) 0%, var(--warning) 50%, var(--danger) 100%);
+    }
+
+    .limit-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg), 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .limit-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .limit-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .limit-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .limit-icon.deposit {
+      background: linear-gradient(135deg, var(--success) 0%, #00b844 100%);
+    }
+
+    .limit-icon.withdrawal {
+      background: linear-gradient(135deg, var(--info) 0%, #0077cc 100%);
+    }
+
+    .limit-text h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .limit-text p {
+      color: var(--neutral-600);
+      font-size: 0.9rem;
+    }
+
+    .limit-status {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .limit-status.safe {
+      background: rgba(0, 211, 77, 0.1);
+      color: var(--success);
+    }
+
+    .limit-status.warning {
+      background: rgba(255, 173, 51, 0.1);
+      color: var(--warning);
+    }
+
+    .limit-status.danger {
+      background: rgba(255, 77, 77, 0.1);
+      color: var(--danger);
+    }
+
+    .circular-chart {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 2rem;
+    }
+
+    .circular-chart svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .circle-bg {
+      fill: none;
+      stroke: var(--neutral-300);
+      stroke-width: 12;
+    }
+
+    .circle-progress {
+      fill: none;
+      stroke-width: 12;
+      stroke-linecap: round;
+      transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .circle-progress.safe {
+      stroke: var(--success);
+      filter: drop-shadow(0 0 8px rgba(0, 211, 77, 0.3));
+    }
+
+    .circle-progress.warning {
+      stroke: var(--warning);
+      filter: drop-shadow(0 0 8px rgba(255, 173, 51, 0.3));
+    }
+
+    .circle-progress.danger {
+      stroke: var(--danger);
+      filter: drop-shadow(0 0 8px rgba(255, 77, 77, 0.3));
+    }
+
+    .chart-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .chart-percentage {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--neutral-900);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .chart-label {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .limit-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .info-item {
+      text-align: center;
+      padding: 1rem;
+      background: var(--neutral-200);
+      border-radius: var(--radius-lg);
+    }
+
+    .info-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      font-weight: 500;
+    }
+
+    .progress-bar-container {
+      margin: 2rem 0;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .progress-title {
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .progress-value {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: var(--neutral-300);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    .progress-fill.safe {
+      background: linear-gradient(90deg, var(--success), #00b844);
+    }
+
+    .progress-fill.warning {
+      background: linear-gradient(90deg, var(--warning), #e6960a);
+    }
+
+    .progress-fill.danger {
+      background: linear-gradient(90deg, var(--danger), #e60000);
+    }
+
+    @keyframes shimmer {
+      100% {
+        left: 100%;
+      }
+    }
+
+    .summary-card {
+      background: var(--card-gradient);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      color: white;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      100% {
+        left: 100%;
+      }
+    }
+
+    .summary-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .summary-stat {
+      text-align: center;
+    }
+
+    .summary-stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .alerts-section {
+      margin-top: 3rem;
+    }
+
+    .alert {
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      border-left: 4px solid;
+    }
+
+    .alert-warning {
+      background: rgba(255, 173, 51, 0.1);
+      border-color: var(--warning);
+      color: var(--warning);
+    }
+
+    .alert-info {
+      background: rgba(0, 149, 255, 0.1);
+      border-color: var(--info);
+      color: var(--info);
+    }
+
+    .alert-icon {
+      font-size: 1.25rem;
+      margin-top: 0.125rem;
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .alert-title {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .alert-message {
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .limits-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .circular-chart {
+        width: 150px;
+        height: 150px;
+      }
+
+      .chart-percentage {
+        font-size: 2rem;
+      }
+
+      .limit-info {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .summary-stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .limit-card {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .limit-card:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .summary-card {
+      animation: fadeInUp 0.6s ease 0.4s forwards;
+      opacity: 0;
+    }
+  </style>
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Límites de Cuenta</h1>
+      <p>Monitorea tu actividad mensual y límites disponibles</p>
+    </div>
+    <div class="limits-grid">
+      <div class="limit-card">
+        <div class="limit-header">
+          <div class="limit-title">
+            <div class="limit-icon deposit">
+              <i class="fas fa-arrow-down"></i>
+            </div>
+            <div class="limit-text">
+              <h3>Depósitos Mensuales</h3>
+              <p>Límite máximo de $10,000</p>
+            </div>
+          </div>
+          <div class="limit-status safe" id="deposit-status">Disponible</div>
+        </div>
+        <div class="circular-chart">
+          <svg viewBox="0 0 100 100">
+            <circle class="circle-bg" cx="50" cy="50" r="40"></circle>
+            <circle 
+              class="circle-progress safe" 
+              cx="50" 
+              cy="50" 
+              r="40" 
+              id="deposit-circle"
+              stroke-dasharray="0 251.2"
+            ></circle>
+          </svg>
+          <div class="chart-center">
+            <div class="chart-percentage" id="deposit-percentage">0%</div>
+            <div class="chart-label">Utilizado</div>
+          </div>
+        </div>
+        <div class="limit-info">
+          <div class="info-item">
+            <div class="info-value" id="deposit-used">$0</div>
+            <div class="info-label">Utilizado</div>
+          </div>
+          <div class="info-item">
+            <div class="info-value" id="deposit-remaining">$10,000</div>
+            <div class="info-label">Disponible</div>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-label">
+            <span class="progress-title">Progreso mensual</span>
+            <span class="progress-value" id="deposit-progress-text">$0 / $10,000</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill safe" id="deposit-progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="limit-card">
+        <div class="limit-header">
+          <div class="limit-title">
+            <div class="limit-icon withdrawal">
+              <i class="fas fa-arrow-up"></i>
+            </div>
+            <div class="limit-text">
+              <h3>Retiros Mensuales</h3>
+              <p>Límite máximo de $5,000</p>
+            </div>
+          </div>
+          <div class="limit-status safe" id="withdrawal-status">Disponible</div>
+        </div>
+        <div class="circular-chart">
+          <svg viewBox="0 0 100 100">
+            <circle class="circle-bg" cx="50" cy="50" r="40"></circle>
+            <circle 
+              class="circle-progress safe" 
+              cx="50" 
+              cy="50" 
+              r="40" 
+              id="withdrawal-circle"
+              stroke-dasharray="0 251.2"
+            ></circle>
+          </svg>
+          <div class="chart-center">
+            <div class="chart-percentage" id="withdrawal-percentage">0%</div>
+            <div class="chart-label">Utilizado</div>
+          </div>
+        </div>
+        <div class="limit-info">
+          <div class="info-item">
+            <div class="info-value" id="withdrawal-used">$0</div>
+            <div class="info-label">Utilizado</div>
+          </div>
+          <div class="info-item">
+            <div class="info-value" id="withdrawal-remaining">$5,000</div>
+            <div class="info-label">Disponible</div>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-label">
+            <span class="progress-title">Progreso mensual</span>
+            <span class="progress-value" id="withdrawal-progress-text">$0 / $5,000</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill safe" id="withdrawal-progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-title">Resumen de Actividad</div>
+      <div class="summary-stats">
+        <div class="summary-stat">
+          <div class="summary-stat-value" id="total-transactions">0</div>
+          <div class="summary-stat-label">Transacciones este mes</div>
+        </div>
+        <div class="summary-stat">
+          <div class="summary-stat-value" id="health-score">100%</div>
+          <div class="summary-stat-label">Salud de la cuenta</div>
+        </div>
+        <div class="summary-stat">
+          <div class="summary-stat-value" id="next-reset">15 días</div>
+          <div class="summary-stat-label">Próximo reinicio</div>
+        </div>
+      </div>
+    </div>
+    <div class="alerts-section">
+      <div class="alert alert-info" id="general-info">
+        <div class="alert-icon">
+          <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title">Información sobre límites</div>
+          <div class="alert-message">
+            Los límites se reinician el primer día de cada mes a las 00:00 UTC. 
+            Para aumentar sus límites, complete la verificación de identidad avanzada o contacte a soporte.
+          </div>
+        </div>
+      </div>
+      <div class="alert alert-warning" id="limit-warning" style="display: none;">
+        <div class="alert-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title">Límite próximo al máximo</div>
+          <div class="alert-message">
+            Has utilizado más del 80% de uno de tus límites mensuales. 
+            Considera planificar tus transacciones para el resto del mes.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top: 3rem; padding: 2rem; background: var(--neutral-100); border-radius: var(--radius-lg); text-align: center;">
+      <h3 style="margin-bottom: 1.5rem; color: var(--neutral-700);">Simulador de Límites</h3>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <button onclick="addDeposit()" style="padding: 0.75rem 1.5rem; background: var(--success); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-weight: 500;">
+          + $500 Depósito
+        </button>
+        <button onclick="addWithdrawal()" style="padding: 0.75rem 1.5rem; background: var(--info); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-weight: 500;">
+          + $250 Retiro
+        </button>
+        <button onclick="resetLimits()" style="padding: 0.75rem 1.5rem; background: var(--neutral-600); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-weight: 500;">
+          Reiniciar
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const LIMITS = {
+      DEPOSIT_MAX: 10000,
+      WITHDRAWAL_MAX: 5000
+    };
+
+    let currentUsage = {
+      deposits: 0,
+      withdrawals: 0
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      currentUsage.deposits = 3750;
+      currentUsage.withdrawals = 1800;
+      updateAllDisplays();
+      setTimeout(() => {
+        animateCharts();
+      }, 500);
+    });
+
+    function updateAllDisplays() {
+      updateDepositsDisplay();
+      updateWithdrawalsDisplay();
+      updateSummary();
+      checkLimitWarnings();
+    }
+
+    function updateDepositsDisplay() {
+      const percentage = (currentUsage.deposits / LIMITS.DEPOSIT_MAX) * 100;
+      const remaining = LIMITS.DEPOSIT_MAX - currentUsage.deposits;
+      document.getElementById('deposit-percentage').textContent = `${Math.round(percentage)}%`;
+      document.getElementById('deposit-used').textContent = `$${currentUsage.deposits.toLocaleString()}`;
+      document.getElementById('deposit-remaining').textContent = `$${remaining.toLocaleString()}`;
+      document.getElementById('deposit-progress-text').textContent = `$${currentUsage.deposits.toLocaleString()} / $${LIMITS.DEPOSIT_MAX.toLocaleString()}`;
+      const circumference = 2 * Math.PI * 40;
+      const strokeDasharray = `${(percentage / 100) * circumference} ${circumference}`;
+      document.getElementById('deposit-circle').style.strokeDasharray = strokeDasharray;
+      document.getElementById('deposit-progress-bar').style.width = `${percentage}%`;
+      const depositCircle = document.getElementById('deposit-circle');
+      const depositBar = document.getElementById('deposit-progress-bar');
+      const depositStatus = document.getElementById('deposit-status');
+      if (percentage >= 90) {
+        depositCircle.className = 'circle-progress danger';
+        depositBar.className = 'progress-fill danger';
+        depositStatus.className = 'limit-status danger';
+        depositStatus.textContent = 'Crítico';
+      } else if (percentage >= 70) {
+        depositCircle.className = 'circle-progress warning';
+        depositBar.className = 'progress-fill warning';
+        depositStatus.className = 'limit-status warning';
+        depositStatus.textContent = 'Cuidado';
+      } else {
+        depositCircle.className = 'circle-progress safe';
+        depositBar.className = 'progress-fill safe';
+        depositStatus.className = 'limit-status safe';
+        depositStatus.textContent = 'Disponible';
+      }
+    }
+
+    function updateWithdrawalsDisplay() {
+      const percentage = (currentUsage.withdrawals / LIMITS.WITHDRAWAL_MAX) * 100;
+      const remaining = LIMITS.WITHDRAWAL_MAX - currentUsage.withdrawals;
+      document.getElementById('withdrawal-percentage').textContent = `${Math.round(percentage)}%`;
+      document.getElementById('withdrawal-used').textContent = `$${currentUsage.withdrawals.toLocaleString()}`;
+      document.getElementById('withdrawal-remaining').textContent = `$${remaining.toLocaleString()}`;
+      document.getElementById('withdrawal-progress-text').textContent = `$${currentUsage.withdrawals.toLocaleString()} / $${LIMITS.WITHDRAWAL_MAX.toLocaleString()}`;
+      const circumference = 2 * Math.PI * 40;
+      const strokeDasharray = `${(percentage / 100) * circumference} ${circumference}`;
+      document.getElementById('withdrawal-circle').style.strokeDasharray = strokeDasharray;
+      document.getElementById('withdrawal-progress-bar').style.width = `${percentage}%`;
+      const withdrawalCircle = document.getElementById('withdrawal-circle');
+      const withdrawalBar = document.getElementById('withdrawal-progress-bar');
+      const withdrawalStatus = document.getElementById('withdrawal-status');
+      if (percentage >= 90) {
+        withdrawalCircle.className = 'circle-progress danger';
+        withdrawalBar.className = 'progress-fill danger';
+        withdrawalStatus.className = 'limit-status danger';
+        withdrawalStatus.textContent = 'Crítico';
+      } else if (percentage >= 70) {
+        withdrawalCircle.className = 'circle-progress warning';
+        withdrawalBar.className = 'progress-fill warning';
+        withdrawalStatus.className = 'limit-status warning';
+        withdrawalStatus.textContent = 'Cuidado';
+      } else {
+        withdrawalCircle.className = 'circle-progress safe';
+        withdrawalBar.className = 'progress-fill safe';
+        withdrawalStatus.className = 'limit-status safe';
+        withdrawalStatus.textContent = 'Disponible';
+      }
+    }
+
+    function updateSummary() {
+      const totalTransactions = Math.floor((currentUsage.deposits / 500) + (currentUsage.withdrawals / 250));
+      const depositUsage = (currentUsage.deposits / LIMITS.DEPOSIT_MAX) * 100;
+      const withdrawalUsage = (currentUsage.withdrawals / LIMITS.WITHDRAWAL_MAX) * 100;
+      const averageUsage = (depositUsage + withdrawalUsage) / 2;
+      const healthScore = Math.max(0, 100 - averageUsage);
+      document.getElementById('total-transactions').textContent = totalTransactions;
+      document.getElementById('health-score').textContent = `${Math.round(healthScore)}%`;
+      const now = new Date();
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      const daysUntilReset = Math.ceil((nextMonth - now) / (1000 * 60 * 60 * 24));
+      document.getElementById('next-reset').textContent = `${daysUntilReset} días`;
+    }
+
+    function checkLimitWarnings() {
+      const depositUsage = (currentUsage.deposits / LIMITS.DEPOSIT_MAX) * 100;
+      const withdrawalUsage = (currentUsage.withdrawals / LIMITS.WITHDRAWAL_MAX) * 100;
+      const warningAlert = document.getElementById('limit-warning');
+      if (depositUsage >= 80 || withdrawalUsage >= 80) {
+        warningAlert.style.display = 'flex';
+      } else {
+        warningAlert.style.display = 'none';
+      }
+    }
+
+    function animateCharts() {
+      updateAllDisplays();
+    }
+
+    function addDeposit() {
+      if (currentUsage.deposits + 500 <= LIMITS.DEPOSIT_MAX) {
+        currentUsage.deposits += 500;
+        updateAllDisplays();
+        showNotification('Depósito de $500 simulado', 'success');
+      } else {
+        showNotification('No se puede exceder el límite de depósitos', 'error');
+      }
+    }
+
+    function addWithdrawal() {
+      if (currentUsage.withdrawals + 250 <= LIMITS.WITHDRAWAL_MAX) {
+        currentUsage.withdrawals += 250;
+        updateAllDisplays();
+        showNotification('Retiro de $250 simulado', 'info');
+      } else {
+        showNotification('No se puede exceder el límite de retiros', 'error');
+      }
+    }
+
+    function resetLimits() {
+      currentUsage.deposits = 0;
+      currentUsage.withdrawals = 0;
+      updateAllDisplays();
+      showNotification('Límites reiniciados', 'success');
+    }
+
+    function showNotification(message, type) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+      `;
+      switch(type) {
+        case 'success':
+          notification.style.background = 'var(--success)';
+          break;
+        case 'error':
+          notification.style.background = 'var(--danger)';
+          break;
+        case 'info':
+          notification.style.background = 'var(--info)';
+          break;
+      }
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+<div id="bottom-nav-container"></div>
+<script src="bottom-nav.js"></script>
+</body>
+</html>
+  <script src="preload.js"></script>

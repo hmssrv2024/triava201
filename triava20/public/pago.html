@@ -1,0 +1,4442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LatinPhone - Checkout Seguro | Envíos Internacionales Garantizados</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Completa tu compra de forma segura en LatinPhone. Smartphones, laptops y accesorios con envío directo desde USA. Garantía internacional y precios imbatibles.">
+    <meta name="keywords" content="checkout, pago seguro, compra online, envíos internacionales, Venezuela, Colombia, Latinoamérica">
+    <meta name="author" content="LatinPhone">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://i.imgur.com/ZmC9YTh.png">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/ZmC9YTh.png">
+    
+    <!-- Google Fonts - Preloaded -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome - Icons loaded asynchronously -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        /* Global styles */
+        :root {
+            --primary: #0056b3;
+            --primary-dark: #003d7a;
+            --primary-light: #e6f0ff;
+            --secondary: #ff3a6e;
+            --secondary-dark: #d81b51;
+            --accent: #00e676;
+            --dark: #10131c;
+            --light: #f8f9fc;
+            --success: #34c759;
+            --danger: #ff3b30;
+            --warning: #ffc107;
+            --venezuela-red: #ef3340;
+            --venezuela-blue: #00247d;
+            --venezuela-yellow: #ffcc00;
+            --gradient-1: linear-gradient(135deg, #0056b3, #00a1ff);
+            --gradient-2: linear-gradient(135deg, #ff3a6e, #ff7c34);
+            --gradient-3: linear-gradient(135deg, #00e676, #00aeff);
+            --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+            --hover-shadow: 0 12px 24px rgba(0, 86, 179, 0.18);
+            --border-radius-sm: 8px;
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.5;
+            overflow-x: hidden;
+            position: relative;
+            font-size: 0.95rem;
+            min-height: 100vh;
+        }
+
+        /* Utility classes */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            width: 100%;
+        }
+        
+        .container-fluid {
+            width: 100%;
+            padding: 0 1.5rem;
+            margin: 0 auto;
+        }
+        
+        .section {
+            padding: 5rem 0;
+            position: relative;
+        }
+        
+        .section-sm {
+            padding: 3rem 0;
+        }
+        
+        .text-gradient {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .text-gradient-2 {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .text-muted {
+            color: #6c757d;
+        }
+        
+        .text-danger {
+            color: var(--danger);
+        }
+        
+        .text-success {
+            color: var(--success);
+        }
+        
+        .text-warning {
+            color: var(--warning);
+        }
+
+        .d-flex {
+            display: flex;
+        }
+        
+        .flex-column {
+            flex-direction: column;
+        }
+        
+        .align-items-center {
+            align-items: center;
+        }
+        
+        .justify-content-between {
+            justify-content: space-between;
+        }
+        
+        .gap-1 {
+            gap: 0.25rem;
+        }
+        
+        .gap-2 {
+            gap: 0.5rem;
+        }
+        
+        .gap-3 {
+            gap: 1rem;
+        }
+        
+        .gap-4 {
+            gap: 1.5rem;
+        }
+        
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .mb-5 {
+            margin-bottom: 2rem;
+        }
+        
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+        
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+        
+        .mt-3 {
+            margin-top: 1rem;
+        }
+        
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        
+        .mt-5 {
+            margin-top: 2rem;
+        }
+        
+        .p-3 {
+            padding: 1rem;
+        }
+        
+        .p-4 {
+            padding: 1.5rem;
+        }
+        
+        .py-3 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .py-4 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .px-3 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .px-4 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .w-100 {
+            width: 100%;
+        }
+        
+        .h-100 {
+            height: 100%;
+        }
+        
+        .position-relative {
+            position: relative;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        @keyframes border-pulse {
+            0% { border-color: rgba(0, 86, 179, 0.5); }
+            50% { border-color: rgba(0, 86, 179, 1); }
+            100% { border-color: rgba(0, 86, 179, 0.5); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            z-index: 1;
+        }
+        
+        .btn-lg {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .btn-block {
+            display: flex;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 86, 179, 0.25);
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 86, 179, 0.35);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--gradient-2);
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 58, 110, 0.25);
+        }
+        
+        .btn-secondary:hover, .btn-secondary:focus {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(255, 58, 110, 0.35);
+        }
+        
+        .btn-secondary:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #34c759, #28a745);
+            color: white;
+            box-shadow: 0 4px 10px rgba(52, 199, 89, 0.25);
+        }
+        
+        .btn-success:hover, .btn-success:focus {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(52, 199, 89, 0.35);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: calc(0.75rem - 2px) calc(1.25rem - 2px);
+        }
+        
+        .btn-outline:hover, .btn-outline:focus {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .btn-outline-secondary {
+            background: transparent;
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+            padding: calc(0.75rem - 2px) calc(1.25rem - 2px);
+        }
+        
+        .btn-outline-secondary:hover, .btn-outline-secondary:focus {
+            background: var(--secondary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .btn-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-floating {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(-100%) rotate(45deg);
+            transition: transform 0.6s;
+            z-index: -1;
+        }
+        
+        .btn:hover::before {
+            transform: translateX(100%) rotate(45deg);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.65rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge-primary {
+            background: var(--gradient-1);
+        }
+        
+        .badge-secondary {
+            background: var(--gradient-2);
+        }
+        
+        .badge-success {
+            background: linear-gradient(135deg, #34c759, #28a745);
+        }
+        
+        .badge-warning {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+        }
+        
+        .badge-danger {
+            background: linear-gradient(135deg, #ff3b30, #dc3545);
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .card-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--dark);
+            background-color: white;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.25);
+        }
+        
+        .form-control.is-invalid {
+            border-color: var(--danger);
+        }
+        
+        .form-control.is-invalid:focus {
+            box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.25);
+        }
+        
+        .invalid-feedback {
+            display: none;
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+        
+        .is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -0.5rem;
+            margin-right: -0.5rem;
+        }
+        
+        .form-col {
+            flex: 1 0 0%;
+            padding: 0 0.5rem;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .form-check-input {
+            margin-right: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Special Inputs */
+        .card-input-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .card-input {
+            flex: 1;
+            text-align: center;
+            letter-spacing: 2px;
+            font-size: 1.1rem;
+            font-family: monospace;
+            padding: 0.75rem 0.5rem;
+        }
+        
+        .cvv-input {
+            width: 4rem;
+            text-align: center;
+            letter-spacing: 2px;
+            font-family: monospace;
+        }
+        
+        .expiry-input {
+            width: 6rem;
+            text-align: center;
+            letter-spacing: 1px;
+            font-family: monospace;
+        }
+        
+        .card-input-masked {
+            position: relative;
+        }
+        
+        .card-input-masked input {
+            padding-right: 40px;
+            letter-spacing: 2px;
+        }
+        
+        .card-input-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            font-family: monospace;
+            letter-spacing: 2px;
+            pointer-events: none;
+        }
+        
+        .card-type-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: #6c757d;
+        }
+
+        /* Custom Select */
+        .custom-select {
+            position: relative;
+        }
+        
+        .custom-select select {
+            appearance: none;
+            padding-right: 2.5rem;
+        }
+        
+        .custom-select::after {
+            content: '▼';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 0.8rem;
+            color: #555;
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* OTP Input */
+        .otp-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        
+        .otp-input {
+            width: 3rem;
+            height: 3.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            background-color: white;
+            transition: all 0.3s;
+        }
+        
+        .otp-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.25);
+            outline: none;
+        }
+
+        /* Loader */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-left-color: var(--primary);
+            animation: rotate 1s linear infinite;
+        }
+        
+        .loader-sm {
+            width: 24px;
+            height: 24px;
+            border-width: 2px;
+        }
+        
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Overlays */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: all 0.3s;
+        }
+        
+        .overlay.active .modal {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+        
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: fadeInUp 0.5s;
+            z-index: 9999;
+            max-width: 350px;
+        }
+        
+        .notification-success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .notification-error {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .notification-warning {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .notification-icon {
+            font-size: 1.5rem;
+        }
+        
+        .notification-success .notification-icon {
+            color: var(--success);
+        }
+        
+        .notification-error .notification-icon {
+            color: var(--danger);
+        }
+        
+        .notification-warning .notification-icon {
+            color: var(--warning);
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .notification-message {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+        
+        .notification-close:hover {
+            color: var(--danger);
+        }
+
+        /* Credit Card Design */
+        .credit-card {
+            width: 100%;
+            max-width: 320px;
+            height: 180px;
+            border-radius: 16px;
+            perspective: 1000px;
+            margin: 0 auto 1rem;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+        
+        .credit-card.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .credit-card-front, .credit-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            backface-visibility: hidden;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .credit-card-front {
+            background: linear-gradient(135deg, #0061f2, #6C47FF);
+            padding: 1.5rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 2;
+        }
+        
+        .credit-card-back {
+            background: linear-gradient(135deg, #434343, #000000);
+            transform: rotateY(180deg);
+            z-index: 1;
+        }
+        
+        .credit-card-logo {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .credit-card-chip {
+            width: 40px;
+            height: 28px;
+            background: linear-gradient(135deg, #FFDE59, #FF914D);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .credit-card-chip::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        
+        .credit-card-type {
+            font-size: 1.2rem;
+            font-weight: 600;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+        
+        .credit-card-number {
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-family: monospace;
+        }
+        
+        .credit-card-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+        }
+        
+        .credit-card-info span {
+            display: block;
+            margin-bottom: 0.25rem;
+            opacity: 0.8;
+        }
+        
+        .credit-card-info strong {
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        
+        .credit-card-back .magnetic-strip {
+            width: 100%;
+            height: 40px;
+            background: #333;
+            margin-top: 1.5rem;
+        }
+        
+        .credit-card-back .signature-box {
+            background: white;
+            height: 40px;
+            margin: 1.5rem 1.5rem 0;
+            padding: 0.5rem;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        
+        .credit-card-back .cvv {
+            color: #333;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .credit-card-back .terms {
+            color: white;
+            font-size: 0.7rem;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            opacity: 0.7;
+        }
+        
+        /* Credit Card Animations */
+        .credit-card:hover {
+            transform: scale(1.05) translateZ(0);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .credit-card.flipped:hover {
+            transform: rotateY(180deg) scale(1.05) translateZ(0);
+        }
+        
+        .credit-card-front::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.2) 0%,
+                rgba(255, 255, 255, 0) 40%,
+                rgba(255, 255, 255, 0) 60%,
+                rgba(255, 255, 255, 0.2) 100%
+            );
+            transform: translateY(100%) rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        /* Product Display */
+        .product-preview {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            background-color: white;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-preview:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .product-preview-image {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--border-radius);
+            object-fit: contain;
+            background-color: #f8f9fc;
+            padding: 0.5rem;
+        }
+        
+        .product-preview-info {
+            flex: 1;
+        }
+        
+        .product-preview-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .product-preview-price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-preview-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .product-preview-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.75rem;
+            border-bottom-left-radius: var(--border-radius);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .product-preview-badge.new {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        
+        .product-preview-badge.sale {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .product-preview-badge.exclusive {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+
+        /* Progress Bar and Steps */
+        .progress-container {
+            margin-bottom: 3rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--gradient-1);
+            transition: width 0.5s ease;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 120px;
+            transition: all 0.3s;
+        }
+        
+        .progress-step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+        
+        .progress-step-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .progress-step.active .progress-step-icon {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.2);
+        }
+        
+        .progress-step.active .progress-step-text {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .progress-step.completed .progress-step-icon {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .progress-step.completed .progress-step-text {
+            color: var(--success);
+        }
+
+        /* Checkout Specific Styles */
+        .checkout-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .checkout-form-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .checkout-summary-container {
+            width: 350px;
+        }
+        
+        .checkout-step {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s;
+        }
+        
+        .checkout-step.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .checkout-summary {
+            position: sticky;
+            top: 2rem;
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        
+        .checkout-summary-header {
+            padding: 1.5rem;
+            background: var(--gradient-1);
+            color: white;
+        }
+        
+        .checkout-summary-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .checkout-summary-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .checkout-summary-content {
+            padding: 1.5rem;
+        }
+        
+        .summary-divider {
+            margin: 1.5rem 0;
+            border: none;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .summary-item-label {
+            color: #6c757d;
+        }
+        
+        .summary-item-value {
+            font-weight: 500;
+        }
+        
+        .summary-item.total {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-list {
+            margin-bottom: 1.5rem;
+        }
+        
+        .product-list-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .product-list-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .product-list-image {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--border-radius);
+            object-fit: contain;
+            background-color: #f8f9fc;
+        }
+        
+        .product-list-info {
+            flex: 1;
+        }
+        
+        .product-list-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .product-list-price {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .product-list-quantity {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .bolivar-conversion {
+            display: inline-block;
+            background-color: rgba(0, 86, 179, 0.1);
+            color: var(--primary);
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--border-radius-sm);
+            margin-left: 0.5rem;
+        }
+        
+        .bolivar-conversion-large {
+            display: block;
+            background-color: rgba(255, 58, 110, 0.1);
+            color: var(--secondary);
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--border-radius);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+        
+        .venezuala-flag {
+            width: 20px;
+            height: 15px;
+            margin-right: 5px;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .venezuala-flag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                var(--venezuela-yellow) 0%, 
+                var(--venezuela-yellow) 33.33%, 
+                var(--venezuela-blue) 33.33%, 
+                var(--venezuela-blue) 66.67%,
+                var(--venezuela-red) 66.67%, 
+                var(--venezuela-red) 100%
+            );
+        }
+        
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background-color: rgba(0, 86, 179, 0.05);
+            margin-bottom: 1rem;
+        }
+        
+        .security-badge i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .security-badge-text {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .delivery-estimate {
+            background-color: rgba(52, 199, 89, 0.1);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .delivery-estimate-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .delivery-estimate-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .delivery-date {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .nationalization-notice {
+            background-color: rgba(255, 193, 7, 0.1);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .nationalization-notice-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--warning);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .nationalization-notice-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .nationalization-amount {
+            font-weight: 600;
+            color: var(--warning);
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .payment-method {
+            min-width: 100px;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .payment-method:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .payment-method.active {
+            border-color: var(--primary);
+            background-color: rgba(0, 86, 179, 0.05);
+            box-shadow: 0 5px 15px rgba(0, 86, 179, 0.1);
+        }
+
+        .payment-method-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            transition: all 0.3s;
+        }
+
+        .payment-method.active .payment-method-icon {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .payment-method-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .payment-method-form {
+            display: none;
+            margin-top: 1rem;
+            animation: fadeIn 0.5s;
+        }
+
+        .payment-method-form.active {
+            display: block;
+        }
+
+        .payment-method-form .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        /* Order Tracking */
+        .order-tracking {
+            margin-top: 2rem;
+        }
+        
+        .tracking-steps {
+            display: flex;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tracking-steps::before {
+            content: '';
+            position: absolute;
+            top: 35px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #e9ecef;
+            z-index: -1;
+        }
+        
+        .tracking-step {
+            flex: 1;
+            text-align: center;
+            padding-top: 50px;
+            position: relative;
+        }
+        
+        .tracking-step::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e9ecef;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+        
+        .tracking-step.completed::before {
+            background: var(--success);
+        }
+        
+        .tracking-step.active::before {
+            background: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.2);
+        }
+        
+        .tracking-step.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: white;
+            z-index: 2;
+        }
+        
+        .tracking-step-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+        
+        .tracking-step.active .tracking-step-title {
+            color: var(--primary);
+        }
+        
+        .tracking-step.completed .tracking-step-title {
+            color: var(--success);
+        }
+        
+        .tracking-step-date {
+            font-size: 0.85rem;
+            color: #999;
+        }
+        
+        .tracking-details {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tracking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .tracking-id {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .tracking-id-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .tracking-id-value {
+            font-weight: 600;
+            background: #f8f9fc;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--border-radius-sm);
+            letter-spacing: 1px;
+        }
+        
+        .tracking-copy {
+            color: var(--primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .tracking-copy:hover {
+            color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        .tracking-qr img {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--border-radius-sm);
+        }
+        
+        .tracking-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .tracking-info-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .tracking-info-label {
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .tracking-info-value {
+            font-weight: 500;
+        }
+        
+        .tracking-timeline {
+            margin-top: 2rem;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 1.5rem;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        .timeline-item:last-child {
+            padding-bottom: 0;
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            width: 2px;
+            height: 100%;
+            background: #e9ecef;
+            z-index: 0;
+        }
+        
+        .timeline-item:last-child::before {
+            height: 0;
+        }
+        
+        .timeline-icon {
+            position: relative;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        
+        .timeline-item.completed .timeline-icon {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .timeline-item.active .timeline-icon {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.2);
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .timeline-item.active .timeline-title {
+            color: var(--primary);
+        }
+        
+        .timeline-item.completed .timeline-title {
+            color: var(--success);
+        }
+        
+        .timeline-date {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* Order Confirmation */
+        .order-confirmation {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 3rem 0;
+        }
+        
+        .confirmation-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(52, 199, 89, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--success);
+            margin: 0 auto 2rem;
+            animation: zoomIn 0.5s, pulse 2s infinite;
+        }
+        
+        .confirmation-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .confirmation-message {
+            font-size: 1.1rem;
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+        
+        .confirmation-details {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .confirmation-details-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: left;
+        }
+        
+        .confirmation-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        
+        .confirmation-label {
+            color: #6c757d;
+        }
+        
+        .confirmation-value {
+            font-weight: 500;
+        }
+        
+        .confirmation-total {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .confirmation-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        /* Success Animation */
+        @keyframes checkmark {
+            0% { stroke-dashoffset: 100; }
+            100% { stroke-dashoffset: 200; }
+        }
+        
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: var(--success);
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 6;
+            stroke: var(--success);
+            stroke-miterlimit: 10;
+            margin: 0 auto 2rem;
+            box-shadow: 0 0 0 rgba(52, 199, 89, 0.4);
+            animation: pulse-success 2s infinite;
+        }
+        
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: checkmark 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
+        }
+        
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+        
+        @keyframes pulse-success {
+            0% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(52, 199, 89, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0); }
+        }
+
+        /* Confetti Effect */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f2d74e;
+            opacity: 0;
+            z-index: 9999;
+            animation: confetti-fall linear forwards;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                opacity: 1;
+                top: -10px;
+                transform: rotateZ(0deg);
+            }
+            100% {
+                opacity: 0;
+                top: 100vh;
+                transform: rotateZ(360deg);
+            }
+        }
+
+        /* Product Video Overlay */
+        .product-video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .product-video-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .product-video-container {
+            width: 100%;
+            max-width: 800px;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .product-video {
+            width: 100%;
+            display: block;
+        }
+        
+        .product-video-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .product-video-close:hover {
+            background: rgba(255, 59, 48, 0.8);
+            transform: scale(1.1);
+        }
+        
+        .product-video-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 960px;
+            }
+            
+            .progress-step {
+                width: 100px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .container {
+                max-width: 720px;
+            }
+            
+            .checkout-summary-container {
+                width: 100%;
+                order: -1;
+                margin-bottom: 2rem;
+            }
+            
+            .checkout-summary {
+                position: static;
+            }
+            
+            .progress-steps {
+                flex-wrap: wrap;
+                gap: 1rem;
+                justify-content: center;
+            }
+            
+            .progress-step {
+                width: 80px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                max-width: 540px;
+            }
+            
+            .progress-step-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+            
+            .progress-step-text {
+                font-size: 0.8rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .tracking-steps {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .tracking-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
+            
+            .tracking-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .confirmation-details {
+                padding: 1.5rem;
+            }
+            
+            .payment-methods {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .payment-method {
+                padding: 0.75rem;
+            }
+
+            .credit-card {
+                height: 160px;
+            }
+
+            .credit-card-number {
+                font-size: 1rem;
+            }
+            
+            .otp-container {
+                gap: 0.5rem;
+            }
+            
+            .otp-input {
+                width: 2.5rem;
+                height: 3rem;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Header specific styles */
+        .checkout-header {
+            background-color: var(--dark);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .checkout-header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .checkout-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand-logo-badge {
+            display: inline-block;
+            padding: 0.4rem 1.1rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 1rem 2.4rem rgba(0, 0, 0, 0.24);
+            box-sizing: border-box;
+        }
+
+        .brand-logo-preloader {
+            margin-bottom: 20px;
+        }
+
+        .checkout-logo-img {
+            height: 2.8rem;
+            width: auto;
+            display: block;
+        }
+
+        .checkout-logo-img.brand-logo-badge {
+            height: 2.6rem;
+        }
+        
+        .checkout-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .checkout-header-action {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            opacity: 0.8;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .checkout-header-action:hover {
+            opacity: 1;
+        }
+        
+        .checkout-header-action i {
+            font-size: 1.2rem;
+        }
+        
+        .persistent-summary {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            z-index: 99;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        
+        .persistent-summary.active {
+            transform: translateY(0);
+        }
+        
+        .persistent-summary-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .persistent-product {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .persistent-product-image {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--border-radius);
+            object-fit: contain;
+            background-color: #f8f9fc;
+        }
+        
+        .persistent-product-info h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .persistent-product-info p {
+            color: var(--primary);
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .persistent-delivery {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--success);
+        }
+        
+        .persistent-delivery i {
+            font-size: 1.5rem;
+        }
+        
+        .persistent-summary-btn {
+            min-width: 150px;
+        }
+        
+        @media (max-width: 768px) {
+            .persistent-summary-content {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .persistent-delivery {
+                justify-content: center;
+            }
+            
+            .persistent-summary-btn {
+                width: 100%;
+            }
+        }
+
+        /* Custom Radio and Checkbox */
+        .custom-control {
+            position: relative;
+            display: flex;
+            gap: 0.75rem;
+            padding-left: 0;
+            min-height: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .custom-control-input {
+            position: absolute;
+            opacity: 0;
+            z-index: -1;
+        }
+        
+        .custom-control-label {
+            position: relative;
+            margin-bottom: 0;
+            vertical-align: top;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .custom-control-label::before {
+            content: '';
+            position: relative;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background-color: white;
+            margin-right: 0.75rem;
+            transition: all 0.3s;
+        }
+        
+        .custom-radio .custom-control-label::before {
+            border-radius: 50%;
+        }
+        
+        .custom-control-input:checked ~ .custom-control-label::before {
+            border-color: var(--primary);
+            background-color: var(--primary);
+        }
+        
+        .custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
+            content: '✓';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: white;
+        }
+        
+        .custom-control-input:focus ~ .custom-control-label::before {
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.25);
+        }
+        
+        /* Footer */
+        .checkout-footer {
+            background-color: #f8f9fc;
+            padding: 3rem 0 1.5rem;
+            margin-top: 4rem;
+        }
+        
+        .checkout-footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .checkout-footer-logo {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .checkout-footer-logo a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--dark);
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+
+        .checkout-footer-logo img {
+            height: 2.4rem;
+            width: auto;
+        }
+
+        .checkout-footer-logo h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .checkout-footer-logo p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .checkout-footer-links {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .checkout-footer-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+        
+        .checkout-footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--primary);
+        }
+        
+        .checkout-footer-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .checkout-footer-list li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .checkout-footer-list a {
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checkout-footer-list a:hover {
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+        
+        .checkout-footer-list i {
+            font-size: 0.7rem;
+        }
+        
+        .checkout-footer-bottom {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .checkout-footer-payments {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .checkout-footer-payment {
+            width: 40px;
+            height: 25px;
+            object-fit: contain;
+            opacity: 0.6;
+            transition: all 0.3s;
+        }
+        
+        .checkout-footer-payment:hover {
+            opacity: 1;
+        }
+        
+        /* Custom Classes */
+        .security-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .security-feature {
+            flex: 1;
+            min-width: 150px;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s;
+        }
+        
+        .security-feature:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .security-feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0, 86, 179, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .security-feature:hover .security-feature-icon {
+            background: var(--primary);
+            color: white;
+            transform: rotateY(360deg);
+        }
+        
+        .security-feature-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .security-feature-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        /* Spinner Animation */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader" class="overlay active">
+        <div class="loader-container">
+            <img src="latinphone.png" alt="LatinPhone" width="120" class="brand-logo-badge brand-logo-preloader">
+            <div class="loader"></div>
+            <p style="color: white; margin-top: 20px;">Cargando sistema de pago seguro...</p>
+            <div id="venezuela-detection" style="display: flex; align-items: center; margin-top: 20px; background: rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 50px; animation: fadeInUp 0.5s;">
+                <div class="venezuala-flag"></div>
+                <span style="color: white; margin-left: 8px;">¡Detectamos que te conectas desde Venezuela!</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="checkout-header">
+        <div class="container checkout-header-content">
+            <a href="latinphonestorehome.html" class="checkout-logo" aria-label="Inicio LatinPhone">
+                <img src="latinphone.png" alt="LatinPhone" class="checkout-logo-img brand-logo-badge">
+            </a>
+            <div class="checkout-header-actions">
+                <a href="latinphonestorehome.html" class="checkout-header-action">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Volver a la tienda</span>
+                </a>
+                <a href="#" class="checkout-header-action" id="support-link">
+                    <i class="fas fa-headset"></i>
+                    <span>Soporte</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container section">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 25%;"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="progress-step active" data-step="1">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="progress-step-text">Carrito</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="progress-step-text">Envío</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="progress-step-text">Pago</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="progress-step-text">Confirmación</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Container -->
+        <div class="checkout-container">
+            <!-- Checkout Form -->
+            <div class="checkout-form-container">
+                <!-- Step 1: Cart Review -->
+                <div class="checkout-step active" id="step-1">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="mb-0" style="font-size: 1.3rem;">Resumen de tu pedido</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="product-preview-container">
+                                <!-- Dynamic product previews will be inserted here -->
+                            </div>
+                            
+                            <div class="security-features">
+                                <div class="security-feature">
+                                    <div class="security-feature-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <h3 class="security-feature-title">Pago Seguro</h3>
+                                    <p class="security-feature-text">Tus datos de pago están protegidos con encriptación de 256 bits.</p>
+                                </div>
+                                <div class="security-feature">
+                                    <div class="security-feature-icon">
+                                        <i class="fas fa-truck"></i>
+                                    </div>
+                                    <h3 class="security-feature-title">Envío Garantizado</h3>
+                                    <p class="security-feature-text">Seguimiento en tiempo real y garantía de entrega.</p>
+                                </div>
+                                <div class="security-feature">
+                                    <div class="security-feature-icon">
+                                        <i class="fas fa-undo"></i>
+                                    </div>
+                                    <h3 class="security-feature-title">Garantía de Devolución</h3>
+                                    <p class="security-feature-text">30 días para devoluciones sin complicaciones.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="delivery-estimate">
+                                <div class="delivery-estimate-title">
+                                    <i class="fas fa-calendar-check"></i>
+                                    Entrega Estimada
+                                </div>
+                                <p class="delivery-estimate-text">
+                                    Tu pedido llegará entre el <span class="delivery-date" id="delivery-date-min">25 de marzo</span> y el <span class="delivery-date" id="delivery-date-max">28 de marzo</span> de 2025.
+                                </p>
+                            </div>
+                            
+                            <div class="nav-buttons">
+                                <a href="latinphonestorehome.html" class="btn btn-outline">
+                                    <i class="fas fa-arrow-left"></i> Volver a la tienda
+                                </a>
+                                <button type="button" class="btn btn-primary" id="go-to-step-2">
+                                    Continuar <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Shipping Information -->
+                <div class="checkout-step" id="step-2">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="mb-0" style="font-size: 1.3rem;">Información de Envío</h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="shipping-form">
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="name" class="form-label">Nombre completo</label>
+                                            <input type="text" class="form-control" id="name" placeholder="Ingresa tu nombre completo" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="email" class="form-label">Correo electrónico</label>
+                                            <input type="email" class="form-control" id="email" placeholder="ejemplo@correo.com" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="phone" class="form-label">Número de teléfono</label>
+                                            <input type="tel" class="form-control" id="phone" placeholder="+58 412 1234567" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="dni" class="form-label">Documento de identidad</label>
+                                            <input type="text" class="form-control" id="dni" placeholder="V-12345678" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="country" class="form-label">País</label>
+                                    <select class="form-control" id="country" required>
+                                        <option value="">Selecciona un país</option>
+                                        <option value="ve" selected>Venezuela</option>
+                                        <option value="co">Colombia</option>
+                                        <option value="pe">Perú</option>
+                                        <option value="ec">Ecuador</option>
+                                        <option value="cl">Chile</option>
+                                        <option value="ar">Argentina</option>
+                                        <option value="mx">México</option>
+                                        <option value="pa">Panamá</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="state" class="form-label">Estado/Provincia</label>
+                                            <input type="text" class="form-control" id="state" placeholder="Estado o provincia" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="city" class="form-label">Ciudad</label>
+                                            <input type="text" class="form-control" id="city" placeholder="Ciudad" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="address" class="form-label">Dirección</label>
+                                    <input type="text" class="form-control" id="address" placeholder="Calle, número, apartamento, etc." required>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="zip" class="form-label">Código postal</label>
+                                            <input type="text" class="form-control" id="zip" placeholder="Código postal">
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="reference" class="form-label">Punto de referencia (opcional)</label>
+                                            <input type="text" class="form-control" id="reference" placeholder="Cerca de...">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="shipping-method" class="form-label">Método de envío</label>
+                                    <div class="payment-methods shipping-methods">
+                                        <div class="payment-method active" data-shipping="express" data-cost="70">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-bolt"></i>
+                                            </div>
+                                            <div class="payment-method-name">Express</div>
+                                            <div class="mt-1">1-4 días</div>
+                                            <div class="mt-1 text-primary font-weight-bold">$70.00</div>
+                                        </div>
+                                        <div class="payment-method" data-shipping="standard" data-cost="35">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-truck"></i>
+                                            </div>
+                                            <div class="payment-method-name">Estándar</div>
+                                            <div class="mt-1">7-10 días</div>
+                                            <div class="mt-1 text-primary font-weight-bold">$35.00</div>
+                                        </div>
+                                        <div class="payment-method" data-shipping="free" data-cost="0">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-gift"></i>
+                                            </div>
+                                            <div class="payment-method-name">Gratuito</div>
+                                            <div class="mt-1">15-20 días</div>
+                                            <div class="mt-1 text-success font-weight-bold">$0.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="shipping-company" class="form-label">Empresa de envío</label>
+                                    <select class="form-control" id="shipping-company" required>
+                                        <option value="">Selecciona una empresa</option>
+                                        <option value="mrw" selected>MRW</option>
+                                        <option value="zoom">Zoom</option>
+                                        <option value="liberty">Liberty Express</option>
+                                        <option value="tealca">Tealca</option>
+                                        <option value="ipostel">Ipostel</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="nationalization-notice" id="nationalization-notice">
+                                    <div class="nationalization-notice-title">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Información importante de aduana
+                                    </div>
+                                    <p class="nationalization-notice-text">
+                                        Para envíos a Venezuela, existe un cargo fijo de nacionalización de <span class="nationalization-amount">$30.00</span> (<span id="nationalization-amount-bs">2,400.00 Bs.</span>) que deberá ser pagado en efectivo y en moneda local al transportista en el momento de la entrega.
+                                    </p>
+                                    <p class="nationalization-notice-text">
+                                        Este cargo representa aproximadamente <span class="badge badge-warning" id="nationalization-percentage">1.5%</span> del valor total de tu compra y se utiliza para cubrir los trámites aduaneros y de nacionalización.
+                                    </p>
+                                </div>
+                                
+                                <div class="custom-control custom-checkbox mt-4">
+                                    <input type="checkbox" class="custom-control-input" id="nationalization-agreement" required>
+                                    <label class="custom-control-label" for="nationalization-agreement">
+                                        Entiendo y acepto pagar el costo de nacionalización de $30.00 (<span id="nationalization-checkbox-bs">2,400.00 Bs.</span>) en moneda local directamente al transportista al momento de la entrega.
+                                    </label>
+                                </div>
+                                
+                               <div class="nav-buttons">
+                                    <button type="button" class="btn btn-outline" id="back-to-step-1">
+                                        <i class="fas fa-arrow-left"></i> Volver
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="go-to-step-3">
+                                        Continuar <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </form></div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment Information -->
+                <div class="checkout-step" id="step-3">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="mb-0" style="font-size: 1.3rem;">Información de Pago</h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="payment-form">
+                                <div class="form-group">
+                                    <label class="form-label">Método de pago</label>
+                                    <div class="payment-methods">
+                                        <div class="payment-method active" data-payment="card">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-credit-card"></i>
+                                            </div>
+                                            <div class="payment-method-name">Tarjeta</div>
+                                        </div>
+                                        <div class="payment-method" data-payment="zelle">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-university"></i>
+                                            </div>
+                                            <div class="payment-method-name">Zelle</div>
+                                        </div>
+                                        <div class="payment-method" data-payment="paypal">
+                                            <div class="payment-method-icon">
+                                                <i class="fab fa-paypal"></i>
+                                            </div>
+                                            <div class="payment-method-name">PayPal</div>
+                                        </div>
+                                        <div class="payment-method disabled" data-payment="crypto">
+                                            <div class="payment-method-icon">
+                                                <i class="fab fa-bitcoin"></i>
+                                            </div>
+                                            <div class="payment-method-name">Crypto</div>
+                                        </div>
+                                        <div class="payment-method disabled" data-payment="pago-movil">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-money-bill-wave"></i>
+                                            </div>
+                                            <div class="payment-method-name">Pago Móvil</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Credit Card Form -->
+                                <div class="payment-method-form active" id="card-payment-form">
+                                    <div class="credit-card" id="credit-card">
+                                        <div class="credit-card-front">
+                                            <div class="credit-card-logo">
+                                                <div class="credit-card-chip"></div>
+                                                <div class="credit-card-type" id="card-type-display">VISA</div>
+                                            </div>
+                                            <div class="credit-card-number" id="card-number-display">•••• •••• •••• ••••</div>
+                                            <div class="credit-card-info">
+                                                <div>
+                                                    <span>TITULAR</span>
+                                                    <strong id="card-name-display">NOMBRE APELLIDO</strong>
+                                                </div>
+                                                <div>
+                                                    <span>VENCE</span>
+                                                    <strong id="card-expiry-display">MM/AA</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="credit-card-back">
+                                            <div class="magnetic-strip"></div>
+                                            <div class="signature-box">
+                                                <div class="cvv" id="card-cvv-display">***</div>
+                                            </div>
+                                            <div class="terms">
+                                                Esta tarjeta es propiedad del banco emisor. Su uso está sujeto a los términos y condiciones del acuerdo con el titular.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="card-name-input" class="form-label">Nombre en la tarjeta</label>
+                                        <input type="text" class="form-control" id="card-name-input" placeholder="Nombre como aparece en la tarjeta" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="card-number-input" class="form-label">Número de tarjeta</label>
+                                        <div class="card-input-masked">
+                                            <input type="text" class="form-control" id="card-number-input" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                                            <div class="card-input-overlay" id="card-number-overlay"></div>
+                                            <div class="card-type-icon" id="card-type-icon">
+                                                <i class="fab fa-cc-visa"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-col">
+                                            <div class="form-group">
+                                                <label for="card-expiry-input" class="form-label">Fecha de vencimiento</label>
+                                                <input type="text" class="form-control" id="card-expiry-input" placeholder="MM/AA" maxlength="5" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-col">
+                                            <div class="form-group">
+                                                <label for="card-cvv-input" class="form-label">Código de seguridad (CVV)</label>
+                                                <input type="password" class="form-control" id="card-cvv-input" placeholder="***" maxlength="3" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="save-card">
+                                        <label class="custom-control-label" for="save-card">Guardar esta tarjeta para compras futuras</label>
+                                    </div>
+                                </div>
+
+                                <!-- Zelle Form -->
+                                <div class="payment-method-form" id="zelle-payment-form">
+                                    <p>Realiza un Zelle a <strong>latinphone@usa.com</strong> por el monto de <strong id="zelle-amount">$0.00</strong>.</p>
+                                    <div class="form-group">
+                                        <label for="zelle-email" class="form-label">Correo desde donde envías</label>
+                                        <input type="email" class="form-control" id="zelle-email" placeholder="tu-correo@example.com" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="zelle-receipt" class="form-label">Adjuntar comprobante</label>
+                                        <input type="file" class="form-control" id="zelle-receipt" accept="image/*,application/pdf">
+                                    </div>
+                                </div>
+
+                                <!-- PayPal Form -->
+                                <div class="payment-method-form" id="paypal-payment-form">
+                                    <div class="text-center p-3">
+                                        <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" alt="PayPal" height="60">
+                                        <p class="mt-3">Haz clic en "Finalizar compra" para coordinar tu pago PayPal vía WhatsApp.</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Crypto Form -->
+                                <div class="payment-method-form" id="crypto-payment-form">
+                                    <div class="text-center p-3">
+                                        <div class="d-flex justify-content-center gap-3 mb-2">
+                                            <i class="fab fa-bitcoin fa-2x"></i>
+                                            <i class="fab fa-ethereum fa-2x"></i>
+                                            <i class="fab fa-usb fa-2x"></i>
+                                        </div>
+                                        <p>Al hacer clic en "Continuar", se generará una dirección de criptomoneda para realizar el pago.</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Pago Móvil Form -->
+                                <div class="payment-method-form" id="pago-movil-payment-form">
+                                    <div class="card p-3 mb-2" style="background-color: rgba(0, 86, 179, 0.05);">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="venezuala-flag" style="width: 30px; height: 20px;"></div>
+                                            <h5 class="mb-0 ml-2" style="margin-left: 10px;">Información para Pago Móvil</h5>
+                                        </div>
+                                        <p class="mb-2">Para completar tu compra mediante Pago Móvil, deberás enviar:</p>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Banco:</span>
+                                            <strong>Banesco</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Teléfono:</span>
+                                            <strong>+58 414-2587963</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Cédula:</span>
+                                            <strong>V-12345678</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Monto a pagar:</span>
+                                            <strong id="pago-movil-amount">$0.00</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Monto en Bs:</span>
+                                            <strong id="pago-movil-amount-bs">0,00 Bs</strong>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="banco-emisor" class="form-label">Banco emisor</label>
+                                        <select class="form-control" id="banco-emisor" required>
+                                            <option value="">Selecciona tu banco</option>
+                                            <option value="banesco">Banesco</option>
+                                            <option value="provincial">Provincial</option>
+                                            <option value="mercantil">Mercantil</option>
+                                            <option value="venezuela">Venezuela</option>
+                                            <option value="bicentenario">Bicentenario</option>
+                                            <option value="bod">BOD</option>
+                                            <option value="otros">Otro banco</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="numero-referencia" class="form-label">Número de confirmación</label>
+                                        <input type="text" class="form-control" id="numero-referencia" placeholder="Código de confirmación de tu pago" required>
+                                        <small class="text-muted">Ingresa el número de confirmación que recibiste al realizar el pago móvil.</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="telefono-pago-movil" class="form-label">Teléfono asociado al pago</label>
+                                        <input type="tel" class="form-control" id="telefono-pago-movil" placeholder="+58 414 1234567" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group mt-3">
+                                    <label class="form-label">Cupón de descuento</label>
+                                    <div class="d-flex gap-2">
+                                        <input type="text" class="form-control" id="coupon-code" placeholder="Ingresa tu código de descuento">
+                                        <button type="button" class="btn btn-outline" id="apply-coupon" style="min-width: 100px;">Aplicar</button>
+                                    </div>
+                                    <div id="coupon-message" class="mt-2"></div>
+                                </div>
+                                
+                                <div class="security-badge">
+                                    <i class="fas fa-lock"></i>
+                                    <div class="security-badge-text">
+                                        Tus datos están protegidos con encriptación de nivel bancario. Usamos tecnología SSL para proteger tu información.
+                                    </div>
+                                </div>
+                                
+                                <div class="nav-buttons">
+                                    <button type="button" class="btn btn-outline" id="back-to-step-2">
+                                        <i class="fas fa-arrow-left"></i> Volver
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="go-to-step-4">
+                                        Finalizar compra <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Confirmation -->
+                <div class="checkout-step" id="step-4">
+                    <div class="order-confirmation">
+                        <div class="confirmation-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h2 class="confirmation-title">¡Pago Completado con Éxito!</h2>
+                        <p class="confirmation-message">Tu pedido ha sido confirmado y está siendo procesado. Recibirás un correo electrónico con los detalles de tu compra y actualizaciones en tiempo real.</p>
+                        
+                        <div class="confirmation-details">
+                            <h3 class="confirmation-details-title">Detalles del Pedido</h3>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Número de pedido:</div>
+                                <div class="confirmation-value" id="order-number">WE5451285S1Q</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Fecha:</div>
+                                <div class="confirmation-value" id="order-date">20 de Marzo, 2025</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Método de pago:</div>
+                                <div class="confirmation-value" id="payment-method-display">Tarjeta de crédito</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Método de envío:</div>
+                                <div class="confirmation-value" id="shipping-method-display">Express (1-4 días)</div>
+                            </div>
+                            
+                            <hr class="summary-divider">
+                            
+                            <div class="product-list" id="confirmation-products">
+                                <!-- Products will be inserted here -->
+                            </div>
+                            
+                            <hr class="summary-divider">
+                            
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Subtotal:</div>
+                                <div class="confirmation-value" id="confirmation-subtotal">$0.00</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">IVA (16%):</div>
+                                <div class="confirmation-value" id="confirmation-tax">$0.00</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Envío:</div>
+                                <div class="confirmation-value" id="confirmation-shipping">$0.00</div>
+                            </div>
+                            <div class="confirmation-row">
+                                <div class="confirmation-label">Seguro:</div>
+                                <div class="confirmation-value" id="confirmation-insurance">$0.00</div>
+                            </div>
+                            <div class="confirmation-row" id="confirmation-discount-row" style="display: none;">
+                                <div class="confirmation-label">Descuento:</div>
+                                <div class="confirmation-value text-danger" id="confirmation-discount">-$0.00</div>
+                            </div>
+                            <div class="confirmation-row confirmation-total">
+                                <div class="confirmation-label">Total:</div>
+                                <div class="confirmation-value" id="confirmation-total">$0.00</div>
+                            </div>
+                        </div>
+                        
+                        <div class="nationalization-notice">
+                            <div class="nationalization-notice-title">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Pago de Nacionalización Pendiente
+                            </div>
+                            <p class="nationalization-notice-text">
+                                Recuerda que debes pagar <span class="nationalization-amount">$30.00</span> (<span id="confirmation-nationalization-bs">2,400.00 Bs.</span>) al transportista cuando recibas tu pedido.
+                            </p>
+                        </div>
+                        
+                        <div class="confirmation-actions">
+                            <a href="#" class="btn btn-primary" id="view-tracking">
+                                <i class="fas fa-shipping-fast"></i> Seguimiento del Pedido
+                            </a>
+                            <a href="#" class="btn btn-outline" id="download-invoice">
+                                <i class="fas fa-file-download"></i> Descargar Factura
+                            </a>
+                            <a href="#" class="btn btn-success" id="contact-whatsapp">
+                                <i class="fab fa-whatsapp"></i> Contactar por WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Tracking Section -->
+                <div class="checkout-step" id="tracking-step">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="mb-0" style="font-size: 1.3rem;">Seguimiento de tu Pedido</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="tracking-header">
+                                <div class="tracking-id">
+                                    <div class="tracking-id-label">Número de seguimiento:</div>
+                                    <div class="tracking-id-value" id="tracking-id-value">WE5451285S1Q</div>
+                                    <button class="tracking-copy" id="copy-tracking" title="Copiar al portapapeles">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="tracking-qr">
+                                    <img id="tracking-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=WE5451285S1Q" alt="Código QR de seguimiento">
+                                </div>
+                            </div>
+                            
+                            <div class="tracking-steps">
+                                <div class="tracking-step completed" id="tracking-step-1">
+                                    <span class="tracking-step-title">Orden confirmada</span>
+                                    <span class="tracking-step-date" id="tracking-date-1">20/03/2025</span>
+                                </div>
+                                <div class="tracking-step active" id="tracking-step-2">
+                                    <span class="tracking-step-title">En preparación</span>
+                                    <span class="tracking-step-date" id="tracking-date-2">21/03/2025</span>
+                                </div>
+                                <div class="tracking-step" id="tracking-step-3">
+                                    <span class="tracking-step-title">En camino</span>
+                                    <span class="tracking-step-date" id="tracking-date-3">-</span>
+                                </div>
+                                <div class="tracking-step" id="tracking-step-4">
+                                    <span class="tracking-step-title">Entregado</span>
+                                    <span class="tracking-step-date" id="tracking-date-4">-</span>
+                                </div>
+                            </div>
+                            
+                            <div class="tracking-info">
+                                <div class="tracking-info-item">
+                                    <div class="tracking-info-label">Dirección de entrega:</div>
+                                    <div class="tracking-info-value" id="tracking-address">Calle Principal #123, Ciudad, Venezuela</div>
+                                </div>
+                                <div class="tracking-info-item">
+                                    <div class="tracking-info-label">Empresa de envío:</div>
+                                    <div class="tracking-info-value" id="tracking-company">MRW</div>
+                                </div>
+                                <div class="tracking-info-item">
+                                    <div class="tracking-info-label">Fecha estimada de entrega:</div>
+                                    <div class="tracking-info-value" id="tracking-estimate">25-28 de marzo, 2025</div>
+                                </div>
+                            </div>
+                            
+                            <div class="tracking-timeline">
+                                <div class="timeline-item completed">
+                                    <div class="timeline-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Pago confirmado</div>
+                                        <div class="timeline-date">20 de marzo, 2025 - 15:30</div>
+                                        <div class="timeline-description">Tu pago ha sido procesado correctamente. Hemos recibido tu pedido.</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item active">
+                                    <div class="timeline-icon">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Pedido en preparación</div>
+                                        <div class="timeline-date">21 de marzo, 2025 - 09:45</div>
+                                        <div class="timeline-description">Estamos preparando tu pedido para el envío. Pronto será entregado al transportista.</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">
+                                        <i class="fas fa-shipping-fast"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">En camino</div>
+                                        <div class="timeline-date">Pendiente</div>
+                                        <div class="timeline-description">Tu pedido está en camino hacia tu dirección de entrega.</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Entregado</div>
+                                        <div class="timeline-date">Pendiente</div>
+                                        <div class="timeline-description">Tu pedido ha sido entregado en la dirección especificada.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="nationalization-notice mt-4">
+                                <div class="nationalization-notice-title">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Recordatorio de Nacionalización
+                                </div>
+                                <p class="nationalization-notice-text">
+                                    Para recibir tu pedido, debes pagar <span class="nationalization-amount">$30.00</span> (<span id="tracking-nationalization-bs">2,400.00 Bs.</span>) al transportista en el momento de la entrega. Este cargo es obligatorio para la nacionalización del producto en Venezuela.
+                                </p>
+                            </div>
+                            
+                            <div class="d-flex justify-content-center mt-4">
+                                <a href="#" class="btn btn-success" id="tracking-whatsapp">
+                                    <i class="fab fa-whatsapp"></i> Consultar estado por WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checkout Summary -->
+            <div class="checkout-summary-container">
+                <div class="checkout-summary">
+                    <div class="checkout-summary-header">
+                        <h3 class="checkout-summary-title">Resumen del Pedido</h3>
+                        <p class="checkout-summary-subtitle">Revisa los detalles de tu compra</p>
+                    </div>
+                    <div class="checkout-summary-content">
+                        <div class="product-list" id="summary-products">
+                            <!-- Products will be inserted here -->
+                        </div>
+                        
+                        <hr class="summary-divider">
+                        
+                        <div class="summary-item">
+                            <div class="summary-item-label">Subtotal</div>
+                            <div class="summary-item-value" id="summary-subtotal">$0.00</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">IVA (16%)</div>
+                            <div class="summary-item-value" id="summary-tax">$0.00</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">Envío</div>
+                            <div class="summary-item-value" id="summary-shipping">$0.00</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">Seguro</div>
+                            <div class="summary-item-value" id="summary-insurance">$0.00</div>
+                        </div>
+                        <div class="summary-item" id="summary-discount-row" style="display: none;">
+                            <div class="summary-item-label">Descuento</div>
+                            <div class="summary-item-value text-danger" id="summary-discount">-$0.00</div>
+                        </div>
+                        <div class="summary-item total">
+                            <div class="summary-item-label">Total</div>
+                            <div class="summary-item-value" id="summary-total">$0.00</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">Saldo disponible</div>
+                            <div class="summary-item-value">
+                                <span data-saldo-usd>—</span>
+                            </div>
+                        </div>
+                        <div class="bolivar-conversion-large" id="total-bs-conversion">
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <div class="venezuala-flag"></div>
+                                <span id="total-bs">0,00 Bs</span>
+                            </div>
+                        </div>
+                        
+                        <div class="delivery-estimate">
+                            <div class="delivery-estimate-title">
+                                <i class="fas fa-calendar-check"></i>
+                                Entrega Estimada
+                            </div>
+                            <p class="delivery-estimate-text">
+                                Tu pedido llegará entre el <span class="delivery-date" id="summary-date-min">25 de marzo</span> y el <span class="delivery-date" id="summary-date-max">28 de marzo</span> de 2025.
+                            </p>
+                        </div>
+                        
+                        <div class="nationalization-notice">
+                            <div class="nationalization-notice-title">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Información de aduana
+                            </div>
+                            <p class="nationalization-notice-text">
+                                Cargo fijo de nacionalización: <span class="nationalization-amount">$30.00</span> (<span id="summary-bs">2,400.00 Bs.</span>)
+                            </p>
+                            <p class="nationalization-notice-text">
+                                Este cargo se paga en efectivo al recibir tu pedido.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Persistent Summary Bar -->
+    <div class="persistent-summary" id="persistent-summary">
+        <div class="container persistent-summary-content">
+            <div class="persistent-product">
+                <img src="https://th.bing.com/th?id=OPEC.Gy18E1jCjibBhg474C474&w=592&h=550&o=5&pid=21.1" alt="Samsung Galaxy S25 Ultra" class="persistent-product-image" id="persistent-product-image">
+                <div class="persistent-product-info">
+                    <h3 id="persistent-product-name">Samsung Galaxy S25 Ultra</h3>
+                    <p id="persistent-product-price">$1,299.00</p>
+                </div>
+            </div>
+            <div class="persistent-delivery">
+                <i class="fas fa-truck"></i>
+                <div>
+                    <div id="persistent-delivery-date">Entrega: 25-28 marzo</div>
+                </div>
+            </div>
+            <button class="btn btn-primary persistent-summary-btn" id="persistent-continue">
+                Continuar con la compra
+            </button>
+        </div>
+    </div>
+
+    <!-- OTP Verification Modal -->
+    <div class="overlay" id="otp-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Verificación de Seguridad</h3>
+                <button class="modal-close" id="close-otp">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Hemos enviado un código de verificación a tu teléfono para confirmar la identidad del titular de la tarjeta.</p>
+                
+                <div class="otp-container mt-4 mb-4">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-1">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-2">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-3">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-4">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-5">
+                    <input type="text" class="otp-input" maxlength="1" id="otp-6">
+                </div>
+                
+                <p class="text-muted text-center mb-4">El código expira en <span id="otp-timer">02:00</span></p>
+                
+                <div class="form-group text-center">
+                    <button class="btn btn-primary" id="verify-otp">Verificar</button>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="#" id="resend-otp">No recibí el código. Reenviar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Video Modal -->
+    <div class="product-video-overlay" id="product-video-overlay">
+        <div class="product-video-container">
+            <video id="product-video" class="product-video" controls autoplay>
+                <source src="" type="video/mp4">
+            </video>
+            <button class="product-video-close" id="close-video">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="product-video-title" id="product-video-title">
+                Samsung Galaxy S25 Ultra
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="checkout-footer">
+        <div class="container">
+            <div class="checkout-footer-content">
+                <div class="checkout-footer-logo">
+                    <a href="latinphonestorehome.html">
+                        <img src="latinphone.png" alt="LatinPhone">
+                        <h2>LatinPhone</h2>
+                    </a>
+                    <p>Somos una tienda especializada en tecnología premium con envíos directos desde Estados Unidos a toda Latinoamérica. Ofrecemos los mejores precios del mercado para particulares y distribuidores.</p>
+                </div>
+                <div class="checkout-footer-links">
+                    <h3 class="checkout-footer-title">Enlaces Rápidos</h3>
+                    <ul class="checkout-footer-list">
+                        <li><a href="latinphonestorehome.html"><i class="fas fa-chevron-right"></i> Inicio</a></li>
+                        <li><a href="latinphonestorehome.html#telefonos"><i class="fas fa-chevron-right"></i> Teléfonos</a></li>
+                        <li><a href="latinphonestorehome.html#computadores"><i class="fas fa-chevron-right"></i> Computadores</a></li>
+                        <li><a href="latinphonestorehome.html#accesorios"><i class="fas fa-chevron-right"></i> Accesorios</a></li>
+                    </ul>
+                </div>
+                <div class="checkout-footer-links">
+                    <h3 class="checkout-footer-title">Soporte</h3>
+                    <ul class="checkout-footer-list">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Preguntas Frecuentes</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Seguimiento de Pedidos</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Política de Devoluciones</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="checkout-footer-links">
+                    <h3 class="checkout-footer-title">Contacto</h3>
+                    <ul class="checkout-footer-list">
+                        <li><a href="tel:+18133584564"><i class="fas fa-phone"></i> +1-813-358-4564</a></li>
+                        <li><a href="mailto:soporte@latinphone.com"><i class="fas fa-envelope"></i> soporte@latinphone.com</a></li>
+                        <li><a href="https://wa.me/18133584564"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> Miami, FL 33122, USA</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="checkout-footer-bottom">
+                <p>&copy; 2025 LatinPhone. Todos los derechos reservados.</p>
+                <p>Precios incluyen IVA. Los costos de nacionalización para Venezuela son fijos: $30.00 (equivalente a 2,400.00 Bs. aproximadamente).</p>
+                <div class="checkout-footer-payments">
+                    <img src="https://cdn.iconscout.com/icon/free/png-256/free-visa-3-226460.png" alt="Visa" class="checkout-footer-payment">
+                    <img src="https://cdn.iconscout.com/icon/free/png-256/free-mastercard-3-226462.png" alt="Mastercard" class="checkout-footer-payment">
+                    <img src="https://cdn.iconscout.com/icon/free/png-256/free-paypal-34-226455.png" alt="PayPal" class="checkout-footer-payment">
+                    <img src="https://cdn.iconscout.com/icon/free/png-256/free-bitcoin-1817503-1538025.png" alt="Bitcoin" class="checkout-footer-payment">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="exchange-rate.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out',
+            once: true
+        });
+
+        // Product Data
+        const products = [
+            {
+                id: 'phone1',
+                name: 'Samsung Galaxy S25 Ultra',
+                price: 1299,
+                image: 'https://th.bing.com/th?id=OPEC.Gy18E1jCjibBhg474C474&w=592&h=550&o=5&pid=21.1',
+                video: 'https://images.samsung.com/es/smartphones/galaxy-s25-ultra/buy/02_Gallery/02-2_KV_With-Exclusive-Color/01_Color_Group_Online-Exclusive-KV_video_PC.mp4'
+            },
+            {
+                id: 'phone2',
+                name: 'Google Pixel 9 Pro XL',
+                price: 1099,
+                image: 'https://storage.googleapis.com/mannequin/blobs/503e2730-0d4c-4071-ba66-dee0cfa726fd.webm',
+                video: 'https://storage.googleapis.com/mannequin/blobs/503e2730-0d4c-4071-ba66-dee0cfa726fd.webm'
+            },
+            {
+                id: 'phone3',
+                name: 'iPhone 16 Pro Max',
+                price: 1199,
+                image: 'https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-16-pro-model-unselect-gallery-2-202409_GEO_EMEA?wid=5120&hei=2880&fmt=webp&qlt=70&.v=aWs5czA5aDFXU0FlMGFGRlpYRXk2UWFRQXQ2R0JQTk5udUZxTkR3ZVlpSlo4cUtOVXZ0VkpGRlBQT0VQc1Qrd1B1OWIzMk5Pa05pM0VtRDBtTXRCK3dUMngwVnJycmY0WkN2ZnNvOUpFNFd0WXdwZkhSYStycUNlU1I0YzZvelo0dGx0Y1ZLQlV5bmZsVklVZzRYdC9R&traceId=1',
+                video: null
+            },
+            {
+                id: 'phone4',
+                name: 'Samsung Galaxy Z Fold 6',
+                price: 1899,
+                image: 'https://images.samsung.com/es/smartphones/galaxy-z-fold6/buy/03_Color-Selection/03-2_Exclusive-Color/Color-Selection_CraftedBlack-PC.png?imbypass=true',
+                video: 'https://images.samsung.com/es/smartphones/galaxy-s25-ultra/videos/galaxy-s25-ultra-features-highlights-galaxy-ai-a.webm?imbypass=true'
+            },
+            {
+                id: 'comp1',
+                name: 'MacBook Pro 16" (M4 Max)',
+                price: 3499,
+                image: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/mbp16-silver-gallery1-202410?wid=4000&hei=3074&fmt=jpeg&qlt=90&.v=1729266976638',
+                video: null
+            },
+            {
+                id: 'acc2',
+                name: 'Samsung Galaxy Buds 3 Pro',
+                price: 199,
+                image: 'https://images.samsung.com/is/image/samsung/p6pim/es/2407/gallery/es-galaxy-buds3-pro-r630-sm-r630nzaaphe-542344297?$684_547_PNG$',
+                video: null
+            },
+            {
+                id: 'acc3',
+                name: 'Logitech MX Master 4',
+                price: 129,
+                image: 'https://m.media-amazon.com/images/I/61ni3t1ryQL.__AC_SX300_SY300_QL70_ML2_.jpg',
+                video: null
+            },
+            {
+                id: 'acc4',
+                name: 'Razer BlackShark V3 Pro',
+                price: 179,
+                image: 'https://m.media-amazon.com/images/I/81y14ID9oHL.__AC_SX300_SY300_QL70_ML2_.jpg',
+                video: null
+            }
+        ];
+
+        // Global Variables
+        let cart = [];
+        let subtotal = 0;
+        let tax = 0;
+        let shipping = 70; // Default to Express
+        let insurance = 0;
+        let discount = 0;
+        let total = 0;
+        let bolivarRate = 225; // 225 Bs per USD
+        let nationalizationCost = 30; // Fixed $30 nationalization fee
+        const validCardNumber = '4745034211763009';
+        const validCardExpiry = '01/26';
+        const validCardCVV = '583';
+        const validOTP = '415263';
+        let currentStep = 1;
+
+        // DOM Elements
+        const preloader = document.getElementById('preloader');
+        const progressFill = document.getElementById('progress-fill');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const checkoutSteps = document.querySelectorAll('.checkout-step');
+        const productPreviewContainer = document.getElementById('product-preview-container');
+        const summaryProducts = document.getElementById('summary-products');
+        const summarySubtotal = document.getElementById('summary-subtotal');
+        const summaryTax = document.getElementById('summary-tax');
+        const summaryShipping = document.getElementById('summary-shipping');
+        const summaryInsurance = document.getElementById('summary-insurance');
+        const summaryDiscount = document.getElementById('summary-discount');
+        const summaryDiscountRow = document.getElementById('summary-discount-row');
+        const summaryTotal = document.getElementById('summary-total');
+        const totalBs = document.getElementById('total-bs');
+        const persistentSummary = document.getElementById('persistent-summary');
+        const persistentProductImage = document.getElementById('persistent-product-image');
+        const persistentProductName = document.getElementById('persistent-product-name');
+        const persistentProductPrice = document.getElementById('persistent-product-price');
+        const persistentDeliveryDate = document.getElementById('persistent-delivery-date');
+        const otpModal = document.getElementById('otp-modal');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const creditCard = document.getElementById('credit-card');
+        const cardNumberInput = document.getElementById('card-number-input');
+        const cardNumberOverlay = document.getElementById('card-number-overlay');
+        const cardNameInput = document.getElementById('card-name-input');
+        const cardExpiryInput = document.getElementById('card-expiry-input');
+        const cardCVVInput = document.getElementById('card-cvv-input');
+        const cardNumberDisplay = document.getElementById('card-number-display');
+        const cardNameDisplay = document.getElementById('card-name-display');
+        const cardExpiryDisplay = document.getElementById('card-expiry-display');
+        const cardCVVDisplay = document.getElementById('card-cvv-display');
+        const cardTypeIcon = document.getElementById('card-type-icon');
+        const cardTypeDisplay = document.getElementById('card-type-display');
+
+        // Helper Functions
+        function formatCurrency(amount) {
+            return '$' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        function formatBolivares(usdAmount) {
+            const bsAmount = usdAmount * bolivarRate;
+            return bsAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + ' Bs';
+        }
+
+        function updateBolivarAmounts() {
+            // Update all Bolivar amounts in page
+            document.getElementById('nationalization-amount-bs').textContent = formatBolivares(nationalizationCost);
+            document.getElementById('nationalization-checkbox-bs').textContent = formatBolivares(nationalizationCost);
+            document.getElementById('summary-bs').textContent = formatBolivares(nationalizationCost);
+            document.getElementById('confirmation-nationalization-bs').textContent = formatBolivares(nationalizationCost);
+            document.getElementById('tracking-nationalization-bs').textContent = formatBolivares(nationalizationCost);
+            document.getElementById('pago-movil-amount').textContent = formatCurrency(total);
+            document.getElementById('pago-movil-amount-bs').textContent = formatBolivares(total);
+            document.getElementById('zelle-amount').textContent = formatCurrency(total);
+            totalBs.textContent = formatBolivares(total);
+            
+            // Update nationalization percentage
+            const percentage = (nationalizationCost / total * 100).toFixed(1);
+            document.getElementById('nationalization-percentage').textContent = percentage + '%';
+        }
+
+        function updateDeliveryDates() {
+            const today = new Date();
+            let minDays = 15;
+            let maxDays = 20;
+            
+            // Get selected shipping method
+            const shippingMethods = document.querySelectorAll('.shipping-methods .payment-method');
+            shippingMethods.forEach(method => {
+                if (method.classList.contains('active')) {
+                    const shippingType = method.getAttribute('data-shipping');
+                    
+                    if (shippingType === 'express') {
+                        minDays = 1;
+                        maxDays = 4;
+                    } else if (shippingType === 'standard') {
+                        minDays = 7;
+                        maxDays = 10;
+                    } else {
+                        minDays = 15;
+                        maxDays = 20;
+                    }
+                }
+            });
+            
+            const minDate = new Date(today);
+            minDate.setDate(today.getDate() + minDays);
+            
+            const maxDate = new Date(today);
+            maxDate.setDate(today.getDate() + maxDays);
+            
+            // Format dates
+            const formatter = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long' });
+            const minDateFormatted = formatter.format(minDate);
+            const maxDateFormatted = formatter.format(maxDate);
+            
+            // Update dates in UI
+            document.getElementById('delivery-date-min').textContent = minDateFormatted;
+            document.getElementById('delivery-date-max').textContent = maxDateFormatted;
+            document.getElementById('summary-date-min').textContent = minDateFormatted;
+            document.getElementById('summary-date-max').textContent = maxDateFormatted;
+            document.getElementById('tracking-estimate').textContent = `${minDateFormatted} - ${maxDateFormatted}, 2025`;
+            document.getElementById('persistent-delivery-date').textContent = `Entrega: ${minDateFormatted.split(' ')[0]}-${maxDateFormatted.split(' ')[0]} ${maxDateFormatted.split(' ')[1]}`;
+        }
+
+        function updateCartSummary() {
+            // Calculate totals
+            subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            tax = subtotal * 0.16;
+            insurance = subtotal * 0.02;
+            total = subtotal + tax + shipping + insurance - discount;
+            
+            // Update summary
+            summarySubtotal.textContent = formatCurrency(subtotal);
+            summaryTax.textContent = formatCurrency(tax);
+            summaryShipping.textContent = formatCurrency(shipping);
+            summaryInsurance.textContent = formatCurrency(insurance);
+            
+            if (discount > 0) {
+                summaryDiscount.textContent = '-' + formatCurrency(discount);
+                summaryDiscountRow.style.display = 'flex';
+            } else {
+                summaryDiscountRow.style.display = 'none';
+            }
+            
+            summaryTotal.textContent = formatCurrency(total);
+            
+            // Update Bolivar amounts
+            updateBolivarAmounts();
+            
+            // Update confirmation screen
+            document.getElementById('confirmation-subtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('confirmation-tax').textContent = formatCurrency(tax);
+            document.getElementById('confirmation-shipping').textContent = formatCurrency(shipping);
+            document.getElementById('confirmation-insurance').textContent = formatCurrency(insurance);
+            document.getElementById('confirmation-total').textContent = formatCurrency(total);
+            
+            if (discount > 0) {
+                document.getElementById('confirmation-discount').textContent = '-' + formatCurrency(discount);
+                document.getElementById('confirmation-discount-row').style.display = 'flex';
+            } else {
+                document.getElementById('confirmation-discount-row').style.display = 'none';
+            }
+        }
+
+        function renderProductPreviews() {
+            // Clear container
+            productPreviewContainer.innerHTML = '';
+            
+            // Render each product
+            cart.forEach(item => {
+                const product = products.find(product => product.id === item.id);
+                const productElement = document.createElement('div');
+                productElement.className = 'product-preview';
+                
+                productElement.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-preview-image">
+                    <div class="product-preview-info">
+                        <h3 class="product-preview-name">${product.name}</h3>
+                        <div class="product-preview-price">${formatCurrency(product.price)} <span class="bolivar-conversion">${formatBolivares(product.price)}</span></div>
+                        <div class="product-preview-meta">
+                            <span>Cantidad: ${item.quantity}</span>
+                            <span>Garantía: 1 año</span>
+                        </div>
+                    </div>
+                    ${product.video ? `<button class="btn btn-sm btn-outline product-video-btn" data-video="${product.video}" data-name="${product.name}">
+                        <i class="fas fa-play-circle"></i> Ver video
+                    </button>` : ''}
+                `;
+                
+                productPreviewContainer.appendChild(productElement);
+            });
+            
+            // Add event listeners to video buttons
+            document.querySelectorAll('.product-video-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const videoSrc = this.getAttribute('data-video');
+                    const productName = this.getAttribute('data-name');
+                    showProductVideo(videoSrc, productName);
+                });
+            });
+        }
+
+        function renderSummaryProducts() {
+            // Clear container
+            summaryProducts.innerHTML = '';
+            
+            // Render each product
+            cart.forEach(item => {
+                const product = products.find(product => product.id === item.id);
+                const productElement = document.createElement('div');
+                productElement.className = 'product-list-item';
+                
+                productElement.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-list-image">
+                    <div class="product-list-info">
+                        <div class="product-list-name">${product.name}</div>
+                        <div class="product-list-price">${formatCurrency(product.price)}</div>
+                        <div class="product-list-quantity">Cantidad: ${item.quantity}</div>
+                    </div>
+                `;
+                
+                summaryProducts.appendChild(productElement);
+            });
+            
+            // Update confirmation products
+            const confirmationProducts = document.getElementById('confirmation-products');
+            confirmationProducts.innerHTML = summaryProducts.innerHTML;
+        }
+
+        function renderPersistentSummary() {
+            // Show first product in persistent summary
+            if (cart.length > 0) {
+                const firstProduct = products.find(product => product.id === cart[0].id);
+                persistentProductImage.src = firstProduct.image;
+                persistentProductName.textContent = firstProduct.name;
+                persistentProductPrice.textContent = formatCurrency(firstProduct.price);
+                
+                // Show persistent summary
+                persistentSummary.classList.add('active');
+            } else {
+                persistentSummary.classList.remove('active');
+            }
+        }
+
+        function showProductVideo(videoSrc, productName) {
+            const productVideo = document.getElementById('product-video');
+            const productVideoTitle = document.getElementById('product-video-title');
+            const productVideoOverlay = document.getElementById('product-video-overlay');
+            
+            productVideo.src = videoSrc;
+            productVideoTitle.textContent = productName;
+            productVideoOverlay.classList.add('active');
+        }
+
+        function goToStep(step) {
+            // Hide all steps
+            checkoutSteps.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show requested step
+            checkoutSteps[step - 1].classList.add('active');
+            
+            // Update progress
+            progressFill.style.width = (step / 4 * 100) + '%';
+            
+            // Update progress steps
+            progressSteps.forEach((stepElement, index) => {
+                stepElement.classList.remove('active', 'completed');
+                
+                if (index + 1 === step) {
+                    stepElement.classList.add('active');
+                } else if (index + 1 < step) {
+                    stepElement.classList.add('completed');
+                }
+            });
+            
+            // Update current step
+            currentStep = step;
+            
+            // Scroll to top of the section
+            window.scrollTo({
+                top: document.querySelector('.progress-container').offsetTop - 100,
+                behavior: 'smooth'
+            });
+        }
+
+        function toggleCardFlip() {
+            creditCard.classList.toggle('flipped');
+        }
+
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            const regex = /^(\d{0,4})(\d{0,4})(\d{0,4})(\d{0,4})$/g;
+            const onlyDigits = value.replace(/[\s-]/g, '');
+            
+            if (onlyDigits.length <= 16) {
+                value = onlyDigits.replace(regex, (regex, $1, $2, $3, $4) => 
+                    [$1, $2, $3, $4].filter(group => group !== '').join(' ')
+                );
+                input.value = value;
+            }
+            
+            // Update card display
+            updateCardDisplay();
+            
+            // Update card type
+            updateCardType(value.replace(/\s+/g, ''));
+        }
+
+        function formatCardExpiry(input) {
+            let value = input.value.replace(/[^0-9]/g, '');
+            
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            
+            input.value = value;
+            
+            // Update card display
+            updateCardDisplay();
+        }
+
+        function updateCardType(cardNumber) {
+            let cardType = 'cc-generic';
+            let cardTypeName = 'TARJETA';
+            
+            // Determine card type based on BIN range
+            if (/^4/.test(cardNumber)) {
+                cardType = 'cc-visa';
+                cardTypeName = 'VISA';
+            } else if (/^5[1-5]/.test(cardNumber)) {
+                cardType = 'cc-mastercard';
+                cardTypeName = 'MASTERCARD';
+            } else if (/^3[47]/.test(cardNumber)) {
+                cardType = 'cc-amex';
+                cardTypeName = 'AMEX';
+            } else if (/^6(?:011|5)/.test(cardNumber)) {
+                cardType = 'cc-discover';
+                cardTypeName = 'DISCOVER';
+            }
+            
+            // Update card type icon
+            cardTypeIcon.innerHTML = `<i class="fab fa-${cardType}"></i>`;
+            cardTypeDisplay.textContent = cardTypeName;
+        }
+
+        function updateCardDisplay() {
+            // Card Number
+            if (cardNumberInput.value) {
+                const lastDigits = cardNumberInput.value.slice(-4);
+                const maskedNumber = '•••• •••• •••• ' + lastDigits;
+                cardNumberDisplay.textContent = maskedNumber;
+                
+                // Update overlay
+                if (cardNumberInput.value.length > 0) {
+                    const maskedValue = cardNumberInput.value.replace(/\d(?=\d{4})/g, '•');
+                    cardNumberOverlay.textContent = maskedValue;
+                    cardNumberOverlay.style.display = 'flex';
+                } else {
+                    cardNumberOverlay.style.display = 'none';
+                }
+            } else {
+                cardNumberDisplay.textContent = '•••• •••• •••• ••••';
+                cardNumberOverlay.style.display = 'none';
+            }
+            
+            // Card Name
+            cardNameDisplay.textContent = cardNameInput.value.toUpperCase() || 'NOMBRE APELLIDO';
+            
+            // Card Expiry
+            cardExpiryDisplay.textContent = cardExpiryInput.value || 'MM/AA';
+            
+            // Card CVV
+            cardCVVDisplay.textContent = cardCVVInput.value ? '***' : '***';
+        }
+
+        function showOTPModal() {
+            otpModal.classList.add('active');
+            otpInputs[0].focus();
+            
+            // Start OTP timer
+            let timeLeft = 120; // 2 minutes
+            const timerElement = document.getElementById('otp-timer');
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timerElement.textContent = '00:00';
+                    showNotification('El código ha expirado. Por favor solicita uno nuevo.', 'error');
+                }
+            }, 1000);
+            
+            // Store timer reference for cleanup
+            otpModal.dataset.timer = timer;
+        }
+
+        function hideOTPModal() {
+            otpModal.classList.remove('active');
+            
+            // Clear OTP inputs
+            otpInputs.forEach(input => input.value = '');
+            
+            // Clear timer
+            if (otpModal.dataset.timer) {
+                clearInterval(otpModal.dataset.timer);
+            }
+        }
+
+        function handleOTPInput() {
+            const otpValue = Array.from(otpInputs).map(input => input.value).join('');
+            
+            if (otpValue.length === 6) {
+                // Validate OTP
+                if (otpValue === validOTP) {
+                    hideOTPModal();
+                    goToStep(4); // Go to confirmation step
+                    createConfetti(); // Celebration effect
+                } else {
+                    showNotification('Código de verificación incorrecto. Intenta nuevamente.', 'error');
+                }
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#0056b3', '#ff3a6e', '#00e676', '#ffc107', '#3a86ff'];
+            const confettiCount = 200;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Random properties
+                const size = Math.random() * 10 + 5;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const left = Math.random() * 100;
+                const delay = Math.random() * 3;
+                const duration = Math.random() * 3 + 3;
+                
+                // Apply styles
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                confetti.style.backgroundColor = color;
+                confetti.style.left = `${left}%`;
+                confetti.style.animationDuration = `${duration}s`;
+                confetti.style.animationDelay = `${delay}s`;
+                
+                document.body.appendChild(confetti);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, (duration + delay) * 1000);
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            // Remove existing notifications
+            document.querySelectorAll('.notification').forEach(notification => {
+                notification.remove();
+            });
+            
+            // Create notification
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            
+            // Set icon based on type
+            let icon = 'check-circle';
+            if (type === 'error') icon = 'times-circle';
+            else if (type === 'warning') icon = 'exclamation-circle';
+            
+            notification.innerHTML = `
+                <div class="notification-icon">
+                    <i class="fas fa-${icon}"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">${type === 'success' ? 'Éxito!' : type === 'error' ? 'Error' : 'Atención'}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <button class="notification-close">&times;</button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Add close event
+            notification.querySelector('.notification-close').addEventListener('click', () => {
+                notification.remove();
+            });
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                // Check if cart has items
+                if (cart.length === 0) {
+                    showNotification('Por favor, agrega productos al carrito para continuar.', 'error');
+                    return false;
+                }
+                return true;
+            } else if (step === 2) {
+                // Validate shipping form
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const dni = document.getElementById('dni').value;
+                const country = document.getElementById('country').value;
+                const state = document.getElementById('state').value;
+                const city = document.getElementById('city').value;
+                const address = document.getElementById('address').value;
+                const shippingCompany = document.getElementById('shipping-company').value;
+                const agreement = document.getElementById('nationalization-agreement').checked;
+                
+                if (!name || !email || !phone || !dni || !country || !state || !city || !address || !shippingCompany) {
+                    showNotification('Por favor, completa todos los campos obligatorios.', 'error');
+                    return false;
+                }
+                
+                // Check if agreement is checked for Venezuela
+                if ((country === 've' || country === 'co') && !agreement) {
+                    showNotification('Debes aceptar el acuerdo de nacionalización para continuar.', 'error');
+                    return false;
+                }
+                
+                return true;
+            } else if (step === 3) {
+                // Get selected payment method
+                const activePaymentMethod = document.querySelector('.payment-methods .payment-method.active');
+                const paymentType = activePaymentMethod.getAttribute('data-payment');
+                
+                if (paymentType === 'card') {
+                    // Validate card details
+                    const cardName = cardNameInput.value;
+                    const cardNumber = cardNumberInput.value.replace(/\s/g, '');
+                    const cardExpiry = cardExpiryInput.value;
+                    const cardCVV = cardCVVInput.value;
+                    
+                    if (!cardName || !cardNumber || !cardExpiry || !cardCVV) {
+                        showNotification('Por favor, completa todos los campos de la tarjeta.', 'error');
+                        return false;
+                    }
+                    
+                    // Validate card details against the valid ones
+                    if (cardNumber !== validCardNumber || cardExpiry !== validCardExpiry || cardCVV !== validCardCVV) {
+                        if (cardNumber === validCardNumber && cardExpiry === validCardExpiry && cardCVV === validCardCVV) {
+                            return true;
+                        }
+                        showNotification('Los datos de la tarjeta no son válidos o no coinciden con nuestros registros.', 'error');
+                        return false;
+                    }
+                    
+                    return true;
+                } else if (paymentType === 'zelle') {
+                    const zelleEmail = document.getElementById('zelle-email').value;
+                    if (!zelleEmail) {
+                        showNotification('Por favor, indica el correo desde donde envías el Zelle.', 'error');
+                        return false;
+                    }
+                    return true;
+                } else if (paymentType === 'paypal') {
+                    return true;
+                } else if (paymentType === 'pago-movil') {
+                    // Validate Pago Móvil fields
+                    const banco = document.getElementById('banco-emisor').value;
+                    const referencia = document.getElementById('numero-referencia').value;
+                    const telefono = document.getElementById('telefono-pago-movil').value;
+                    
+                    if (!banco || !referencia || !telefono) {
+                        showNotification('Por favor, completa todos los campos del pago móvil.', 'error');
+                        return false;
+                    }
+                    
+                    return true;
+                }
+                
+                return true;
+            }
+            
+            return true;
+        }
+
+        function applyCoupon() {
+            const couponCode = document.getElementById('coupon-code').value.trim().toUpperCase();
+            const couponMessage = document.getElementById('coupon-message');
+            
+            if (couponCode === 'NEW2025') {
+                // Apply 10% discount
+                discount = subtotal * 0.1;
+                couponMessage.textContent = '¡Cupón aplicado! 10% de descuento';
+                couponMessage.style.color = 'var(--success)';
+                showNotification('Cupón aplicado correctamente. ¡10% de descuento!');
+                updateCartSummary();
+            } else {
+                couponMessage.textContent = 'Cupón inválido o expirado';
+                couponMessage.style.color = 'var(--danger)';
+                showNotification('El código de cupón no es válido.', 'error');
+            }
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Copiado al portapapeles');
+            }).catch(err => {
+                showNotification('No se pudo copiar el texto.', 'error');
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        function downloadInvoice() {
+            showNotification('Factura descargada correctamente');
+        }
+
+        function contactWhatsApp() {
+            const orderNumber = document.getElementById('order-number').textContent;
+            const total = document.getElementById('confirmation-total').textContent;
+            
+            // Create WhatsApp message
+            let message = `Hola, acabo de realizar un pedido en LatinPhone.\n\n`;
+            message += `🛒 Pedido: ${orderNumber}\n`;
+            message += `💰 Total: ${total}\n`;
+            message += `📦 Productos: ${cart.length} item(s)\n\n`;
+            message += `¿Podrían confirmarme cuando mi pedido sea despachado?`;
+            
+            // Open WhatsApp
+            window.open(`https://wa.me/18133584564?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const orderDateEl = document.getElementById('order-date');
+            if (orderDateEl) {
+                const now = new Date();
+                const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                const day = now.getDate();
+                const monthName = months[now.getMonth()];
+                const year = now.getFullYear();
+                orderDateEl.textContent = `${day} de ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}, ${year}`;
+            }
+
+            // Hide preloader
+            setTimeout(() => {
+                preloader.classList.remove('active');
+            }, 2000);
+            
+            // Add a product to the cart for testing
+            cart = [{
+                id: 'phone1',
+                quantity: 1
+            }];
+            
+            // Initialize the page
+            renderProductPreviews();
+            renderSummaryProducts();
+            renderPersistentSummary();
+            updateCartSummary();
+            updateDeliveryDates();
+            
+            // Step navigation buttons
+            document.getElementById('go-to-step-2').addEventListener('click', () => {
+                if (validateStep(1)) goToStep(2);
+            });
+            
+            document.getElementById('back-to-step-1').addEventListener('click', () => {
+                goToStep(1);
+            });
+            
+            document.getElementById('go-to-step-3').addEventListener('click', () => {
+                if (validateStep(2)) goToStep(3);
+            });
+            
+            document.getElementById('back-to-step-2').addEventListener('click', () => {
+                goToStep(2);
+            });
+            
+            document.getElementById('go-to-step-4').addEventListener('click', () => {
+                if (!validateStep(3)) return;
+                const active = document.querySelector('.payment-methods .payment-method.active');
+                const paymentType = active ? active.getAttribute('data-payment') : '';
+                const displayMap = { card: 'Tarjeta de crédito', zelle: 'Zelle', paypal: 'PayPal' };
+                document.getElementById('payment-method-display').textContent = displayMap[paymentType] || '';
+
+                if (paymentType === 'card') {
+                    showOTPModal();
+                } else if (paymentType === 'paypal') {
+                    const message = `Hola, quiero pagar mi compra de ${formatCurrency(total)} via PayPal.`;
+                    window.open(`https://wa.me/18133584564?text=${encodeURIComponent(message)}`, '_blank');
+                    goToStep(4);
+                } else {
+                    goToStep(4);
+                }
+            });
+            
+            // Persistent summary continue button
+            document.getElementById('persistent-continue').addEventListener('click', () => {
+                if (currentStep < 4) {
+                    if (validateStep(currentStep)) {
+                        if (currentStep === 3) {
+                            const active = document.querySelector('.payment-methods .payment-method.active');
+                            const paymentType = active ? active.getAttribute('data-payment') : '';
+                            const displayMap = { card: 'Tarjeta de crédito', zelle: 'Zelle', paypal: 'PayPal' };
+                            document.getElementById('payment-method-display').textContent = displayMap[paymentType] || '';
+
+                            if (paymentType === 'card') {
+                                showOTPModal();
+                            } else if (paymentType === 'paypal') {
+                                const message = `Hola, quiero pagar mi compra de ${formatCurrency(total)} via PayPal.`;
+                                window.open(`https://wa.me/18133584564?text=${encodeURIComponent(message)}`, '_blank');
+                                goToStep(4);
+                            } else {
+                                goToStep(4);
+                            }
+                        } else {
+                            goToStep(currentStep + 1);
+                        }
+                    }
+                }
+            });
+            
+            // Credit card form
+            cardCVVInput.addEventListener('focus', () => {
+                creditCard.classList.add('flipped');
+            });
+            
+            cardCVVInput.addEventListener('blur', () => {
+                creditCard.classList.remove('flipped');
+            });
+            
+            creditCard.addEventListener('click', toggleCardFlip);
+            
+            // Card input formatting
+            cardNumberInput.addEventListener('input', () => formatCardNumber(cardNumberInput));
+            cardExpiryInput.addEventListener('input', () => formatCardExpiry(cardExpiryInput));
+            cardNameInput.addEventListener('input', updateCardDisplay);
+            cardCVVInput.addEventListener('input', updateCardDisplay);
+            
+            // OTP inputs
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', () => {
+                    if (input.value.length >= 1) {
+                        if (index < otpInputs.length - 1) {
+                            otpInputs[index + 1].focus();
+                        } else {
+                            handleOTPInput();
+                        }
+                    }
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && input.value === '' && index > 0) {
+                        otpInputs[index - 1].focus();
+                    }
+                });
+            });
+            
+            // OTP modal
+            document.getElementById('verify-otp').addEventListener('click', handleOTPInput);
+            document.getElementById('close-otp').addEventListener('click', hideOTPModal);
+            document.getElementById('resend-otp').addEventListener('click', () => {
+                hideOTPModal();
+                setTimeout(showOTPModal, 500);
+                showNotification('Se ha enviado un nuevo código de verificación.');
+            });
+            
+            // Product video controls
+            document.getElementById('close-video').addEventListener('click', () => {
+                document.getElementById('product-video-overlay').classList.remove('active');
+                document.getElementById('product-video').pause();
+            });
+            
+            // Payment method selection
+            document.querySelectorAll('.payment-methods .payment-method').forEach(method => {
+                method.addEventListener('click', () => {
+                    // Remove active class from all methods
+                    document.querySelectorAll('.payment-methods .payment-method').forEach(m => {
+                        m.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked method
+                    method.classList.add('active');
+                    
+                    // Show corresponding form for payment methods
+                    if (method.closest('.payment-methods') !== document.querySelector('.shipping-methods')) {
+                        const paymentType = method.getAttribute('data-payment');
+                        document.querySelectorAll('.payment-method-form').forEach(form => {
+                            form.classList.remove('active');
+                        });
+                        document.getElementById(`${paymentType}-payment-form`).classList.add('active');
+                    } else {
+                        // Handle shipping method selection
+                        shipping = parseFloat(method.getAttribute('data-cost'));
+                        updateCartSummary();
+                        updateDeliveryDates();
+                    }
+                });
+            });
+            
+            // Apply coupon button
+            document.getElementById('apply-coupon').addEventListener('click', applyCoupon);
+            
+            // Tracking section
+            document.getElementById('view-tracking').addEventListener('click', (e) => {
+                e.preventDefault();
+                goToStep(5); // Show tracking step
+            });
+            
+            // Copy tracking button
+            document.getElementById('copy-tracking').addEventListener('click', () => {
+                copyToClipboard(document.getElementById('tracking-id-value').textContent);
+            });
+            
+            // Download invoice
+            document.getElementById('download-invoice').addEventListener('click', (e) => {
+                e.preventDefault();
+                downloadInvoice();
+            });
+            
+            // WhatsApp contact
+            document.getElementById('contact-whatsapp').addEventListener('click', (e) => {
+                e.preventDefault();
+                contactWhatsApp();
+            });
+            
+            document.getElementById('tracking-whatsapp').addEventListener('click', (e) => {
+                e.preventDefault();
+                contactWhatsApp();
+            });
+            
+            // Support link
+            document.getElementById('support-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                contactWhatsApp();
+            });
+        });
+    </script>
+    <script>
+    (() => {
+      const STORAGE_KEYS = {
+        BALANCE: 'remeexBalance',
+        DEVICE: 'remeexDeviceId',
+      };
+
+      function leerSaldoGuardado() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.BALANCE);
+          if (!raw) return null;
+
+          const data = JSON.parse(raw);
+          const deviceIdActual = localStorage.getItem(STORAGE_KEYS.DEVICE);
+
+          if (data.deviceId && deviceIdActual && data.deviceId !== deviceIdActual) {
+            console.warn('El saldo pertenece a otro dispositivo.');
+            return null;
+          }
+
+          return {
+            usd: Number(data.usd || 0),
+            bs: Number(data.bs || 0),
+            eur: Number(data.eur || 0),
+            usdt: Number(data.usdt || 0),
+          };
+        } catch (error) {
+          console.error('No se pudo leer el saldo guardado', error);
+          return null;
+        }
+      }
+
+      function mostrarSaldo() {
+        const destino = document.querySelector('[data-saldo-usd]');
+        if (!destino) return;
+
+        const balance = leerSaldoGuardado();
+        if (!balance) {
+          destino.textContent = 'Saldo no disponible';
+          return;
+        }
+
+        destino.textContent = balance.usd.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        });
+      }
+
+      window.addEventListener('storage', (event) => {
+        if (event.key === STORAGE_KEYS.BALANCE) {
+          mostrarSaldo();
+        }
+      });
+
+      document.addEventListener('saldoActualizado', mostrarSaldo);
+      document.addEventListener('DOMContentLoaded', mostrarSaldo);
+    })();
+    </script>
+</body>
+</html>

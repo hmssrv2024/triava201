@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="repair.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9, user-scalable=no">
+    <title>Primera Recarga P2P - REMEEX</title>
+    <meta name="description" content="Activa tu cuenta con tu primera recarga P2P">
+    <meta name="theme-color" content="#1a1f71">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="recargaremeexp2p.css">
+    <script src="js/exchange-rate.js"></script>
+    <script src="bank-data.js"></script>
+    <script src="js/validation-amounts.js"></script>
+    <script>
+        localStorage.setItem('p2pActivationVisited', 'true');
+        localStorage.removeItem('p2pActivationCompleted');
+    </script>
+    <style>
+        .hidden-row { display: none; }
+
+        .release-animation {
+            position: relative;
+            width: 100%;
+            height: 80px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .usdt-coin {
+            position: absolute;
+            left: -50px;
+            top: 15px;
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(0 0 10px #00ff99);
+        }
+
+        .usdt-coin.animate {
+            animation: releaseCoin 2s ease-out forwards;
+        }
+
+        @keyframes releaseCoin {
+            0% { transform: translateX(0) scale(0.5); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(calc(100% + 100px)) scale(1); opacity: 1; }
+        }
+
+        .balance-animation {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            opacity: 0;
+            margin-bottom: 1rem;
+        }
+
+        .balance-animation.animate {
+            animation: showBalance 0.5s 2s forwards;
+        }
+
+        @keyframes showBalance {
+            to { opacity: 1; }
+        }
+
+        .summary-value.pending {
+            color: #ff9800;
+        }
+        #p2pLockOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 9999;
+            font-family: 'Inter', sans-serif;
+            padding: 1rem;
+        }
+
+        #p2pExitOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 9999;
+            font-family: 'Inter', sans-serif;
+            padding: 1rem;
+        }
+
+        #p2pExitOverlay .overlay-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        #p2pExitOverlay button {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        #stayProcess {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        #exitProcess {
+            background: var(--danger);
+            color: #fff;
+        }
+    </style>
+    <script>
+        (function() {
+            const LOCK_KEY = 'p2pLockedUntil';
+            const ATTEMPT_KEY = 'p2pAttemptCount';
+            const RESUME_KEY = 'p2pResumeStep5';
+            const TIMER_KEY = 'p2pTimerEnd';
+
+            const lockUntil = parseInt(localStorage.getItem(LOCK_KEY), 10);
+            if (lockUntil && Date.now() < lockUntil) {
+                document.addEventListener('DOMContentLoaded', () => showLockOverlay(lockUntil));
+            } else if (localStorage.getItem(RESUME_KEY) === 'true') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (typeof navigateToStep === 'function') navigateToStep(5);
+                });
+            }
+
+            const sessionActive = sessionStorage.getItem('remeexSession') === 'active';
+            if (!sessionActive) {
+                window.location.replace('homevisa.html');
+                return;
+            }
+
+            let exitOverlayShown = false;
+            let pendingNavigation = null;
+
+            history.pushState(null, '', location.href);
+            window.addEventListener('popstate', (e) => {
+                if (!exitOverlayShown) {
+                    e.preventDefault();
+                    history.pushState(null, '', location.href);
+                    showExitOverlay();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if ((e.key === 'F5') || (e.key === 'r' && (e.ctrlKey || e.metaKey))) {
+                    e.preventDefault();
+                    showExitOverlay();
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                const link = e.target.closest('a');
+                if (link && link.href && link.target !== '_blank') {
+                    e.preventDefault();
+                    pendingNavigation = link.href;
+                    showExitOverlay();
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                try {
+                    const balanceData = sessionStorage.getItem('remeexSessionBalance');
+                    if (balanceData) {
+                        const bal = JSON.parse(balanceData);
+                        const usd = bal.usd || 0;
+                        const bs = bal.bs || 0;
+                        const balanceUsd = document.getElementById('balanceUsd');
+                        const balanceBs = document.getElementById('balanceBs');
+                        const balanceCurrent = document.getElementById('balanceCurrent');
+                        const balanceAfter = document.getElementById('balanceAfter');
+                        if (balanceUsd) balanceUsd.textContent = usd + ' USD';
+                        if (balanceBs) balanceBs.textContent = 'Bs ' + bs.toFixed(2);
+                        if (balanceCurrent) balanceCurrent.textContent = 'Bs ' + bs.toFixed(2);
+                        if (balanceAfter) balanceAfter.textContent = 'Bs ' + bs.toFixed(2);
+                    }
+                } catch (e) {}
+
+                const rate = window.getStoredExchangeRate ? window.getStoredExchangeRate() : null;
+                if (rate) {
+                    const rateEl = document.querySelector('.rate-value:not(.success)');
+                    if (rateEl) rateEl.textContent = rate.USD_TO_BS + ' Bs/USDT';
+                }
+            });
+
+            function showLockOverlay(until) {
+                const overlay = document.createElement('div');
+                overlay.id = 'p2pLockOverlay';
+                overlay.innerHTML = '<div><p>Has desistido del proceso P2P.</p><p>Podr\u00e1s intentar nuevamente en <span id="p2pCountdown"></span></p></div>';
+                document.body.appendChild(overlay);
+
+                const countdownEl = overlay.querySelector('#p2pCountdown');
+                const update = () => {
+                    const remaining = until - Date.now();
+                    if (remaining <= 0) {
+                        localStorage.removeItem(LOCK_KEY);
+                        overlay.remove();
+                    } else {
+                        const seconds = Math.ceil(remaining / 1000);
+                        const mins = Math.floor(seconds / 60);
+                        const secs = (seconds % 60).toString().padStart(2, '0');
+                        countdownEl.textContent = mins + ':' + secs;
+                        setTimeout(update, 1000);
+                    }
+                };
+                update();
+            }
+
+            function showExitOverlay() {
+                exitOverlayShown = true;
+                const overlay = document.createElement('div');
+                overlay.id = 'p2pExitOverlay';
+                overlay.innerHTML = '<div><p>¿Deseas salir del proceso?</p><p>Si recargas o desistes deberás comenzar desde cero.</p><div class="overlay-actions"><button id="stayProcess">Continuar</button><button id="exitProcess">Salir</button></div></div>';
+                document.body.appendChild(overlay);
+                document.getElementById('stayProcess').addEventListener('click', () => {
+                    exitOverlayShown = false;
+                    pendingNavigation = null;
+                    overlay.remove();
+                });
+                document.getElementById('exitProcess').addEventListener('click', () => {
+                    let attempts = parseInt(localStorage.getItem(ATTEMPT_KEY) || '0', 10) + 1;
+                    localStorage.setItem(ATTEMPT_KEY, attempts);
+                    localStorage.setItem(RESUME_KEY, 'true');
+
+                    let lockTime;
+                    if (attempts >= 3) {
+                        lockTime = 4 * 60 * 60 * 1000; // 4 horas
+                        localStorage.setItem(ATTEMPT_KEY, '0');
+                    } else {
+                        lockTime = 30 * 60 * 1000; // 30 minutos
+                    }
+                    localStorage.setItem(LOCK_KEY, Date.now() + lockTime);
+
+                    sessionStorage.clear();
+                    if (pendingNavigation) {
+                        location.href = pendingNavigation;
+                    } else {
+                        location.reload();
+                    }
+                });
+            }
+
+            window.addEventListener('beforeunload', () => {
+                if (localStorage.getItem('p2pActivationCompleted') === 'true') return;
+                let attempts = parseInt(localStorage.getItem(ATTEMPT_KEY) || '0', 10) + 1;
+                localStorage.setItem(ATTEMPT_KEY, attempts);
+                let lockTime;
+                if (attempts >= 3) {
+                    lockTime = 4 * 60 * 60 * 1000;
+                    localStorage.setItem(ATTEMPT_KEY, '0');
+                } else {
+                    lockTime = 30 * 60 * 1000;
+                }
+                localStorage.setItem(LOCK_KEY, Date.now() + lockTime);
+            });
+        })();
+    </script>
+</head>
+<body>
+    <!-- Header Global -->
+    <header class="header-container" role="banner">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="back-btn" id="backBtn" aria-label="Volver atrás" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M5 12L12 19M5 12L12 5"/>
+                    </svg>
+                </button>
+                <div class="header-info">
+                    <h1 class="header-title">Primera Recarga P2P</h1>
+                    <span class="header-subtitle" id="stepIndicator">Introducción</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="step-counter">
+                    <span id="currentStep">0</span>/<span>7</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="progress-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Step 0: Introducción educativa -->
+        <section class="wizard-step active" id="step0" role="region" aria-labelledby="step0-title">
+            <div class="step-content">
+                <div class="intro-container">
+                    <div class="intro-icon">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h2 id="step0-title" class="intro-title">Bienvenido al sistema P2P</h2>
+                    <p class="intro-subtitle">Tu primera recarga activará todas las funcionalidades de tu cuenta</p>
+                    
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 2L2 7V12C2 16.5 5 20.7 12 22C19 20.7 22 16.5 22 12V7L12 2Z" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="info-card-content">
+                                <h3>Seguro y verificado</h3>
+                                <p>Todos nuestros operadores están verificados y las transacciones son monitoreadas</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="9" cy="9" r="3" stroke="currentColor" stroke-width="2"/>
+                                    <circle cx="15" cy="15" r="3" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M9 12L15 12" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="info-card-content">
+                                <h3>¿Qué es P2P?</h3>
+                                <p>Intercambio directo entre usuarios verificados con garantía de la plataforma</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect x="3" y="7" width="18" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M7 7V5C7 3.9 7.9 3 9 3H15C16.1 3 17 3.9 17 5V7" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M12 11V13" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="info-card-content">
+                                <h3>Pago Móvil</h3>
+                                <p>Realizarás el pago mediante Pago Móvil y subirás el comprobante</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="intro-steps">
+                        <h3>Cómo funciona:</h3>
+                        <ol class="steps-list">
+                            <li>Regístrate con tus datos básicos</li>
+                            <li>Selecciona el monto a recargar</li>
+                            <li>Te conectaremos con un operador verificado</li>
+                            <li>Realiza el Pago Móvil siguiendo las instrucciones</li>
+                            <li>Sube el comprobante de pago</li>
+                            <li>Recibe tus USDT y activa tu cuenta</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="step-actions">
+                <button class="btn btn-primary" id="startBtn" type="button">
+                    Comenzar
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Step 1: Registro mínimo -->
+        <section class="wizard-step" id="step1" role="region" aria-labelledby="step1-title">
+            <div class="step-content">
+                <div class="login-card">
+                    <h2 id="step1-title" class="login-title">Iniciar sesión</h2>
+                    <p class="login-subtitle">Confirma tus datos para continuar</p>
+
+                    <form id="registrationForm" novalidate>
+                        <div class="form-group">
+                            <label for="userName" class="form-label">Nombre completo</label>
+                            <input 
+                                type="text" 
+                                id="userName" 
+                                name="userName" 
+                                class="form-input" 
+                                required
+                                aria-required="true"
+                                aria-describedby="userName-error"
+                                placeholder="Juan Pérez"
+                            >
+                            <span class="form-error" id="userName-error" role="alert"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="userEmail" class="form-label">Correo electrónico</label>
+                            <input 
+                                type="email" 
+                                id="userEmail" 
+                                name="userEmail" 
+                                class="form-input" 
+                                required
+                                aria-required="true"
+                                aria-describedby="userEmail-error"
+                                placeholder="juan@ejemplo.com"
+                            >
+                            <span class="form-error" id="userEmail-error" role="alert"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="userPassword" class="form-label">Contraseña</label>
+                            <div class="password-input-wrapper">
+                                <input 
+                                    type="password" 
+                                    id="userPassword" 
+                                    name="userPassword" 
+                                    class="form-input" 
+                                    required
+                                    aria-required="true"
+                                    aria-describedby="userPassword-error password-strength"
+                                    placeholder="Mínimo 8 caracteres"
+                                >
+                                <button type="button" class="password-toggle" id="passwordToggle" aria-label="Mostrar contraseña">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12S5 5 12 5S23 12 23 12S19 19 12 19S1 12 1 12Z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        <div class="password-strength" id="password-strength">
+                            <div class="password-strength-bar">
+                                <div class="password-strength-fill"></div>
+                            </div>
+                            <span class="password-strength-text">Fuerza de la contraseña</span>
+                        </div>
+                        <span class="form-error" id="userPassword-error" role="alert"></span>
+                    </div>
+                    <div class="step-actions">
+                        <button class="btn btn-primary" id="continueStep1" type="submit" disabled>
+                            Continuar
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12H19M19 12L12 5M19 12L12 19"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </section>
+
+        <!-- Step 2: Selección de monto -->
+        <section class="wizard-step" id="step2" role="region" aria-labelledby="step2-title">
+            <div class="step-content">
+                <div class="amount-container">
+                    <h2 id="step2-title" class="form-title">Selecciona el monto</h2>
+                    <p class="form-subtitle">Primera recarga mediante Pago Móvil</p>
+                    
+                    <div class="payment-method-info">
+                        <div class="method-badge">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
+                                <path d="M8 10H16M8 14H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Pago Móvil</span>
+                        </div>
+                    </div>
+
+                    <div class="user-balance">
+                        <span>Saldo disponible:</span>
+                        <strong id="balanceUsd">0 USD</strong>
+                        (<span id="balanceBs">Bs 0</span>)
+                    </div>
+
+                    <p class="form-help">Selecciona o ingresa el monto que deseas recargar. El mínimo permitido es <span id="minUsdText">0</span>&nbsp;USD.</p>
+
+                    <div class="form-group">
+                        <label for="customAmount" class="form-label">Monto a recargar (USD)</label>
+                        <input type="number" id="customAmount" class="form-input" min="0" step="1" placeholder="Ej: 20" aria-describedby="customAmountError">
+                        <span class="form-hint">El mínimo permitido es <span id="minUsdHint">0</span>&nbsp;USD</span>
+                        <span class="form-error" id="customAmountError" role="alert"></span>
+                    </div>
+
+                    <div class="amount-grid" id="presetOptions"></div>
+
+                    <div class="rate-info">
+                        <div class="rate-item">
+                            <span class="rate-label">Tasa actual</span>
+                            <span class="rate-value">-- Bs/USDT</span>
+                            <button class="info-tooltip" aria-label="Información sobre la tasa">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="rate-item">
+                            <span class="rate-label">Comisión P2P</span>
+                            <span class="rate-value success">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="amount-summary" id="amountSummary" style="display: none;">
+                        <h3>Resumen de la operación</h3>
+                        <div class="summary-row">
+                            <span>Pagarás</span>
+                            <strong id="summaryBs">Bs 0</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Recibirás</span>
+                            <strong id="summaryUsdt">0 USDT</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="step-actions">
+                <button class="btn btn-primary" id="searchOperators" disabled>
+                    Buscar operadores verificados
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21L16.65 16.65"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Step 3: Búsqueda de operadores -->
+        <section class="wizard-step" id="step3" role="region" aria-labelledby="step3-title" aria-live="polite">
+            <div class="step-content">
+                <div class="search-container">
+                    <h2 id="step3-title" class="search-title">Conectando con operadores</h2>
+                    <p class="search-subtitle">Buscando los mejores operadores verificados para tu transacción</p>
+                    <p class="search-explanation">Estamos escaneando nuestra red segura para conectarte con un operador verificado que recibirá tu pago y te enviará los USDT. Este proceso puede tardar unos segundos.</p>
+                    
+                    <div class="radar-container">
+                        <div class="radar">
+                            <div class="radar-circle radar-circle-1"></div>
+                            <div class="radar-circle radar-circle-2"></div>
+                            <div class="radar-circle radar-circle-3"></div>
+                            <div class="radar-sweep"></div>
+                            <div class="radar-center"></div>
+                            <div class="operators-dots" id="operatorsDots"></div>
+                        </div>
+                        <div class="radar-progress">
+                            <div class="radar-progress-fill" id="radarProgress"></div>
+                        </div>
+                    </div>
+
+                    <div class="search-status" id="searchStatus">
+                        <div class="status-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2V6M12 18V22M4.93 4.93L7.76 7.76M16.24 16.24L19.07 19.07M2 12H6M18 12H22M4.93 19.07L7.76 16.24M16.24 7.76L19.07 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <p class="status-text">Escaneando red P2P...</p>
+                    </div>
+
+                    <div class="operators-preview" id="operatorsPreview" style="display: none;">
+                        <h3>Operadores encontrados</h3>
+                        <div class="preview-grid" id="previewGrid"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 4: Selección del operador -->
+        <section class="wizard-step" id="step4" role="region" aria-labelledby="step4-title">
+            <div class="step-content">
+                <div class="operator-selection">
+                    <h2 id="step4-title" class="form-title">Operador seleccionado</h2>
+                    <p class="form-subtitle">El mejor operador para tu transacción</p>
+                    
+                    <div class="operator-card selected" id="selectedOperatorCard">
+                        <!-- Contenido dinámico -->
+                    </div>
+
+                    <div class="transaction-summary">
+                        <h3>Resumen de la operación</h3>
+                        <div class="summary-details">
+                            <div class="summary-row">
+                                <span>Monto a pagar</span>
+                                <strong id="finalAmount">Bs 0</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>USDT a recibir</span>
+                                <strong id="finalUsdt">0 USDT</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>Método de pago</span>
+                                <strong>Pago Móvil</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tiempo límite</span>
+                                <strong>15 minutos</strong>
+                            </div>
+                            <div class="summary-row highlight">
+                                <span>Comisión total</span>
+                                <strong class="success">0%</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="balance-card">
+                        <h3>Saldo de la cuenta</h3>
+                        <div class="balance-chart">
+                            <div class="balance-current" id="balanceCurrentBar"></div>
+                            <div class="balance-recharge" id="balanceRechargeBar"></div>
+                        </div>
+                        <p class="balance-equation">
+                            Saldo actual <strong id="balanceCurrent">Bs 0.00</strong> + <strong id="balanceRecharge">Bs 0.00</strong> = Saldo después de la recarga <strong id="balanceAfter">Bs 0.00</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="step-actions">
+                <button class="btn btn-secondary" id="changeOperator">
+                    Buscar otro operador
+                </button>
+                <button class="btn btn-primary" id="continueWithOperator">
+                    Continuar con este operador
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Step 5: Instrucciones de pago -->
+        <section class="wizard-step" id="step5" role="region" aria-labelledby="step5-title">
+            <div class="step-content">
+                <div class="payment-instructions">
+                    <h2 id="step5-title" class="form-title">Realiza el Pago Móvil</h2>
+
+                    <div id="secureOverlay" class="secure-overlay">
+                        <div class="overlay-content">
+                            <div class="timer-container" role="timer" aria-live="polite" aria-atomic="true">
+                                <div class="timer-circle">
+                                    <svg class="timer-svg" width="120" height="120">
+                                        <circle cx="60" cy="60" r="54" class="timer-bg"/>
+                                        <circle cx="60" cy="60" r="54" class="timer-progress" id="timerProgress"/>
+                                    </svg>
+                                    <div class="timer-display" id="timerDisplay">15:00</div>
+                                </div>
+                                <p class="timer-label">Tiempo restante</p>
+                            </div>
+
+                            <div class="payment-details">
+                                <h3>Datos para el Pago Móvil</h3>
+                                <p class="copy-instructions">Desliza para ver cada dato y toca el ícono para copiar.</p>
+        <div class="detail-card">
+                                    <div class="detail-row" id="bankRow">
+                                        <span class="detail-label">Banco</span>
+                                        <div class="detail-value-group">
+                                            <span class="detail-value">
+                                                <img id="bankLogo" class="bank-logo" alt="Logo del banco">
+                                                <span id="bankName">(0104) Banco Venezolano de Credito</span>
+                                            </span>
+                                            <button class="copy-btn" data-copy="bankName" aria-label="Copiar banco">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                                                    <path d="M5 15H4C2.9 15 2 14.1 2 13V4C2 2.9 2.9 2 4 2H13C14.1 2 15 2.9 15 4V5" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="detail-row highlight" id="amountRow">
+                                        <span class="detail-label">Monto exacto</span>
+                                        <div class="detail-value-group">
+                                            <span class="detail-value important blink" id="exactAmount" data-copy-value="0">Bs. 0,00</span>
+                                            <button class="copy-btn" data-copy="exactAmount" aria-label="Copiar monto">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                                                    <path d="M5 15H4C2.9 15 2 14.1 2 13V4C2 2.9 2.9 2 4 2H13C14.1 2 15 2.9 15 4V5" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="data-slider-wrapper">
+                                        <div class="data-slider" id="dataSlider">
+                                            <div class="detail-row slide">
+                                                <span class="detail-label">Teléfono</span>
+                                                <div class="detail-value-group">
+                                                    <span class="detail-value blink" id="phoneNumber" data-copy-value="04126783725">0412-6783725</span>
+                                                    <button class="copy-btn" data-copy="phoneNumber" aria-label="Copiar teléfono">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                                                            <path d="M5 15H4C2.9 15 2 14.1 2 13V4C2 2.9 2.9 2 4 2H13C14.1 2 15 2.9 15 4V5" stroke="currentColor" stroke-width="2"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="detail-row slide">
+                                                <span class="detail-label">Cédula</span>
+                                                <div class="detail-value-group">
+                                                    <span class="detail-value blink" id="idNumber" data-copy-value="V-30966019">V 30.966019</span>
+                                                    <button class="copy-btn" data-copy="idNumber" aria-label="Copiar cédula">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                                                            <path d="M5 15H4C2.9 15 2 14.1 2 13V4C2 2.9 2.9 2 4 2H13C14.1 2 15 2.9 15 4V5" stroke="currentColor" stroke-width="2"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="detail-row slide">
+                                                <span class="detail-label">Concepto</span>
+                                                <div class="detail-value-group">
+                                                    <span class="detail-value blink" id="conceptCode" data-copy-value="5484142">5484142</span>
+                                                    <button class="copy-btn" data-copy="conceptCode" aria-label="Copiar concepto">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                                                            <path d="M5 15H4C2.9 15 2 14.1 2 13V4C2 2.9 2.9 2 4 2H13C14.1 2 15 2.9 15 4V5" stroke="currentColor" stroke-width="2"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slider-nav">
+                                            <button type="button" id="prevSlide" aria-label="Dato anterior">&#9664;</button>
+                                            <button type="button" id="nextSlide" aria-label="Siguiente dato">&#9654;</button>
+                                        </div>
+                                        <p class="slider-instructions">Desliza para ver más datos o usa las flechas. Puedes copiar cada uno.</p>
+                                    </div>
+                                </div>
+
+                                <div class="security-tips">
+                                    <h4>Importante:</h4>
+                                    <ul>
+                                        <li>Envía exactamente el monto indicado</li>
+                                        <li>Guarda el comprobante del Pago Móvil</li>
+                                        <li>Anota el número de referencia</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="step-actions">
+                                <button class="btn btn-secondary" id="cancelPayment">
+                                    Cancelar
+                                </button>
+                                <button class="btn btn-primary" id="confirmPayment">
+                                    He realizado la recarga
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 12L11 14L15 10" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="particles" aria-hidden="true">
+                            <span class="particle" style="left:5%;animation-duration:8s;"></span>
+                            <span class="particle" style="left:15%;animation-duration:10s;"></span>
+                            <span class="particle" style="left:30%;animation-duration:9s;"></span>
+                            <span class="particle" style="left:45%;animation-duration:11s;"></span>
+                            <span class="particle" style="left:60%;animation-duration:8s;"></span>
+                            <span class="particle" style="left:75%;animation-duration:10s;"></span>
+                            <span class="particle" style="left:85%;animation-duration:9s;"></span>
+                            <span class="particle" style="left:25%;animation-duration:12s;"></span>
+                            <span class="particle" style="left:50%;animation-duration:7s;"></span>
+                            <span class="particle" style="left:70%;animation-duration:13s;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+<!-- Step 6: Subir comprobante -->
+        <section class="wizard-step" id="step6" role="region" aria-labelledby="step6-title">
+            <div class="step-content">
+                <div class="upload-container">
+                    <h2 id="step6-title" class="form-title">Sube el comprobante</h2>
+                    <p class="form-subtitle">Adjunta el comprobante del Pago Móvil</p>
+                    
+                    <div class="upload-area" id="uploadArea" tabindex="0" role="button" aria-label="Área de carga de archivos">
+                        <input type="file" id="fileInput" accept="image/*,.pdf" hidden>
+                        <div class="upload-content">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                <path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <p class="upload-text">Arrastra aquí o haz clic para seleccionar</p>
+                            <p class="upload-hint">JPG, PNG o PDF - Máximo 5MB</p>
+                        </div>
+                        <div class="upload-preview" id="uploadPreview" style="display: none;">
+                            <img id="previewImage" alt="Vista previa del comprobante">
+                            <div class="preview-info">
+                                <span class="file-name" id="fileName"></span>
+                                <button class="remove-file" id="removeFile" aria-label="Eliminar archivo">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="referenceNumber" class="form-label">Número de referencia</label>
+                        <input
+                            type="text"
+                            id="referenceNumber"
+                            class="form-input"
+                            placeholder="Ej: 123456789"
+                            aria-describedby="reference-error"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                        >
+                        <span class="form-error" id="reference-error" role="alert"></span>
+                    </div>
+
+                    <div class="upload-progress" id="uploadProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="uploadProgressFill"></div>
+                        </div>
+                        <span class="progress-text">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="step-actions">
+                <button class="btn btn-primary" id="submitProof" disabled>
+                    Enviar para verificación
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Step 7: Verificación y liberación -->
+        <section class="wizard-step" id="step7" role="region" aria-labelledby="step7-title" aria-live="polite">
+            <div class="step-content">
+                <div class="verification-container">
+                    <div class="verification-status" id="verificationStatus">
+                        <div class="status-icon verifying">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2V6M12 18V22M4.93 4.93L7.76 7.76M16.24 16.24L19.07 19.07M2 12H6M18 12H22M4.93 19.07L7.76 16.24M16.24 7.76L19.07 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="spinner-icon"/>
+                            </svg>
+                        </div>
+                        <h2 id="step7-title" class="verification-title">Verificando pago...</h2>
+                        <p class="verification-subtitle">Esto tomará solo unos segundos</p>
+                    </div>
+
+                    <div class="verification-checklist" id="verificationChecklist">
+                        <div class="checklist-item" data-step="1">
+                            <div class="checklist-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <span>Validando comprobante</span>
+                        </div>
+                        <div class="checklist-item" data-step="2">
+                            <div class="checklist-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <span>Confirmando monto</span>
+                        </div>
+                        <div class="checklist-item" data-step="3">
+                            <div class="checklist-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <span>Liberando USDT</span>
+                        </div>
+                        <div class="checklist-item" data-step="4">
+                            <div class="checklist-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <span>Activando cuenta</span>
+                        </div>
+                    </div>
+
+                    <div class="success-animation" id="successAnimation" style="display: none;">
+                        <div class="release-animation">
+                            <img src="usdt.png" alt="USDT" class="usdt-coin">
+                        </div>
+                        <div class="balance-animation">
+                            <span class="balance-value" id="balanceCount">0.00 USDT</span>
+                        </div>
+                        <h2 class="success-title">¡USDT liberados!</h2>
+                        <p class="success-message">Tu cuenta estará activa en unos minutos mientras comprobamos la legitimidad del comprobante</p>
+
+                        <div class="success-summary">
+                            <div class="summary-card">
+                                <span class="summary-label">USDT recibidos</span>
+                                <span class="summary-value" id="receivedUsdt">0 USDT</span>
+                            </div>
+                            <div class="summary-card">
+                                <span class="summary-label">Nuevo saldo</span>
+                                <span class="summary-value" id="newBalance">0 USDT</span>
+                            </div>
+                            <div class="summary-card">
+                                <span class="summary-label">Estado</span>
+                                <span class="summary-value pending">Activando cuenta...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="step-actions" id="finalActions" style="display: none;">
+                <button class="btn btn-primary" id="goToDashboard">
+                    Ir al panel principal
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <h3 id="modalTitle"></h3>
+                <button class="modal-close" id="modalClose" aria-label="Cerrar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer" id="modalFooter"></div>
+        </div>
+    </div>
+
+    <!-- Exit Confirmation Overlay -->
+    <div class="modal-overlay" id="exitOverlay">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+            <div class="modal-header">
+                <h3 id="exitTitle">¿Salir de la recarga?</h3>
+            </div>
+            <div class="modal-body">
+                <p>Si desistes, deberás iniciar de nuevo la recarga.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="stayBtn">Permanecer</button>
+                <button class="btn btn-primary" id="exitBtn">Salir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reproducir sonido de construcción al ingresar -->
+    <audio id="buildingSound" preload="auto" style="display:none;">
+        <source src="remeexvisabuilding.ogg" type="audio/ogg">
+    </audio>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('buildingSound');
+            if (audio) {
+                audio.currentTime = 0;
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => console.error('Audio playback failed:', err));
+                }
+            }
+        });
+    </script>
+    <script src="recargaremeexp2p.js"></script>
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/68a44855d541a4192285c373/1j30rl42b';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+    <!--End of Tawk.to Script-->
+</body>
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>LatinPhone — Cobertura de Entregas</title>
+  <meta name="description" content="Consulta si tu zona tiene entrega disponible. Buscador, mapa y tiempo estimado de entrega. Optimizado para móvil." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <style>
+    :root{
+      --ink:#1F2937;
+      --muted:#6B7280;
+      --bg:#F8FAFC;
+      --card:#FFFFFF;
+      --line:#E5E7EB;
+      --primary:#1428A0; /* Samsung-like */
+      --accent:#0EA5E9;
+      --success:#10B981;
+      --warn:#F59E0B;
+      --danger:#EF4444;
+      --radius:16px;
+      --shadow:0 10px 25px rgba(0,0,0,.07);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    }
+    header{
+      position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#fff 0%, #fff8 100%);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:saturate(140%) blur(6px);
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{
+      width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#1B3ED6);
+      box-shadow:0 6px 16px rgba(20,40,160,.35);
+    }
+    h1{font-size:18px;margin:0}
+    .sub{color:var(--muted);font-size:12px;margin-top:2px}
+    .grid{display:grid;gap:12px}
+    @media(min-width:960px){ .grid{grid-template-columns: 420px 1fr; align-items:start} }
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+    }
+    .card h2{font-size:16px;margin:0 0 6px}
+    .pad{padding:14px}
+    .field{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
+    .field input, .field select{
+      appearance:none;border:none;outline:0;background:transparent;width:100%;font-size:14px;color:var(--ink)
+    }
+    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .kpi{border:1px dashed var(--line);border-radius:12px;padding:10px;text-align:center;background:#fff}
+    .kpi strong{display:block;font-size:16px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px}
+    .chip{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:#fff;cursor:pointer}
+    .chip[data-active="true"]{border-color:var(--primary);outline:2px solid #1428A033}
+    .results{max-height:280px;overflow:auto;border:1px solid var(--line);border-radius:12px}
+    .row{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-bottom:1px solid var(--line);background:#fff}
+    .row:last-child{border-bottom:none}
+    .row small{color:var(--muted)}
+    .tag{display:inline-block;font-size:11px;padding:3px 8px;border-radius:999px;margin-left:6px}
+    .t-metro{background:#10B98122;color:#065F46;border:1px solid #10B98166}
+    .t-reg{background:#0EA5E922;color:#075985;border:1px solid #0EA5E966}
+    .t-rem{background:#F59E0B22;color:#7C2D12;border:1px solid #F59E0B66}
+    .t-na{background:#EF444422;color:#7F1D1D;border:1px solid #EF444466}
+    #map{height:420px;width:100%;border-radius:var(--radius);border:1px solid var(--line);overflow:hidden}
+    .footer{color:var(--muted);font-size:12px;text-align:center;padding:16px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:600
+    }
+    .btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+    .stack{display:flex;flex-direction:column;gap:10px}
+    .code{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      font-size:12px;background:#0b1220;color:#dbeafe;border-radius:10px;padding:12px;overflow:auto
+    }
+    /* Autocomplete panel */
+    .ac-wrap{position:relative}
+    .ac{
+      position:absolute;left:0;right:0;top:100%;z-index:30;background:#fff;border:1px solid var(--line);border-radius:12px;margin-top:6px;
+      max-height:260px;overflow:auto;box-shadow:var(--shadow);display:none
+    }
+    .ac .item{padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+    .ac .item:last-child{border-bottom:none}
+    .ac .item b{color:var(--primary)}
+    .empty{color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>LatinPhone — Cobertura de Entregas</h1>
+        <div class="sub">Busca tu estado y zona, confirma si entregamos, ETA y costo estimado.</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btnSoporte">¿Ayuda?</button>
+  </div>
+</header>
+
+<main class="wrap grid" style="margin-top:14px;">
+  <!-- Panel izquierdo -->
+  <section class="card pad stack" aria-labelledby="panel-busqueda">
+    <h2 id="panel-busqueda">Busca tu zona</h2>
+
+    <div class="stack">
+      <div class="field">
+        <span>🔎</span>
+        <input id="q" type="search" placeholder="Escribe zona, ciudad o estado (p. ej. San Antonio de los Altos, Chacaíto, Valencia)"/>
+      </div>
+      <div class="ac-wrap">
+        <div id="ac" class="ac" role="listbox" aria-label="Sugerencias de búsqueda"></div>
+      </div>
+
+      <div class="field">
+        <span>🗺️</span>
+        <select id="estado"></select>
+      </div>
+      <div class="field">
+        <span>📍</span>
+        <select id="ciudad" disabled></select>
+      </div>
+      <div class="chips" id="chips">
+        <div class="chip" data-filter="all" data-active="true">Todas</div>
+        <div class="chip" data-filter="metro">Metro (24–48h)</div>
+        <div class="chip" data-filter="regional">Regional (48–72h)</div>
+        <div class="chip" data-filter="remoto">Remoto (3–7 días)</div>
+        <div class="chip" data-filter="na">Validación manual</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><small>ETA estimada</small><strong id="eta">—</strong></div>
+        <div class="kpi"><small>Costo aprox.</small><strong id="costo">—</strong></div>
+        <div class="kpi"><small>Cobertura</small><strong id="status">—</strong></div>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="btnLimpiar">Limpiar</button>
+        <button class="btn btn-primary" id="btnConfirmar">Confirmar zona</button>
+      </div>
+    </div>
+
+    <div class="stack">
+      <h2>Resultados</h2>
+      <div class="results" id="listado"></div>
+      <div class="empty" id="vacio" style="display:none;padding:10px;">No se encontraron resultados. Prueba con otra palabra o revisa el selector Estado → Ciudad.</div>
+    </div>
+
+    <div class="stack">
+      <h2>Resumen para checkout</h2>
+      <div class="code" id="resumen">
+        {/* Selecciona una zona para generar el resumen pegable en tu checkout */}
+      </div>
+    </div>
+  </section>
+
+  <!-- Panel mapa -->
+  <section class="card">
+    <div id="map" role="application" aria-label="Mapa de cobertura"></div>
+    <div class="pad" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
+      <small>🧭 Arrastra el mapa o acerca para ver más marcadores. Tap en un marcador para ver detalles.</small>
+      <small>🗺️ Mapas por OpenStreetMap — © contribuidores</small>
+    </div>
+  </section>
+</main>
+
+<div class="footer">© 2025 LatinPhone. Cobertura estimada: referencia logística; la confirmación final se muestra al completar tu compra.</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+/**
+ * ===============================
+ *  DATASET: Cobertura logística
+ * ===============================
+ * estado, capital, ciudades, nivel (metro/regional/remoto/na), coords (lat,lng) si disponible
+ * - Si una ciudad no tiene coords, se usa la capital del estado como aproximación.
+ * - Esta lista incluye las ampliaciones que pediste: Miranda con San Antonio de los Altos y Chacaíto, etc.
+ * - Puedes extender fácilmente agregando objetos al arreglo.
+ */
+const DATA = [
+  {"estado":"Distrito Capital","capital":"Caracas","ciudades":[
+    "Altamira","La Candelaria","Los Dos Caminos","Chacao","El Paraíso","La Castellana","Sabana Grande","San Bernardino",
+    "Bello Monte","Catia","La Pastora","El Recreo","San Pedro","Santa Rosalía","Antímano","La Vega","Caricuao","El Junquito",
+    "Macarao","23 de Enero","Las Mercedes (límites)","Chacaíto (límites)"], "nivel":"metro", "coords":[10.491, -66.902]},
+  {"estado":"Amazonas","capital":"Puerto Ayacucho","ciudades":[
+    "San Fernando de Atabapo","San Carlos de Río Negro","Maroa","Isla Ratón","La Esmeralda","Samariapo"], "nivel":"remoto", "coords":[5.663, -67.623]},
+  {"estado":"Anzoátegui","capital":"Barcelona","ciudades":[
+    "Puerto La Cruz","Lechería","El Tigre","Anaco","San Tomé","Pariaguán","Guanta","Clarines","Cantaura","Puerto Píritu"], "nivel":"regional", "coords":[10.134, -64.686]},
+  {"estado":"Apure","capital":"San Fernando de Apure","ciudades":[
+    "Guasdualito","Biruaca","Achaguas","El Nula","Bruzual","Mantecal","San Juan de Payara"], "nivel":"regional", "coords":[7.887, -67.472]},
+  {"estado":"Aragua","capital":"Maracay","ciudades":[
+    "La Victoria","Cagua","Turmero","El Limón","Santa Rita","Palo Negro","San Mateo","Villa de Cura","San Sebastián de los Reyes","Las Tejerías"], "nivel":"metro", "coords":[10.246, -67.595]},
+  {"estado":"Barinas","capital":"Barinas","ciudades":[
+    "Socopó","Santa Bárbara de Barinas","Ciudad Bolivia","Pedraza","Barinitas","Sabaneta","Altamira de Cáceres"], "nivel":"regional", "coords":[8.622, -70.207]},
+  {"estado":"Bolívar","capital":"Ciudad Bolívar","ciudades":[
+    "Puerto Ordaz","San Félix","Upata","Tumeremo","El Callao","Guasipati","Caicara del Orinoco","Santa Elena de Uairén","Ciudad Piar"], "nivel":"regional", "coords":[8.122, -63.550]},
+  {"estado":"Carabobo","capital":"Valencia","ciudades":[
+    "Puerto Cabello","Guacara","San Joaquín","Bejuma","Naguanagua","Los Guayos","Morón","Montalbán","Canoabo"], "nivel":"metro", "coords":[10.158, -68.007]},
+  {"estado":"Cojedes","capital":"San Carlos","ciudades":[
+    "Tinaquillo","El Baúl","El Pao","Manrique","Macapo","Las Vegas","Cojeditos"], "nivel":"regional", "coords":[9.661, -68.581]},
+  {"estado":"Delta Amacuro","capital":"Tucupita","ciudades":[
+    "Pedernales","Curiapo","San José de Amacuro","Nabasanuka","Sierra Imataca","Capure"], "nivel":"remoto", "coords":[9.058, -62.050]},
+  {"estado":"Falcón","capital":"Coro","ciudades":[
+    "Punto Fijo","La Vela de Coro","Tucacas","Dabajuro","Chichiriviche","Cumarebo","Puerto Cumarebo","Yaracal","Santa Ana de Coro"], "nivel":"regional", "coords":[11.404, -69.673]},
+  {"estado":"Guárico","capital":"San Juan de los Morros","ciudades":[
+    "Calabozo","Valle de la Pascua","Altagracia de Orituco","Zaraza","Tucupido","Ortiz","El Sombrero","San José de Guaribe"], "nivel":"regional", "coords":[9.911, -67.353]},
+  {"estado":"Lara","capital":"Barquisimeto","ciudades":[
+    "Cabudare","El Tocuyo","Carora","Quíbor","Duaca","Sarare","Sanare","Barquisimeto (Este/Oeste/Centro)"], "nivel":"metro", "coords":[10.067, -69.347]},
+  {"estado":"Mérida","capital":"Mérida","ciudades":[
+    "El Vigía","Tovar","Ejido","Lagunillas","Tabay","Zea","Santa Cruz de Mora","Mucuchíes"], "nivel":"regional", "coords":[8.589, -71.145]},
+  {"estado":"Miranda","capital":"Los Teques","ciudades":[
+    "Los Teques","San Antonio de los Altos","Carrizal","San José de los Altos","Guarenas","Guatire","Higuerote","Río Chico","Ocumare del Tuy","Cúa","Charallave","Santa Teresa del Tuy",
+    "Petare","Baruta","El Hatillo","Chacao","Chacaíto","La Urbina","El Rosal","Las Mercedes","La California","El Cafetal","Macaracuay"], "nivel":"metro", "coords":[10.344, -67.043]},
+  {"estado":"Monagas","capital":"Maturín","ciudades":[
+    "Punta de Mata","Caripe","Temblador","Barrancas del Orinoco","Quiriquire","Jusepín","Aguasay","Santa Bárbara"], "nivel":"regional", "coords":[9.746, -63.176]},
+  {"estado":"Nueva Esparta","capital":"La Asunción","ciudades":[
+    "Porlamar","Pampatar","Juan Griego","San Juan Bautista","La Guardia","El Valle del Espíritu Santo","Boca de Río","El Yaque"], "nivel":"regional", "coords":[10.997, -63.911]},
+  {"estado":"Portuguesa","capital":"Guanare","ciudades":[
+    "Acarigua","Araure","Biscucuy","Ospino","Agua Blanca","Guanarito","Píritu","Villa Bruzual"], "nivel":"regional", "coords":[9.042, -69.742]},
+  {"estado":"Sucre","capital":"Cumaná","ciudades":[
+    "Carúpano","Güiria","Cariaco","San Vicente","Araya","Yaguaraparo","Marigüitar","Irapa"], "nivel":"regional", "coords":[10.453, -64.182]},
+  {"estado":"Táchira","capital":"San Cristóbal","ciudades":[
+    "Rubio","Táriba","La Grita","San Antonio del Táchira","Ureña","Palmira","Pregonero","Capacho Nuevo (Independencia)","Capacho Viejo (Libertad)"], "nivel":"regional", "coords":[7.766, -72.225]},
+  {"estado":"Trujillo","capital":"Trujillo","ciudades":[
+    "Valera","Boconó","Pampán","Carache","Isnotú","Motatán","Sabana de Mendoza","Monay"], "nivel":"regional", "coords":[9.366, -70.436]},
+  {"estado":"La Guaira","capital":"La Guaira","ciudades":[
+    "Maiquetía","Catia La Mar","Macuto","Caraballeda","Naiguatá","Carayaca","La Sabana","Camurí Grande","Playa Grande","Tanaguarena"], "nivel":"metro", "coords":[10.601, -66.934]},
+  {"estado":"Yaracuy","capital":"San Felipe","ciudades":[
+    "Yaritagua","Chivacoa","Nirgua","Cocorote","Independencia","Aroa","Urachiche","Sabana de Parra"], "nivel":"regional", "coords":[10.339, -68.736]},
+  {"estado":"Zulia","capital":"Maracaibo","ciudades":[
+    "Cabimas","Ciudad Ojeda","Machiques","Santa Bárbara del Zulia","San Francisco","La Concepción","La Cañada de Urdaneta","Mene Grande","Los Puertos de Altagracia","La Villa del Rosario","Tía Juana"], "nivel":"regional", "coords":[10.654, -71.653]}
+];
+
+/**
+ * ===============================
+ *  CONFIG: tarifas y ETA por nivel
+ * ===============================
+ */
+const CONFIG = {
+  metro:   { eta: "24–48 h", costo: (km)=> Math.max(3, 2 + km*0.25), tag:"t-metro", label:"Metro" },
+  regional:{ eta: "48–72 h", costo: (km)=> Math.max(5, 3 + km*0.35), tag:"t-reg",   label:"Regional" },
+  remoto:  { eta: "3–7 días", costo: (km)=> Math.max(8, 5 + km*0.50), tag:"t-rem",  label:"Remoto" },
+  na:      { eta: "Validación manual", costo: ()=> "—",               tag:"t-na",   label:"Validación" }
+};
+
+// Sede/almacén base (ajústalo a tu tienda)
+const WAREHOUSE = { name:"LatinPhone Caracas", coords:[10.491, -66.902] };
+
+/**
+ * Utilidad: Haversine para distancia aproximada en KM
+ */
+function haversine(a, b){
+  if(!a || !b) return 0;
+  const toRad = d => d * Math.PI/180;
+  const [lat1, lon1] = a, [lat2, lon2] = b;
+  const R=6371, dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+  const s1=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s1));
+}
+
+/**
+ * Index plano para búsqueda: cada ciudad como item independiente
+ */
+const INDEX = [];
+for(const est of DATA){
+  for(const c of est.ciudades){
+    INDEX.push({
+      estado: est.estado,
+      ciudad: c,
+      nivel: est.nivel,
+      coords: est.coords, // fallback: capital/centro del estado
+      capital: est.capital
+    });
+  }
+}
+
+/**
+ * Fuzzy simple: prioriza startsWith, luego includes (sin acentos)
+ */
+function normalize(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+function fuzzy(query, limit=100){
+  const q = normalize(query);
+  if(!q) return INDEX.slice(0, limit);
+  const starts = [], contains = [];
+  for(const item of INDEX){
+    const hay = normalize(item.ciudad+" "+item.estado+" "+item.capital);
+    if(hay.startsWith(q)) starts.push(item);
+    else if(hay.includes(q)) contains.push(item);
+  }
+  return [...starts, ...contains].slice(0, limit);
+}
+
+/**
+ * ============
+ *   UI
+ * ============
+ */
+const $ = sel => document.querySelector(sel);
+const q = $("#q"), ac=$("#ac"), estado=$("#estado"), ciudad=$("#ciudad");
+const listado=$("#listado"), vacio=$("#vacio");
+const eta=$("#eta"), costo=$("#costo"), status=$("#status");
+const resumen=$("#resumen");
+
+function fillEstados(){
+  estado.innerHTML = `<option value="">Selecciona un estado</option>` + 
+    DATA.map(d=>`<option value="${d.estado}">${d.estado}</option>`).join("");
+}
+function fillCiudades(est){
+  const d = DATA.find(x=>x.estado===est);
+  ciudad.disabled = !d;
+  ciudad.innerHTML = d 
+    ? `<option value="">Selecciona ciudad/zona</option>` + d.ciudades.map(c=>`<option value="${c}">${c}</option>`).join("")
+    : `<option value="">Selecciona ciudad/zona</option>`;
+}
+
+function renderList(items){
+  listado.innerHTML = items.map(it => {
+    const cfg = CONFIG[it.nivel] || CONFIG.na;
+    const km = Math.round(haversine(WAREHOUSE.coords, it.coords));
+    const price = cfg.costo(km);
+    const priceTxt = typeof price === "number" ? Intl.NumberFormat('es-ES',{style:'currency',currency:'USD'}).format(price) : "—";
+    return `
+      <div class="row" data-estado="${it.estado}" data-ciudad="${it.ciudad}" data-nivel="${it.nivel}">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <div><strong>${it.ciudad}</strong> · <small>${it.estado}</small>
+            <span class="tag ${cfg.tag}">${cfg.label}</span>
+          </div>
+          <div><small>~${km} km</small></div>
+        </div>
+        <small>ETA ${cfg.eta} · Costo aprox: <strong>${priceTxt}</strong> · Base: ${WAREHOUSE.name}</small>
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick='focusOn("${it.estado}","${it.ciudad}")'>Ver en mapa</button>
+          <button class="btn" onclick='setResumen("${it.estado}","${it.ciudad}")'>Usar esta zona</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+  vacio.style.display = items.length ? "none":"block";
+}
+
+function setKPIs(it){
+  if(!it){ eta.textContent="—"; costo.textContent="—"; status.textContent="—"; return; }
+  const cfg = CONFIG[it.nivel] || CONFIG.na;
+  const km = Math.round(haversine(WAREHOUSE.coords, it.coords));
+  const price = cfg.costo(km);
+  eta.textContent = cfg.eta;
+  costo.textContent = (typeof price === "number")
+    ? Intl.NumberFormat('es-ES',{style:'currency',currency:'USD'}).format(price)
+    : "—";
+  status.textContent = cfg.label;
+}
+
+function setResumen(estado, ciudad){
+  const it = INDEX.find(x=>x.estado===estado && x.ciudad===ciudad);
+  if(!it) return;
+  const cfg = CONFIG[it.nivel] || CONFIG.na;
+  const km = Math.round(haversine(WAREHOUSE.coords, it.coords));
+  const price = cfg.costo(km);
+  const priceTxt = typeof price === "number" ? Intl.NumberFormat('es-ES',{style:'currency',currency:'USD'}).format(price) : "—";
+  const code = `{
+  "shipping_zone_code": "${normalize(estado).slice(0,3)}-${normalize(ciudad).slice(0,6)}",
+  "estado": "${estado}",
+  "ciudad": "${ciudad}",
+  "nivel": "${cfg.label}",
+  "eta": "${cfg.eta}",
+  "dist_km_aprox": ${km},
+  "tarifa_estimada_usd": ${typeof price === "number" ? price.toFixed(2) : "null"}
+}`;
+  resumen.textContent = code;
+  setKPIs(it);
+  // resaltar en list
+  [...document.querySelectorAll(".row")].forEach(r=>r.style.outline="none");
+  const el = [...document.querySelectorAll(`.row[data-estado="${CSS.escape(estado)}"][data-ciudad="${CSS.escape(ciudad)}"]`)][0];
+  if(el) el.style.outline = "2px solid #1428A0";
+}
+
+function showAC(items){
+  if(!items.length){ ac.style.display="none"; ac.innerHTML=""; return; }
+  ac.style.display="block";
+  ac.innerHTML = items.slice(0,50).map(it=>{
+    const label = `${it.ciudad} · ${it.estado}`;
+    return `<div class="item" role="option" onclick='selectAC("${it.estado}","${it.ciudad}")'>${label}</div>`;
+  }).join("");
+}
+function selectAC(est,ciu){
+  ac.style.display="none";
+  estado.value = est;
+  fillCiudades(est);
+  ciudad.value = ciu;
+  applyFilters(); // repinta lista
+  focusOn(est,ciu);
+  setResumen(est,ciu);
+}
+
+// Filtros por chip
+let activeFilter = "all";
+function applyFilters(){
+  const est = estado.value;
+  const ciu = ciudad.value;
+  let items = INDEX;
+  if(est) items = items.filter(x=>x.estado===est);
+  if(ciu) items = items.filter(x=>x.ciudad===ciu);
+  if(activeFilter !== "all"){
+    items = items.filter(x=>x.nivel===activeFilter);
+  }
+  renderList(items.slice(0,200));
+}
+
+document.querySelectorAll(".chip").forEach(ch=>{
+  ch.addEventListener("click",()=>{
+    document.querySelectorAll(".chip").forEach(c=>c.dataset.active="false");
+    ch.dataset.active="true";
+    activeFilter = ch.dataset.filter;
+    applyFilters();
+  });
+});
+
+$("#btnLimpiar").addEventListener("click",()=>{
+  q.value=""; ac.style.display="none"; estado.value=""; fillCiudades(""); ciudad.disabled=true; ciudad.value="";
+  activeFilter="all"; document.querySelector('.chip[data-filter="all"]').dataset.active="true";
+  applyFilters(); setKPIs(null); resumen.textContent="{/* Selecciona una zona para generar el resumen */}";
+});
+
+$("#btnConfirmar").addEventListener("click",()=>{
+  if(estado.value && ciudad.value){ setResumen(estado.value, ciudad.value); focusOn(estado.value, ciudad.value); }
+});
+
+// Autocomplete typing
+q.addEventListener("input", ()=>{
+  const items = fuzzy(q.value, 50);
+  showAC(items);
+});
+q.addEventListener("blur", ()=> setTimeout(()=> ac.style.display="none", 200));
+q.addEventListener("focus", ()=>{
+  const items = fuzzy(q.value, 50);
+  showAC(items);
+});
+
+// Cascada Estado → Ciudad
+estado.addEventListener("change", e=>{
+  fillCiudades(e.target.value);
+  applyFilters();
+});
+ciudad.addEventListener("change", e=>{
+  applyFilters();
+  if(estado.value && e.target.value) { focusOn(estado.value, e.target.value); setResumen(estado.value, e.target.value); }
+});
+
+/**
+ * ===============================
+ *   MAPA
+ * ===============================
+ */
+const map = L.map('map',{ zoomControl:true, scrollWheelZoom:true }).setView(WAREHOUSE.coords, 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom: 19,
+  attribution:'&copy; OpenStreetMap'
+}).addTo(map);
+
+const baseMarker = L.circleMarker(WAREHOUSE.coords,{radius:8, weight:2, color:'#1428A0', fillColor:'#1428A0', fillOpacity:.9})
+  .addTo(map).bindPopup(`<b>${WAREHOUSE.name}</b><br/>Base de despacho`);
+
+const markers = [];
+function drawMarkers(){
+  // Limpia
+  markers.forEach(m=> map.removeLayer(m));
+  markers.length=0;
+
+  // Dibuja algunos principales por estado (capital aprox.)
+  for(const d of DATA){
+    const cfg = CONFIG[d.nivel] || CONFIG.na;
+    const m = L.circleMarker(d.coords,{radius:6, weight:2, color:'#555', fillColor:'#999', fillOpacity:.8})
+      .addTo(map)
+      .bindPopup(`<b>${d.estado}</b><br/>Capital: ${d.capital}<br/><span class="tag ${cfg.tag}">${cfg.label}</span>`)
+    markers.push(m);
+  }
+}
+drawMarkers();
+
+function focusOn(est,ciu){
+  const d = INDEX.find(x => x.estado===est && x.ciudad===ciu);
+  if(!d){ return; }
+  const cfg = CONFIG[d.nivel] || CONFIG.na;
+  const km = Math.round(haversine(WAREHOUSE.coords, d.coords));
+  const price = cfg.costo(km);
+  const priceTxt = typeof price === "number" ? Intl.NumberFormat('es-ES',{style:'currency',currency:'USD'}).format(price) : "—";
+  map.setView(d.coords, 10, {animate:true});
+  const marker = L.marker(d.coords).addTo(map)
+    .bindPopup(`<b>${d.ciudad}</b><br/>${d.estado}<br/>
+      <span class="tag ${cfg.tag}">${cfg.label}</span> · ETA ${cfg.eta}<br/>
+      Dist: ~${km} km · Tarifa: ${priceTxt}`).openPopup();
+  markers.push(marker);
+}
+
+/**
+ * INIT
+ */
+fillEstados();
+fillCiudades("");
+applyFilters();
+
+// Soporte
+document.getElementById("btnSoporte").addEventListener("click",()=>{
+  alert("Escríbenos por WhatsApp para confirmar casos especiales (zonas limítrofes y direcciones rurales).");
+});
+</script>
+</body>
+</html>

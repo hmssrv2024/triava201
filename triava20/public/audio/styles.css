@@ -1,0 +1,299 @@
+:root {
+  color-scheme: light dark;
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --color-bg: #0f172a;
+  --color-surface: rgba(15, 23, 42, 0.72);
+  --color-surface-light: rgba(255, 255, 255, 0.9);
+  --color-text: #0f172a;
+  --color-text-inverse: #f8fafc;
+  --color-accent: #2563eb;
+  --color-accent-strong: #1d4ed8;
+  --color-border: rgba(15, 23, 42, 0.12);
+  --color-border-strong: rgba(37, 99, 235, 0.4);
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-error: #b91c1c;
+  --shadow-elevated: 0 18px 45px rgba(15, 23, 42, 0.2);
+  --radius-large: 20px;
+  --radius-medium: 12px;
+  --radius-small: 8px;
+  --transition-base: 180ms ease;
+  --max-content-width: min(960px, 94vw);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+  background: radial-gradient(circle at top, rgba(37, 99, 235, 0.35), transparent 65%),
+    radial-gradient(circle at bottom, rgba(14, 116, 144, 0.25), transparent 70%),
+    linear-gradient(160deg, #0f172a 0%, #111827 60%, #0b1120 100%);
+  color: var(--color-text-inverse);
+  padding: 4vh 0;
+}
+
+.app {
+  width: 100%;
+  max-width: var(--max-content-width);
+  background: var(--color-surface);
+  backdrop-filter: blur(18px);
+  border-radius: var(--radius-large);
+  padding: clamp(24px, 5vw, 48px);
+  box-shadow: var(--shadow-elevated);
+}
+
+@media (max-width: 720px) {
+  .app {
+    border-radius: var(--radius-medium);
+    padding: clamp(20px, 5vw, 36px);
+    margin: 0 18px;
+  }
+}
+
+.app__header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.app__header h1 {
+  font-size: clamp(1.6rem, 2.2vw + 1rem, 2.3rem);
+  margin-bottom: 12px;
+  line-height: 1.2;
+  color: #e0f2fe;
+}
+
+.app__intro {
+  margin: 0 auto;
+  max-width: 48ch;
+  color: rgba(226, 232, 240, 0.86);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.tts-form {
+  display: grid;
+  gap: 24px;
+}
+
+.form-field label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+textarea,
+select,
+.button {
+  font-family: inherit;
+  font-size: 1rem;
+  border-radius: var(--radius-small);
+  border: 1px solid rgba(248, 250, 252, 0.18);
+  padding: 12px 14px;
+  background-color: rgba(15, 23, 42, 0.35);
+  color: #f8fafc;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base),
+    transform var(--transition-base);
+}
+
+textarea:focus,
+select:focus,
+.button:focus {
+  outline: none;
+  border-color: rgba(148, 197, 255, 0.8);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 180px;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+textarea::placeholder {
+  color: rgba(226, 232, 240, 0.55);
+}
+
+.help-text {
+  font-size: 0.85rem;
+  color: rgba(226, 232, 240, 0.74);
+  margin-top: 6px;
+}
+
+.field-footer {
+  display: flex;
+  justify-content: flex-end;
+  color: rgba(224, 231, 255, 0.74);
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.field-footer .over-limit {
+  color: #fca5a5;
+  font-weight: 600;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+.button {
+  cursor: pointer;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button--primary {
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
+  border-color: var(--color-border-strong);
+  color: var(--color-text-inverse);
+  font-weight: 600;
+}
+
+.button--primary:not([disabled]):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+}
+
+.status {
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: var(--radius-small);
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+#status-message {
+  margin: 0;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#status-message::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.65);
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.25);
+  transition: background var(--transition-base), box-shadow var(--transition-base);
+}
+
+#status-message[data-tone='progress']::before {
+  background: #facc15;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
+}
+
+#status-message[data-tone='success']::before {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+#status-message[data-tone='warning'] {
+  color: #fbbf24;
+}
+
+#status-message[data-tone='error'] {
+  color: #fca5a5;
+}
+
+#status-message[data-tone='warning']::before {
+  background: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+
+#status-message[data-tone='error']::before {
+  background: #f87171;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.25);
+}
+
+.player {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+#audio-player {
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--radius-small);
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  padding: 6px 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background: linear-gradient(140deg, #eef2ff 0%, #e0f2fe 45%, #ecfeff 100%);
+    color: var(--color-text);
+  }
+
+  .app {
+    background: var(--color-surface-light);
+    color: var(--color-text);
+  }
+
+  .app__header h1 {
+    color: #0f172a;
+  }
+
+  .app__intro {
+    color: rgba(15, 23, 42, 0.75);
+  }
+
+  textarea,
+  select,
+  .button {
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--color-text);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+  }
+
+  textarea::placeholder {
+    color: rgba(15, 23, 42, 0.4);
+  }
+
+  .status {
+    background: rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+  }
+
+  #audio-player {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.1);
+  }
+
+  .field-footer .over-limit {
+    color: #b91c1c;
+  }
+}

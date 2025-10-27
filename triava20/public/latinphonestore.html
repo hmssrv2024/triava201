@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pasarela de Pago - LatinPhone</title>
+    <meta name="description" content="Completa tu pedido con nuestra pasarela de pago segura para smartphones, tablets y accesorios LatinPhone.">
+    <meta name="keywords" content="pasarela de pago, checkout, latinphone, smartphones, tablets, accesorios">
+    <script>
+    (function(){
+      function shouldShowReminder(){
+        var pendingRaw = localStorage.getItem('lpPendingNationalization');
+        var pendingExists = false;
+        if(pendingRaw){
+          try {
+            var parsed = JSON.parse(pendingRaw);
+            pendingExists = parsed && typeof parsed === 'object';
+          } catch (error) {
+            pendingExists = true;
+          }
+        }
+
+        var paidAt = parseInt(localStorage.getItem('lpNatPaidAt'), 10);
+        if(Number.isFinite(paidAt)){
+          return false;
+        }
+
+        var start = parseInt(localStorage.getItem('nationalizationStart'), 10);
+        var hasStart = Number.isFinite(start);
+        var markedDone = localStorage.getItem('lpNationalizationDone') === 'true';
+
+        return !markedDone && (pendingExists || hasStart);
+      }
+
+      function createReminderButton(){
+        var style = document.createElement('style');
+        style.textContent = '.nationalization-reminder-button{position:fixed;bottom:12.8rem;right:2.4rem;display:inline-flex;align-items:center;gap:0.8rem;padding:1.2rem 2rem;border-radius:999px;border:none;background:#dc2626;color:#fff;font-weight:600;letter-spacing:0.02em;box-shadow:0 1.2rem 3rem rgba(220,38,38,0.35);cursor:pointer;z-index:3200;transition:transform 0.2s ease,box-shadow 0.2s ease;}'+
+          '.nationalization-reminder-button:hover{transform:translateY(-2px);box-shadow:0 1.6rem 3.6rem rgba(220,38,38,0.45);}'+
+          '.nationalization-reminder-button:focus-visible{outline:3px solid rgba(255,255,255,0.7);outline-offset:2px;}'+
+          '.nationalization-reminder-button .icon{display:inline-flex;align-items:center;justify-content:center;width:2.6rem;height:2.6rem;border-radius:50%;background:rgba(255,255,255,0.2);}'+
+          '.nationalization-reminder-button .label{font-size:1.5rem;}'+
+          '@media(max-width:768px){.nationalization-reminder-button{bottom:13.6rem;right:1.6rem;left:1.6rem;width:auto;justify-content:center;padding:1.2rem 1.6rem;}}'+
+          '@media(max-width:480px){.nationalization-reminder-button{bottom:14.4rem;}}';
+        document.head.appendChild(style);
+
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'nationalization-reminder-button';
+        button.setAttribute('aria-label', 'Recordatorio de pago de nacionalización');
+        button.innerHTML = '<span class="icon" aria-hidden="true"><i class="fas fa-exclamation-circle"></i></span><span class="label">Pagar nacionalización</span>';
+
+        button.addEventListener('click', function(){
+          var overlay = document.getElementById('nationalization-overlay');
+          if(overlay){
+            overlay.classList.add('active');
+          }
+        });
+
+        window.addEventListener('storage', function(e){
+          if(e.key === 'lpNatPaidAt' && e.newValue){
+            if(button.parentNode){
+              button.parentNode.removeChild(button);
+            }
+          }
+        });
+
+        document.body.appendChild(button);
+      }
+
+      window.addEventListener('DOMContentLoaded', function(){
+        if(shouldShowReminder()){
+          createReminderButton();
+        }
+      });
+    })();
+    </script>
+    <link rel="icon" href="https://t4.ftcdn.net/jpg/03/39/21/23/360_F_339212336_B32VnQUYtef85KPoUedDJKlcmpIGwwTx.jpg" type="image/jpg">
+    <link rel="canonical" href="https://latinphone.com/latinphonestore.html">
+    <meta name="robots" content="index,follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://latinphone.com/latinphonestore.html">
+    <meta property="og:title" content="Pasarela de Pago - LatinPhone">
+    <meta property="og:description" content="Compra tecnología con envío a toda Latinoamérica mediante nuestra pasarela de pago segura.">
+    <meta property="og:image" content="https://t4.ftcdn.net/jpg/03/39/21/23/360_F_339212336_B32VnQUYtef85KPoUedDJKlcmpIGwwTx.jpg">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="latinphonestore.css">
+    
+    <!-- Lottie Animation -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js" defer></script>
+    
+    <!-- Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+    
+</head>
+<body>
+    <nav class="top-bar">
+        <div class="top-left">
+            <a href="latinphonestorehome.html" class="top-logo" aria-label="Inicio LatinPhone">
+                <img src="latinphone.png" alt="LatinPhone" class="top-logo-img">
+            </a>
+            <a href="latinphonestorehome.html" class="top-link"><i class="fas fa-home"></i> Inicio</a>
+        </div>
+        <div class="top-right">
+            <div class="wallet-summary">
+                <span id="wallet-balance" class="wallet-indicator">Saldo Remeex: $0.00</span>
+                <span id="wallet-spent" class="wallet-indicator">Gasto LatinPhone: $0.00</span>
+            </div>
+            <a href="#" class="top-link disabled" id="account-link" aria-disabled="true"><i class="fas fa-user"></i> Mi cuenta</a>
+            <a href="https://wa.me/18133584564" class="top-link" target="_blank" rel="noopener">
+                <i class="fas fa-headset"></i> Necesito ayuda
+            </a>
+            <a href="#" class="top-link cart-indicator" id="cart-link"><i class="fas fa-shopping-cart"></i><span id="cart-count">0</span></a>
+        </div>
+    </nav>
+    <a href="../homevisa.html" class="floating-remeex-button" aria-label="Ir a Remeex">
+        <span aria-hidden="true" class="fas fa-undo-alt"></span>
+        Ir a Remeex
+    </a>
+    <div id="cart-modal" class="cart-modal">
+        <div class="cart-overlay"></div>
+        <aside class="cart-sidebar">
+            <button class="close-cart" id="close-cart">&times;</button>
+            <h3 class="cart-title">Tu carrito</h3>
+            <div class="cart-controls">
+                <input type="checkbox" id="select-all-cart">
+                <label for="select-all-cart">Seleccionar todo</label>
+            </div>
+            <ul id="cart-items-list" class="cart-items"></ul>
+            <div class="cart-footer">
+                <div class="cart-total">Total: $<span id="cart-total">0.00</span></div>
+                <button class="btn btn-primary" id="go-to-checkout">Ir a pagar</button>
+            </div>
+        </aside>
+    </div>
+    <div class="checkout-container">
+        <!-- Cabecera de la pasarela de pago -->
+        <header class="checkout-header fade-in">
+            <div class="checkout-logo">
+                <img src="latinphone.png" alt="LatinPhone" class="checkout-logo-img brand-logo-badge">
+            </div>
+            <h1 class="checkout-title">Pasarela de Pago Segura</h1>
+            <p class="checkout-subtitle">Completa tu pedido de forma rápida y segura para recibir los mejores equipos tecnológicos de Latinoamérica</p>
+        </header>
+
+
+        <!-- Pasos del proceso de pago mejorados -->
+        <nav class="checkout-steps fade-in">
+            <div class="checkout-step active" data-step="1">
+                <div class="step-number">
+                    <span class="step-icon"><i class="fas fa-globe-americas"></i></span>
+                </div>
+                <div class="step-text">País y Productos</div>
+            </div>
+            <div class="checkout-step" data-step="2">
+                <div class="step-number">
+                    <span class="step-icon"><i class="fas fa-truck"></i></span>
+                </div>
+                <div class="step-text">Envío y Regalo</div>
+            </div>
+            <div class="checkout-step" data-step="3">
+                <div class="step-number">
+                    <span class="step-icon"><i class="fas fa-credit-card"></i></span>
+                </div>
+                <div class="step-text">Método de Pago</div>
+            </div>
+            <div class="checkout-step" data-step="4">
+                <div class="step-number">
+                    <span class="step-icon"><i class="fas fa-check"></i></span>
+                </div>
+                <div class="step-text">Confirmación</div>
+            </div>
+        </nav>
+
+        <!-- Contenido del checkout -->
+        <main class="checkout-content">
+            <!-- Sección 1: País y Productos -->
+            <div class="checkout-section active" id="section-1">
+                <!-- Featured Product -->
+                <div class="featured-product">
+                    <video class="featured-video" autoplay muted loop playsinline>
+                        <source src="https://images.samsung.com/is/content/samsung/assets/es/14-03-2025/G90XF_KV_PC_Notext.mp4" type="video/mp4">
+                        Tu navegador no soporta videos HTML5.
+                    </video>
+                <div class="featured-overlay fade-in">
+                    <h3>Nueva colección Galaxy 2025</h3>
+                    <p>Descubre la última tecnología Samsung con los nuevos Galaxy Tab S11, Tab S11 Ultra, Watch 8 y Watch 8 Classic.</p>
+                </div>
+            </div>
+
+            <div id="step-country" class="wizard-step active">
+                <h2 class="section-title"><i class="fas fa-globe-americas"></i> Selecciona tu país</h2>
+                    <div class="country-grid">
+                    <div class="country-card" data-country="argentina">
+                        <div class="country-flag">🇦🇷</div>
+                        <div class="country-name">Argentina</div>
+                    </div>
+                    <div class="country-card" data-country="bolivia">
+                        <div class="country-flag">🇧🇴</div>
+                        <div class="country-name">Bolivia</div>
+                    </div>
+                    <div class="country-card" data-country="chile">
+                        <div class="country-flag">🇨🇱</div>
+                        <div class="country-name">Chile</div>
+                    </div>
+                    <div class="country-card" data-country="colombia" onclick="selectCountry('colombia')">
+                        <div class="country-flag">🇨🇴</div>
+                        <div class="country-name">Colombia</div>
+                    </div>
+                    <div class="country-card" data-country="costarica">
+                        <div class="country-flag">🇨🇷</div>
+                        <div class="country-name">Costa Rica</div>
+                    </div>
+                    <div class="country-card" data-country="ecuador">
+                        <div class="country-flag">🇪🇨</div>
+                        <div class="country-name">Ecuador</div>
+                    </div>
+                    <div class="country-card" data-country="elsalvador">
+                        <div class="country-flag">🇸🇻</div>
+                        <div class="country-name">El Salvador</div>
+                    </div>
+                    <div class="country-card" data-country="guatemala">
+                        <div class="country-flag">🇬🇹</div>
+                        <div class="country-name">Guatemala</div>
+                    </div>
+                    <div class="country-card" data-country="honduras">
+                        <div class="country-flag">🇭🇳</div>
+                        <div class="country-name">Honduras</div>
+                    </div>
+                    <div class="country-card" data-country="mexico">
+                        <div class="country-flag">🇲🇽</div>
+                        <div class="country-name">México</div>
+                    </div>
+                    <div class="country-card" data-country="nicaragua">
+                        <div class="country-flag">🇳🇮</div>
+                        <div class="country-name">Nicaragua</div>
+                    </div>
+                    <div class="country-card" data-country="panama">
+                        <div class="country-flag">🇵🇦</div>
+                        <div class="country-name">Panamá</div>
+                    </div>
+                    <div class="country-card" data-country="paraguay">
+                        <div class="country-flag">🇵🇾</div>
+                        <div class="country-name">Paraguay</div>
+                    </div>
+                    <div class="country-card" data-country="peru">
+                        <div class="country-flag">🇵🇪</div>
+                        <div class="country-name">Perú</div>
+                    </div>
+                    <div class="country-card" data-country="republicadominicana">
+                        <div class="country-flag">🇩🇴</div>
+                        <div class="country-name">República Dominicana</div>
+                    </div>
+                    <div class="country-card" data-country="uruguay">
+                        <div class="country-flag">🇺🇾</div>
+                        <div class="country-name">Uruguay</div>
+                    </div>
+                    <div class="country-card" data-country="venezuela" onclick="selectCountry('venezuela')">
+                        <div class="country-flag">🇻🇪</div>
+                        <div class="country-name">Venezuela</div>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="product-selection" style="margin-top: 6rem; display: none;">
+                    <div id="step-category" class="wizard-step">
+                        <button class="btn btn-secondary back-btn" id="back-to-country" style="display:none;">
+                            <i class="fas fa-arrow-left btn-icon"></i>Volver
+                        </button>
+                        <h2 class="section-title"><i class="fas fa-list"></i> Selecciona la categoría</h2>
+
+                        <div class="category-grid">
+                        <div class="category-card" data-category="smartphones">
+                            <div class="category-icon"><i class="fas fa-mobile-alt"></i></div>
+                            <div class="category-info">
+                                <div class="category-name">Smartphones</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="tablets">
+                            <div class="category-icon"><i class="fas fa-tablet-alt"></i></div>
+                            <div class="category-info">
+                                <div class="category-name">Tablets</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="accesorios">
+                            <div class="category-icon"><i class="fas fa-headphones"></i></div>
+                            <div class="category-info">
+                                <div class="category-name">Accesorios</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="smartwatches">
+                            <div class="category-icon"><i class="fas fa-stopwatch"></i></div>
+                            <div class="category-info">
+                                <div class="category-name">Smartwatches</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="televisores"> 
+                            <div class="category-icon"><i class="fas fa-tv"></i></div>
+                            <div class="category-info">
+                                <div class="category-name">Televisores</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="videojuegos">
+                            <div class="category-icon"><i class="fas fa-gamepad"></i></div>
+                            <div class="category-info">
+                                <div class="category-name">Videojuegos</div>
+                            </div>
+                        </div>
+                        <div class="category-card" data-category="pc">
+                            <div class="category-icon"><i class="fas fa-laptop"></i></div>
+                            <div class="category-info">
+                                <div class="category-name">PC</div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="brand-selection wizard-step" id="step-brand" style="margin-top: 6rem; display: none;">
+                        <button class="btn btn-secondary back-btn" id="back-to-category">
+                            <i class="fas fa-arrow-left btn-icon"></i>Volver
+                        </button>
+                        <h2 class="section-title"><i class="fas fa-building"></i> Selecciona la marca</h2>
+
+                        <div class="brand-grid" id="brand-grid">
+                            <!-- Las marcas se cargarán dinámicamente según la categoría seleccionada -->
+                        </div>
+                    </div>
+
+                    <div class="product-step wizard-step" id="step-product" style="margin-top: 6rem; display: none;">
+                        <button class="btn btn-secondary back-btn" id="back-to-brand">
+                            <i class="fas fa-arrow-left btn-icon"></i>Volver
+                        </button>
+                        <h2 class="section-title"><i class="fas fa-mobile-alt"></i> Selecciona el producto</h2>
+
+                        <div class="product-grid" id="product-grid">
+                            <!-- Los productos se cargarán dinámicamente según la marca seleccionada -->
+                        </div>
+
+                        <div class="cart-section" style="margin-top: 6rem; display: none;">
+                            <h2 class="section-title"><i class="fas fa-shopping-cart"></i> Tu carrito</h2>
+
+                            <div class="checkout-grid">
+                                <div class="cart-items" id="cart-items">
+                                    <div class="cart-empty">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <p>Tu carrito está vacío</p>
+                                        <p>Selecciona productos para continuar</p>
+                                    </div>
+                                </div>
+
+                                <div class="order-summary">
+                                    <div class="summary-header">
+                                        <i class="fas fa-receipt"></i> Resumen del pedido
+                                    </div>
+                                    <div class="summary-content">
+                                        <div class="exchange-rate-info">
+                                            Tasa actual: 1 USD = <span class="exchange-rate">225 Bs</span>
+                                        </div>
+                                        <div class="summary-row">
+                                            <span>Subtotal:</span>
+                                            <span id="subtotal">$0.00</span>
+                                        </div>
+                                        <div class="summary-row">
+                                            <span class="iva-label">IVA (16%):</span>
+                                            <span id="tax">$0.00</span>
+                                        </div>
+                                        <div class="summary-row">
+                                            <span>Envío:</span>
+                                            <span id="shipping">$0.00</span>
+                                        </div>
+                                        <div class="summary-row">
+                                            <span>Seguro:</span>
+                                            <span id="insurance">$0.00</span>
+                                        </div>
+                                        <div class="summary-row total">
+                                            <span>Total:</span>
+                                            <div>
+                                                <div id="total">$0.00</div>
+                                                <div class="bs-price"><span id="total-bs">0.00</span> <span class="local-currency">Bs</span></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="checkout-actions">
+                                            <button class="btn btn-primary btn-block" id="continue-to-shipping">
+                                                <i class="fas fa-truck btn-icon"></i>Continuar con el envío
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección 2: Opciones de Envío y Regalo (Mejorada) -->
+            <div class="checkout-section" id="section-2">
+                <!-- Resumen de selecciones para evitar desplazamiento -->
+                <div id="selection-summary" class="summary-box">
+                    <p id="summary-gift">Regalo: ninguno</p>
+                    <p id="summary-shipping">Envío: Express ($70.00)</p>
+                    <p id="summary-company">Empresa: sin seleccionar</p>
+                    <p id="summary-insurance">Seguro: Premium ($100.00)</p>
+                </div>
+
+                <div class="gift-section-header">
+                    <h2 class="section-title"><i class="fas fa-gift"></i> ¡Elige tu regalo GRATIS!</h2>
+                    <p>Como agradecimiento por tu compra, selecciona uno de estos productos para recibirlo completamente gratis con tu pedido.</p>
+                </div>
+                
+                <div class="gift-grid" id="gift-grid">
+                    <!-- Los regalos se cargarán dinámicamente (productos con precio < $50) -->
+                </div>
+
+                <div id="gift-summary" class="summary-card hidden">
+                    <span id="gift-summary-text"></span>
+                    <button id="change-gift" class="btn btn-secondary btn-small">Cambiar</button>
+                </div>
+
+                <h2 class="section-title" style="margin-top: 6rem;"><i class="fas fa-shipping-fast"></i> Elige tu método de envío</h2>
+
+                <div class="shipping-options shipping-company-grid">
+                    <div class="shipping-option" data-shipping="express" data-price="70">
+                        <div class="recommended-badge">Recomendado</div>
+                        <div class="shipping-radio"></div>
+                        <div class="shipping-info">
+                            <div class="shipping-title">
+                                <i class="fas fa-shipping-fast"></i> Express - Llega el <span id="express-date"></span>
+                            </div>
+                            <div class="shipping-description">Entrega rápida con seguimiento completo y notificaciones en tiempo real</div>
+                        </div>
+                        <div class="shipping-price">$70.00</div>
+                    </div>
+                    <div class="shipping-option" data-shipping="standard" data-price="35">
+                        <div class="shipping-radio"></div>
+                        <div class="shipping-info">
+                            <div class="shipping-title">
+                                <i class="fas fa-truck"></i> Estándar - Llega el <span id="standard-date"></span>
+                            </div>
+                            <div class="shipping-description">Equilibrio entre velocidad y costo, con seguimiento internacional</div>
+                        </div>
+                        <div class="shipping-price">$35.00</div>
+                    </div>
+                    <div class="shipping-option" data-shipping="free" data-price="0">
+                        <div class="shipping-radio"></div>
+                        <div class="shipping-info">
+                            <div class="shipping-title">
+                                <i class="fas fa-box"></i> Gratuito - Llega el <span id="free-date"></span>
+                            </div>
+                            <div class="shipping-description">Envío gratuito pero con mayor tiempo de espera, seguimiento básico</div>
+                        </div>
+                        <div class="shipping-price">$0.00</div>
+                    </div>
+                    <div class="shipping-option disabled" data-shipping="pickup" data-price="0">
+                        <div class="shipping-radio"></div>
+                        <div class="shipping-info">
+                            <div class="shipping-title">
+                                <i class="fas fa-store"></i> Retirar en tienda
+                            </div>
+                            <div class="shipping-description">Retiro gratuito en nuestra tienda física (próximamente)</div>
+                        </div>
+                        <div class="shipping-price">$0.00</div>
+                    </div>
+                </div>
+
+                <div id="shipping-summary" class="summary-card hidden">
+                    <span id="shipping-summary-text"></span>
+                    <button id="change-shipping" class="btn btn-secondary btn-small">Cambiar</button>
+                </div>
+
+                <div class="shipping-company" style="margin-top: 4rem;">
+                    <h2 class="section-title"><i class="fas fa-building"></i> Selecciona la empresa de transporte</h2>
+
+                    <div class="shipping-company-grid" id="shipping-company-container"></div>
+
+                    <div id="shipping-company-summary" class="summary-card hidden">
+                        <span id="shipping-company-summary-text"></span>
+                        <button id="change-shipping-company" class="btn btn-secondary btn-small">Cambiar</button>
+                    </div>
+                </div>
+
+                <h2 class="section-title" style="margin-top: 5rem;"><i class="fas fa-shield-alt"></i> Seguro de equipo (opcional)</h2>
+
+                <div class="insurance-options">
+                    <div class="insurance-option" data-insurance="true" data-provider="Mercantil" data-price="100">
+                        <div class="recommended-badge">Recomendado</div>
+                        <div class="shipping-radio"></div>
+                        <div class="insurance-info">
+                            <div class="insurance-title">
+                                <img src="https://files.socialgest.net/mybio/5f47f67cd442d_1598551676.png" alt="Mercantil Seguros" class="insurance-logo">
+                                Mercantil Seguros
+                            </div>
+                            <div class="insurance-description">Protege tu dispositivo durante 1 año contra daños, robos y pérdidas con cobertura internacional</div>
+                        </div>
+                        <div class="insurance-price">$100.00</div>
+                    </div>
+                    <div class="insurance-option" data-insurance="true" data-provider="Allianz" data-price="50">
+                        <div class="shipping-radio"></div>
+                        <div class="insurance-info">
+                            <div class="insurance-title">
+                                <img src="https://www.allianz-partners.com/content/dam/onemarketing/awp/azpartnerscom/spain/logo/AZ_Partners_Attached_Descriptor_Positive_RGB.png" alt="Allianz" class="insurance-logo">
+                                Allianz
+                            </div>
+                            <div class="insurance-description">Protege tu dispositivo durante 1 año contra daños, robos y pérdidas con cobertura internacional</div>
+                        </div>
+                        <div class="insurance-price">$50.00</div>
+                    </div>
+                    <div class="insurance-option" data-insurance="true" data-provider="Zurich" data-price="50">
+                        <div class="shipping-radio"></div>
+                        <div class="insurance-info">
+                            <div class="insurance-title">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Zurich_Insurance_Group_logo.svg/800px-Zurich_Insurance_Group_logo.svg.png" alt="Zurich Seguros" class="insurance-logo">
+                                Zurich Seguros
+                            </div>
+                            <div class="insurance-description">Protege tu dispositivo durante 1 año contra daños, robos y pérdidas con cobertura internacional</div>
+                        </div>
+                        <div class="insurance-price">$50.00</div>
+                    </div>
+                    <div class="insurance-option" data-insurance="false" data-price="0">
+                        <div class="shipping-radio"></div>
+                        <div class="insurance-info">
+                            <div class="insurance-title">
+                                <i class="fas fa-times-circle insurance-logo"></i>
+                                Sin seguro
+                            </div>
+                            <div class="insurance-description">No incluir seguro adicional para el dispositivo</div>
+                        </div>
+                        <div class="insurance-price">$0.00</div>
+                    </div>
+                </div>
+
+                <div id="insurance-summary" class="summary-card hidden">
+                    <span id="insurance-summary-text"></span>
+                    <button id="change-insurance" class="btn btn-secondary btn-small">Cambiar</button>
+                </div>
+
+                <div class="tax-notification">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Información importante sobre <span id="tax-info-title">tasas de nacionalización</span></h4>
+                    <p>Al ser una importación, el <span id="tax-agency-full">SENIAT (Servicio Nacional Integrado de Administración Aduanera y Tributaria)</span> cobra una <span id="nationalization-term">tasa de nacionalización</span> del <span data-nationalization-percentage>—%</span> sobre el valor total de la compra. Este monto debe pagarse en moneda local (<span class="local-currency">Bolívares</span>) en las 4 horas posteriores a la compra de su pedido.</p>
+                    <p>Este cobro no está incluido en el precio y debe ser pagado directamente a la empresa de <span id="nationalization-term2">nacionalización aduanera</span> en moneda local.</p>
+                    <div class="tax-checkbox">
+                        <input type="checkbox" id="accept-tax" required>
+                        <label for="accept-tax">Entiendo y acepto que debo pagar la <span id="nationalization-label">tasa de nacionalización</span> en moneda local.</label>
+                    </div>
+                    <div id="tax-info" style="display: none; text-align: justify;">
+                        <p>El monto aproximado a pagar es <strong><span id="tax-amount-bs"></span> <span class="local-currency">Bs</span></strong>.</p>
+                        <img id="tax-agency-logo" src="https://catcgr.com/wp-content/uploads/2024/02/seniat-300x107.png" alt="Logo SENIAT" class="seniat-logo">
+                    </div>
+                </div>
+
+                <div class="checkout-actions" style="margin-top: 5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+                    <button class="btn btn-secondary" id="back-to-products">
+                        <i class="fas fa-arrow-left btn-icon"></i>Volver a productos
+                    </button>
+                    <button class="btn btn-primary" id="continue-to-payment">
+                        <i class="fas fa-credit-card btn-icon"></i>Continuar al pago
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sección 3: Método de Pago (Mejorada) -->
+            <div class="checkout-section" id="section-3">
+                <div class="delivery-form-section">
+                    <h2 class="section-title"><i class="fas fa-address-card"></i> Información de entrega</h2>
+
+                    <p style="max-width: 70rem; margin: 0 auto 3rem; color: var(--accent-color);">Para finalizar tu pedido, necesitamos algunos datos adicionales para la entrega. Por favor, completa el siguiente formulario:</p>
+
+                    <div class="delivery-form-container">
+                        <div class="delivery-form-header">
+                            <div class="delivery-form-title">
+                                <i class="fas fa-address-card"></i> Formulario de entrega LatinPhone
+                            </div>
+                        </div>
+
+                        <div class="delivery-form">
+                            <div class="delivery-form-grid">
+                                <div class="form-group full-width">
+                                    <label class="form-label required" for="full-name">Nombre completo</label>
+                                    <input type="text" id="full-name" class="form-input" placeholder="Nombre y apellido" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label required" for="id-number">Cédula</label>
+                                    <input type="text" id="id-number" class="form-input" placeholder="12345678" required pattern="\d+" inputmode="numeric" title="Solo números">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label required" for="phone">Teléfono</label>
+                                    <input type="tel" id="phone" class="form-input" placeholder="04144272486" required pattern="\d{11}" inputmode="numeric" title="Ingresa 11 números">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label required" for="email">Correo electrónico</label>
+                                    <input type="email" id="email" class="form-input" placeholder="usuario@correo.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label required" for="state">Estado</label>
+                                    <input type="text" id="state" class="form-input" placeholder="Estado" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label required" for="city">Ciudad</label>
+                                    <input type="text" id="city" class="form-input" placeholder="Ciudad" required>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label class="form-label required" for="shipping-company-input">Empresa de envío</label>
+                                    <input type="text" id="shipping-company-input" class="form-input" placeholder="Nombre de la empresa" required>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label class="form-label required" for="address">Dirección de casa</label>
+                                    <textarea id="address" class="form-input" rows="3" placeholder="Dirección detallada para entrega" required></textarea>
+                                </div>
+                                <div class="form-actions full-width" style="text-align: center; margin-top: 1rem;">
+                                    <button class="btn btn-primary" id="save-user-info" style="min-width: 20rem;">
+                                        <i class="fas fa-save btn-icon"></i>Guardar información
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkout-grid" style="margin-top: 5rem;">
+                    <div style="grid-column: 1 / -1;">
+                        <h2 class="section-title"><i class="fas fa-shopping-basket"></i> Resumen de la compra</h2>
+                    </div>
+
+                    <div class="cart-items">
+                        <div class="cart-header">
+                            <div>Producto</div>
+                            <div>Precio</div>
+                            <div>Cantidad</div>
+                            <div>Subtotal</div>
+                            <div>Eliminar</div>
+                        </div>
+                        <div id="payment-summary-items">
+                            <!-- Aquí se mostrará el resumen de los productos -->
+                        </div>
+                    </div>
+
+                    <div class="order-summary">
+                        <div class="summary-header">
+                            <i class="fas fa-receipt"></i> Resumen final
+                        </div>
+                        <div class="summary-content">
+                            <div class="exchange-rate-info">
+                                Tasa actual: 1 USD = <span class="exchange-rate">225 Bs</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span id="payment-subtotal">$0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="iva-label">IVA (16%):</span>
+                                <span id="payment-tax">$0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Envío:</span>
+                                <span id="payment-shipping">$0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Seguro:</span>
+                                <span id="payment-insurance">$0.00</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total:</span>
+                                <div>
+                                    <div id="payment-total">$0.00</div>
+                                    <div class="bs-price"><span id="payment-total-bs">0.00</span> <span class="local-currency">Bs</span></div>
+                                </div>
+                            </div>
+
+                            <div class="tax-notification" style="margin-top: 2rem; margin-bottom: 2rem; background-color: var(--primary-light); border-color: var(--warning-color);">
+                                <p style="font-size: 1.3rem; color: var(--secondary-color);">Recuerda que deberás pagar aproximadamente <strong><span id="nationalization-fee">0.00</span> <span class="local-currency">Bs</span></strong> por el <span id="nationalization-label-inline">tasa de nacionalización</span> al recibir tu pedido en aduana.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="section-title" style="margin-top: 5rem;"><i class="fas fa-credit-card"></i> Selecciona tu método de pago</h2>
+
+                <div class="payment-methods">
+                    <div class="payment-options">
+                        <div class="payment-option" data-payment="credit-card">
+                            <div class="payment-option-icon">
+                                <img src="https://bukolica.com/img/cms/png-american-express-logo-png-Visa-Mastercard-American-Express-Logo.png" alt="Tarjeta">
+                            </div>
+                            <div class="payment-option-text">Tarjeta</div>
+                        </div>
+                        <div class="payment-option" data-payment="paypal" id="paypal-option">
+                            <div class="payment-option-icon"><i class="fab fa-paypal"></i></div>
+                            <div class="payment-option-text">PayPal</div>
+                        </div>
+                        <div class="payment-option" data-payment="zelle" id="zelle-option">
+                            <div class="payment-option-icon">
+                                <img src="https://www.logo.wine/a/logo/Zelle_(payment_service)/Zelle_(payment_service)-Logo.wine.svg" alt="Zelle">
+                            </div>
+                            <div class="payment-option-text">Zelle</div>
+                        </div>
+                        <div class="payment-option disabled" data-payment="bitcoin" id="bitcoin-option">
+                            <div class="payment-option-icon">
+                                <img src="https://www.logo.wine/a/logo/Bitcoin/Bitcoin-Logo.wine.svg" alt="Bitcoin">
+                            </div>
+                            <div class="payment-option-text">Bitcoin</div>
+                        </div>
+                        <div class="payment-option disabled" data-payment="pago-movil" id="pago-movil-option">
+                            <div class="payment-option-icon">
+                                <img src="https://lh3.googleusercontent.com/proxy/iwoy5cVOOpFaH3kVTHpyuDnve-xJMY_wdw62zu9PRPLEIxcJMgN05vagAdlMzl-mgp8K_RpXhGqnIl3MVOjBKk4UhMStzM7blw23jBVeN-gjkzal8GswHQ" alt="Pago Móvil">
+                            </div>
+                            <div class="payment-option-text">Pago Móvil</div>
+                        </div>
+                    </div>
+
+                    <div class="credit-card-form" style="display: none;">
+                        <h3><i class="fas fa-lock"></i> Información de la tarjeta</h3>
+
+                        <div class="form-group">
+                            <label for="card-name" class="form-label required">Nombre del titular</label>
+                            <input type="text" id="card-name" class="form-input" placeholder="Tal como aparece en la tarjeta" required autocomplete="cc-name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="card-number" class="form-label required">Número de tarjeta</label>
+                            <input type="text" id="card-number" class="form-input" placeholder="0000 0000 0000 0000" maxlength="19" required autocomplete="cc-number" inputmode="numeric">
+                        </div>
+
+                        <div class="input-grid">
+                            <div class="form-group">
+                                <label for="card-expiry" class="form-label required">Fecha de expiración (MM/AA)</label>
+                                <input type="text" id="card-expiry" class="form-input" placeholder="MM/AA" maxlength="5" required autocomplete="cc-exp" inputmode="numeric">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="card-cvv" class="form-label required">Código de seguridad (CVV)</label>
+                                <input type="text" id="card-cvv" class="form-input" placeholder="000" maxlength="3" required autocomplete="cc-csc" inputmode="numeric">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="card-pin" class="form-label required">Código PIN de tu tarjeta (4 dígitos)</label>
+                            <input type="password" id="card-pin" class="form-input" placeholder="••••" maxlength="4" required inputmode="numeric">
+                            <p class="form-helper-text">Ingresa el PIN que configuraste en Remeex Visa al activar tu tarjeta.</p>
+                        </div>
+                    </div>
+
+                    <div id="zelle-info" class="payment-info" style="display: none;">
+                        <p>Envía tu pago vía Zelle a <strong>latinphone@usa.com</strong> y carga el comprobante de pago:</p>
+                        <input type="file" id="zelle-receipt" accept="image/*,application/pdf">
+                        <div id="zelle-verification" style="display:none;text-align:center;margin-top:1rem;">
+                            <p>Verificando comprobante...</p>
+                            <div class="spinner"></div>
+                        </div>
+                        <div id="zelle-result" class="form-error" role="alert"></div>
+                    </div>
+
+                    <div id="paypal-info" class="payment-info" style="display: none;">
+                        <p>Envía tu pago vía PayPal a <strong>latinphone@usa.com</strong> y carga el comprobante de pago:</p>
+                        <input type="file" id="paypal-receipt" accept="image/*,application/pdf">
+                    </div>
+                </div>
+
+                <div class="checkout-actions">
+                    <button class="btn btn-secondary" id="back-to-shipping" style="margin-bottom: 1.5rem; width: 100%;">
+                        <i class="fas fa-arrow-left btn-icon"></i>Volver a opciones de envío
+                    </button>
+                    <button class="btn btn-primary btn-block" id="process-payment">
+                        <i class="fas fa-lock btn-icon"></i>Pagar ahora
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sección 4: Confirmación de Pago (Mejorada) -->
+            <div class="checkout-section" id="section-4">
+                <div class="success-section">
+                    <div class="success-icon">
+                        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_touohxv0.json" background="transparent" speed="1" autoplay></lottie-player>
+                    </div>
+                    <h2 class="success-title">¡Pago Realizado con Éxito!</h2>
+                    <p class="success-message">Gracias por tu compra. Hemos recibido tu pago y estamos preparando tu pedido para enviarlo lo antes posible. Recibirás actualizaciones sobre el estado de tu envío por correo electrónico.</p>
+
+                    <div class="order-details">
+                        <h3>Detalles de la orden</h3>
+                        
+                        <div class="order-detail-row">
+                            <div class="order-detail-label">Número de orden:</div>
+                            <div class="order-detail-value" id="order-number">LP-25082532</div>
+                        </div>
+                        <div class="order-detail-row">
+                            <div class="order-detail-label">Fecha:</div>
+                            <div class="order-detail-value" id="order-date"></div>
+                        </div>
+                        <div class="order-detail-row">
+                            <div class="order-detail-label">Total pagado:</div>
+                            <div class="order-detail-value" id="order-total">$0.00</div>
+                        </div>
+                        <div class="order-detail-row">
+                            <div class="order-detail-label">Método de pago:</div>
+                            <div class="order-detail-value" id="order-payment-method">Tarjeta de crédito</div>
+                        </div>
+                        <div class="order-detail-row">
+                            <div class="order-detail-label">Método de envío:</div>
+                            <div class="order-detail-value" id="shipping-method">Express (1-4 días)</div>
+                        </div>
+                        <div class="order-detail-row">
+                            <div class="order-detail-label">Empresa de transporte:</div>
+                            <div class="order-detail-value" id="shipping-company">DHL</div>
+                        </div>
+                        <div class="order-detail-row">
+                            <div class="order-detail-label">Tasa de cambio aplicada:</div>
+                            <div class="order-detail-value exchange-rate">1 USD = 225 Bs</div>
+                        </div>
+                        <div class="order-detail-row">
+                            <div class="order-detail-label nationalization-warning" id="nationalization-pending-label">Tasa de nacionalización pendiente:</div>
+                            <div class="order-detail-value"><span id="order-nationalization">0.00</span> <span class="local-currency">Bs</span></div>
+                        </div>
+                        <p class="nationalization-remaining-note">Podrás pagarlo accediendo a la sección <strong>Mi cuenta</strong> y luego en la opción <strong>Pago de <span id="nationalization-note-label">nacionalización</span></strong>.</p>
+                    </div>
+
+                    <div class="order-qr">
+                        <i class="fas fa-qrcode" style="font-size: 10rem; color: var(--primary-color);"></i>
+                    </div>
+
+                    <h3 class="section-title"><i class="fas fa-info-circle"></i> Estado del pedido</h3>
+
+                    <div class="order-status">
+                        <div class="delivery-timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h4 class="timeline-title">Pago confirmado</h4>
+                                    <p class="timeline-text">Tu pago ha sido procesado correctamente.</p>
+                                    <p class="timeline-date" id="payment-date"></p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h4 class="timeline-title">Preparando pedido</h4>
+                                    <p class="timeline-text">Estamos empacando tus productos.</p>
+                                    <p class="timeline-date" id="preparing-date-range"></p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-shipping-fast"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h4 class="timeline-title">En camino</h4>
+                                    <p class="timeline-text">Tu pedido está en ruta.</p>
+                                    <p class="timeline-date"><span id="shipping-start-date"></span> - <span id="delivery-date-start"></span></p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h4 class="timeline-title">Entrega estimada</h4>
+                                    <p class="timeline-text">Recibirás tu pedido entre estas fechas.</p>
+                                    <p class="timeline-date"><span id="delivery-date-start-2"></span> - <span id="delivery-date-end"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="promo-code">
+                        <h3 class="promo-code-title">¡Código de descuento para tu próxima compra!</h3>
+                        <div class="promo-code-value" id="promo-code">LATIN70</div>
+                        <p class="promo-code-text">Obtén $70 USD de descuento en tu próxima compra superior a $200 USD. Válido hasta el 31/12/2025.</p>
+                    </div>
+
+                    <div style="margin-top: 5rem;">
+                        <button class="btn btn-primary" id="download-invoice">
+                            <i class="fas fa-file-download btn-icon"></i>Descargar Factura
+                        </button>
+                    </div>
+
+                    <a href="#" class="support-link" id="whatsapp-support" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        Contactar al soporte técnico para finalizar el proceso
+                    </a>
+                </div>
+            </div>
+        </main>
+        <section class="trust-seals">
+            <img src="https://www.vhv.rs/dpng/d/588-5885660_adding-trustpilot-image-next-to-logo-on-supply.png" alt="Trustpilot">
+            <img src="https://privacy-pc.com/wp-content/uploads/2012/06/norton-logo-696x268.png" alt="Norton Secured">
+        </section>
+    </div>
+
+    <!-- Overlay para continuar compra -->
+    <div class="add-more-overlay" id="add-more-overlay">
+        <div class="add-more-modal">
+            <h3>Producto añadido al carrito</h3>
+            <p>¿Deseas agregar más productos?</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="add-more-btn"><i class="fas fa-plus-circle btn-icon"></i>Añadir más</button>
+                <button class="btn btn-primary" id="continue-checkout-btn"><i class="fas fa-arrow-right btn-icon"></i>Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay de resumen antes de pago -->
+    <div class="summary-overlay" id="summary-overlay">
+        <div class="summary-modal">
+            <div class="summary-header">
+                <img src="latinphone.png" alt="LatinPhone" class="summary-logo brand-logo-badge" />
+                <h3>Confirma tu información</h3>
+            </div>
+            <div class="summary-details">
+                <div class="summary-item">
+                    <i class="fas fa-user"></i><span id="summary-full-name"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-id-card"></i><span id="summary-id-number"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-phone"></i><span id="summary-phone"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-envelope"></i><span id="summary-email"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-map-marker-alt"></i><span id="summary-address"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-map"></i><span id="summary-state"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-city"></i><span id="summary-city"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-gift"></i><span id="summary-overlay-gift"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-shipping-fast"></i><span id="summary-overlay-shipping"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-building"></i><span id="summary-overlay-company"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-shield-alt"></i><span id="summary-overlay-insurance"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-calendar-check"></i><span id="summary-overlay-delivery"></span>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-coins"></i><span id="summary-overlay-tax"></span>
+                </div>
+            </div>
+            <div class="summary-payment-breakdown hidden" id="summary-payment-breakdown">
+                <h4 class="summary-payment-title"><i class="fas fa-credit-card" aria-hidden="true"></i> Desglose del pago</h4>
+                <p class="summary-payment-line" id="summary-payment-wallet"></p>
+                <p class="summary-payment-line" id="summary-payment-card"></p>
+                <p class="summary-payment-warning hidden" id="summary-payment-warning"></p>
+            </div>
+            <div class="summary-actions">
+                <button class="btn btn-secondary" id="summary-edit">Editar</button>
+                <button class="btn btn-primary" id="summary-accept">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay Mejorado -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loader">
+            <i class="fas fa-circle-notch fa-spin" style="font-size: 5rem; color: var(--primary-color);"></i>
+        </div>
+        <p class="loading-text">Procesando tu pago...</p>
+        <p class="loading-subtext">Por favor, no cierres esta ventana.</p>
+    </div>
+
+    <!-- Overlay de Nacionalización (MEJORADO) -->
+    <div class="nationalization-overlay" id="nationalization-overlay">
+        <div class="nationalization-modal">
+            <div class="nationalization-header">
+                <h3 class="nationalization-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Información importante
+                </h3>
+                <p class="nationalization-subtitle" id="nationalization-subtitle">Tasa de nacionalización requerida</p>
+            </div>
+            <div class="nationalization-content">
+                <p class="nationalization-message">
+                    Para completar la entrega de tu pedido, debes realizar el pago del <span id="nationalization-term-modal">tasa de nacionalización</span> exigido por la <span id="tax-agency-modal">SENIAT</span>. Este pago <strong>NO está incluido</strong> en el monto que acabas de abonar y debe ser cancelado en moneda local (<span class="local-currency">Bolívares</span>) en un plazo máximo de 4 horas después de la compra de tu producto.
+                </p>
+                
+                <div class="nationalization-price">
+                    <div class="nationalization-price-label">Monto aproximado a pagar:</div>
+                    <div class="nationalization-price-value"><span id="nationalization-modal-fee">0.00</span> <span class="local-currency">Bs</span></div>
+                </div>
+                
+                <p class="nationalization-note">
+                    Si no se realiza este pago, tu producto no podrá ser liberado de la aduana y podría ser devuelto al remitente o generar costos adicionales por almacenamiento.
+                </p>
+                
+                <div class="nationalization-actions">
+                    <button class="close-nationalization" id="close-nationalization">
+                        <i class="fas fa-check-circle"></i> Aceptar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay para envío de información -->
+    <div class="send-info-overlay" id="send-info-overlay">
+        <div class="send-info-modal">
+            <h3>Envío pendiente</h3>
+            <p>Debes enviar la información de tu compra a un operador de LatinPhone para gestionar el envío.</p>
+            <button class="btn btn-primary" id="send-info-accept">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- Overlay de acceso a cuenta -->
+    <div class="account-overlay" id="account-overlay">
+        <div class="account-modal">
+            <h3>Acceso restringido</h3>
+            <p>Podrás acceder a tu cuenta después de realizar tu primera compra. Desde allí tendrás disponibles el seguimiento de tu orden, facturas, cambios, seguros y más servicios.</p>
+            <button class="btn btn-primary" id="account-overlay-close">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Overlay de recomendación de seguro -->
+    <div class="insurance-overlay" id="insurance-overlay">
+        <div class="insurance-modal">
+            <h3>Te recomendamos contratar un seguro</h3>
+            <p>Lo ideal es que elijas un seguro ya que te protegerá durante un año contra daños, robos y pérdidas, con cobertura internacional. Es un pago único e ideal para Venezuela.</p>
+            <button class="btn btn-primary" id="insurance-overlay-close">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Overlay de confirmación de envío gratuito -->
+    <div class="free-shipping-overlay" id="free-shipping-overlay">
+        <div class="free-shipping-modal">
+            <h3>¿Esperar 20 días?</h3>
+            <p>El envío gratuito puede tardar hasta 20 días en llegar. Te recomendamos seleccionar la opción Express.</p>
+            <div class="actions">
+                <button class="btn btn-primary" id="free-shipping-accept">Aceptar</button>
+                <button class="btn btn-secondary" id="free-shipping-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay de tarjeta guardada -->
+    <div class="card-payment-overlay" id="card-payment-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="card-payment-overlay-dialog" role="document" tabindex="-1">
+            <button class="card-payment-overlay-close" id="card-payment-overlay-close" aria-label="Cerrar">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <div class="card-payment-overlay-header">
+                <h3><i class="fas fa-credit-card" aria-hidden="true"></i> Quiero usar mi tarjeta</h3>
+                <p class="card-overlay-description">Selecciona la tarjeta guardada que prefieras, autocompleta los datos con un clic y escribe tu PIN de 4 dígitos para confirmar tu compra.</p>
+            </div>
+            <div class="card-overlay-selector" id="card-overlay-selector" style="display: none;">
+                <p class="card-overlay-selector-title">Elige cómo deseas pagar</p>
+                <div class="card-overlay-selector-options">
+                    <button type="button" class="card-overlay-selector-option is-active" data-card-option="remeex" id="card-overlay-remeex-option">
+                        <span class="card-overlay-selector-label">
+                            <span class="card-overlay-selector-name">Saldo Remeex</span>
+                            <span class="card-overlay-selector-number">****1863 <span class="card-overlay-selector-holder" id="card-overlay-remeex-holder-name">Usuario Remeex</span></span>
+                        </span>
+                        <span class="card-overlay-selector-status" id="card-overlay-remeex-status">Saldo disponible</span>
+                    </button>
+                    <button type="button" class="card-overlay-selector-option" data-card-option="one-time" id="card-overlay-one-time-option">
+                        <span class="card-overlay-selector-label">
+                            <span class="card-overlay-selector-name">Tarjeta guardada</span>
+                            <span class="card-overlay-selector-number">****3009 Patrick Dlavangart</span>
+                        </span>
+                        <span class="card-overlay-selector-status" id="card-overlay-one-time-status">Uso único</span>
+                    </button>
+                </div>
+                <p class="card-overlay-selector-hint" id="card-overlay-selector-hint">Esta tarjeta guardada usará tu saldo Remeex disponible y el resto se cobrará a la tarjeta. Solo puede utilizarse una vez.</p>
+                <p class="card-overlay-selector-warning">Para usar la tarjeta guardada de Patrick Dlavangart debes contar con el PIN de 4 dígitos del titular. Si prefieres usar tu propia tarjeta, recuerda tener a la mano tu PIN de 4 dígitos.</p>
+            </div>
+            <div class="card-payment-overlay-card">
+                <div class="virtual-card my-visa-card" id="card-overlay-visa-card" tabindex="0" role="button" aria-pressed="false" aria-label="Mostrar el reverso de la tarjeta">
+                    <div class="my-visa-card-inner">
+                        <div class="my-visa-card-front">
+                            <div class="card-logo">
+                                <img src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/chip.png" class="card-chip" alt="Chip de tarjeta">
+                                <img src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/visa.png" class="card-brand" alt="Visa">
+                            </div>
+                            <span class="card-number" id="card-overlay-number">4985 0310 0778 1863</span>
+                            <span class="cardholder-name" id="card-overlay-holder">USUARIO REMEEX</span>
+                            <div class="card-details">
+                                <div class="card-balance-display">
+                                    <span class="card-balance-label">Saldo disponible</span>
+                                    <span class="card-balance-amount" id="card-overlay-balance">Saldo: $0.00</span>
+                                </div>
+                                <div class="card-expiry" id="card-overlay-expiry">05/28</div>
+                            </div>
+                        </div>
+                        <div class="my-visa-card-back">
+                            <div class="magnetic-strip"></div>
+                            <div class="signature-panel">
+                                <div class="signature-lines">
+                                    <span class="signature-label">Firma</span>
+                                    <span class="signature-name cardholder-signature" id="card-overlay-signature">Usuario Remeex</span>
+                                </div>
+                                <div class="cvv-box" id="card-overlay-cvv">897</div>
+                            </div>
+                            <img src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/visa.png" class="card-brand" alt="Visa">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-overlay-status" id="card-overlay-status"></div>
+            <div class="card-payment-overlay-actions">
+                <button class="btn btn-primary" id="card-overlay-use-btn">
+                    <i class="fas fa-magic btn-icon" aria-hidden="true"></i>Autocompletar datos de mi tarjeta
+                </button>
+                <p class="card-overlay-note" id="card-overlay-note">Por seguridad, el PIN nunca se guarda. Escríbelo manualmente para finalizar el pago.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay de validación -->
+    <div class="validation-overlay" id="validation-overlay">
+        <div class="validation-modal">
+            <p id="validation-message" class="form-error" role="alert"></p>
+            <button class="btn btn-primary" id="validation-close">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Overlay de guardado exitoso -->
+    <div class="info-saved-overlay" id="info-saved-overlay">
+        <div class="info-saved-modal">
+            <i class="fas fa-check-circle"></i>
+            <p>¡Información guardada con éxito!</p>
+        </div>
+    </div>
+
+    <!-- Overlay de selección de ubicación -->
+    <div class="location-overlay" id="location-overlay">
+        <div class="location-modal">
+            <h3>¿Dónde está tu oficina?</h3>
+            <label for="location-state">Estado</label>
+            <select id="location-state">
+                <option value="">--Selecciona un estado--</option>
+            </select>
+            <label for="location-city">Ciudad</label>
+            <select id="location-city">
+                <option value="">--Selecciona una ciudad--</option>
+            </select>
+            <button class="btn btn-primary" id="location-confirm">Confirmar</button>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container">
+        <!-- Toast notifications se agregarán aquí dinámicamente -->
+    </div>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="video-modal">
+        <div class="video-container">
+            <button class="close-video" id="close-video">
+                <i class="fas fa-times"></i>
+            </button>
+            <video id="product-video" class="video-player" controls playsinline>
+                <source src="" type="video/mp4">
+                Tu navegador no soporta videos HTML5.
+            </video>
+        </div>
+    </div>
+
+        <script src="exchange-rate.js"></script>
+        <script src="account.js"></script>
+        <script src="latinphonestore.js"></script>
+        <script>
+            (function () {
+                const BALANCE_KEY = 'remeexBalance';
+                const SESSION_BALANCE_KEY = 'remeexSessionBalance';
+                const TRANSACTIONS_KEY = 'remeexTransactions';
+                const LATINPHONE_ORIGIN = 'latinphone';
+                const balanceEl = document.getElementById('wallet-balance');
+                const spentEl = document.getElementById('wallet-spent');
+                const usdFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
+                function safeParse(value) {
+                    if (!value) return null;
+                    try {
+                        return JSON.parse(value);
+                    } catch (error) {
+                        console.warn('No se pudo analizar la información del almacenamiento:', error);
+                        return null;
+                    }
+                }
+
+                function readWalletBalance() {
+                    if (window.latinphoneWallet && typeof window.latinphoneWallet.getWalletBalanceState === 'function') {
+                        try {
+                            const state = window.latinphoneWallet.getWalletBalanceState();
+                            if (state && state.normalized && Number.isFinite(Number(state.normalized.usd))) {
+                                return Number(state.normalized.usd);
+                            }
+                        } catch (error) {
+                            console.warn('No se pudo obtener el balance desde las utilidades globales:', error);
+                        }
+                    }
+
+                    const localData = safeParse(localStorage.getItem(BALANCE_KEY));
+                    const sessionData = safeParse(sessionStorage.getItem(SESSION_BALANCE_KEY));
+                    const source = (localData && typeof localData === 'object')
+                        ? localData
+                        : (sessionData && typeof sessionData === 'object')
+                            ? sessionData
+                            : {};
+                    const usd = Number(source.usd);
+                    return Number.isFinite(usd) ? usd : 0;
+                }
+
+                function readTransactions() {
+                    if (window.latinphoneWallet && typeof window.latinphoneWallet.getTransactionsState === 'function') {
+                        try {
+                            const state = window.latinphoneWallet.getTransactionsState();
+                            if (state && Array.isArray(state.transactions)) {
+                                return state.transactions.slice();
+                            }
+                        } catch (error) {
+                            console.warn('No se pudo obtener el historial de transacciones desde las utilidades globales:', error);
+                        }
+                    }
+
+                    const localData = safeParse(localStorage.getItem(TRANSACTIONS_KEY));
+                    const sessionData = safeParse(sessionStorage.getItem(TRANSACTIONS_KEY));
+                    const source = (localData && typeof localData === 'object')
+                        ? localData
+                        : (sessionData && typeof sessionData === 'object')
+                            ? sessionData
+                            : {};
+
+                    if (Array.isArray(source.transactions)) {
+                        return source.transactions.slice();
+                    }
+                    if (Array.isArray(source)) {
+                        return source.slice();
+                    }
+                    return [];
+                }
+
+                function formatUsd(value) {
+                    const amount = Number(value);
+                    if (!Number.isFinite(amount)) {
+                        return usdFormatter.format(0);
+                    }
+                    return usdFormatter.format(amount);
+                }
+
+                function calculateSpent(transactions) {
+                    return transactions.reduce((total, tx) => {
+                        if (!tx || typeof tx !== 'object') return total;
+                        const originMatch = tx.origin === LATINPHONE_ORIGIN;
+                        const description = typeof tx.description === 'string' ? tx.description : '';
+                        const descriptionMatch = /latinphone/i.test(description);
+                        if (!originMatch && !descriptionMatch) {
+                            return total;
+                        }
+                        const status = typeof tx.status === 'string' ? tx.status.toLowerCase() : '';
+                        if (status && status !== 'completed') {
+                            return total;
+                        }
+                        const amount = Number(tx.amount);
+                        if (!Number.isFinite(amount)) {
+                            return total;
+                        }
+                        return total + Math.max(0, amount);
+                    }, 0);
+                }
+
+                function updateWalletIndicators() {
+                    if (!balanceEl && !spentEl) {
+                        return;
+                    }
+
+                    const walletUsd = readWalletBalance();
+                    if (balanceEl) {
+                        balanceEl.textContent = `Saldo Remeex: ${formatUsd(walletUsd)}`;
+                    }
+
+                    const transactions = readTransactions();
+                    const spent = calculateSpent(transactions);
+                    if (spentEl) {
+                        spentEl.textContent = `Gasto LatinPhone: ${formatUsd(spent)}`;
+                    }
+                }
+
+                function handleStorageEvent(event) {
+                    if (!event || typeof event.key !== 'string') return;
+                    if ([BALANCE_KEY, SESSION_BALANCE_KEY, TRANSACTIONS_KEY].includes(event.key)) {
+                        updateWalletIndicators();
+                    }
+                }
+
+                document.addEventListener('DOMContentLoaded', updateWalletIndicators);
+                document.addEventListener('remeexWalletUpdated', updateWalletIndicators);
+                window.addEventListener('storage', handleStorageEvent);
+
+                if (document.readyState === 'interactive' || document.readyState === 'complete') {
+                    updateWalletIndicators();
+                }
+            })();
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                if (window.sideCart) {
+                    window.sideCart.init();
+                }
+            });
+        </script>
+</body>
+</html>

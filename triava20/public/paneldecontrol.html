@@ -1,0 +1,5272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Panel de Control REMEEX | Configuración Modular</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --secondary: #00579f;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --danger: #ff4d4d;
+      --warning: #ffad33;
+      --info: #0095ff;
+      --neutral-50: #ffffff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+      --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+      --radius-xs: 4px;
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      --transition-fast: all 0.15s ease;
+      --transition-base: all 0.25s ease;
+      --transition-slow: all 0.4s ease;
+      --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+      --success-gradient: linear-gradient(135deg, #00c057 0%, #00a346 100%);
+      --glass-bg: rgba(255, 255, 255, 0.9);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --backdrop-blur: blur(10px);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--neutral-50);
+      color: var(--neutral-900);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      height: 100vh;
+      overflow-y: hidden;
+    }
+
+    /* Layout principal mobile-first */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: relative;
+    }
+
+    /* Header fijo */
+    .header {
+      background: var(--card-gradient);
+      color: white;
+      padding: 1rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 100%;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: var(--radius-md);
+      transition: var(--transition-base);
+    }
+
+    .menu-toggle:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .header-subtitle {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      display: none;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    /* Contenedor principal */
+    .main-container {
+      flex: 1;
+      margin-top: 70px;
+      margin-bottom: 70px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Wizard Navigation */
+    .wizard-nav {
+      background: var(--neutral-100);
+      border-bottom: 1px solid var(--neutral-300);
+      padding: 0.5rem 1rem;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .wizard-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .wizard-steps {
+      display: flex;
+      gap: 0.5rem;
+      min-width: fit-content;
+    }
+
+    .wizard-step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      background: var(--neutral-200);
+      color: var(--neutral-600);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-base);
+      white-space: nowrap;
+      min-width: fit-content;
+    }
+
+    .wizard-step.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .wizard-step.completed {
+      background: var(--success);
+      color: white;
+    }
+
+    .wizard-step:hover:not(.active) {
+      background: var(--neutral-300);
+    }
+
+    .step-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: currentColor;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .step-number {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    /* Contenido del paso */
+    .step-content {
+      display: none;
+      height: calc(100vh - 140px);
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .step-content.active {
+      display: block;
+    }
+
+    /* Secciones colapsables */
+    .collapsible-section {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: var(--neutral-100);
+      border-bottom: 1px solid var(--neutral-300);
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .section-header:hover {
+      background: var(--neutral-200);
+    }
+
+    .section-header.expanded {
+      background: var(--primary);
+      color: white;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .section-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .section-header.expanded .section-icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .section-toggle {
+      transition: var(--transition-base);
+    }
+
+    .section-toggle.expanded {
+      transform: rotate(180deg);
+    }
+
+    .section-content {
+      display: none;
+      padding: 1rem;
+      background: var(--neutral-50);
+    }
+
+    .section-content.expanded {
+      display: block;
+    }
+
+    /* Quick stats grid mobile-first */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-card {
+      background: var(--neutral-100);
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+      transition: var(--transition-base);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      margin: 0 auto 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: white;
+    }
+
+    .stat-icon.primary { background: var(--primary); }
+    .stat-icon.success { background: var(--success); }
+    .stat-icon.warning { background: var(--warning); }
+    .stat-icon.info { background: var(--info); }
+    .stat-icon.danger { background: var(--danger); }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      color: var(--neutral-600);
+      font-size: 0.75rem;
+    }
+
+    .stat-change {
+      font-size: 0.7rem;
+      font-weight: 500;
+      margin-top: 0.25rem;
+    }
+
+    .stat-change.positive {
+      color: var(--success);
+    }
+
+    .stat-change.negative {
+      color: var(--danger);
+    }
+
+    /* Form elements mobile-first */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 500;
+      color: var(--neutral-700);
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--neutral-400);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      transition: var(--transition-base);
+      background: var(--neutral-100);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.1);
+    }
+
+    .form-select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .input-prefix {
+      position: absolute;
+      left: 0.75rem;
+      color: var(--neutral-500);
+      z-index: 1;
+    }
+
+    .input-group .form-control {
+      padding-left: 2.5rem;
+    }
+
+    /* Buttons mobile-first */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition-base);
+      text-decoration: none;
+      white-space: nowrap;
+      min-height: 44px;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: var(--neutral-200);
+      color: var(--neutral-700);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--neutral-300);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: #00b844;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #e60000;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-warning:hover:not(:disabled) {
+      background: #ff9500;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--neutral-400);
+      color: var(--neutral-700);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--neutral-100);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-sm {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      min-height: 36px;
+    }
+
+    .btn-lg {
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+    }
+
+    .btn-icon {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .btn-group-horizontal {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--neutral-400);
+      transition: 0.3s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--success);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(24px);
+    }
+
+    /* Setting Item */
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--neutral-300);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-info {
+      flex: 1;
+      margin-right: 1rem;
+    }
+
+    .setting-title {
+      font-weight: 500;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    .setting-description {
+      font-size: 0.75rem;
+      color: var(--neutral-600);
+      line-height: 1.4;
+    }
+
+    .setting-value {
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .alert-success {
+      background: rgba(0, 211, 77, 0.1);
+      border-left: 4px solid var(--success);
+      color: var(--success);
+    }
+
+    .alert-warning {
+      background: rgba(255, 173, 51, 0.1);
+      border-left: 4px solid var(--warning);
+      color: var(--warning);
+    }
+
+    .alert-danger {
+      background: rgba(255, 77, 77, 0.1);
+      border-left: 4px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .alert-info {
+      background: rgba(0, 149, 255, 0.1);
+      border-left: 4px solid var(--info);
+      color: var(--info);
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .alert-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .alert-message {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+
+    /* Sliders mobile-friendly */
+    .slider-container {
+      margin: 1rem 0;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--neutral-300);
+      outline: none;
+      transition: var(--transition-base);
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 8px rgba(26, 31, 113, 0.1);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      border: none;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .slider-value {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* Virtual Cards */
+    .card-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .virtual-card {
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      min-height: 200px;
+    }
+
+    .virtual-card::before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-info h4 {
+      font-size: 0.8rem;
+      opacity: 0.8;
+      margin-bottom: 0.25rem;
+    }
+
+    .card-info h3 {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .card-brand {
+      font-size: 1.5rem;
+      opacity: 0.8;
+    }
+
+    .card-number {
+      font-family: monospace;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      letter-spacing: 2px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .card-detail {
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .card-detail-value {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .card-actions {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+    }
+
+    /* Progress indicators */
+    .progress-ring {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
+    }
+
+    .progress-ring circle {
+      fill: transparent;
+      stroke: var(--neutral-300);
+      stroke-width: 4;
+      r: 26;
+      cx: 30;
+      cy: 30;
+    }
+
+    .progress-ring .progress {
+      stroke: var(--primary);
+      stroke-dasharray: 163;
+      stroke-dashoffset: 163;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    /* Security indicators */
+    .security-level {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .security-dots {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .security-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--neutral-300);
+    }
+
+    .security-dot.active {
+      background: var(--success);
+    }
+
+    .security-dot.medium {
+      background: var(--warning);
+    }
+
+    .security-dot.high {
+      background: var(--danger);
+    }
+
+    .security-text {
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* Biometric options */
+    .biometric-option {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--neutral-300);
+      border-radius: var(--radius-md);
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .biometric-option:hover {
+      border-color: var(--primary);
+      background: rgba(26, 31, 113, 0.05);
+    }
+
+    .biometric-option.selected {
+      border-color: var(--primary);
+      background: rgba(26, 31, 113, 0.1);
+    }
+
+    .biometric-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .biometric-info {
+      flex: 1;
+    }
+
+    .biometric-title {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    .biometric-description {
+      font-size: 0.75rem;
+      color: var(--neutral-600);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--neutral-100);
+      border-top: 1px solid var(--neutral-300);
+      padding: 0.5rem;
+      z-index: 1000;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--neutral-200);
+      color: var(--neutral-700);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .nav-btn:hover {
+      background: var(--neutral-300);
+    }
+
+    .nav-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .nav-btn.success {
+      background: var(--success);
+      color: white;
+    }
+
+    /* Modal responsive */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: var(--backdrop-blur);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 9999;
+      padding: 0;
+    }
+
+    .modal {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: modalSlideUp 0.3s ease;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .modal-header {
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--neutral-300);
+      position: sticky;
+      top: 0;
+      background: var(--neutral-100);
+      z-index: 1;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-200);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .modal-close:hover {
+      background: var(--neutral-300);
+    }
+
+    .modal-body {
+      padding: 1rem;
+    }
+
+    .modal-footer {
+      padding: 1rem;
+      border-top: 1px solid var(--neutral-300);
+      display: flex;
+      gap: 0.5rem;
+      position: sticky;
+      bottom: 0;
+      background: var(--neutral-100);
+    }
+
+    .modal-footer .btn {
+      flex: 1;
+    }
+
+    @keyframes modalSlideUp {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Notification items */
+    .notification-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid var(--neutral-300);
+      transition: var(--transition-base);
+    }
+
+    .notification-item:hover {
+      background: var(--neutral-200);
+    }
+
+    .notification-item.unread {
+      background: rgba(26, 31, 113, 0.05);
+      border-left: 4px solid var(--primary);
+    }
+
+    .notification-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      color: white;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    .notification-message {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      margin-bottom: 0.25rem;
+    }
+
+    .notification-time {
+      font-size: 0.7rem;
+      color: var(--neutral-500);
+    }
+
+    .notification-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Responsive breakpoints */
+    @media (min-width: 640px) {
+      .header-subtitle {
+        display: block;
+      }
+
+      .header-title {
+        font-size: 1.5rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .btn-group {
+        flex-direction: row;
+      }
+
+      .card-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .modal-overlay {
+        align-items: center;
+        padding: 1rem;
+      }
+
+      .modal {
+        border-radius: var(--radius-lg);
+        max-width: 600px;
+        max-height: 90vh;
+      }
+
+      @keyframes modalSlideUp {
+        from {
+          transform: scale(0.9) translateY(-20px);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .app-container {
+        flex-direction: row;
+      }
+
+      .main-container {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      .header {
+        position: relative;
+        border-radius: 0;
+      }
+
+      .wizard-nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .step-content {
+        height: calc(100vh - 70px);
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .card-container {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .bottom-nav {
+        position: relative;
+        border-top: none;
+        background: transparent;
+        padding: 1rem;
+      }
+    }
+
+    /* Loading states */
+    .loading {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+      0% {
+        left: -100%;
+      }
+      100% {
+        left: 100%;
+      }
+    }
+
+    /* Utility classes */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-success {
+      color: var(--success);
+    }
+
+    .text-danger {
+      color: var(--danger);
+    }
+
+    .text-warning {
+      color: var(--warning);
+    }
+
+    .text-info {
+      color: var(--info);
+    }
+
+    .text-muted {
+      color: var(--neutral-600);
+    }
+
+    .d-none {
+      display: none;
+    }
+
+    .d-block {
+      display: block;
+    }
+
+    .d-flex {
+      display: flex;
+    }
+
+    .flex-1 {
+      flex: 1;
+    }
+
+    .mb-0 { margin-bottom: 0; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    .mb-4 { margin-bottom: 2rem; }
+
+    .mt-0 { margin-top: 0; }
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mt-4 { margin-top: 2rem; }
+
+    .p-0 { padding: 0; }
+    .p-1 { padding: 0.5rem; }
+    .p-2 { padding: 1rem; }
+    .p-3 { padding: 1.5rem; }
+    .p-4 { padding: 2rem; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="header-left">
+          <button class="menu-toggle" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <h1 class="header-title" id="header-title">Panel de Control</h1>
+            <div class="header-subtitle" id="header-subtitle">REMEEX VISA</div>
+          </div>
+        </div>
+        <div class="user-avatar">JC</div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+      <!-- Wizard Navigation -->
+      <nav class="wizard-nav" id="wizard-nav">
+        <div class="wizard-steps">
+          <div class="wizard-step active" data-step="0">
+            <div class="step-number">1</div>
+            <span>Inicio</span>
+          </div>
+          <div class="wizard-step" data-step="1">
+            <div class="step-number">2</div>
+            <span>Personal</span>
+          </div>
+          <div class="wizard-step" data-step="2">
+            <div class="step-number">3</div>
+            <span>Verificación</span>
+          </div>
+          <div class="wizard-step" data-step="3">
+            <div class="step-number">4</div>
+            <span>Seguridad</span>
+          </div>
+          <div class="wizard-step" data-step="4">
+            <div class="step-number">5</div>
+            <span>Límites</span>
+          </div>
+          <div class="wizard-step" data-step="5">
+            <div class="step-number">6</div>
+            <span>Cuentas</span>
+          </div>
+          <div class="wizard-step" data-step="6">
+            <div class="step-number">7</div>
+            <span>Usuarios</span>
+          </div>
+          <div class="wizard-step" data-step="7">
+            <div class="step-number">8</div>
+            <span>Configuración</span>
+          </div>
+          <div class="wizard-step" data-step="8">
+            <div class="step-number">9</div>
+            <span>Notificaciones</span>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Step 1: Dashboard -->
+      <div class="step-content active" id="step-0">
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon success">
+              <i class="fas fa-shield-check"></i>
+            </div>
+            <div class="stat-value">98%</div>
+            <div class="stat-label">Seguridad</div>
+            <div class="stat-change positive">+5%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon primary">
+              <i class="fas fa-university"></i>
+            </div>
+            <div class="stat-value">3</div>
+            <div class="stat-label">Cuentas</div>
+            <div class="stat-change">Activas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon warning">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-value">1</div>
+            <div class="stat-label">Pendiente</div>
+            <div class="stat-change negative">Acción requerida</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon info">
+              <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="stat-value">2</div>
+            <div class="stat-label">Tarjetas</div>
+            <div class="stat-change">Virtuales</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-bolt"></i>
+              </div>
+              Acciones Rápidas
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="navigateToStep(3)">
+                <i class="fas fa-key"></i>
+                Cambiar Contraseña
+              </button>
+              <button class="btn btn-secondary" onclick="navigateToStep(5)">
+                <i class="fas fa-plus"></i>
+                Crear Tarjeta Virtual
+              </button>
+              <button class="btn btn-outline" onclick="navigateToStep(4)">
+                <i class="fas fa-sliders-h"></i>
+                Ajustar Límites
+              </button>
+              <button class="btn btn-outline" onclick="exportData()">
+                <i class="fas fa-download"></i>
+                Exportar Datos
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Overview -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              Resumen de Seguridad
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="security-level">
+              <div class="security-dots">
+                <div class="security-dot active"></div>
+                <div class="security-dot active"></div>
+                <div class="security-dot active"></div>
+                <div class="security-dot active"></div>
+                <div class="security-dot medium"></div>
+              </div>
+              <span class="security-text">Seguridad Alta (4/5)</span>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Autenticación 2FA</div>
+                <div class="setting-description">Protección adicional activa</div>
+              </div>
+              <span class="setting-value text-success">Activo</span>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Biometría</div>
+                <div class="setting-description">Huella dactilar configurada</div>
+              </div>
+              <span class="setting-value text-success">Configurado</span>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Sesiones Activas</div>
+                <div class="setting-description">3 dispositivos conectados</div>
+              </div>
+              <span class="setting-value text-info">3 dispositivos</span>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="navigateToStep(3)">
+                <i class="fas fa-cog"></i>
+                Configurar Seguridad
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-history"></i>
+              </div>
+              Actividad Reciente
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Límite modificado</div>
+                <div class="setting-description">Hace 2 horas - Aumentado a $5,000</div>
+              </div>
+              <i class="fas fa-chevron-right text-muted"></i>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Nueva sesión</div>
+                <div class="setting-description">Hace 1 día - iPhone 14 Pro</div>
+              </div>
+              <i class="fas fa-chevron-right text-muted"></i>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Notificaciones actualizadas</div>
+                <div class="setting-description">Hace 3 días - Email deshabilitado</div>
+              </div>
+              <i class="fas fa-chevron-right text-muted"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Personal Information -->
+      <div class="step-content" id="step-1">
+        <!-- Basic Information -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-user"></i>
+              </div>
+              Información Básica
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nombre(s)</label>
+                <input type="text" class="form-control" value="Juan Carlos" id="first-name">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Apellido(s)</label>
+                <input type="text" class="form-control" value="Pérez García" id="last-name">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tipo de Documento</label>
+                <select class="form-control form-select" id="document-type">
+                  <option value="v">Cédula de Identidad (V)</option>
+                  <option value="e">Cédula de Extranjero (E)</option>
+                  <option value="passport">Pasaporte</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Número de Documento</label>
+                <input type="text" class="form-control" value="12.345.678" id="document-number">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" value="1990-05-15" id="birth-date">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nacionalidad</label>
+                <select class="form-control form-select" id="nationality">
+                  <option value="ve">Venezolana</option>
+                  <option value="co">Colombiana</option>
+                  <option value="ar">Argentina</option>
+                  <option value="other">Otra</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="savePersonalInfo('basic')">
+                <i class="fas fa-save"></i>
+                Guardar Cambios
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              Información de Contacto
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Email Principal</label>
+                <div class="input-group">
+                  <span class="input-prefix"><i class="fas fa-envelope"></i></span>
+                  <input type="email" class="form-control" value="juan.perez@email.com" id="primary-email">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Teléfono Principal</label>
+                <div class="input-group">
+                  <span class="input-prefix"><i class="fas fa-phone"></i></span>
+                  <input type="tel" class="form-control" value="+58 412-1234567" id="primary-phone">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Alternativo</label>
+                <div class="input-group">
+                  <span class="input-prefix"><i class="fas fa-envelope"></i></span>
+                  <input type="email" class="form-control" placeholder="email.alternativo@ejemplo.com" id="secondary-email">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">WhatsApp</label>
+                <div class="input-group">
+                  <span class="input-prefix"><i class="fab fa-whatsapp"></i></span>
+                  <input type="tel" class="form-control" value="+58 412-1234567" id="whatsapp">
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <div class="alert-content">
+                <div class="alert-title">Verificación de Contacto</div>
+                <div class="alert-message">Asegúrate de verificar tus métodos de contacto para recibir notificaciones importantes.</div>
+              </div>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="savePersonalInfo('contact')">
+                <i class="fas fa-save"></i>
+                Guardar
+              </button>
+              <button class="btn btn-outline" onclick="verifyContact('email')">
+                <i class="fas fa-envelope-open"></i>
+                Verificar Email
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address Information -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              Dirección
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">País</label>
+                <select class="form-control form-select" id="country">
+                  <option value="ve">Venezuela</option>
+                  <option value="co">Colombia</option>
+                  <option value="ar">Argentina</option>
+                  <option value="us">Estados Unidos</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Estado/Provincia</label>
+                <select class="form-control form-select" id="state">
+                  <option value="caracas">Caracas</option>
+                  <option value="miranda">Miranda</option>
+                  <option value="carabobo">Carabobo</option>
+                  <option value="zulia">Zulia</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Ciudad</label>
+                <input type="text" class="form-control" value="Caracas" id="city">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Código Postal</label>
+                <input type="text" class="form-control" value="1010" id="postal-code">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Dirección Completa</label>
+              <textarea class="form-control" rows="3" id="full-address" placeholder="Av. Principal, Edificio Los Robles, Piso 5, Apto 5A">Av. Francisco de Miranda, Torre Banaven, Piso 15, Oficina 1501, El Rosal</textarea>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="savePersonalInfo('address')">
+                <i class="fas fa-save"></i>
+                Guardar Dirección
+              </button>
+              <button class="btn btn-outline" onclick="validateAddress()">
+                <i class="fas fa-map-marker-alt"></i>
+                Validar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional Information -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-briefcase"></i>
+              </div>
+              Información Profesional
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Situación Laboral</label>
+                <select class="form-control form-select" id="employment-status">
+                  <option value="employed">Empleado</option>
+                  <option value="self-employed">Trabajador Independiente</option>
+                  <option value="business-owner">Empresario</option>
+                  <option value="unemployed">Desempleado</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Empresa/Organización</label>
+                <input type="text" class="form-control" value="REMEEX Technologies" id="company">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Cargo/Posición</label>
+                <input type="text" class="form-control" value="Gerente de Sistemas" id="position">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Ingresos Mensuales (USD)</label>
+                <select class="form-control form-select" id="income">
+                  <option value="0-500">$0 - $500</option>
+                  <option value="500-1000">$500 - $1,000</option>
+                  <option value="1000-2500">$1,000 - $2,500</option>
+                  <option value="2500-5000">$2,500 - $5,000</option>
+                  <option value="5000+">Más de $5,000</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="savePersonalInfo('professional')">
+                <i class="fas fa-save"></i>
+                Guardar Información
+              </button>
+              <button class="btn btn-outline" onclick="verifyEmployment()">
+                <i class="fas fa-building"></i>
+                Verificar Empleo
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Verification -->
+      <div class="step-content" id="step-2">
+        <!-- Identity Verification -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-shield-check"></i>
+              </div>
+              Verificación de Identidad
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="alert alert-success">
+              <i class="fas fa-check-circle"></i>
+              <div class="alert-content">
+                <div class="alert-title">Identidad Verificada</div>
+                <div class="alert-message">Tu identidad ha sido verificada exitosamente el 15 de marzo de 2024.</div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Documento de Identidad</div>
+                <div class="setting-description">Cédula de Identidad V-12.345.678</div>
+              </div>
+              <span class="setting-value text-success">
+                <i class="fas fa-check-circle"></i> Verificado
+              </span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Reconocimiento Facial</div>
+                <div class="setting-description">Selfie y comparación biométrica</div>
+              </div>
+              <span class="setting-value text-success">
+                <i class="fas fa-check-circle"></i> Verificado
+              </span>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-outline" onclick="downloadVerificationCertificate()">
+                <i class="fas fa-certificate"></i>
+                Descargar Certificado
+              </button>
+              <button class="btn btn-secondary" onclick="updateIdentityDocument()">
+                <i class="fas fa-sync-alt"></i>
+                Actualizar Documento
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Document Verification -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              Documentos
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Cédula (Frontal)</div>
+                <div class="setting-description">Imagen clara del anverso</div>
+              </div>
+              <span class="setting-value text-success">
+                <i class="fas fa-check-circle"></i> Aprobado
+              </span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Cédula (Posterior)</div>
+                <div class="setting-description">Imagen clara del reverso</div>
+              </div>
+              <span class="setting-value text-success">
+                <i class="fas fa-check-circle"></i> Aprobado
+              </span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Pasaporte</div>
+                <div class="setting-description">Documento adicional</div>
+              </div>
+              <span class="setting-value text-warning">
+                <i class="fas fa-clock"></i> Opcional
+              </span>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="uploadDocument('passport')">
+                <i class="fas fa-upload"></i>
+                Subir Pasaporte
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address Verification -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-home"></i>
+              </div>
+              Comprobante de Domicilio
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              <div class="alert-content">
+                <div class="alert-title">Verificación Pendiente</div>
+                <div class="alert-message">Necesitas subir un comprobante de domicilio reciente (máximo 3 meses).</div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Recibo de Servicios</div>
+                <div class="setting-description">Electricidad, agua, gas o teléfono</div>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="uploadDocument('utility')">
+                <i class="fas fa-upload"></i> Subir
+              </button>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Estado de Cuenta</div>
+                <div class="setting-description">Último estado bancario</div>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="uploadDocument('bank-statement')">
+                <i class="fas fa-upload"></i> Subir
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Income Verification -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+              Verificación de Ingresos
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Comprobante de Ingresos</div>
+                <div class="setting-description">Últimos 3 meses de recibos de pago</div>
+              </div>
+              <span class="setting-value text-warning">
+                <i class="fas fa-clock"></i> Pendiente
+              </span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Constancia de Trabajo</div>
+                <div class="setting-description">Carta de la empresa</div>
+              </div>
+              <span class="setting-value text-warning">
+                <i class="fas fa-clock"></i> Pendiente
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Fuente Principal de Ingresos</label>
+              <select class="form-control form-select" id="income-source">
+                <option value="salary">Salario/Sueldo</option>
+                <option value="business">Negocio Propio</option>
+                <option value="investments">Inversiones</option>
+                <option value="freelance">Trabajo Independiente</option>
+              </select>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="uploadDocument('income-proof')">
+                <i class="fas fa-upload"></i>
+                Subir Comprobantes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Security -->
+      <div class="step-content" id="step-3">
+        <!-- Password Security -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-key"></i>
+              </div>
+              Contraseña y Acceso
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="security-level">
+              <div class="security-dots">
+                <div class="security-dot active"></div>
+                <div class="security-dot active"></div>
+                <div class="security-dot active"></div>
+                <div class="security-dot active"></div>
+                <div class="security-dot"></div>
+              </div>
+              <span class="security-text">Fortaleza: Muy Alta</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Contraseña Actual</label>
+              <input type="password" class="form-control" id="current-password">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nueva Contraseña</label>
+              <input type="password" class="form-control" id="new-password" oninput="checkPasswordStrength(this.value)">
+              <div id="password-strength" class="mt-1"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Confirmar Nueva Contraseña</label>
+              <input type="password" class="form-control" id="confirm-password">
+            </div>
+
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <div class="alert-content">
+                <div class="alert-title">Requisitos de Contraseña</div>
+                <div class="alert-message">
+                  • Mínimo 8 caracteres<br>
+                  • Al menos una mayúscula y minúscula<br>
+                  • Al menos un número y símbolo
+                </div>
+              </div>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="changePassword()">
+                <i class="fas fa-key"></i>
+                Cambiar Contraseña
+              </button>
+              <button class="btn btn-outline" onclick="generateStrongPassword()">
+                <i class="fas fa-magic"></i>
+                Generar Segura
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two Factor Authentication -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              Autenticación 2FA
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Autenticación de Dos Factores</div>
+                <div class="setting-description">Protección adicional con códigos</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="two-factor-enabled" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Aplicación Autenticadora</div>
+                <div class="setting-description">Google Authenticator, Authy</div>
+              </div>
+              <span class="setting-value text-success">
+                <i class="fas fa-check-circle"></i> Configurado
+              </span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">SMS de Respaldo</div>
+                <div class="setting-description">Códigos por mensaje</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="sms-backup" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="setup2FA()">
+                <i class="fas fa-qrcode"></i>
+                Reconfigurar 2FA
+              </button>
+              <button class="btn btn-outline" onclick="test2FA()">
+                <i class="fas fa-vial"></i>
+                Probar 2FA
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Biometric Authentication -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-fingerprint"></i>
+              </div>
+              Autenticación Biométrica
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="biometric-option selected">
+              <div class="biometric-icon">
+                <i class="fas fa-fingerprint"></i>
+              </div>
+              <div class="biometric-info">
+                <div class="biometric-title">Huella Dactilar</div>
+                <div class="biometric-description">Autenticación rápida y segura</div>
+              </div>
+              <span class="setting-value text-success">
+                <i class="fas fa-check-circle"></i> Configurado
+              </span>
+            </div>
+
+            <div class="biometric-option">
+              <div class="biometric-icon">
+                <i class="fas fa-eye"></i>
+              </div>
+              <div class="biometric-info">
+                <div class="biometric-title">Reconocimiento Facial</div>
+                <div class="biometric-description">Desbloqueo con face ID</div>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="setupFaceID()">
+                <i class="fas fa-plus"></i> Configurar
+              </button>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Biometría como Principal</div>
+                <div class="setting-description">Usar en lugar de contraseña</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="biometric-primary" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="addFingerprint()">
+                <i class="fas fa-plus"></i>
+                Agregar Huella
+              </button>
+              <button class="btn btn-outline" onclick="testBiometric()">
+                <i class="fas fa-vial"></i>
+                Probar Biometría
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Sessions -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-desktop"></i>
+              </div>
+              Sesiones Activas
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <div class="alert-content">
+                <div class="alert-message">Tienes 3 sesiones activas. Si ves algún dispositivo desconocido, ciérralo inmediatamente.</div>
+              </div>
+            </div>
+
+            <div class="setting-item" style="border: 2px solid var(--success); background: rgba(0, 211, 77, 0.05);">
+              <div class="setting-info">
+                <div class="setting-title">MacBook Pro (Actual)</div>
+                <div class="setting-description">
+                  macOS • Chrome • Caracas<br>
+                  IP: 190.123.45.67 • Ahora
+                </div>
+              </div>
+              <span class="setting-value text-success">
+                <i class="fas fa-check-circle"></i> Actual
+              </span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">iPhone 14 Pro</div>
+                <div class="setting-description">
+                  iOS • Safari • Caracas<br>
+                  IP: 190.123.45.68 • Hace 2h
+                </div>
+              </div>
+              <button class="btn btn-sm btn-danger" onclick="terminateSession('iphone')">
+                <i class="fas fa-sign-out-alt"></i>
+              </button>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">iPad Air</div>
+                <div class="setting-description">
+                  iPadOS • Safari • Miami<br>
+                  IP: 201.87.91.23 • Hace 1d
+                </div>
+              </div>
+              <button class="btn btn-sm btn-danger" onclick="terminateSession('ipad')">
+                <i class="fas fa-sign-out-alt"></i>
+              </button>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-danger" onclick="terminateAllSessions()">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar Todas
+              </button>
+              <button class="btn btn-outline" onclick="refreshSessions()">
+                <i class="fas fa-sync-alt"></i>
+                Actualizar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Limits and Controls -->
+      <div class="step-content" id="step-4">
+        <!-- Daily Limits -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-calendar-day"></i>
+              </div>
+              Límites Diarios
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="form-group">
+              <label class="form-label">Límite Diario de Retiros</label>
+              <div class="slider-container">
+                <input type="range" class="slider" id="daily-withdrawal-limit" min="100" max="25000" value="5000" step="100">
+                <div class="slider-labels">
+                  <span>$100</span>
+                  <span class="slider-value" id="daily-withdrawal-value">$5,000</span>
+                  <span>$25,000</span>
+                </div>
+              </div>
+              <div class="text-muted" style="font-size: 0.75rem;">
+                Usado hoy: $1,250 / $5,000 (25%)
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Límite Diario de Depósitos</label>
+              <div class="slider-container">
+                <input type="range" class="slider" id="daily-deposit-limit" min="500" max="50000" value="15000" step="500">
+                <div class="slider-labels">
+                  <span>$500</span>
+                  <span class="slider-value" id="daily-deposit-value">$15,000</span>
+                  <span>$50,000</span>
+                </div>
+              </div>
+              <div class="text-muted" style="font-size: 0.75rem;">
+                Usado hoy: $2,800 / $15,000 (18.7%)
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Límite Diario de Transferencias</label>
+              <div class="slider-container">
+                <input type="range" class="slider" id="daily-transfer-limit" min="1000" max="100000" value="20000" step="1000">
+                <div class="slider-labels">
+                  <span>$1,000</span>
+                  <span class="slider-value" id="daily-transfer-value">$20,000</span>
+                  <span>$100,000</span>
+                </div>
+              </div>
+              <div class="text-muted" style="font-size: 0.75rem;">
+                Usado hoy: $850 / $20,000 (4.3%)
+              </div>
+            </div>
+
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <div class="alert-content">
+                <div class="alert-message">Los límites se reinician cada día a las 00:00 UTC.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transaction Limits -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-exchange-alt"></i>
+              </div>
+              Límites por Transacción
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Retiro Mínimo</label>
+                <div class="input-group">
+                  <span class="input-prefix">$</span>
+                  <input type="number" class="form-control" value="10" min="1" max="100">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Retiro Máximo</label>
+                <div class="input-group">
+                  <span class="input-prefix">$</span>
+                  <input type="number" class="form-control" value="5000" min="100" max="25000">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Transferencia Mínima</label>
+                <div class="input-group">
+                  <span class="input-prefix">$</span>
+                  <input type="number" class="form-control" value="1" min="0.01" max="10">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Transferencia Máxima</label>
+                <div class="input-group">
+                  <span class="input-prefix">$</span>
+                  <input type="number" class="form-control" value="20000" min="1000" max="100000">
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <h4 style="font-size: 1rem; margin-bottom: 1rem;">Límites por Tipo de Destinatario</h4>
+              
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-title">Contactos Verificados</div>
+                  <div class="setting-description">Límites más altos para contactos de confianza</div>
+                </div>
+                <span class="setting-value">Hasta $50,000</span>
+              </div>
+              
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-title">Nuevos Destinatarios</div>
+                  <div class="setting-description">Límites reducidos para nuevos contactos</div>
+                </div>
+                <span class="setting-value">Hasta $1,000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Velocity Controls -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-tachometer-alt"></i>
+              </div>
+              Controles de Velocidad
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Control de Frecuencia</div>
+                <div class="setting-description">Limitar número de transacciones por hora</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="frequency-control" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Máximo por Hora</label>
+              <div class="slider-container">
+                <input type="range" class="slider" id="transactions-per-hour" min="1" max="50" value="10" step="1">
+                <div class="slider-labels">
+                  <span>1</span>
+                  <span class="slider-value" id="hourly-tx-value">10</span>
+                  <span>50</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tiempo de Espera Entre Grandes</label>
+              <select class="form-control form-select">
+                <option value="0">Sin espera</option>
+                <option value="30">30 segundos</option>
+                <option value="60" selected>1 minuto</option>
+                <option value="300">5 minutos</option>
+              </select>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Detección de Patrones</div>
+                <div class="setting-description">Alertar sobre comportamientos inusuales</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="pattern-detection" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              <div class="alert-content">
+                <div class="alert-message">Los controles pueden causar demoras durante alta actividad.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="btn-group mt-3">
+          <button class="btn btn-primary" onclick="saveLimits()">
+            <i class="fas fa-save"></i>
+            Guardar Configuración
+          </button>
+          <button class="btn btn-outline" onclick="resetLimitsToDefault()">
+            <i class="fas fa-undo"></i>
+            Restaurar Defaults
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 6: Accounts and Cards -->
+      <div class="step-content" id="step-5">
+        <!-- Bank Accounts -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-university"></i>
+              </div>
+              Cuentas Bancarias
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <!-- Bank Account List -->
+            <div class="setting-item" style="border: 2px solid var(--success); background: rgba(0, 211, 77, 0.05);">
+              <div class="setting-info">
+                <div class="setting-title">Banco de Venezuela - Principal</div>
+                <div class="setting-description">
+                  Cuenta Corriente: ****-****-**-0123456789<br>
+                  Titular: Juan Carlos Pérez García • Verificada
+                </div>
+              </div>
+              <div class="btn-group-horizontal">
+                <button class="btn btn-sm btn-outline" onclick="editBankAccount('bv-001')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="removeBankAccount('bv-001')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Banesco</div>
+                <div class="setting-description">
+                  Cuenta Ahorro: ****-****-**-9876543210<br>
+                  Titular: Juan Carlos Pérez García • Verificada
+                </div>
+              </div>
+              <div class="btn-group-horizontal">
+                <button class="btn btn-sm btn-outline" onclick="editBankAccount('banesco-001')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-secondary" onclick="setBankAsPrimary('banesco-001')">
+                  <i class="fas fa-star"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="removeBankAccount('banesco-001')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="setting-item" style="border: 2px solid var(--warning); background: rgba(255, 173, 51, 0.05);">
+              <div class="setting-info">
+                <div class="setting-title">Mercantil</div>
+                <div class="setting-description">
+                  Cuenta Corriente: ****-****-**-1357924680<br>
+                  Titular: Juan Carlos Pérez García • Verificación Pendiente
+                </div>
+              </div>
+              <div class="btn-group-horizontal">
+                <button class="btn btn-sm btn-warning" onclick="verifyBankAccount('mercantil-001')">
+                  <i class="fas fa-check"></i> Verificar
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="removeBankAccount('mercantil-001')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="openModal('add-bank-modal')">
+                <i class="fas fa-plus"></i>
+                Agregar Cuenta
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Virtual Cards -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-credit-card"></i>
+              </div>
+              Tarjetas Virtuales
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <!-- Virtual Cards Grid -->
+            <div class="card-container">
+              <!-- Card 1 -->
+              <div class="virtual-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-header">
+                  <div class="card-info">
+                    <h4>REMEEX VIRTUAL</h4>
+                    <h3>Compras Online</h3>
+                  </div>
+                  <i class="fab fa-cc-visa card-brand"></i>
+                </div>
+                <div class="card-number">**** **** **** 1234</div>
+                <div class="card-footer">
+                  <div>
+                    <div class="card-detail">VÁLIDA HASTA</div>
+                    <div class="card-detail-value">12/26</div>
+                  </div>
+                  <div>
+                    <div class="card-detail">LÍMITE</div>
+                    <div class="card-detail-value">$2,500</div>
+                  </div>
+                </div>
+                <div class="card-actions">
+                  <div class="btn-group-horizontal">
+                    <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none;" onclick="viewCardDetails('card-1')">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none;" onclick="toggleCard('card-1', false)">
+                      <i class="fas fa-pause"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2 -->
+              <div class="virtual-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="card-header">
+                  <div class="card-info">
+                    <h4>REMEEX VIRTUAL</h4>
+                    <h3>Suscripciones</h3>
+                  </div>
+                  <i class="fab fa-cc-mastercard card-brand"></i>
+                </div>
+                <div class="card-number">**** **** **** 5678</div>
+                <div class="card-footer">
+                  <div>
+                    <div class="card-detail">VÁLIDA HASTA</div>
+                    <div class="card-detail-value">09/27</div>
+                  </div>
+                  <div>
+                    <div class="card-detail">LÍMITE</div>
+                    <div class="card-detail-value">$500</div>
+                  </div>
+                </div>
+                <div class="card-actions">
+                  <div class="btn-group-horizontal">
+                    <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none;" onclick="viewCardDetails('card-2')">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none;" onclick="toggleCard('card-2', false)">
+                      <i class="fas fa-pause"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Paused Card -->
+              <div class="virtual-card" style="background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%); opacity: 0.7;">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; opacity: 0.3;">
+                  <i class="fas fa-pause"></i>
+                </div>
+                <div class="card-header">
+                  <div class="card-info">
+                    <h4>REMEEX VIRTUAL</h4>
+                    <h3>Viajes - PAUSADA</h3>
+                  </div>
+                  <i class="fab fa-cc-visa card-brand"></i>
+                </div>
+                <div class="card-number">**** **** **** 9012</div>
+                <div class="card-footer">
+                  <div>
+                    <div class="card-detail">VÁLIDA HASTA</div>
+                    <div class="card-detail-value">03/28</div>
+                  </div>
+                  <div>
+                    <div class="card-detail">LÍMITE</div>
+                    <div class="card-detail-value">$1,000</div>
+                  </div>
+                </div>
+                <div class="card-actions">
+                  <div class="btn-group-horizontal">
+                    <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none;" onclick="viewCardDetails('card-3')">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm" style="background: rgba(76, 175, 80, 0.8); color: white; border: none;" onclick="toggleCard('card-3', true)">
+                      <i class="fas fa-play"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Statistics -->
+            <div class="stats-grid mt-3">
+              <div class="stat-card">
+                <div class="stat-icon primary">
+                  <i class="fas fa-credit-card"></i>
+                </div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Creadas</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon success">
+                  <i class="fas fa-play"></i>
+                </div>
+                <div class="stat-value">2</div>
+                <div class="stat-label">Activas</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon warning">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-value">$347</div>
+                <div class="stat-label">Este Mes</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon info">
+                  <i class="fas fa-shield-check"></i>
+                </div>
+                <div class="stat-value">$2,653</div>
+                <div class="stat-label">Disponible</div>
+              </div>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="openModal('create-card-modal')">
+                <i class="fas fa-plus"></i>
+                Crear Tarjeta
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Settings -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-cog"></i>
+              </div>
+              Configuración de Tarjetas
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Auto-crear para Comercios</div>
+                <div class="setting-description">Crear automáticamente para nuevos sitios</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="auto-create-cards">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Notificaciones de Transacciones</div>
+                <div class="setting-description">Alertas por cada uso de tarjeta</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="card-notifications" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Límite Global de Tarjetas</div>
+                <div class="setting-description">Número máximo permitido</div>
+              </div>
+              <select class="form-control form-select" style="width: auto;">
+                <option value="5">5 tarjetas</option>
+                <option value="10" selected>10 tarjetas</option>
+                <option value="20">20 tarjetas</option>
+              </select>
+            </div>
+
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <div class="alert-content">
+                <div class="alert-title">Beneficios de Tarjetas Virtuales</div>
+                <div class="alert-message">
+                  • Mayor seguridad en compras online<br>
+                  • Control granular de gastos<br>
+                  • Fácil cancelación sin afectar otros servicios
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7: Authorized Users -->
+      <div class="step-content" id="step-6">
+        <!-- Authorized Users List -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              Usuarios Autorizados
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item" style="border: 2px solid var(--success); background: rgba(0, 211, 77, 0.05);">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 48px; height: 48px; border-radius: var(--radius-full); background: var(--success); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 600;">
+                  MP
+                </div>
+                <div class="setting-info">
+                  <div class="setting-title">María Pérez García</div>
+                  <div class="setting-description">
+                    C.I: V-23.456.789 • Esposa<br>
+                    Límite diario: $2,000 • Activa
+                  </div>
+                </div>
+              </div>
+              <div class="btn-group-horizontal">
+                <button class="btn btn-sm btn-outline" onclick="editAuthorizedUser('user-1')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-warning" onclick="suspendUser('user-1')">
+                  <i class="fas fa-pause"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 48px; height: 48px; border-radius: var(--radius-full); background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 600;">
+                  CG
+                </div>
+                <div class="setting-info">
+                  <div class="setting-title">Carlos García Rodríguez</div>
+                  <div class="setting-description">
+                    C.I: V-34.567.890 • Hermano<br>
+                    Límite diario: $1,500 • Activo
+                  </div>
+                </div>
+              </div>
+              <div class="btn-group-horizontal">
+                <button class="btn btn-sm btn-outline" onclick="editAuthorizedUser('user-2')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="removeAuthorizedUser('user-2')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="setting-item" style="border: 2px solid var(--warning); background: rgba(255, 173, 51, 0.05);">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 48px; height: 48px; border-radius: var(--radius-full); background: var(--warning); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 600;">
+                  AL
+                </div>
+                <div class="setting-info">
+                  <div class="setting-title">Ana López Martínez</div>
+                  <div class="setting-description">
+                    C.I: V-45.678.901 • Representante<br>
+                    Límite diario: $5,000 • Pendiente
+                  </div>
+                </div>
+              </div>
+              <div class="btn-group-horizontal">
+                <button class="btn btn-sm btn-success" onclick="approveUser('user-3')">
+                  <i class="fas fa-check"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="rejectUser('user-3')">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="openModal('add-user-modal')">
+                <i class="fas fa-user-plus"></i>
+                Autorizar Usuario
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Authorization Statistics -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-chart-bar"></i>
+              </div>
+              Estadísticas de Autorización
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon primary">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Autorizados</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon success">
+                  <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-value">2</div>
+                <div class="stat-label">Activos</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon warning">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value">1</div>
+                <div class="stat-label">Pendientes</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon info">
+                  <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-value">$8,500</div>
+                <div class="stat-label">Límite Total</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Authorization Settings -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-cog"></i>
+              </div>
+              Configuración de Autorizaciones
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Aprobación Manual</div>
+                <div class="setting-description">Requerir aprobación para cada operación</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="manual-approval">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Notificaciones de Operaciones</div>
+                <div class="setting-description">Alertas cuando usuarios realizan operaciones</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="authorized-notifications" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Límite Global de Usuarios</div>
+                <div class="setting-description">Número máximo permitido</div>
+              </div>
+              <select class="form-control form-select" style="width: auto;">
+                <option value="3">3 usuarios</option>
+                <option value="5" selected>5 usuarios</option>
+                <option value="10">10 usuarios</option>
+              </select>
+            </div>
+
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              <div class="alert-content">
+                <div class="alert-title">Responsabilidad Legal</div>
+                <div class="alert-message">
+                  Eres responsable de todas las operaciones realizadas por usuarios autorizados.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Permission Matrix -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-table"></i>
+              </div>
+              Matriz de Permisos
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                <thead>
+                  <tr style="background: var(--neutral-200);">
+                    <th style="padding: 0.5rem; text-align: left; border: 1px solid var(--neutral-300);">Operación</th>
+                    <th style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">María</th>
+                    <th style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">Carlos</th>
+                    <th style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">Ana</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid var(--neutral-300);">Retiros</td>
+                    <td style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">
+                      <i class="fas fa-check text-success"></i>
+                    </td>
+                    <td style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">
+                      <i class="fas fa-check text-success"></i>
+                    </td>
+                    <td style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">
+                      <i class="fas fa-times text-danger"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid var(--neutral-300);">Transferencias</td>
+                    <td style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">
+                      <i class="fas fa-check text-success"></i>
+                    </td>
+                    <td style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">
+                      <i class="fas fa-times text-danger"></i>
+                    </td>
+                    <td style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">
+                      <i class="fas fa-check text-success"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid var(--neutral-300);">Consultas</td>
+                    <td style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">
+                      <i class="fas fa-check text-success"></i>
+                    </td>
+                    <td style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">
+                      <i class="fas fa-check text-success"></i>
+                    </td>
+                    <td style="padding: 0.5rem; text-align: center; border: 1px solid var(--neutral-300);">
+                      <i class="fas fa-check text-success"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 8: Preferences -->
+      <div class="step-content" id="step-7">
+        <!-- Theme and Display -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-palette"></i>
+              </div>
+              Tema y Visualización
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Modo Oscuro</div>
+                <div class="setting-description">Cambiar a tema oscuro para reducir fatiga visual</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="dark-mode">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Modo de Alto Contraste</div>
+                <div class="setting-description">Mejorar legibilidad con mayor contraste</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="high-contrast">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tamaño de Fuente</label>
+              <select class="form-control form-select">
+                <option value="small">Pequeño</option>
+                <option value="medium" selected>Mediano</option>
+                <option value="large">Grande</option>
+                <option value="extra-large">Extra Grande</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Idioma de la Interfaz</label>
+              <select class="form-control form-select">
+                <option value="es" selected>Español</option>
+                <option value="en">English</option>
+                <option value="pt">Português</option>
+                <option value="fr">Français</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Privacy and Data -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-user-shield"></i>
+              </div>
+              Privacidad y Datos
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Análisis de Uso</div>
+                <div class="setting-description">Permitir recopilación de datos para mejorar el servicio</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="usage-analytics" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Cookies Publicitarias</div>
+                <div class="setting-description">Permitir cookies para personalizar anuncios</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="ad-cookies">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Compartir Datos con Terceros</div>
+                <div class="setting-description">Permitir compartir información con socios comerciales</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="data-sharing">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-outline" onclick="downloadDataReport()">
+                <i class="fas fa-download"></i>
+                Descargar Mis Datos
+              </button>
+              <button class="btn btn-danger" onclick="requestDataDeletion()">
+                <i class="fas fa-trash"></i>
+                Eliminar Cuenta
+              </button>
+            </div>
+
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <div class="alert-content">
+                <div class="alert-title">Control de Privacidad</div>
+                <div class="alert-message">
+                  Puedes cambiar estas configuraciones en cualquier momento. 
+                  Los cambios se aplicarán inmediatamente.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- API and Developers -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-code"></i>
+              </div>
+              API y Desarrolladores
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Acceso API</div>
+                <div class="setting-description">Habilitar acceso programático a tu cuenta</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="api-access">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Clave API</label>
+              <div class="input-group">
+                <input type="password" class="form-control" value="remeex_api_key_123456789" readonly id="api-key">
+                <button class="btn btn-outline" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); z-index: 2;" onclick="toggleApiKeyVisibility()">
+                  <i class="fas fa-eye" id="api-key-toggle"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Webhooks</div>
+                <div class="setting-description">Recibir notificaciones en tiempo real</div>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="configureWebhooks()">
+                <i class="fas fa-cog"></i> Configurar
+              </button>
+            </div>
+
+            <div class="btn-group mt-2">
+              <button class="btn btn-primary" onclick="generateNewApiKey()">
+                <i class="fas fa-key"></i>
+                Generar Nueva Clave
+              </button>
+              <button class="btn btn-outline" onclick="viewApiDocs()">
+                <i class="fas fa-book"></i>
+                Documentación API
+              </button>
+            </div>
+
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              <div class="alert-content">
+                <div class="alert-title">Seguridad API</div>
+                <div class="alert-message">
+                  Mantén tu clave API segura. No la compartas ni la expongas en código público.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Help and Support -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-question-circle"></i>
+              </div>
+              Ayuda y Soporte
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Centro de Ayuda</div>
+                <div class="setting-description">Preguntas frecuentes y guías</div>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="openHelpCenter()">
+                <i class="fas fa-external-link-alt"></i> Abrir
+              </button>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Chat de Soporte</div>
+                <div class="setting-description">Habla con un agente en tiempo real</div>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="openSupportChat()">
+                <i class="fas fa-comments"></i> Iniciar Chat
+              </button>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Reportar un Problema</div>
+                <div class="setting-description">Enviar ticket de soporte técnico</div>
+              </div>
+              <button class="btn btn-sm btn-warning" onclick="reportIssue()">
+                <i class="fas fa-bug"></i> Reportar
+              </button>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Programar Llamada</div>
+                <div class="setting-description">Agendar consulta telefónica</div>
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="scheduleCall()">
+                <i class="fas fa-phone"></i> Agendar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- About REMEEX -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-info-circle"></i>
+              </div>
+              Acerca de REMEEX
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="text-center mb-3">
+              <div style="width: 80px; height: 80px; background: var(--card-gradient); border-radius: var(--radius-full); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: bold;">
+                R
+              </div>
+              <h3 style="margin-bottom: 0.5rem;">REMEEX VISA</h3>
+              <p class="text-muted" style="font-size: 0.9rem;">Versión 2.4.1 (Build 2024031501)</p>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Términos de Servicio</div>
+                <div class="setting-description">Conoce nuestros términos y condiciones</div>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="viewTerms()">
+                <i class="fas fa-file-contract"></i> Ver
+              </button>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Política de Privacidad</div>
+                <div class="setting-description">Cómo protegemos tu información</div>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="viewPrivacyPolicy()">
+                <i class="fas fa-shield-alt"></i> Ver
+              </button>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Licencias Open Source</div>
+                <div class="setting-description">Software de terceros utilizado</div>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="viewLicenses()">
+                <i class="fas fa-code"></i> Ver
+              </button>
+            </div>
+
+            <div class="text-center mt-3">
+              <p class="text-muted" style="font-size: 0.8rem;">
+                © 2024 REMEEX Technologies<br>
+                Todos los derechos reservados
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 9: Notifications -->
+      <div class="step-content" id="step-8">
+        <!-- Notification Channels -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-bell"></i>
+              </div>
+              Canales de Notificación
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--primary); color: white; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div class="setting-info">
+                  <div class="setting-title">Email</div>
+                  <div class="setting-description">juan.perez@email.com</div>
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="email-notifications" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--success); color: white; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-sms"></i>
+                </div>
+                <div class="setting-info">
+                  <div class="setting-title">SMS</div>
+                  <div class="setting-description">+58 412-1234567</div>
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="sms-notifications" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--accent); color: white; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="setting-info">
+                  <div class="setting-title">Push (App Móvil)</div>
+                  <div class="setting-description">iPhone 14 Pro, iPad Air</div>
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="push-notifications" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--info); color: white; display: flex; align-items: center; justify-content: center;">
+                  <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="setting-info">
+                  <div class="setting-title">WhatsApp</div>
+                  <div class="setting-description">+58 412-1234567</div>
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="whatsapp-notifications">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <div class="alert-content">
+                <div class="alert-message">
+                  Para recibir notificaciones por WhatsApp, debes verificar tu número.
+                </div>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="verifyWhatsApp()">
+                <i class="fas fa-check"></i>
+                Verificar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification Types -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-list"></i>
+              </div>
+              Tipos de Notificación
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div style="margin-bottom: 1.5rem;">
+              <h4 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--neutral-700);">Transacciones y Movimientos</h4>
+              
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-title">Transacciones Exitosas</div>
+                  <div class="setting-description">Confirmar operaciones completadas</div>
+                </div>
+                <div style="display: flex; gap: 0.25rem; align-items: center;">
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;">
+                      <span style="position: absolute; content: ''; height: 12px; width: 12px; left: 2px; bottom: 2px; background-color: white; transition: 0.3s; border-radius: 50%;"></span>
+                    </span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">📧</span>
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;">
+                      <span style="position: absolute; content: ''; height: 12px; width: 12px; left: 2px; bottom: 2px; background-color: white; transition: 0.3s; border-radius: 50%;"></span>
+                    </span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">📱</span>
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox">
+                    <span class="toggle-slider" style="border-radius: 16px;">
+                      <span style="position: absolute; content: ''; height: 12px; width: 12px; left: 2px; bottom: 2px; background-color: white; transition: 0.3s; border-radius: 50%;"></span>
+                    </span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">🔔</span>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-title">Transacciones Fallidas</div>
+                  <div class="setting-description">Alertar sobre operaciones no completadas</div>
+                </div>
+                <div style="display: flex; gap: 0.25rem; align-items: center;">
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">📧</span>
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">📱</span>
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">🔔</span>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-title">Depósitos Recibidos</div>
+                  <div class="setting-description">Notificar cuando recibas dinero</div>
+                </div>
+                <div style="display: flex; gap: 0.25rem; align-items: center;">
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">📧</span>
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox">
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">📱</span>
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">🔔</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+              <h4 style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--neutral-700);">Seguridad y Acceso</h4>
+              
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-title">Inicios de Sesión</div>
+                  <div class="setting-description">Alertar sobre nuevos accesos</div>
+                </div>
+                <div style="display: flex; gap: 0.25rem; align-items: center;">
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">📧</span>
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">📱</span>
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox">
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">🔔</span>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-title">Intentos Fallidos</div>
+                  <div class="setting-description">Alertar sobre intentos sospechosos</div>
+                </div>
+                <div style="display: flex; gap: 0.25rem; align-items: center;">
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">📧</span>
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">📱</span>
+                  <label class="toggle-switch" style="width: 32px; height: 16px;">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider" style="border-radius: 16px;"></span>
+                  </label>
+                  <span style="font-size: 0.7rem; color: var(--neutral-600);">🔔</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification Schedule -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              Horarios y Frecuencia
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Modo No Molestar</div>
+                <div class="setting-description">Pausar notificaciones no urgentes</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="do-not-disturb" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Inicio (No Molestar)</label>
+                <input type="time" class="form-control" value="22:00">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fin (No Molestar)</label>
+                <input type="time" class="form-control" value="07:00">
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <h4 style="font-size: 0.9rem; margin-bottom: 1rem;">Días de la Semana</h4>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <label class="btn btn-sm" style="background: var(--primary); color: white; border: 2px solid var(--primary);">
+                  <input type="checkbox" style="display: none;" checked>
+                  <span>L</span>
+                </label>
+                <label class="btn btn-sm" style="background: var(--primary); color: white; border: 2px solid var(--primary);">
+                  <input type="checkbox" style="display: none;" checked>
+                  <span>M</span>
+                </label>
+                <label class="btn btn-sm" style="background: var(--primary); color: white; border: 2px solid var(--primary);">
+                  <input type="checkbox" style="display: none;" checked>
+                  <span>M</span>
+                </label>
+                <label class="btn btn-sm" style="background: var(--primary); color: white; border: 2px solid var(--primary);">
+                  <input type="checkbox" style="display: none;" checked>
+                  <span>J</span>
+                </label>
+                <label class="btn btn-sm" style="background: var(--primary); color: white; border: 2px solid var(--primary);">
+                  <input type="checkbox" style="display: none;" checked>
+                  <span>V</span>
+                </label>
+                <label class="btn btn-sm btn-outline">
+                  <input type="checkbox" style="display: none;">
+                  <span>S</span>
+                </label>
+                <label class="btn btn-sm btn-outline">
+                  <input type="checkbox" style="display: none;">
+                  <span>D</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <h4 style="font-size: 0.9rem; margin-bottom: 1rem;">Resúmenes</h4>
+              
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-title">Resumen Diario</div>
+                  <div class="setting-description">Resumen de transacciones del día</div>
+                </div>
+                <select class="form-control form-select" style="width: auto; font-size: 0.8rem;">
+                  <option value="disabled">Desactivado</option>
+                  <option value="18:00" selected>6:00 PM</option>
+                  <option value="20:00">8:00 PM</option>
+                  <option value="22:00">10:00 PM</option>
+                </select>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <div class="setting-title">Resumen Semanal</div>
+                  <div class="setting-description">Resumen de actividad semanal</div>
+                </div>
+                <select class="form-control form-select" style="width: auto; font-size: 0.8rem;">
+                  <option value="disabled">Desactivado</option>
+                  <option value="monday" selected>Lunes 9:00 AM</option>
+                  <option value="friday">Viernes 6:00 PM</option>
+                  <option value="sunday">Domingo 7:00 PM</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification History -->
+        <div class="collapsible-section">
+          <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-history"></i>
+              </div>
+              Historial de Notificaciones
+            </div>
+            <i class="fas fa-chevron-down section-toggle"></i>
+          </div>
+          <div class="section-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h4 style="font-size: 0.9rem; margin: 0;">Actividad Reciente</h4>
+              <div class="btn-group-horizontal">
+                <button class="btn btn-sm btn-outline" onclick="markAllRead()">
+                  <i class="fas fa-check"></i>
+                  Todo Leído
+                </button>
+                <button class="btn btn-sm btn-secondary" onclick="exportNotifications()">
+                  <i class="fas fa-download"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="notification-item unread">
+              <div class="notification-icon success">
+                <i class="fas fa-arrow-down"></i>
+              </div>
+              <div class="notification-content">
+                <div class="notification-title">Depósito Recibido</div>
+                <div class="notification-message">Has recibido $250.00 de María Pérez García</div>
+                <div class="notification-time">Hace 15 minutos</div>
+              </div>
+              <div class="notification-actions">
+                <button class="btn btn-sm btn-outline" onclick="markRead('notif-1')">
+                  <i class="fas fa-check"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="notification-item unread">
+              <div class="notification-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="notification-content">
+                <div class="notification-title">Límite Alcanzado</div>
+                <div class="notification-message">90% del límite diario de retiros</div>
+                <div class="notification-time">Hace 2 horas</div>
+              </div>
+              <div class="notification-actions">
+                <button class="btn btn-sm btn-outline" onclick="markRead('notif-2')">
+                  <i class="fas fa-check"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="notification-item">
+              <div class="notification-icon info">
+                <i class="fas fa-info-circle"></i>
+              </div>
+              <div class="notification-content">
+                <div class="notification-title">Nuevo Inicio de Sesión</div>
+                <div class="notification-message">iPhone 14 Pro en Caracas</div>
+                <div class="notification-time">Hace 5 horas</div>
+              </div>
+              <div class="notification-actions">
+                <span class="text-muted" style="font-size: 0.8rem;">Leído</span>
+              </div>
+            </div>
+
+            <div class="notification-item">
+              <div class="notification-icon primary">
+                <i class="fas fa-credit-card"></i>
+              </div>
+              <div class="notification-content">
+                <div class="notification-title">Transacción Exitosa</div>
+                <div class="notification-message">$500.00 a Carlos García</div>
+                <div class="notification-time">Ayer 3:30 PM</div>
+              </div>
+              <div class="notification-actions">
+                <span class="text-muted" style="font-size: 0.8rem;">Leído</span>
+              </div>
+            </div>
+
+            <div class="text-center mt-3">
+              <button class="btn btn-outline" onclick="loadMoreNotifications()">
+                <i class="fas fa-plus"></i>
+                Cargar Más
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Notification Settings -->
+        <div class="btn-group mt-3">
+          <button class="btn btn-primary" onclick="saveNotificationSettings()">
+            <i class="fas fa-save"></i>
+            Guardar Configuración
+          </button>
+          <button class="btn btn-outline" onclick="testNotifications()">
+            <i class="fas fa-vial"></i>
+            Enviar Prueba
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <div class="nav-actions">
+        <button class="nav-btn" id="prev-btn" onclick="previousStep()" disabled>
+          <i class="fas fa-chevron-left"></i>
+          <span>Anterior</span>
+        </button>
+        <button class="nav-btn primary" id="save-btn" onclick="saveCurrentStep()">
+          <i class="fas fa-save"></i>
+          <span>Guardar</span>
+        </button>
+        <button class="nav-btn" id="next-btn" onclick="nextStep()">
+          <span>Siguiente</span>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Modals -->
+  <!-- Add Bank Account Modal -->
+  <div id="add-bank-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fas fa-university"></i>
+          Agregar Cuenta Bancaria
+        </div>
+        <button class="modal-close" onclick="closeModal('add-bank-modal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Banco</label>
+          <select class="form-control form-select">
+            <option value="">Seleccionar banco...</option>
+            <option value="bv">Banco de Venezuela</option>
+            <option value="banesco">Banesco</option>
+            <option value="mercantil">Mercantil</option>
+            <option value="provincial">Provincial</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tipo de Cuenta</label>
+          <select class="form-control form-select">
+            <option value="corriente">Cuenta Corriente</option>
+            <option value="ahorro">Cuenta de Ahorro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Número de Cuenta</label>
+          <input type="text" class="form-control" placeholder="01020123456789012345" maxlength="20">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nombre del Titular</label>
+          <input type="text" class="form-control" placeholder="Debe coincidir con tu nombre en REMEEX">
+        </div>
+
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle"></i>
+          <div class="alert-content">
+            <div class="alert-message">
+              Solo puedes agregar cuentas a tu nombre. La verificación toma 1-3 días hábiles.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('add-bank-modal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="addBankAccount()">
+          <i class="fas fa-plus"></i>
+          Agregar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Virtual Card Modal -->
+  <div id="create-card-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fas fa-credit-card"></i>
+          Crear Tarjeta Virtual
+        </div>
+        <button class="modal-close" onclick="closeModal('create-card-modal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nombre de la Tarjeta</label>
+          <input type="text" class="form-control" placeholder="ej. Compras Amazon, Netflix">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Límite de Gasto</label>
+          <div class="input-group">
+            <span class="input-prefix">$</span>
+            <input type="number" class="form-control" placeholder="1000" min="10" max="25000">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tipo de Tarjeta</label>
+          <select class="form-control form-select">
+            <option value="visa">Visa</option>
+            <option value="mastercard">Mastercard</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Válida Hasta</label>
+          <select class="form-control form-select">
+            <option value="3">3 meses</option>
+            <option value="6">6 meses</option>
+            <option value="12" selected>1 año</option>
+            <option value="24">2 años</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-title">Pausar después de cada uso</div>
+            <div class="setting-description">Requerir activación manual</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pause-after-use">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-title">Notificaciones por transacción</div>
+            <div class="setting-description">Alerta por cada uso</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="card-transaction-alerts" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('create-card-modal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="createVirtualCard()">
+          <i class="fas fa-plus"></i>
+          Crear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Authorized User Modal -->
+  <div id="add-user-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fas fa-user-plus"></i>
+          Autorizar Usuario
+        </div>
+        <button class="modal-close" onclick="closeModal('add-user-modal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nombre Completo</label>
+          <input type="text" class="form-control" placeholder="Nombre y apellido">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Cédula de Identidad</label>
+          <input type="text" class="form-control" placeholder="V-12345678">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Parentesco/Relación</label>
+          <select class="form-control form-select">
+            <option value="">Seleccionar...</option>
+            <option value="conyuge">Cónyuge</option>
+            <option value="hijo">Hijo/a</option>
+            <option value="padre">Padre</option>
+            <option value="madre">Madre</option>
+            <option value="hermano">Hermano/a</option>
+            <option value="representante">Representante Legal</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Límite Diario</label>
+          <div class="input-group">
+            <span class="input-prefix">$</span>
+            <input type="number" class="form-control" placeholder="1000" min="10" max="10000">
+          </div>
+        </div>
+
+        <div style="margin: 1.5rem 0;">
+          <h4 style="font-size: 1rem; margin-bottom: 1rem;">Permisos</h4>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-title">Retiros</div>
+              <div class="setting-description">Permitir retiros de dinero</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-title">Transferencias</div>
+              <div class="setting-description">Permitir transferencias a terceros</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-title">Consulta de Saldos</div>
+              <div class="setting-description">Ver saldos y movimientos</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div class="alert-content">
+            <div class="alert-message">
+              Eres legalmente responsable de todas las operaciones realizadas por usuarios autorizados.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('add-user-modal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="authorizeUser()">
+          <i class="fas fa-user-plus"></i>
+          Autorizar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Data Card (Hidden by default) -->
+  <div id="global-data-card" class="collapsible-section" style="display: none;">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title">
+        <div class="section-icon">
+          <i class="fas fa-database"></i>
+        </div>
+        Datos Globales
+      </div>
+      <i class="fas fa-chevron-down section-toggle"></i>
+    </div>
+    <div class="section-content">
+      <pre id="global-data-display" style="white-space:pre-wrap; font-size: 0.75rem; background: var(--neutral-200); padding: 1rem; border-radius: var(--radius-md); overflow-x: auto;"></pre>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let currentStep = 0;
+    const totalSteps = 9;
+    let globalData = {};
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeApp();
+      initializeSliders();
+      loadGlobalData();
+    });
+
+    // Initialize application
+    function initializeApp() {
+      updateWizardNavigation();
+      updateBottomNavigation();
+      updateHeaderTitle();
+      
+      // Add event listeners for wizard steps
+      const wizardSteps = document.querySelectorAll('.wizard-step');
+      wizardSteps.forEach((step, index) => {
+        step.addEventListener('click', () => navigateToStep(index));
+      });
+
+      // Add event listeners for menu toggle
+      const menuToggle = document.getElementById('menu-toggle');
+      if (menuToggle) {
+        menuToggle.addEventListener('click', toggleMenu);
+      }
+
+      // Initialize first section as expanded in current step
+      const firstSection = document.querySelector('.step-content.active .section-header');
+      if (firstSection) {
+        toggleSection(firstSection);
+      }
+    }
+
+    // Navigation functions
+    function navigateToStep(stepIndex) {
+      if (stepIndex < 0 || stepIndex >= totalSteps) return;
+      
+      // Hide current step
+      const currentStepElement = document.getElementById(`step-${currentStep}`);
+      if (currentStepElement) {
+        currentStepElement.classList.remove('active');
+      }
+
+      // Update current step
+      currentStep = stepIndex;
+
+      // Show new step
+      const newStepElement = document.getElementById(`step-${currentStep}`);
+      if (newStepElement) {
+        newStepElement.classList.add('active');
+      }
+
+      // Update navigation
+      updateWizardNavigation();
+      updateBottomNavigation();
+      updateHeaderTitle();
+
+      // Scroll to top
+      const mainContainer = document.querySelector('.main-container');
+      if (mainContainer) {
+        mainContainer.scrollTop = 0;
+      }
+
+      // Expand first section of new step
+      setTimeout(() => {
+        const firstSection = document.querySelector(`#step-${currentStep} .section-header`);
+        if (firstSection && !firstSection.classList.contains('expanded')) {
+          toggleSection(firstSection);
+        }
+      }, 100);
+    }
+
+    function nextStep() {
+      if (currentStep < totalSteps - 1) {
+        navigateToStep(currentStep + 1);
+      }
+    }
+
+    function previousStep() {
+      if (currentStep > 0) {
+        navigateToStep(currentStep - 1);
+      }
+    }
+
+    function updateWizardNavigation() {
+      const wizardSteps = document.querySelectorAll('.wizard-step');
+      wizardSteps.forEach((step, index) => {
+        step.classList.remove('active', 'completed');
+        if (index === currentStep) {
+          step.classList.add('active');
+        } else if (index < currentStep) {
+          step.classList.add('completed');
+        }
+      });
+    }
+
+    function updateBottomNavigation() {
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      
+      if (prevBtn) {
+        prevBtn.disabled = currentStep === 0;
+      }
+      
+      if (nextBtn) {
+        if (currentStep === totalSteps - 1) {
+          nextBtn.innerHTML = '<i class="fas fa-check"></i><span>Finalizar</span>';
+          nextBtn.classList.add('success');
+        } else {
+          nextBtn.innerHTML = '<span>Siguiente</span><i class="fas fa-chevron-right"></i>';
+          nextBtn.classList.remove('success');
+        }
+      }
+    }
+
+    function updateHeaderTitle() {
+      const titles = [
+        'Panel Principal',
+        'Información Personal',
+        'Verificación',
+        'Seguridad',
+        'Límites y Controles',
+        'Cuentas y Tarjetas',
+        'Usuarios Autorizados',
+        'Configuración',
+        'Notificaciones'
+      ];
+      
+      const headerTitle = document.getElementById('header-title');
+      if (headerTitle && titles[currentStep]) {
+        headerTitle.textContent = titles[currentStep];
+      }
+    }
+
+    // Section collapsible functionality
+    function toggleSection(headerElement) {
+      const section = headerElement.closest('.collapsible-section');
+      const content = section.querySelector('.section-content');
+      const toggle = headerElement.querySelector('.section-toggle');
+      
+      const isExpanded = headerElement.classList.contains('expanded');
+      
+      if (isExpanded) {
+        headerElement.classList.remove('expanded');
+        content.classList.remove('expanded');
+        toggle.classList.remove('expanded');
+      } else {
+        // Close other sections in the same step
+        const currentStepElement = document.getElementById(`step-${currentStep}`);
+        const allHeaders = currentStepElement.querySelectorAll('.section-header.expanded');
+        allHeaders.forEach(header => {
+          header.classList.remove('expanded');
+          header.closest('.collapsible-section').querySelector('.section-content').classList.remove('expanded');
+          header.querySelector('.section-toggle').classList.remove('expanded');
+        });
+        
+        // Open clicked section
+        headerElement.classList.add('expanded');
+        content.classList.add('expanded');
+        toggle.classList.add('expanded');
+      }
+    }
+
+    // Menu toggle for mobile
+    function toggleMenu() {
+      // This could be expanded to show a mobile menu overlay
+      console.log('Menu toggle clicked');
+    }
+
+    // Slider functionality
+    function initializeSliders() {
+      const sliders = document.querySelectorAll('.slider');
+      
+      sliders.forEach(slider => {
+        const valueElement = document.getElementById(slider.id.replace('-limit', '-value') + '-value') || 
+                            document.getElementById(slider.id + '-value');
+        
+        function updateValue() {
+          if (valueElement) {
+            const value = parseInt(slider.value);
+            if (slider.id.includes('threshold') || slider.id.includes('limit') || 
+                slider.id.includes('withdrawal') || slider.id.includes('deposit') || 
+                slider.id.includes('transfer') || slider.id.includes('payment')) {
+              valueElement.textContent = '$' + value.toLocaleString();
+            } else {
+              valueElement.textContent = value;
+            }
+          }
+        }
+        
+        updateValue();
+        slider.addEventListener('input', updateValue);
+      });
+    }
+
+    // Modal functionality
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('modal-overlay')) {
+        e.target.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+    // Save current step
+    function saveCurrentStep() {
+      showNotification('Configuración guardada exitosamente', 'success');
+      
+      // Mark current step as completed
+      const wizardStep = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
+      if (wizardStep && !wizardStep.classList.contains('completed')) {
+        wizardStep.classList.add('completed');
+      }
+    }
+
+    // Notification system
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `alert alert-${type}`;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        min-width: 300px;
+        animation: slideInRight 0.3s ease;
+      `;
+      
+      notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        <div class="alert-content">
+          <div class="alert-message">${message}</div>
+        </div>
+        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; margin-left: 1rem;">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.remove();
+        }
+      }, 5000);
+    }
+
+    // Security functions
+    function changePassword() {
+      showNotification('Función para cambiar contraseña - Redireccionar a formulario seguro', 'info');
+    }
+
+    function generateStrongPassword() {
+      showNotification('Generando contraseña segura...', 'info');
+    }
+
+    function setup2FA() {
+      showNotification('Configurando autenticación de dos factores...', 'info');
+    }
+
+    function test2FA() {
+      showNotification('Probando 2FA...', 'info');
+    }
+
+    function downloadRecoveryCodes() {
+      showNotification('Descargando códigos de recuperación...', 'info');
+    }
+
+    function generateNewRecoveryCodes() {
+      if (confirm('¿Estás seguro de que deseas generar nuevos códigos? Los actuales dejarán de funcionar.')) {
+        showNotification('Generando nuevos códigos de recuperación...', 'success');
+      }
+    }
+
+    function enableMaxSecurity() {
+      if (confirm('¿Deseas activar todas las medidas de seguridad máxima? Esto puede afectar la usabilidad.')) {
+        showNotification('Activando seguridad máxima...', 'success');
+      }
+    }
+
+    function resetSecurityDefaults() {
+      if (confirm('¿Deseas restaurar la configuración de seguridad por defecto?')) {
+        showNotification('Restaurando configuración por defecto...', 'success');
+      }
+    }
+
+    // Biometric functions
+    function setupFaceID() {
+      showNotification('Configurando reconocimiento facial...', 'info');
+    }
+
+    function setupVoiceID() {
+      showNotification('Configurando reconocimiento de voz...', 'info');
+    }
+
+    function addFingerprint() {
+      showNotification('Agregando nueva huella dactilar...', 'info');
+    }
+
+    function testBiometric() {
+      showNotification('Probando autenticación biométrica...', 'info');
+    }
+
+    function clearAllBiometric() {
+      if (confirm('¿Estás seguro de que deseas eliminar todos los datos biométricos?')) {
+        showNotification('Eliminando datos biométricos...', 'success');
+      }
+    }
+
+    function deleteBiometric(id) {
+      if (confirm('¿Deseas eliminar este dato biométrico?')) {
+        showNotification('Eliminando dato biométrico: ' + id, 'success');
+      }
+    }
+
+    // Session functions
+    function terminateSession(sessionId) {
+      if (confirm('¿Deseas cerrar esta sesión?')) {
+        showNotification('Cerrando sesión: ' + sessionId, 'success');
+      }
+    }
+
+    function terminateAllSessions() {
+      if (confirm('¿Estás seguro de que deseas cerrar todas las sesiones? Tendrás que iniciar sesión nuevamente.')) {
+        showNotification('Cerrando todas las sesiones...', 'warning');
+      }
+    }
+
+    function viewSessionDetails(sessionId) {
+      showNotification('Mostrando detalles de la sesión: ' + sessionId, 'info');
+    }
+
+    function refreshSessions() {
+      showNotification('Actualizando lista de sesiones...', 'info');
+    }
+
+    function exportSessionHistory() {
+      showNotification('Exportando historial de sesiones...', 'info');
+    }
+
+    // Limits functions
+    function saveLimits() {
+      showNotification('Guardando configuración de límites...', 'success');
+    }
+
+    function resetLimitsToDefault() {
+      if (confirm('¿Deseas restaurar los límites por defecto?')) {
+        showNotification('Restaurando límites por defecto...', 'success');
+      }
+    }
+
+    function requestLimitIncrease() {
+      showNotification('Abriendo formulario para solicitar aumento de límites...', 'info');
+    }
+
+    // Bank account functions
+    function addBankAccount() {
+      showNotification('Agregando cuenta bancaria...', 'success');
+      closeModal('add-bank-modal');
+    }
+
+    function editBankAccount(accountId) {
+      showNotification('Editando cuenta: ' + accountId, 'info');
+    }
+
+    function setBankAsPrimary(accountId) {
+      showNotification('Estableciendo como cuenta principal: ' + accountId, 'success');
+    }
+
+    function removeBankAccount(accountId) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta cuenta bancaria?')) {
+        showNotification('Eliminando cuenta: ' + accountId, 'success');
+      }
+    }
+
+    function verifyBankAccount(accountId) {
+      showNotification('Iniciando verificación de cuenta: ' + accountId, 'info');
+    }
+
+    // Virtual card functions
+    function createVirtualCard() {
+      showNotification('Creando tarjeta virtual...', 'success');
+      closeModal('create-card-modal');
+    }
+
+    function viewCardDetails(cardId) {
+      showNotification('Mostrando detalles de la tarjeta: ' + cardId, 'info');
+    }
+
+    function toggleCard(cardId, activate) {
+      const action = activate ? 'activar' : 'pausar';
+      if (confirm(`¿Deseas ${action} esta tarjeta?`)) {
+        showNotification(`${action === 'activar' ? 'Activando' : 'Pausando'} tarjeta: ` + cardId, 'success');
+      }
+    }
+
+    // Authorized user functions
+    function authorizeUser() {
+      showNotification('Autorizando usuario...', 'success');
+      closeModal('add-user-modal');
+    }
+
+    function editAuthorizedUser(userId) {
+      showNotification('Editando usuario autorizado: ' + userId, 'info');
+    }
+
+    function suspendUser(userId) {
+      if (confirm('¿Deseas suspender temporalmente este usuario?')) {
+        showNotification('Suspendiendo usuario: ' + userId, 'warning');
+      }
+    }
+
+    function removeAuthorizedUser(userId) {
+      if (confirm('¿Estás seguro de que deseas eliminar la autorización de este usuario?')) {
+        showNotification('Eliminando autorización: ' + userId, 'success');
+      }
+    }
+
+    function approveUser(userId) {
+      if (confirm('¿Deseas aprobar este usuario autorizado?')) {
+        showNotification('Aprobando usuario: ' + userId, 'success');
+      }
+    }
+
+    function rejectUser(userId) {
+      if (confirm('¿Deseas rechazar esta solicitud de autorización?')) {
+        showNotification('Rechazando usuario: ' + userId, 'success');
+      }
+    }
+
+    // Notification functions
+    function saveNotificationSettings() {
+      showNotification('Guardando configuración de notificaciones...', 'success');
+    }
+
+    function testNotifications() {
+      showNotification('Enviando notificación de prueba...', 'info');
+    }
+
+    function resetNotificationDefaults() {
+      if (confirm('¿Deseas restaurar la configuración de notificaciones por defecto?')) {
+        showNotification('Restaurando configuración por defecto...', 'success');
+      }
+    }
+
+    function verifyWhatsApp() {
+      showNotification('Iniciando verificación de WhatsApp...', 'info');
+    }
+
+    function markAllRead() {
+      showNotification('Marcando todas las notificaciones como leídas...', 'success');
+    }
+
+    function markRead(notificationId) {
+      showNotification('Marcando notificación como leída: ' + notificationId, 'success');
+    }
+
+    function loadMoreNotifications() {
+      showNotification('Cargando más notificaciones...', 'info');
+    }
+
+    function exportNotifications() {
+      showNotification('Exportando historial de notificaciones...', 'info');
+    }
+
+    // Personal info functions
+    function savePersonalInfo(section) {
+      showNotification(`Guardando información ${section}...`, 'success');
+    }
+
+    function verifyContact(type) {
+      showNotification(`Iniciando verificación de ${type}...`, 'info');
+    }
+
+    function validateAddress() {
+      showNotification('Validando dirección...', 'info');
+    }
+
+    function verifyEmployment() {
+      showNotification('Iniciando verificación de empleo...', 'info');
+    }
+
+    // Verification functions
+    function downloadVerificationCertificate() {
+      showNotification('Descargando certificado de verificación...', 'info');
+    }
+
+    function updateIdentityDocument() {
+      showNotification('Actualizando documento de identidad...', 'info');
+    }
+
+    function uploadDocument(type) {
+      showNotification(`Subiendo documento: ${type}...`, 'info');
+    }
+
+    // Utility functions
+    function exportData() {
+      showNotification('Exportando datos de la cuenta...', 'info');
+    }
+
+    function checkPasswordStrength(password) {
+      const strengthElement = document.getElementById('password-strength');
+      if (!strengthElement) return;
+      
+      let strength = 0;
+      let feedback = [];
+      
+      if (password.length >= 8) strength++;
+      else feedback.push('Mínimo 8 caracteres');
+      
+      if (/[A-Z]/.test(password)) strength++;
+      else feedback.push('Una mayúscula');
+      
+      if (/[a-z]/.test(password)) strength++;
+      else feedback.push('Una minúscula');
+      
+      if (/\d/.test(password)) strength++;
+      else feedback.push('Un número');
+      
+      if (/[^A-Za-z0-9]/.test(password)) strength++;
+      else feedback.push('Un símbolo especial');
+      
+      const strengthLevels = ['Muy débil', 'Débil', 'Regular', 'Fuerte', 'Muy fuerte'];
+      const strengthColors = ['#ff4d4d', '#ff9500', '#ffad33', '#00d34d', '#00c057'];
+      
+      strengthElement.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+          <div style="flex: 1; height: 4px; background: var(--neutral-300); border-radius: 2px; overflow: hidden;">
+            <div style="width: ${(strength / 5) * 100}%; height: 100%; background: ${strengthColors[strength - 1] || strengthColors[0]}; transition: all 0.3s ease;"></div>
+          </div>
+          <span style="font-size: 0.75rem; color: ${strengthColors[strength - 1] || strengthColors[0]};">${strengthLevels[strength - 1] || strengthLevels[0]}</span>
+        </div>
+        ${feedback.length > 0 ? `<div style="font-size: 0.7rem; color: var(--neutral-600); margin-top: 0.25rem;">Falta: ${feedback.join(', ')}</div>` : ''}
+      `;
+    }
+
+    function toggleApiKeyVisibility() {
+      const apiKeyInput = document.getElementById('api-key');
+      const toggleIcon = document.getElementById('api-key-toggle');
+      
+      if (apiKeyInput && toggleIcon) {
+        if (apiKeyInput.type === 'password') {
+          apiKeyInput.type = 'text';
+          toggleIcon.className = 'fas fa-eye-slash';
+        } else {
+          apiKeyInput.type = 'password';
+          toggleIcon.className = 'fas fa-eye';
+        }
+      }
+    }
+
+    // Preference functions
+    function generateNewApiKey() {
+      if (confirm('¿Estás seguro de que deseas generar una nueva clave API? La actual dejará de funcionar.')) {
+        showNotification('Generando nueva clave API...', 'success');
+      }
+    }
+
+    function configureWebhooks() {
+      showNotification('Abriendo configuración de webhooks...', 'info');
+    }
+
+    function viewApiDocs() {
+      showNotification('Abriendo documentación de API...', 'info');
+    }
+
+    function downloadDataReport() {
+      showNotification('Preparando reporte de datos...', 'info');
+    }
+
+    function requestDataDeletion() {
+      if (confirm('¿Estás seguro de que deseas eliminar tu cuenta y todos los datos asociados? Esta acción no se puede deshacer.')) {
+        showNotification('Iniciando proceso de eliminación de cuenta...', 'warning');
+      }
+    }
+
+    function openHelpCenter() {
+      showNotification('Abriendo centro de ayuda...', 'info');
+    }
+
+    function openSupportChat() {
+      showNotification('Iniciando chat de soporte...', 'info');
+    }
+
+    function reportIssue() {
+      showNotification('Abriendo formulario de reporte...', 'info');
+    }
+
+    function scheduleCall() {
+      showNotification('Abriendo calendario para agendar llamada...', 'info');
+    }
+
+    function viewTerms() {
+      showNotification('Abriendo términos de servicio...', 'info');
+    }
+
+    function viewPrivacyPolicy() {
+      showNotification('Abriendo política de privacidad...', 'info');
+    }
+
+    function viewLicenses() {
+      showNotification('Abriendo licencias de software...', 'info');
+    }
+
+    // Global data functionality
+    function loadGlobalData() {
+      globalData = {
+        user: {
+          id: 'user_12345',
+          name: 'Juan Carlos Pérez García',
+          email: 'juan.perez@email.com',
+          phone: '+58 412-1234567',
+          verification_status: 'verified',
+          created_at: '2024-03-15T10:30:00Z'
+        },
+        account: {
+          type: 'premium',
+          balance: 15750.25,
+          currency: 'USD',
+          limits: {
+            daily_withdrawal: 5000,
+            daily_deposit: 15000,
+            daily_transfer: 20000
+          }
+        },
+        security: {
+          two_factor_enabled: true,
+          biometric_enabled: true,
+          active_sessions: 3,
+          last_login: '2024-06-23T08:15:00Z'
+        },
+        preferences: {
+          language: 'es',
+          theme: 'light',
+          notifications: {
+            email: true,
+            sms: true,
+            push: true,
+            whatsapp: false
+          }
+        }
+      };
+
+      // Dispatch custom event with global data
+      const event = new CustomEvent('globalDataReady', {
+        detail: globalData
+      });
+      document.dispatchEvent(event);
+
+      // Update global data display if element exists
+      const globalDataDisplay = document.getElementById('global-data-display');
+      if (globalDataDisplay) {
+        globalDataDisplay.textContent = JSON.stringify(globalData, null, 2);
+        
+        // Show global data card in dashboard
+        const globalDataCard = document.getElementById('global-data-card');
+        if (globalDataCard && currentStep === 0) {
+          globalDataCard.style.display = 'block';
+        }
+      }
+    }
+
+    // Update global data
+    function updateGlobalData(path, value) {
+      const keys = path.split('.');
+      let current = globalData;
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) {
+          current[keys[i]] = {};
+        }
+        current = current[keys[i]];
+      }
+      
+      current[keys[keys.length - 1]] = value;
+      
+      // Update display
+      const globalDataDisplay = document.getElementById('global-data-display');
+      if (globalDataDisplay) {
+        globalDataDisplay.textContent = JSON.stringify(globalData, null, 2);
+      }
+      
+      // Dispatch update event
+      const event = new CustomEvent('globalDataUpdated', {
+        detail: { path, value, globalData }
+      });
+      document.dispatchEvent(event);
+    }
+
+    // Location functions
+    function addTrustedLocation() {
+      showNotification('Agregando ubicación actual como confiable...', 'info');
+    }
+
+    function removeLocation(locationId) {
+      if (confirm('¿Deseas eliminar esta ubicación confiable?')) {
+        showNotification('Eliminando ubicación: ' + locationId, 'success');
+      }
+    }
+
+    function clearAllLocations() {
+      if (confirm('¿Estás seguro de que deseas eliminar todas las ubicaciones confiables?')) {
+        showNotification('Eliminando todas las ubicaciones...', 'warning');
+      }
+    }
+
+    // Password visibility toggle
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      const button = input.parentElement.querySelector('button');
+      const icon = button.querySelector('i');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+      }
+    }
+
+    // Form reset functions
+    function resetForm(formId) {
+      const form = document.getElementById(formId);
+      if (form) {
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+          if (input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = input.defaultChecked;
+          } else {
+            input.value = input.defaultValue;
+          }
+        });
+        showNotification('Formulario restablecido', 'info');
+      }
+    }
+
+    // Advanced functions for enhanced features
+    function startEnhancedVerification() {
+      showNotification('Iniciando verificación avanzada...', 'info');
+    }
+
+    function scheduleConsultation() {
+      showNotification('Abriendo calendario para agendar consulta...', 'info');
+    }
+
+    // API integration functions
+    function syncWithServer() {
+      showNotification('Sincronizando datos con el servidor...', 'info');
+      
+      // Simulate API call
+      setTimeout(() => {
+        showNotification('Sincronización completada', 'success');
+        updateGlobalData('last_sync', new Date().toISOString());
+      }, 2000);
+    }
+
+    function backupSettings() {
+      showNotification('Creando respaldo de configuraciones...', 'info');
+      
+      const settings = {
+        user_preferences: globalData.preferences,
+        security_settings: globalData.security,
+        notification_settings: globalData.preferences.notifications,
+        backup_date: new Date().toISOString()
+      };
+      
+      // Create downloadable backup file
+      const dataStr = JSON.stringify(settings, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `remeex_backup_${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+      
+      URL.revokeObjectURL(url);
+      showNotification('Respaldo descargado exitosamente', 'success');
+    }
+
+    function restoreSettings() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      
+      input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            try {
+              const settings = JSON.parse(e.target.result);
+              
+              // Validate backup structure
+              if (settings.user_preferences && settings.security_settings) {
+                // Restore settings
+                updateGlobalData('preferences', settings.user_preferences);
+                updateGlobalData('security', settings.security_settings);
+                
+                showNotification('Configuraciones restauradas exitosamente', 'success');
+                
+                // Reload current step to reflect changes
+                setTimeout(() => {
+                  location.reload();
+                }, 1500);
+              } else {
+                showNotification('Archivo de respaldo inválido', 'danger');
+              }
+            } catch (error) {
+              showNotification('Error al leer el archivo de respaldo', 'danger');
+            }
+          };
+          reader.readAsText(file);
+        }
+      };
+      
+      input.click();
+    }
+
+    // Accessibility functions
+    function increaseFontSize() {
+      document.documentElement.style.fontSize = '110%';
+      showNotification('Tamaño de fuente aumentado', 'success');
+    }
+
+    function decreaseFontSize() {
+      document.documentElement.style.fontSize = '90%';
+      showNotification('Tamaño de fuente reducido', 'success');
+    }
+
+    function resetFontSize() {
+      document.documentElement.style.fontSize = '100%';
+      showNotification('Tamaño de fuente restablecido', 'success');
+    }
+
+    function toggleHighContrast() {
+      document.body.classList.toggle('high-contrast');
+      const isHighContrast = document.body.classList.contains('high-contrast');
+      showNotification(`Modo alto contraste ${isHighContrast ? 'activado' : 'desactivado'}`, 'success');
+    }
+
+    // Keyboard navigation support
+    document.addEventListener('keydown', function(e) {
+      // ESC key closes modals
+      if (e.key === 'Escape') {
+        const openModals = document.querySelectorAll('.modal-overlay[style*="flex"]');
+        openModals.forEach(modal => {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'auto';
+        });
+      }
+      
+      // Arrow keys for step navigation (when not in input fields)
+      if (!e.target.matches('input, textarea, select')) {
+        if (e.key === 'ArrowLeft' && currentStep > 0) {
+          e.preventDefault();
+          previousStep();
+        } else if (e.key === 'ArrowRight' && currentStep < totalSteps - 1) {
+          e.preventDefault();
+          nextStep();
+        }
+      }
+      
+      // Number keys for direct step navigation
+      if (e.key >= '1' && e.key <= '9' && !e.target.matches('input, textarea, select')) {
+        const stepIndex = parseInt(e.key) - 1;
+        if (stepIndex < totalSteps) {
+          e.preventDefault();
+          navigateToStep(stepIndex);
+        }
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = null;
+    let touchStartY = null;
+
+    document.addEventListener('touchstart', function(e) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    });
+
+    document.addEventListener('touchend', function(e) {
+      if (!touchStartX || !touchStartY) return;
+      
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+      
+      // Only handle horizontal swipes that are longer than vertical swipes
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+        if (deltaX > 0 && currentStep > 0) {
+          // Swipe right - previous step
+          previousStep();
+        } else if (deltaX < 0 && currentStep < totalSteps - 1) {
+          // Swipe left - next step
+          nextStep();
+        }
+      }
+      
+      touchStartX = null;
+      touchStartY = null;
+    });
+
+    // Auto-save functionality
+    let autoSaveTimer = null;
+
+    function enableAutoSave() {
+      // Clear existing timer
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+      }
+      
+      // Set new timer for 30 seconds
+      autoSaveTimer = setTimeout(() => {
+        saveCurrentStep();
+        enableAutoSave(); // Re-enable for next cycle
+      }, 30000);
+    }
+
+    // Form change detection for auto-save
+    document.addEventListener('change', function(e) {
+      if (e.target.matches('input, select, textarea')) {
+        enableAutoSave();
+      }
+    });
+
+    // Performance monitoring
+    function trackPerformance() {
+      if ('performance' in window) {
+        const navigation = performance.getEntriesByType('navigation')[0];
+        const loadTime = navigation.loadEventEnd - navigation.loadEventStart;
+        
+        console.log(`Page load time: ${loadTime}ms`);
+        
+        // Track step navigation performance
+        const stepStart = performance.now();
+        
+        // This would be called after step navigation completes
+        window.trackStepNavigation = function() {
+          const stepEnd = performance.now();
+          console.log(`Step navigation time: ${stepEnd - stepStart}ms`);
+        };
+      }
+    }
+
+    // Initialize performance tracking
+    trackPerformance();
+
+    // Service Worker registration for offline support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+          .then(function(registration) {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(function(err) {
+            console.log('ServiceWorker registration failed');
+          });
+      });
+    }
+
+    // Network status monitoring
+    function updateNetworkStatus() {
+      const isOnline = navigator.onLine;
+      const statusIndicator = document.getElementById('network-status');
+      
+      if (statusIndicator) {
+        statusIndicator.textContent = isOnline ? 'En línea' : 'Sin conexión';
+        statusIndicator.className = isOnline ? 'text-success' : 'text-danger';
+      }
+      
+      if (!isOnline) {
+        showNotification('Sin conexión a internet. Trabajando en modo offline.', 'warning');
+      }
+    }
+
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+
+    // Initialize network status
+    updateNetworkStatus();
+
+    // Clean up function
+    function cleanUp() {
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+      }
+      
+      // Remove event listeners
+      window.removeEventListener('online', updateNetworkStatus);
+      window.removeEventListener('offline', updateNetworkStatus);
+    }
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', cleanUp);
+
+    // Final initialization
+    console.log('REMEEX Panel de Control initialized successfully');
+    
+    // Dispatch ready event
+    const readyEvent = new CustomEvent('remeexReady', {
+      detail: {
+        version: '2.4.1',
+        buildDate: '2024-03-15',
+        features: [
+          'modular-design',
+          'mobile-first',
+          'wizard-navigation',
+          'collapsible-sections',
+          'auto-save',
+          'offline-support',
+          'accessibility',
+          'touch-gestures'
+        ]
+      }
+    });
+    document.dispatchEvent(readyEvent);
+  </script>
+
+  <!-- External Scripts (for bottom navigation compatibility) -->
+  <script>
+    // Bottom navigation integration
+    document.addEventListener('globalDataReady', function(e) {
+      const globalDataDisplay = document.getElementById('global-data-display');
+      if (globalDataDisplay) {
+        globalDataDisplay.textContent = JSON.stringify(e.detail, null, 2);
+      }
+    });
+
+    // Additional utility functions for external integration
+    window.REMEEX = {
+      version: '2.4.1',
+      currentStep: () => currentStep,
+      navigateToStep: navigateToStep,
+      globalData: () => globalData,
+      updateGlobalData: updateGlobalData,
+      showNotification: showNotification,
+      openModal: openModal,
+      closeModal: closeModal,
+      saveCurrentStep: saveCurrentStep,
+      backupSettings: backupSettings,
+      restoreSettings: restoreSettings
+    };
+
+    // Module loading detection
+    if (typeof module !== 'undefined' && module.exports) {
+      module.exports = window.REMEEX;
+    }
+  </script>
+
+  <!-- CSS for additional animations and transitions -->
+  <style>
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .pulse {
+      animation: pulse 0.5s ease-in-out;
+    }
+
+    /* High contrast mode */
+    .high-contrast {
+      --primary: #0000ff;
+      --success: #008000;
+      --danger: #ff0000;
+      --warning: #ff8c00;
+      --neutral-100: #ffffff;
+      --neutral-200: #f0f0f0;
+      --neutral-300: #000000;
+      --neutral-700: #000000;
+      --neutral-900: #000000;
+    }
+
+    .high-contrast .card,
+    .high-contrast .collapsible-section,
+    .high-contrast .stat-card {
+      border: 2px solid #000000;
+    }
+
+    .high-contrast .btn-outline {
+      border: 2px solid #000000;
+      color: #000000;
+    }
+
+    /* Network status indicator */
+    #network-status {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: var(--neutral-100);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      box-shadow: var(--shadow-md);
+      z-index: 999;
+    }
+
+    /* Loading states for async operations */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--neutral-300);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Focus styles for better accessibility */
+    .btn:focus,
+    .form-control:focus,
+    .nav-btn:focus,
+    .wizard-step:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Print styles */
+    @media print {
+      .header,
+      .wizard-nav,
+      .bottom-nav,
+      .btn,
+      .modal-overlay {
+        display: none !important;
+      }
+      
+      .main-container {
+        margin: 0 !important;
+      }
+      
+      .step-content {
+        display: block !important;
+        height: auto !important;
+        page-break-before: always;
+      }
+      
+      .collapsible-section {
+        break-inside: avoid;
+      }
+      
+      .section-content {
+        display: block !important;
+      }
+    }
+
+    /* RTL language support */
+    [dir="rtl"] {
+      text-align: right;
+    }
+
+    [dir="rtl"] .wizard-nav {
+      direction: rtl;
+    }
+
+    [dir="rtl"] .section-toggle {
+      transform: scaleX(-1);
+    }
+
+    [dir="rtl"] .section-toggle.expanded {
+      transform: scaleX(-1) rotate(180deg);
+    }
+  </style>
+
+  <!-- Loading overlay for async operations -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Network status indicator -->
+  <div id="network-status" class="text-success">En línea</div>
+
+</body>
+</html>
+  <script src="preload.js"></script>

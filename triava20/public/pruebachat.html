@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="js/exchange-rate.js"></script>
+    <script>
+        (function () {
+            const referrerPart = document.referrer
+                ? document.referrer.split('/').pop().split(/[?#]/)[0].replace(/\.html$/, '')
+                : '';
+            const fromProcessing = sessionStorage.getItem('fromProcessingRetiro') === 'true';
+            if (referrerPart !== 'procesamiento-retiro' && !fromProcessing) {
+                window.location.replace('transferencia.html');
+            } else {
+                sessionStorage.removeItem('fromProcessingRetiro');
+                localStorage.setItem('firstWithdrawalDone','true');
+            }
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat P2P - REMEEX</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" href="visabluapple.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Paleta de colores moderna basada en estilo Revolut/N26 */
+            --primary: #1a1f71;
+            --primary-dark: #0c1045;
+            --primary-light: #3244b6;
+            --secondary: #00579f;
+            --accent: #f7b600;
+            --success: #00d34d;
+            --danger: #ff4d4d;
+            --warning: #ffad33;
+            --info: #0095ff;
+            --neutral-100: #ffffff;
+            --neutral-200: #f5f7fa;
+            --neutral-300: #eaecf0;
+            --neutral-400: #d0d5dd;
+            --neutral-500: #9da4b4;
+            --neutral-600: #6e7891;
+            --neutral-700: #4f5d75;
+            --neutral-800: #293249;
+            --neutral-900: #1a1f37;
+
+            /* Sombras y efectos */
+            --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+            --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+            --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+            --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+            
+            /* Border radius */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+            
+            /* Transiciones */
+            --transition-fast: all 0.2s ease;
+            --transition-base: all 0.3s ease;
+            --transition-slow: all 0.5s ease;
+            
+            /* Variables de altura para móviles */
+            --header-height: 70px;
+            --nav-height: 70px;
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        @supports (height: 100dvh) {
+            :root { --vh: 100dvh; }
+        }
+
+        @supports not (height: 100dvh) {
+            :root { --vh: 100vh; }
+        }
+
+        @media (max-width: 480px) {
+            html { font-size: 90%; }
+            :root {
+                --header-height: 65px;
+                --nav-height: 65px;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: var(--vh);
+            min-height: var(--vh);
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--neutral-200);
+            color: var(--neutral-900);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Container */
+        .header-container {
+            position: fixed;
+            top: 0;
+            top: var(--safe-area-top);
+            left: 0;
+            right: 0;
+            background: var(--neutral-100);
+            border-bottom: 1px solid var(--neutral-300);
+            box-shadow: var(--shadow-sm);
+            z-index: 1000;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            background: transparent;
+            border: none;
+            color: var(--neutral-700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .back-btn:hover {
+            background: var(--neutral-200);
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+        }
+
+        .operation-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+
+        .operation-status {
+            font-size: 0.75rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* Timer Badge */
+        .timer-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .timer-badge.warning {
+            background: var(--warning);
+        }
+
+        .timer-badge.danger {
+            background: var(--danger);
+            animation: timerPulse 1s infinite;
+        }
+
+        /* Main Container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding-top: var(--header-height);
+            padding-bottom: var(--nav-height);
+            overflow: hidden;
+        }
+
+        /* Operation Info Bar */
+        .operation-info-bar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem;
+            flex-shrink: 0;
+        }
+
+        .operation-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .amount-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .amount-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+
+        .amount-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .exchange-info {
+            text-align: right;
+        }
+
+        .exchange-rate {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+
+        .exchange-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .progress-step {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-step.completed {
+            background: var(--success);
+        }
+
+        .progress-step.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: white;
+            animation: progressAnimation 2s ease-in-out infinite;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--neutral-100);
+            overflow: hidden;
+        }
+
+        /* Trader Info */
+        .trader-info {
+            background: white;
+            border-bottom: 1px solid var(--neutral-300);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .trader-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .trader-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background: var(--success);
+            border: 2px solid white;
+            border-radius: 50%;
+            animation: onlinePulse 2s infinite;
+        }
+
+        .trader-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .trader-name {
+            font-weight: 600;
+            color: var(--neutral-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .trader-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--neutral-600);
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stars {
+            color: var(--accent);
+        }
+
+        .trader-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            background: var(--neutral-200);
+            border: none;
+            color: var(--neutral-700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .action-btn:hover {
+            background: var(--neutral-300);
+        }
+
+        /* Chat Area (donde se integrará Tawk.to) */
+        .chat-area {
+            flex: 1;
+            position: relative;
+            background: var(--neutral-100);
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        /* Personalización del chat de Tawk.to */
+        .chat-welcome {
+            padding: 1rem;
+            background: var(--neutral-50);
+            border-bottom: 1px solid var(--neutral-300);
+            text-align: center;
+        }
+
+        .chat-welcome-message {
+            color: var(--neutral-700);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-welcome-note {
+            font-size: 0.8rem;
+            color: var(--neutral-600);
+            background: var(--neutral-100);
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            display: inline-block;
+        }
+
+        /* Transaction Actions Bar */
+        .transaction-actions-bar {
+            background: white;
+            border-top: 2px solid var(--neutral-300);
+            padding: 1rem;
+            display: flex;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .transaction-btn {
+            flex: 1;
+            padding: 0.875rem;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .transaction-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .transaction-btn.confirm {
+            background: var(--success);
+            color: white;
+        }
+
+        .transaction-btn.dispute {
+            background: var(--danger);
+            color: white;
+        }
+
+        .transaction-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            bottom: var(--safe-area-bottom);
+            left: 0;
+            right: 0;
+            background: var(--neutral-100);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0.25rem;
+            padding-bottom: calc(0.5rem + var(--safe-area-bottom));
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+            z-index: 900;
+            border-top: 1px solid var(--neutral-300);
+            height: var(--nav-height);
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.125rem;
+            padding: 0.25rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
+            cursor: pointer;
+            flex: 1;
+            color: var(--neutral-600);
+            position: relative;
+            max-width: 70px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: translateY(-2px);
+        }
+
+        .nav-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: calc(var(--header-height) + 1rem);
+            right: 1rem;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem;
+            min-width: 250px;
+            max-width: 350px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideInRight 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success);
+        }
+
+        .toast.warning .toast-icon {
+            color: var(--warning);
+        }
+
+        .toast.error .toast-icon {
+            color: var(--danger);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.8rem;
+            color: var(--neutral-600);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes onlinePulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes timerPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes progressAnimation {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .header-info {
+                max-width: 150px;
+            }
+
+            .operation-title {
+                font-size: 0.85rem;
+            }
+
+            .amount-value {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .operation-summary {
+                flex-direction: column;
+                gap: 0.75rem;
+                text-align: center;
+            }
+
+            .exchange-info {
+                text-align: center;
+            }
+        }
+
+        /* Personalización específica para Tawk.to */
+        #tawk-container {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Ocultar elementos del widget de Tawk.to que no necesitamos */
+        .tawk-min-container {
+            display: none !important;
+        }
+
+        /* Asegurar que el chat ocupe todo el espacio disponible */
+        .tawk-container iframe {
+            height: 100% !important;
+            width: 100% !important;
+            border: none !important;
+            border-radius: 0 !important;
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Container -->
+    <div class="header-container">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="header-info">
+                    <div class="operation-title">Retiro P2P #R2847</div>
+                    <div class="operation-status">
+                        <span class="status-dot"></span>
+                        <span>En proceso</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timer-badge" id="timer-badge">
+                <i class="fas fa-clock"></i>
+                <span id="timer-display">14:45</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Operation Info Bar -->
+        <div class="operation-info-bar">
+            <div class="operation-summary">
+                <div class="amount-info">
+                    <div class="amount-label">Recibirás</div>
+                    <div class="amount-value" id="summary-amount">Bs 0.00</div>
+                </div>
+                <div class="exchange-info">
+                    <div class="exchange-rate" id="summary-rate">Tasa: 0.00 Bs/USD</div>
+                    <div class="exchange-value" id="summary-equivalent">≈ $0.00 USD</div>
+                </div>
+            </div>
+            <div class="progress-steps">
+                <div class="progress-step completed"></div>
+                <div class="progress-step active"></div>
+                <div class="progress-step"></div>
+                <div class="progress-step"></div>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <!-- Trader Info -->
+            <div class="trader-info">
+                <div class="trader-avatar" id="trader-avatar">
+                    <img src="usuarios/Juan Tomas Perez.jpg" alt="Juan Tomas">
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="trader-details">
+                    <div class="trader-name" id="trader-name">Juan Tomas - Soporte P2P</div>
+                    <div class="trader-stats">
+                        <div class="rating">
+                            <span class="stars">★★★★★</span>
+                            <span>4.9</span>
+                        </div>
+                        <span>Operador verificado</span>
+                        <span>En línea</span>
+                    </div>
+                </div>
+                <div class="trader-actions">
+                    <button class="action-btn" onclick="showTraderProfile()">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <button class="action-btn" onclick="reportIssue()">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Area con Tawk.to -->
+            <div class="chat-area">
+                <div class="chat-welcome">
+                    <div class="chat-welcome-message">
+                        <strong>Chat en vivo con soporte P2P</strong>
+                    </div>
+                    <div class="chat-welcome-note">
+                        <i class="fas fa-shield-check"></i>
+                        Operación protegida - Respuesta inmediata garantizada
+                    </div>
+                </div>
+                <div id="tawk-container">
+                    <!-- El chat de Tawk.to se cargará aquí -->
+                </div>
+            </div>
+
+            <!-- Transaction Actions Bar -->
+            <div class="transaction-actions-bar" id="transaction-actions">
+                <button class="transaction-btn confirm" onclick="confirmPayment()">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Confirmar Recepción</span>
+                </button>
+                <button class="transaction-btn dispute" onclick="openDispute()">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Abrir Disputa</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item">
+            <div class="nav-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="nav-label">Inicio</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">
+                <i class="fas fa-exchange-alt"></i>
+            </div>
+            <div class="nav-label">Transferir</div>
+        </div>
+        <div class="nav-item active">
+            <div class="nav-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="nav-label">P2P</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">
+                <i class="fas fa-history"></i>
+            </div>
+            <div class="nav-label">Historial</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="nav-label">Perfil</div>
+        </div>
+    </div>
+
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/68a44855d541a4192285c373/1j30rl42b';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+
+    // Configuración personalizada de Tawk.to para integración
+    Tawk_API.onLoad = function(){
+        // Ocultar el widget flotante por defecto ya que usamos integración personalizada
+        Tawk_API.hideWidget();
+        
+        // Mostrar el chat en el contenedor personalizado
+        Tawk_API.toggle();
+    };
+
+    // Personalizar el comportamiento del chat
+    Tawk_API.onChatMaximized = function(){
+        // Chat maximizado
+        console.log('Chat maximizado');
+    };
+
+    Tawk_API.onChatMinimized = function(){
+        // Chat minimizado
+        console.log('Chat minimizado');
+    };
+
+    Tawk_API.onChatStarted = function(){
+        // Chat iniciado
+        showToast('success', 'Chat iniciado', 'Conectado con soporte P2P');
+    };
+
+    Tawk_API.onChatEnded = function(){
+        // Chat finalizado
+        showToast('info', 'Chat finalizado', 'Sesión de soporte terminada');
+    };
+    </script>
+    <!--End of Tawk.to Script-->
+
+    <script>
+        // Variables globales
+        let timeRemaining = 885; // 14:45 en segundos
+        let timerInterval;
+
+        // Datos persistentes
+        const registrationData = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+        const userData = JSON.parse(localStorage.getItem('visaUserData') || '{}');
+        const transferData = JSON.parse(sessionStorage.getItem('remeexTransferData') || '{}');
+        const exchangeData = window.getStoredExchangeRate ? window.getStoredExchangeRate() : null;
+        const exchangeRate = exchangeData ? exchangeData.USD_TO_BS : parseFloat(sessionStorage.getItem('remeexSessionExchangeRate') || localStorage.getItem('remeexSessionExchangeRate') || '0');
+
+        let currentUser = userData.fullName || registrationData.preferredName || 'Usuario';
+
+        function formatCurrency(amount, currency) {
+            if (isNaN(amount)) amount = 0;
+            if (currency === 'bs') {
+                return `Bs ${amount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            } else if (currency === 'usd') {
+                return `$${amount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            }
+            return amount.toLocaleString();
+        }
+
+        function renderOperationInfo() {
+            const amountEl = document.getElementById('summary-amount');
+            const rateEl = document.getElementById('summary-rate');
+            const equivalentEl = document.getElementById('summary-equivalent');
+            if (!amountEl || !rateEl || !equivalentEl) return;
+
+            const amount = parseFloat(transferData.amount) || 0;
+            const rate = exchangeRate || 0;
+            const isInternational = transferData.method === 'international';
+
+            amountEl.textContent = formatCurrency(amount, isInternational ? 'usd' : 'bs');
+            rateEl.textContent = `Tasa: ${rate.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs/USD`;
+            const equivalent = isInternational ? amount * rate : amount / rate;
+            equivalentEl.textContent = `≈ ${formatCurrency(equivalent, isInternational ? 'bs' : 'usd')}`;
+        }
+
+        function updateVH() {
+            document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+        }
+        window.addEventListener('resize', updateVH);
+        window.addEventListener('orientationchange', updateVH);
+        updateVH();
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Iniciando chat P2P con Tawk.to');
+            startTimer();
+            renderOperationInfo();
+            setupTawkIntegration();
+        });
+
+        // Iniciar temporizador
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        // Actualizar display del timer
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const timerDisplay = document.getElementById('timer-display');
+            const timerBadge = document.getElementById('timer-badge');
+            
+            if (timerDisplay) {
+                timerDisplay.textContent = display;
+            }
+            
+            if (timerBadge) {
+                if (timeRemaining <= 180) { // 3 minutos
+                    timerBadge.classList.add('danger');
+                } else if (timeRemaining <= 300) { // 5 minutos
+                    timerBadge.classList.add('warning');
+                }
+            }
+        }
+
+        // Configurar integración con Tawk.to
+        function setupTawkIntegration() {
+            // Enviar información del usuario al chat
+            if (typeof Tawk_API !== 'undefined') {
+                Tawk_API.onLoad = function(){
+                    // Establecer atributos del visitante
+                    Tawk_API.setAttributes({
+                        'nombre': currentUser,
+                        'operacion': 'Retiro P2P #R2847',
+                        'monto': transferData.amount || '0',
+                        'metodo': transferData.method || 'N/A',
+                        'estado': 'En proceso'
+                    }, function(error){
+                        if(error){
+                            console.log('Error al establecer atributos:', error);
+                        }
+                    });
+
+                    // Enviar mensaje inicial con contexto
+                    const contextMessage = `
+🔄 RETIRO P2P EN PROCESO
+👤 Usuario: ${currentUser}
+💰 Monto: ${formatCurrency(parseFloat(transferData.amount) || 0, transferData.method === 'international' ? 'usd' : 'bs')}
+📱 Método: ${transferData.method || 'N/A'}
+⏰ Tiempo restante: ${document.getElementById('timer-display').textContent}
+
+¡Hola! Estoy procesando un retiro P2P y necesito asistencia.
+                    `;
+                    
+                    // Mostrar mensaje de bienvenida personalizado
+                    setTimeout(() => {
+                        if (Tawk_API.isChatOngoing()) {
+                            Tawk_API.addEvent('Retiro P2P iniciado', {
+                                'usuario': currentUser,
+                                'monto': transferData.amount,
+                                'timestamp': new Date().toISOString()
+                            });
+                        }
+                    }, 2000);
+                };
+            }
+        }
+
+        // Confirmar pago
+        function confirmPayment() {
+            if (confirm('¿Confirmas que has recibido el pago completo en tu cuenta?')) {
+                showToast('success', 'Pago confirmado', 'La operación se ha completado exitosamente');
+                
+                // Actualizar progreso
+                const progressSteps = document.querySelectorAll('.progress-step');
+                progressSteps.forEach(step => step.classList.add('completed'));
+                
+                // Notificar al chat
+                if (typeof Tawk_API !== 'undefined' && Tawk_API.isChatOngoing()) {
+                    Tawk_API.addEvent('Pago confirmado', {
+                        'estado': 'completado',
+                        'timestamp': new Date().toISOString()
+                    });
+                }
+                
+                // Redirigir después de 3 segundos
+                setTimeout(() => {
+                    window.location.href = 'homevisa.html';
+                }, 3000);
+            }
+        }
+
+        // Abrir disputa
+        function openDispute() {
+            const reason = prompt('¿Cuál es el motivo de la disputa?');
+            if (reason) {
+                showToast('warning', 'Disputa abierta', 'Un moderador revisará tu caso');
+                
+                // Notificar al chat
+                if (typeof Tawk_API !== 'undefined' && Tawk_API.isChatOngoing()) {
+                    Tawk_API.addEvent('Disputa abierta', {
+                        'motivo': reason,
+                        'timestamp': new Date().toISOString()
+                    });
+                }
+            }
+        }
+
+        // Mostrar perfil del trader
+        function showTraderProfile() {
+            showToast('info', 'Perfil del operador', 'Juan Tomas - Operador verificado con 4.9⭐');
+        }
+
+        // Reportar problema
+        function reportIssue() {
+            if (confirm('¿Deseas reportar un problema con este operador?')) {
+                showToast('warning', 'Reporte enviado', 'Revisaremos tu reporte pronto');
+                
+                // Notificar al chat
+                if (typeof Tawk_API !== 'undefined' && Tawk_API.isChatOngoing()) {
+                    Tawk_API.addEvent('Problema reportado', {
+                        'operador': 'Juan Tomas',
+                        'timestamp': new Date().toISOString()
+                    });
+                }
+            }
+        }
+
+        // Mostrar toast
+        function showToast(type, title, message) {
+            const toastContainer = document.getElementById('toast-container');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'check-circle',
+                warning: 'exclamation-triangle',
+                error: 'times-circle',
+                info: 'info-circle'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas fa-${icons[type] || 'info-circle'}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease reverse';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Manejar timeout
+        function handleTimeout() {
+            showToast('error', 'Tiempo agotado', 'La operación ha sido cancelada por inactividad');
+            
+            // Notificar al chat
+            if (typeof Tawk_API !== 'undefined' && Tawk_API.isChatOngoing()) {
+                Tawk_API.addEvent('Operación expirada', {
+                    'motivo': 'timeout',
+                    'timestamp': new Date().toISOString()
+                });
+            }
+        }
+
+        // Navegación
+        function goBack() {
+            if (confirm('¿Deseas salir del chat? Se cancelará la operación.')) {
+                sessionStorage.setItem('fromRetiroP2P', 'true');
+                window.location.href = 'homevisa.html';
+            }
+        }
+
+        // Navegación inferior
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        console.log('✅ Chat P2P con Tawk.to inicializado correctamente');
+    </script>
+</body>
+</html>

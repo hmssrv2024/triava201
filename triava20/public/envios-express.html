@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Visa Envíos Express</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Visa Envíos Express: envía dinero al instante con seguridad y soporte global.">
+  <meta name="keywords" content="envío de dinero, remesas, transferencias internacionales, visa">
+  <meta name="author" content="Remeex VISA">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://remeexvisa.com/envios-express">
+  <link rel="prefetch" href="homevisa.html">
+  <meta property="og:title" content="Visa Envíos Express" />
+  <meta property="og:description" content="Envía dinero al instante a más de 25 países con Visa." />
+  <meta property="og:image" content="https://mnd-assets.mynewsdesk.com/image/upload/c_fill,dpr_auto,f_auto,g_auto,q_auto:good,w_1782/sqyrhijdylqrsgwbrbtm" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://remeexvisa.com/envios-express" />
+  <meta property="og:site_name" content="Remeex VISA" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Visa Envíos Express" />
+  <meta name="twitter:description" content="Envía dinero al instante a más de 25 países con Visa." />
+  <meta name="twitter:image" content="https://mnd-assets.mynewsdesk.com/image/upload/c_fill,dpr_auto,f_auto,g_auto,q_auto:good,w_1782/sqyrhijdylqrsgwbrbtm" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="registro.css">
+  <link rel="stylesheet" href="envios-express.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+  <div class="container registration-app" id="enviosExpressApp">
+    <div class="header-actions">
+      <button class="exit-btn" type="button" aria-label="Cerrar Envíos Express" id="exitButton">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9,22 9,12 15,12 15,22"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <div class="header">
+      <div class="logo-container">
+        <div class="logo-identity">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa Logo" class="visa-logo">
+          <div class="subtitle">Envíos Express internacionales</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-container" id="progressContainer" style="display: none;">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text">
+        <span>Proceso de envío</span>
+        <span class="progress-percentage" id="progressPercentage">0%</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="selected-country-banner" id="selectedCountryBanner" hidden aria-hidden="true">
+        <div class="selected-country-text" id="selectedCountryText"></div>
+        <button class="link-button" type="button" id="changeCountryButton">Cambiar país</button>
+      </div>
+
+      <div class="step active" id="step0">
+        <div class="step-info">
+          <div class="welcome-screen welcome-screen--info">
+            <svg class="welcome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            <div class="step-title">Visa Envíos Express</div>
+            <div class="step-description">
+              Envía fondos de forma rápida, segura y con soporte global. Completa nuestro asistente paso a paso y libera tu envío en minutos.
+            </div>
+          </div>
+        </div>
+        <div class="step-content">
+          <div class="welcome-screen welcome-screen--content">
+            <div class="button-group">
+              <button class="btn btn-primary" type="button" id="startWizardButton">
+                <span>Comenzar</span>
+                <div class="btn-ripple"></div>
+              </button>
+            </div>
+            <video class="welcome-video" autoplay muted loop playsinline controls>
+              <source src="https://usa.visa.com/content/dam/VCOM/regional/na/us/homepage/videos/typewriter-900x900.mp4" type="video/mp4">
+              Tu navegador no soporta el elemento de video.
+            </video>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="step1" aria-hidden="true">
+        <div class="step-info">
+          <div class="step-icon">
+            <span class="step-number">1</span>
+          </div>
+          <div class="step-header">
+            <div class="step-title">Selecciona el país de destino</div>
+            <div class="step-description" id="countryStepDescription">
+              Disponemos de 23 países, incluido Venezuela. Indica hacia dónde necesitas enviar los fondos.
+            </div>
+          </div>
+        </div>
+        <div class="step-content">
+          <div class="country-selector">
+            <div class="country-grid" id="countryGrid" role="listbox" aria-label="País de destino">
+              <!-- Opciones generadas desde JavaScript -->
+            </div>
+          </div>
+          <div class="button-group">
+            <button class="btn btn-secondary" type="button" data-action="back">
+              <span>Volver</span>
+              <div class="btn-ripple"></div>
+            </button>
+            <button class="btn btn-primary" type="button" data-action="next" disabled id="countryNextButton">
+              <span>Continuar</span>
+              <div class="btn-ripple"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="step2" aria-hidden="true">
+        <div class="step-info">
+          <div class="step-icon">
+            <span class="step-number">2</span>
+          </div>
+          <div class="step-header">
+            <div class="step-title" id="recipientStepTitle">Datos del beneficiario</div>
+            <div class="step-description" id="recipientStepDescription">
+              Completa los datos obligatorios del receptor del dinero. Utiliza información real para evitar rechazos.
+            </div>
+          </div>
+        </div>
+        <div class="step-content">
+          <form class="form" id="recipientForm" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="recipientFirstName">Nombre</label>
+                <input class="form-input" type="text" id="recipientFirstName" name="recipientFirstName" required autocomplete="given-name" placeholder="Ej. María">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="recipientLastName">Apellido</label>
+                <input class="form-input" type="text" id="recipientLastName" name="recipientLastName" required autocomplete="family-name" placeholder="Ej. González">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="recipientId" id="recipientIdLabel">Documento de identidad</label>
+                <input class="form-input" type="text" id="recipientId" name="recipientId" required placeholder="Ej. DNI 12345678">
+                <p class="form-hint" id="recipientIdHint" aria-live="polite"></p>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="recipientPhone">Número de teléfono</label>
+                <input class="form-input" type="tel" id="recipientPhone" name="recipientPhone" required autocomplete="tel" placeholder="Ej. +54 9 11 5555 5555">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="recipientEmail">Correo electrónico</label>
+                <input class="form-input" type="email" id="recipientEmail" name="recipientEmail" required autocomplete="email" placeholder="nombre@dominio.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="recipientBank" id="recipientBankLabel">Banco de recepción</label>
+                <input
+                  class="form-input"
+                  type="text"
+                  id="recipientBank"
+                  name="recipientBank"
+                  required
+                  list="recipientBankOptions"
+                  placeholder="Ej. Banco Internacional"
+                  autocomplete="organization"
+                >
+                <datalist id="recipientBankOptions"></datalist>
+                <p class="form-hint" id="recipientBankHint" aria-live="polite"></p>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="recipientAccountNumber" id="recipientAccountNumberLabel">Número de cuenta o IBAN</label>
+                <input class="form-input" type="text" id="recipientAccountNumber" name="recipientAccountNumber" required placeholder="Ej. ES12 3456 7890 1234">
+                <p class="form-hint" id="recipientAccountHint" aria-live="polite"></p>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="recipientAccountType" id="recipientAccountTypeLabel">Tipo de cuenta</label>
+                <select class="form-input" id="recipientAccountType" name="recipientAccountType" required>
+                  <option value="">Selecciona una opción</option>
+                  <option value="corriente">Cuenta corriente</option>
+                  <option value="ahorro">Cuenta de ahorros</option>
+                  <option value="tarjeta">Tarjeta VISA</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="transferAmount" id="transferAmountLabel">Monto a enviar</label>
+                <input
+                  class="form-input"
+                  type="number"
+                  id="transferAmount"
+                  name="transferAmount"
+                  required
+                  min="50"
+                  step="0.01"
+                  placeholder="Ej. 500"
+                  aria-describedby="transferAmountHint"
+                >
+                <p class="form-hint" id="transferAmountHint">El monto mínimo permitido es de 50&nbsp;USD o su equivalente en moneda local.</p>
+              </div>
+              <div class="form-group form-group--full">
+                <label class="form-label" for="transferNotes">Mensaje o referencia</label>
+                <textarea class="form-input" id="transferNotes" name="transferNotes" rows="3" placeholder="Referencia opcional para el beneficiario"></textarea>
+              </div>
+            </div>
+            <div class="form-feedback" id="formFeedback" role="alert" aria-live="assertive"></div>
+          </form>
+          <div class="button-group">
+            <button class="btn btn-secondary" type="button" data-action="back">
+              <span>Volver</span>
+              <div class="btn-ripple"></div>
+            </button>
+            <button class="btn btn-primary" type="button" data-action="next" id="recipientNextButton">
+              <span>Continuar</span>
+              <div class="btn-ripple"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="step3" aria-hidden="true">
+        <div class="step-info">
+          <div class="step-icon">
+            <span class="step-number">3</span>
+          </div>
+          <div class="step-header">
+            <div class="step-title">Confirma los datos</div>
+            <div class="step-description">
+              Revisa atentamente la información antes de liberar el pago. Puedes volver atrás para editar cualquier dato.
+            </div>
+          </div>
+        </div>
+        <div class="step-content">
+          <div class="summary-card">
+            <h3 class="summary-title">Resumen del envío</h3>
+            <dl class="summary-list">
+              <div class="summary-item">
+                <dt>País de destino</dt>
+                <dd id="summaryCountry">-</dd>
+              </div>
+              <div class="summary-item">
+                <dt>Beneficiario</dt>
+                <dd id="summaryRecipient">-</dd>
+              </div>
+              <div class="summary-item">
+                <dt>Documento</dt>
+                <dd id="summaryDocument">-</dd>
+              </div>
+              <div class="summary-item">
+                <dt>Contacto</dt>
+                <dd id="summaryContact">-</dd>
+              </div>
+              <div class="summary-item">
+                <dt>Banco y cuenta</dt>
+                <dd id="summaryBank">-</dd>
+              </div>
+              <div class="summary-item">
+                <dt>Monto</dt>
+                <dd id="summaryAmount">-</dd>
+              </div>
+              <div class="summary-item">
+                <dt>Referencia</dt>
+                <dd id="summaryNotes">-</dd>
+              </div>
+            </dl>
+          </div>
+          <div class="button-group">
+            <button class="btn btn-secondary" type="button" data-action="back">
+              <span>Volver</span>
+              <div class="btn-ripple"></div>
+            </button>
+            <button class="btn btn-primary" type="button" data-action="next" id="confirmNextButton">
+              <span>Confirmar y pagar</span>
+              <div class="btn-ripple"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="step4" aria-hidden="true">
+        <div class="step-info">
+          <div class="step-icon">
+            <span class="step-number">4</span>
+          </div>
+          <div class="step-header">
+            <div class="step-title">Pasarela de pago</div>
+            <div class="step-description">
+              Conecta con nuestra pasarela segura VisaNet para completar tu envío. Recibirás un comprobante digital instantáneo.
+            </div>
+          </div>
+        </div>
+        <div class="step-content">
+          <div class="payment-card">
+            <h3>Resumen final</h3>
+            <p class="payment-highlight">Enviarás <span id="paymentAmount">-</span> a <span id="paymentRecipient">-</span> en <span id="paymentCountry">-</span>.</p>
+            <div class="payment-details">
+              <p><strong>Banco destino:</strong> <span id="paymentBank">-</span></p>
+              <p><strong>Contacto:</strong> <span id="paymentContact">-</span></p>
+            </div>
+            <div class="payment-actions">
+              <button class="btn btn-primary" type="button" id="launchGatewayButton">
+                <span>Ir a pasarela segura</span>
+                <div class="btn-ripple"></div>
+              </button>
+              <button class="btn btn-secondary" type="button" data-action="back">
+                <span>Editar datos</span>
+                <div class="btn-ripple"></div>
+              </button>
+            </div>
+            <!-- Contenedor de botones PayPal; oculto hasta pulsar “Ir a pasarela segura” -->
+            <div id="paypal-button-container" style="margin-top: 24px; display:none;"></div>
+            <p class="payment-note">Al continuar serás dirigido a un entorno cifrado para completar el pago. Tu envío se libera automáticamente al confirmarse la transacción.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuración de entorno (debe definir window.__ENV__) -->
+  <script src="env-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js" defer></script>
+  <script type="module" src="envios-express.js"></script>
+</body>
+</html>

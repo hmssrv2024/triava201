@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HomeVisa Express</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --color-primary: #2563eb;
+      --color-primary-light: #3b82f6;
+      --color-surface: #ffffff;
+      --color-muted: #94a3b8;
+      --color-text: #0f172a;
+      --color-background: #f1f5f9;
+      --color-border: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(37, 99, 235, 0.15), transparent 55%) var(--color-background);
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+    }
+
+    .express-shell {
+      width: min(940px, 100%);
+      background: var(--color-surface);
+      border-radius: 24px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.15);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      position: relative;
+      isolation: isolate;
+    }
+
+    .express-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .express-column {
+      position: relative;
+      z-index: 1;
+      padding: 3rem clamp(1.75rem, 3vw, 2.75rem);
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 2vw + 1rem, 2.1rem);
+      margin: 0;
+      line-height: 1.2;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    p {
+      margin: 0;
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+
+    .express-login-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--color-text);
+      display: block;
+      margin-bottom: 0.45rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      background: rgba(255, 255, 255, 0.85);
+      font: inherit;
+      color: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    }
+
+    button[type="submit"] {
+      cursor: pointer;
+      border: none;
+      border-radius: 14px;
+      padding: 0.95rem 1.5rem;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.01em;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+      color: white;
+      box-shadow: 0 12px 25px rgba(37, 99, 235, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px rgba(37, 99, 235, 0.35);
+    }
+
+    .express-note {
+      font-size: 0.85rem;
+      color: var(--color-muted);
+      line-height: 1.5;
+    }
+
+    .express-dashboard {
+      background: linear-gradient(165deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.03));
+      border-left: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .express-balance-card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 20px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.15);
+    }
+
+    .express-balance-card h2 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .express-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+
+    .express-stat {
+      background: rgba(37, 99, 235, 0.08);
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+
+    .express-stat span {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(29, 78, 216, 0.65);
+    }
+
+    .express-activity {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .express-activity-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px dashed rgba(148, 163, 184, 0.35);
+      font-size: 0.95rem;
+    }
+
+    .express-activity-item strong {
+      color: var(--color-text);
+    }
+
+    .express-activity-item span {
+      color: var(--color-muted);
+    }
+
+    .express-dashboard[hidden] {
+      display: none;
+    }
+
+    body.express-authenticated .express-dashboard {
+      display: block;
+    }
+
+    body.express-authenticated #express-login-panel {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      body {
+        padding: 1.75rem 1rem;
+      }
+
+      .express-shell {
+        border-radius: 20px;
+      }
+
+      .express-column {
+        padding: 2.25rem 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="express-shell">
+    <section id="express-login-panel" class="express-column">
+      <div class="express-login-card">
+        <header>
+          <h1>HomeVisa Express</h1>
+          <p>Una experiencia simplificada para ingresar a tu cuenta y revisar lo esencial de tus movimientos.
+          </p>
+        </header>
+        <form id="express-login-form" autocomplete="on">
+          <div>
+            <label for="express-email">Correo electrónico</label>
+            <input id="express-email" type="email" name="email" placeholder="tucorreo@ejemplo.com" required>
+          </div>
+          <div>
+            <label for="express-password">Contraseña</label>
+            <input id="express-password" type="password" name="password" placeholder="••••••••" required>
+          </div>
+          <button type="submit">Entrar al panel</button>
+        </form>
+        <p class="express-note">Versión Lite: ingreso instantáneo y vista resumida de tu cuenta HomeVisa. Contacta a tu
+          asesor para funciones avanzadas.</p>
+      </div>
+    </section>
+
+    <section id="express-dashboard" class="express-column express-dashboard" hidden>
+      <div class="express-balance-card">
+        <span>Saldo disponible</span>
+        <h2 id="express-balance">$4,780.42 USD</h2>
+        <p>Última actualización: hace 3 minutos</p>
+      </div>
+      <div class="express-stats">
+        <article class="express-stat">
+          <span>Transferencias</span>
+          +3 hoy
+        </article>
+        <article class="express-stat">
+          <span>Recargas</span>
+          2 pendientes
+        </article>
+        <article class="express-stat">
+          <span>Tarjetas activas</span>
+          1 virtual
+        </article>
+      </div>
+      <div class="express-activity">
+        <h2>Actividad reciente</h2>
+        <div class="express-activity-item">
+          <strong>Enviaste $250.00 USD</strong>
+          <span>A Maria Gómez · 10:24 AM</span>
+        </div>
+        <div class="express-activity-item">
+          <strong>Recibiste $420.00 USD</strong>
+          <span>Desde Wallet Express · Ayer</span>
+        </div>
+        <div class="express-activity-item">
+          <strong>Recarga pendiente</strong>
+          <span>Tarjeta virtual · 2 en cola</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginForm = document.getElementById('express-login-form');
+      const emailInput = document.getElementById('express-email');
+      const dashboard = document.getElementById('express-dashboard');
+
+      loginForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        document.body.classList.add('express-authenticated');
+        dashboard.hidden = false;
+
+        const email = emailInput.value.trim();
+        const balanceHeading = document.getElementById('express-balance');
+        if (email && balanceHeading) {
+          const alias = email.split('@')[0];
+          balanceHeading.textContent = `$4,780.42 USD · Hola, ${alias}!`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

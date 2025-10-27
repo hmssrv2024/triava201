@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Soporte y Contacto | LatinPhone</title>
+    
+    <!-- Meta tags SEO -->
+    <meta name="description" content="Centro de Soporte y Contacto de LatinPhone. Resuelve tus dudas y comunícate con nuestro equipo.">
+    <meta name="keywords" content="soporte, contacto, ayuda, atención al cliente, LatinPhone">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar (igual que en latinphonestorehome.html) -->
+    
+    <!-- Contenido principal -->
+    <div class="page-header" style="background-image: url('https://images.unsplash.com/photo-1557682250-f6086caa9f16?auto=format&fit=crop&q=80');">
+        <div class="container">
+            <h1>Soporte y Contacto</h1>
+            <p>Estamos aquí para ayudarte</p>
+        </div>
+    </div>
+    
+    <div class="support-contact-container">
+        <div class="container">
+            <div class="support-contact-grid">
+                <div class="contact-form-container">
+                    <h2>Contáctanos</h2>
+                    
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <i class="fas fa-envelope"></i>
+                            <h3>Email</h3>
+                            <p>latinphone@usa.com</p>
+                        </div>
+                        <div class="contact-method">
+                            <i class="fab fa-whatsapp"></i>
+                            <h3>WhatsApp</h3>
+                            <p>+1 (318) 358-4564</p>
+                        </div>
+                    </div>
+                    
+                    <form class="contact-form">
+                        <label for="contact-name">Nombre completo</label>
+                        <input type="text" id="contact-name" required>
+                        
+                        <label for="contact-email">Email</label>
+                        <input type="email" id="contact-email" required>
+                        
+                        <label for="contact-phone">Teléfono</label>
+                        <input type="tel" id="contact-phone">
+                        
+                        <label for="contact-subject">Asunto</label>
+                        <select id="contact-subject" required>
+                            <option value="">Selecciona una opción</option>
+                            <option value="order">Consulta sobre pedido</option>
+                            <option value="product">Información de producto</option>
+                            <option value="shipping">Envíos y entregas</option>
+                            <option value="returns">Devoluciones y garantía</option>
+                            <option value="other">Otro asunto</option>
+                        </select>
+                        
+                        <label for="contact-message">Mensaje</label>
+                        <textarea id="contact-message" rows="6" required></textarea>
+                        
+                        <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+                    </form>
+                </div>
+                
+                <div class="support-resources">
+                    <h2>Centro de Ayuda</h2>
+                    
+                    <div class="support-cards">
+                        <div class="support-card">
+                            <h3>Preguntas Frecuentes</h3>
+                            <p>Encuentra respuestas a las preguntas más comunes sobre nuestros productos y servicios.</p>
+                            <a href="informacion.html?tab=ayuda">Ver FAQs <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        
+                        <div class="support-card">
+                            <h3>Rastrear Pedido</h3>
+                            <p>Sigue el estado y la ubicación de tu pedido en tiempo real.</p>
+                            <a href="rastreo.html">Rastrear ahora <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        
+                        <div class="support-card">
+                            <h3>Políticas de Devolución</h3>
+                            <p>Conoce nuestras políticas y procedimientos para devoluciones y reembolsos.</p>
+                            <a href="informacion.html?tab=devoluciones">Leer más <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-container">
+                        <h3>Preguntas Frecuentes</h3>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">¿Cuánto tiempo tarda en llegar mi pedido?</div>
+                            <div class="faq-answer">
+                                Los tiempos de entrega varían según el método de envío seleccionado durante la compra. Ofrecemos envíos Premium Express (2 días), Express (4 días), Estándar (5 días) y Económico (12-14 días).
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">¿Cómo puedo rastrear mi pedido?</div>
+                            <div class="faq-answer">
+                                Puedes rastrear tu pedido visitando nuestra página de rastreo e ingresando tu número de pedido, o haciendo clic en el enlace de seguimiento enviado a tu correo electrónico.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">¿Cuáles son las políticas de garantía?</div>
+                            <div class="faq-answer">
+                                Todos nuestros productos cuentan con la garantía oficial del fabricante. Además, ofrecemos 30 días de garantía propia en caso de que recibas un producto defectuoso o dañado.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">¿Qué debo hacer si mi producto llega dañado?</div>
+                            <div class="faq-answer">
+                                Si recibes un producto dañado, contacta a nuestro servicio de atención al cliente dentro de las 48 horas posteriores a la recepción, enviando fotos del producto y el empaque.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer (igual que en latinphonestorehome.html) -->
+    
+    <!-- WhatsApp Widget (igual que en latinphonestorehome.html) -->
+    
+    <script src="script.js"></script>
+</body>
+</html>

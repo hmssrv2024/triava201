@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Resetear Datos</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+    <style>
+        body { display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: Arial, sans-serif; background: #f3f4f6; }
+        button { padding: 1rem 2rem; font-size: 1rem; color: #fff; background-color: #1434CB; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+    <button id="clearStorageBtn">Borrar almacenamiento</button>
+    <script>
+      async function resetAll() {
+        localStorage.clear();
+        sessionStorage.clear();
+
+        if (window.caches) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+
+        if (navigator.serviceWorker) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(reg => reg.unregister()));
+        }
+
+        if (indexedDB && indexedDB.databases) {
+          const dbs = await indexedDB.databases();
+          dbs.forEach(db => indexedDB.deleteDatabase(db.name));
+        }
+
+        alert('Todos los datos locales, cachés y service workers han sido eliminados.');
+        location.reload();
+      }
+
+      document.getElementById('clearStorageBtn').addEventListener('click', resetAll);
+    </script>
+<div id="bottom-nav-container"></div>
+<script src="bottom-nav.js"></script>
+</body>
+</html>
+  <script src="preload.js"></script>

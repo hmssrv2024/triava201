@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>Compra con Remeex Visa - Yummy Rides Venezuela</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+      
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      
+      --transition-base: all 0.3s ease;
+      --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    html {
+      font-size: 85%;
+    }
+
+    body {
+      font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+      background-color: var(--neutral-200);
+      color: var(--neutral-800);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Header mejorado */
+    header {
+      background: var(--neutral-100);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--neutral-300);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header-brand img {
+      height: 45px;
+      width: auto;
+      transition: var(--transition-base);
+    }
+
+    .header-brand img:hover {
+      transform: scale(1.05);
+    }
+
+    .header-brand-text {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: none;
+    }
+
+    .back-button {
+      background: var(--neutral-200);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--neutral-800);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-base);
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      background: var(--neutral-300);
+      transform: translateY(-2px);
+    }
+
+    /* Sección de balance mejorada */
+    .balance-section {
+      background: var(--card-gradient);
+      color: white;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .balance-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      100% { left: 200%; }
+    }
+
+    .balance-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .balance-greeting {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+    }
+
+    .balance-amount {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .currency-flag {
+      width: 32px;
+      height: 22px;
+      border-radius: 4px;
+      object-fit: cover;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .balance-equivalents {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .balance-equivalent {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      backdrop-filter: blur(5px);
+    }
+
+    /* Mensaje de compra mejorado */
+    .shop-message {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin: 1.5rem;
+      box-shadow: var(--shadow-md);
+      text-align: center;
+    }
+
+    .shop-message-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .shop-message-subtitle {
+      font-size: 1rem;
+      color: var(--neutral-800);
+      margin-bottom: 1rem;
+    }
+
+    .yummy-rides-logo {
+      max-width: 200px;
+      height: auto;
+      margin: 1rem 0;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+    }
+
+    .shop-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .shop-feature {
+      background: var(--neutral-200);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      text-align: center;
+      transition: var(--transition-base);
+    }
+
+    .shop-feature:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .shop-feature i {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .shop-feature h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--neutral-800);
+      margin-bottom: 0.25rem;
+    }
+
+    .shop-feature p {
+      font-size: 0.8rem;
+      color: var(--neutral-800);
+      opacity: 0.8;
+    }
+
+    /* iframe mejorado */
+    .store-container {
+      margin: 1.5rem;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      background: var(--neutral-100);
+    }
+
+    .store-header {
+      background: var(--primary);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .store-container iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+      display: block;
+    }
+
+    /* Ensure chatbot iframe is unaffected */
+    iframe[src*="remeexbot"] {
+      width: auto;
+      height: auto;
+    }
+
+    /* Security badge */
+    .security-badge {
+      background: rgba(0, 211, 77, 0.1);
+      border: 1px solid var(--success);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      margin: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .security-badge-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .security-badge-text {
+      font-size: 0.9rem;
+      color: var(--neutral-800);
+    }
+
+    /* Responsive design */
+    @media (min-width: 768px) {
+      .header-brand-text {
+        display: block;
+      }
+      
+      .balance-amount {
+        font-size: 3rem;
+      }
+      
+      .store-container iframe {
+        height: 80vh;
+      }
+    }
+
+    @media (max-width: 479px) {
+      .shop-features {
+        grid-template-columns: 1fr;
+      }
+
+      .balance-equivalents {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .store-container {
+        margin: 1rem 0.5rem;
+      }
+    }
+  </style>
+  <script>
+    window.onload = function() {
+      const savedBalance = localStorage.getItem('visaBalance');
+      const balanceEl = document.getElementById('balance');
+      if (savedBalance) {
+        balanceEl.textContent = '$' + savedBalance;
+      } else {
+        balanceEl.textContent = 'Cargando...';
+      }
+
+      const userData = JSON.parse(localStorage.getItem('visaUserData') || '{}');
+      const firstName = (userData.preferredName || userData.firstName || userData.nickname || userData.fullName || userData.name || '').split(' ')[0];
+      const nameEl = document.getElementById('user-name');
+      if (nameEl && firstName) {
+        nameEl.textContent = firstName;
+      }
+      const messageEl = document.getElementById('personalMessage');
+      if (messageEl) {
+        messageEl.textContent = firstName ? `${firstName}, ¡Yummy te lleva!` : '¡Yummy te lleva!';
+      }
+
+      // Cargar balance del sistema principal si está disponible
+      try {
+        const mainBalance = JSON.parse(localStorage.getItem('remeexBalance') || '{}');
+        if (mainBalance.usd) {
+          const usdEl = document.getElementById('usd-balance');
+          const bsEl = document.getElementById('bs-balance');
+          const eurEl = document.getElementById('eur-balance');
+          
+          if (usdEl) usdEl.textContent = `$${mainBalance.usd.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+          if (bsEl) bsEl.textContent = `Bs ${mainBalance.bs.toLocaleString('es-VE', {minimumFractionDigits: 2})}`;
+          if (eurEl) eurEl.textContent = `€${mainBalance.eur.toLocaleString('de-DE', {minimumFractionDigits: 2})}`;
+          
+          // Actualizar balance principal también
+          balanceEl.textContent = `$${mainBalance.usd.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        }
+      } catch (e) {
+        console.log('Balance principal no disponible');
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <!-- Header mejorado -->
+  <header>
+    <div class="header-brand">
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5LcO3QUPBws01fNImCBJZ55Tr5ii86EJ0THqkMDpRmAkg3Pl_rC_cYhUHqcoSF1o-YKbd2A48STpWey4T8V2hKIddC_QmP5mh3II0tqw7eDtwYe5nUkoMQv5vLvqBz7qAe6X7qRWqpATZiPBoz5KH65Nk8JYfTNgHht2ezHGAvBom1NWuwtXFtUhaiio/s320/visaremeexlogo2025.png" alt="REMEEX Visa" />
+      <span class="header-brand-text">Remeex Visa</span>
+    </div>
+    <a href="javascript:history.back()" class="back-button">
+      <i class="fas fa-arrow-left"></i>
+      <span>Volver</span>
+    </a>
+  </header>
+
+  <!-- Sección de balance mejorada -->
+  <section class="balance-section">
+    <div class="balance-content">
+      <div class="balance-greeting">Hola <span id="user-name"></span>, tu saldo Remeex Visa es:</div>
+      <div class="balance-amount">
+        <img src="https://flagcdn.com/us.svg" class="currency-flag" alt="USD">
+        <strong id="balance">Cargando...</strong>
+      </div>
+      <div class="balance-equivalents">
+        <div class="balance-equivalent">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/Flag_of_Venezuela.svg" class="currency-flag" alt="VES">
+          <span id="bs-balance">≈ Bs 0,00</span>
+        </div>
+        <div class="balance-equivalent">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/Flag_of_Europe.svg" class="currency-flag" alt="EUR">
+          <span id="eur-balance">≈ €0,00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mensaje personalizado -->
+  <section class="shop-message">
+    <div class="shop-message-title">
+      <i class="fas fa-car"></i>
+      <span id="personalMessage">¡Yummy te lleva!</span>
+    </div>
+    <div class="shop-message-subtitle">
+      Usa tu saldo de Remeex Visa en <strong>Yummy Rides - App de Transporte #1 de Venezuela</strong>
+    </div>
+    
+    <!-- Características de la tienda -->
+    <div class="shop-features">
+      <div class="shop-feature">
+        <i class="fas fa-car"></i>
+        <h3>Carro, Moto & Bus</h3>
+        <p>Múltiples opciones de transporte</p>
+      </div>
+      <div class="shop-feature">
+        <i class="fas fa-map-marker-alt"></i>
+        <h3>20+ Ciudades</h3>
+        <p>Disponible en todo Venezuela</p>
+      </div>
+      <div class="shop-feature">
+        <i class="fas fa-clock"></i>
+        <h3>24/7 - 365 días</h3>
+        <p>Siempre disponible para ti</p>
+      </div>
+      <div class="shop-feature">
+        <i class="fas fa-handshake"></i>
+        <h3>Cuádralo</h3>
+        <p>Tarifa negociable única</p>
+      </div>
+      <div class="shop-feature">
+        <i class="fas fa-shipping-fast"></i>
+        <h3>Mandaditos</h3>
+        <p>Envíos rápidos y seguros</p>
+      </div>
+      <div class="shop-feature">
+        <i class="fas fa-credit-card"></i>
+        <h3>Pago Seguro</h3>
+        <p>Con tu saldo Remeex Visa</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Badge de seguridad -->
+  <div class="security-badge">
+    <div class="security-badge-icon">
+      <i class="fas fa-shield-alt"></i>
+    </div>
+    <div class="security-badge-text">
+      <strong>Viaje Seguro:</strong> Todas las transacciones están protegidas por Remeex Visa
+    </div>
+  </div>
+
+  <!-- Contenedor de la tienda -->
+  <section class="store-container">
+    <div class="store-header">
+      <i class="fas fa-car"></i>
+      Yummy Rides - Te Llevamos en Menos de 5 Minutos
+    </div>
+    <iframe src="https://www.yummysuperapp.com/rides" loading="lazy" title="Yummy Rides Venezuela"></iframe>
+  </section>
+
+  <script src="preload.js"></script>
+  <script src="remeexbot/embed.js"></script>
+</body>
+</html>

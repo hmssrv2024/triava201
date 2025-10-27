@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Retiro en Efectivo - REMEEX Visa Banking</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      /* Modern color palette based on Revolut/N26 style */
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --secondary: #00579f;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --danger: #ff4d4d;
+      --warning: #ffad33;
+      --info: #0095ff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+
+      /* Shadows & Effects */
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+      
+      /* Border radius */
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      
+      /* Transitions */
+      --transition-fast: all 0.2s ease;
+      --transition-base: all 0.3s ease;
+      --transition-slow: all 0.5s ease;
+      
+      /* Card gradients */
+      --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+      
+      /* Animations */
+      --animation-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      /* Layout */
+      --header-height: 64px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--neutral-200);
+      color: var(--neutral-900);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    /* Header */
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 1rem;
+      background: var(--neutral-100);
+      border-bottom: 1px solid var(--neutral-300);
+      box-shadow: var(--shadow-sm);
+      z-index: 1000;
+      height: var(--header-height);
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-200);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+      color: var(--neutral-700);
+    }
+    
+    .back-btn:hover {
+      background: var(--neutral-300);
+      transform: translateX(-2px);
+    }
+    
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    /* Main Container */
+    .main-container {
+      padding-top: calc(var(--header-height) + 16px);
+      padding-bottom: 2rem;
+      min-height: 100vh;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .content-wrapper {
+      padding: 0 1rem;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s var(--animation-bounce), box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Balance Card */
+    .balance-card {
+      background: var(--card-gradient);
+      color: white;
+      text-align: center;
+    }
+
+    .balance-amount {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .balance-label {
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+
+    /* Section Titles */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title i {
+      color: var(--primary);
+    }
+
+    /* Method Selection */
+    .method-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .method-option {
+      padding: 1.5rem;
+      border: 2px solid var(--neutral-300);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+      background: var(--neutral-100);
+    }
+
+    .method-option:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .method-option.selected {
+      border-color: var(--primary);
+      background: rgba(26, 31, 113, 0.05);
+    }
+
+    .method-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-full);
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1rem;
+    }
+
+    .method-option.selected .method-icon {
+      background: var(--primary-dark);
+      box-shadow: var(--shadow-md);
+    }
+
+    .method-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--neutral-900);
+    }
+
+    .method-description {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+    }
+
+    /* Provider Grid */
+    .provider-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .provider-card {
+      padding: 1.25rem;
+      border: 2px solid var(--neutral-300);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: var(--transition-base);
+      background: var(--neutral-100);
+    }
+
+    .provider-card:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .provider-card.selected {
+      border-color: var(--primary);
+      background: rgba(26, 31, 113, 0.05);
+    }
+
+    .provider-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .provider-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .provider-info h3 {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--neutral-900);
+    }
+
+    .provider-info p {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+    }
+
+    .provider-details {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    .provider-details ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .provider-details li {
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .provider-details i {
+      color: var(--success);
+      width: 12px;
+    }
+
+    /* Location Selection */
+    .location-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--neutral-700);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 48px;
+      padding: 0 1rem;
+      border: 1px solid var(--neutral-400);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      color: var(--neutral-900);
+      background: var(--neutral-100);
+      transition: var(--transition-base);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.15);
+    }
+
+    /* Amount Input */
+    .amount-container {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .currency-symbol {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-weight: 600;
+      color: var(--neutral-600);
+      font-size: 1.1rem;
+    }
+
+    .amount-input {
+      padding-left: 3rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .amount-equivalent {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--neutral-600);
+    }
+
+    /* Info Cards */
+    .info-card {
+      background: rgba(0, 149, 255, 0.1);
+      border-left: 4px solid var(--info);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .info-card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--info);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .info-card-title {
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .info-card-content {
+      font-size: 0.85rem;
+      color: var(--neutral-700);
+      line-height: 1.6;
+    }
+
+    /* Warning Cards */
+    .warning-card {
+      background: rgba(255, 173, 51, 0.1);
+      border-left: 4px solid var(--warning);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .warning-card .info-card-icon {
+      background: var(--warning);
+    }
+
+    /* Button Styles */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      padding: 0 1.5rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s var(--animation-bounce);
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:disabled {
+      background: var(--neutral-500);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: rgba(26, 31, 113, 0.05);
+      transform: translateY(-2px);
+    }
+
+    /* Location Results */
+    .location-results {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid var(--neutral-300);
+      border-radius: var(--radius-md);
+      background: var(--neutral-100);
+    }
+
+    .location-item {
+      padding: 1rem;
+      border-bottom: 1px solid var(--neutral-200);
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .location-item:hover {
+      background: var(--neutral-200);
+    }
+
+    .location-item:last-child {
+      border-bottom: none;
+    }
+
+    .location-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .location-address {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+      margin-bottom: 0.5rem;
+    }
+
+    .location-details {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    .location-details span {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Summary Card */
+    .summary-card {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .summary-label {
+      opacity: 0.9;
+    }
+
+    .summary-value {
+      font-weight: 600;
+    }
+
+    /* Loading States */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      display: none;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+
+    .loading-text {
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* Success Modal */
+    .success-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      display: none;
+    }
+
+    .success-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 400px;
+      padding: 2rem;
+      text-align: center;
+      animation: scaleIn 0.3s ease;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--success);
+      color: white;
+      font-size: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+
+    .success-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 1rem;
+    }
+
+    .success-message {
+      font-size: 0.9rem;
+      color: var(--neutral-600);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .reference-code {
+      background: var(--neutral-200);
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+    }
+
+    .reference-label {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      margin-bottom: 0.25rem;
+    }
+
+    .reference-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      font-family: monospace;
+    }
+
+    /* Hidden Sections */
+    .hidden {
+      display: none;
+    }
+
+    /* Animations */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .method-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .provider-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .location-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-title {
+        font-size: 1rem;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="responsive.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <button class="back-btn" id="back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h1 class="header-title">Retiro en Efectivo</h1>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <div class="content-wrapper">
+      
+      <!-- Balance Card -->
+      <div class="card balance-card">
+        <div class="balance-label">Saldo disponible para retiro</div>
+        <div class="balance-amount" id="user-balance">$1,245.00</div>
+      </div>
+
+      <!-- Step 1: Method Selection -->
+      <div id="step-method" class="step-section">
+        <div class="section-title">
+          <i class="fas fa-hand-holding-usd"></i>
+          Selecciona el método de retiro
+        </div>
+
+        <div class="method-grid">
+          <div class="method-option" data-method="bank">
+            <div class="method-icon">
+              <i class="fas fa-university"></i>
+            </div>
+            <div class="method-title">Bancos</div>
+            <div class="method-description">Retira en agencias bancarias autorizadas</div>
+          </div>
+
+          <div class="method-option" data-method="exchange">
+            <div class="method-icon">
+              <i class="fas fa-exchange-alt"></i>
+            </div>
+            <div class="method-title">Casas de Cambio</div>
+            <div class="method-description">Retira en casas de cambio asociadas</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Provider Selection -->
+      <div id="step-provider" class="step-section hidden">
+        <div class="section-title">
+          <i class="fas fa-building"></i>
+          Selecciona el proveedor
+        </div>
+
+        <!-- Bank Providers -->
+        <div id="bank-providers" class="provider-grid hidden">
+          <div class="provider-card" data-provider="banesco">
+            <div class="provider-header">
+              <div class="provider-logo" style="background: #003366; color: white;">
+                <i class="fas fa-university"></i>
+              </div>
+              <div class="provider-info">
+                <h3>Banesco</h3>
+                <p>MoneyGram</p>
+              </div>
+            </div>
+            <div class="provider-details">
+              <ul>
+                <li><i class="fas fa-check"></i> Disponible 24/7</li>
+                <li><i class="fas fa-check"></i> Red nacional</li>
+                <li><i class="fas fa-check"></i> Comisión: 2.5%</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="provider-card" data-provider="mercantil">
+            <div class="provider-header">
+              <div class="provider-logo" style="background: #ff6b35; color: white;">
+                <i class="fas fa-university"></i>
+              </div>
+              <div class="provider-info">
+                <h3>Mercantil</h3>
+                <p>Retiro directo</p>
+              </div>
+            </div>
+            <div class="provider-details">
+              <ul>
+                <li><i class="fas fa-check"></i> Horario comercial</li>
+                <li><i class="fas fa-check"></i> Principales ciudades</li>
+                <li><i class="fas fa-check"></i> Comisión: 3%</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="provider-card" data-provider="venezuela">
+            <div class="provider-header">
+              <div class="provider-logo" style="background: #1e40af; color: white;">
+                <i class="fas fa-university"></i>
+              </div>
+              <div class="provider-info">
+                <h3>Banco de Venezuela</h3>
+                <p>Retiro directo</p>
+              </div>
+            </div>
+            <div class="provider-details">
+              <ul>
+                <li><i class="fas fa-check"></i> Horario comercial</li>
+                <li><i class="fas fa-check"></i> Red amplia</li>
+                <li><i class="fas fa-check"></i> Comisión: 2%</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exchange Providers -->
+        <div id="exchange-providers" class="provider-grid hidden">
+          <div class="provider-card" data-provider="italcambio">
+            <div class="provider-header">
+              <div class="provider-logo" style="background: #0066cc; color: white;">
+                <i class="fas fa-coins"></i>
+              </div>
+              <div class="provider-info">
+                <h3>Italcambio</h3>
+                <p>Casa de cambio</p>
+              </div>
+            </div>
+            <div class="provider-details">
+              <ul>
+                <li><i class="fas fa-check"></i> Mejor tasa de cambio</li>
+                <li><i class="fas fa-check"></i> Principales ciudades</li>
+                <li><i class="fas fa-check"></i> Comisión: 1.5%</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="provider-card" data-provider="zoom">
+            <div class="provider-header">
+              <div class="provider-logo" style="background: #ffcc00; color: black;">
+                <i class="fas fa-bolt"></i>
+              </div>
+              <div class="provider-info">
+                <h3>Zoom</h3>
+                <p>Western Union</p>
+              </div>
+            </div>
+            <div class="provider-details">
+              <ul>
+                <li><i class="fas fa-check"></i> Red mundial</li>
+                <li><i class="fas fa-check"></i> Disponible 24/7</li>
+                <li><i class="fas fa-check"></i> Comisión: 4%</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="provider-card" data-provider="cambios-plaza">
+            <div class="provider-header">
+              <div class="provider-logo" style="background: #dc2626; color: white;">
+                <i class="fas fa-exchange-alt"></i>
+              </div>
+              <div class="provider-info">
+                <h3>Cambios Plaza</h3>
+                <p>Casa de cambio</p>
+              </div>
+            </div>
+            <div class="provider-details">
+              <ul>
+                <li><i class="fas fa-check"></i> Atención personalizada</li>
+                <li><i class="fas fa-check"></i> Caracas y principales ciudades</li>
+                <li><i class="fas fa-check"></i> Comisión: 2%</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="provider-card" data-provider="multicambio">
+            <div class="provider-header">
+              <div class="provider-logo" style="background: #059669; color: white;">
+                <i class="fas fa-coins"></i>
+              </div>
+              <div class="provider-info">
+                <h3>Multicambio</h3>
+                <p>Casa de cambio</p>
+              </div>
+            </div>
+            <div class="provider-details">
+              <ul>
+                <li><i class="fas fa-check"></i> Múltiples sucursales</li>
+                <li><i class="fas fa-check"></i> Horario extendido</li>
+                <li><i class="fas fa-check"></i> Comisión: 1.8%</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Location Selection -->
+      <div id="step-location" class="step-section hidden">
+        <div class="section-title">
+          <i class="fas fa-map-marker-alt"></i>
+          Selecciona la ubicación
+        </div>
+
+        <div class="location-grid">
+          <div class="form-group">
+            <label class="form-label" for="state-select">Estado</label>
+            <select class="form-control" id="state-select">
+              <option value="">Selecciona un estado</option>
+              <option value="distrito-capital">Distrito Capital</option>
+              <option value="miranda">Miranda</option>
+              <option value="carabobo">Carabobo</option>
+              <option value="zulia">Zulia</option>
+              <option value="lara">Lara</option>
+              <option value="aragua">Aragua</option>
+              <option value="tachira">Táchira</option>
+              <option value="bolivar">Bolívar</option>
+              <option value="anzoategui">Anzoátegui</option>
+              <option value="falcon">Falcón</option>
+              <option value="monagas">Monagas</option>
+              <option value="vargas">Vargas</option>
+              <option value="yaracuy">Yaracuy</option>
+              <option value="sucre">Sucre</option>
+              <option value="nueva-esparta">Nueva Esparta</option>
+              <option value="merida">Mérida</option>
+              <option value="trujillo">Trujillo</option>
+              <option value="portuguesa">Portuguesa</option>
+              <option value="barinas">Barinas</option>
+              <option value="apure">Apure</option>
+              <option value="cojedes">Cojedes</option>
+              <option value="guarico">Guárico</option>
+              <option value="delta-amacuro">Delta Amacuro</option>
+              <option value="amazonas">Amazonas</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="city-select">Ciudad</label>
+            <select class="form-control" id="city-select" disabled>
+              <option value="">Primero selecciona un estado</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="location-results" class="location-results hidden">
+          <!-- Los resultados se llenarán dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Step 4: Amount and Details -->
+      <div id="step-details" class="step-section hidden">
+        <div class="section-title">
+          <i class="fas fa-calculator"></i>
+          Detalles del retiro
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="withdraw-amount">Monto a retirar</label>
+          <div class="amount-container">
+            <span class="currency-symbol">$</span>
+            <input type="number" class="form-control amount-input" id="withdraw-amount" placeholder="0.00" min="10" max="1000" step="0.01">
+          </div>
+          <div class="amount-equivalent" id="amount-equivalent">
+            ≈ Bs 0,00
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="recipient-name">Nombre del beneficiario</label>
+          <input type="text" class="form-control" id="recipient-name" placeholder="Nombre completo">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="recipient-id">Cédula de identidad</label>
+          <input type="text" class="form-control" id="recipient-id" placeholder="V12345678">
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-header">
+            <div class="info-card-icon">
+              <i class="fas fa-info"></i>
+            </div>
+            <div class="info-card-title">Información importante</div>
+          </div>
+          <div class="info-card-content">
+            El beneficiario debe presentar su cédula de identidad original en el punto de retiro. Los fondos estarán disponibles durante 30 días desde la fecha de procesamiento.
+          </div>
+        </div>
+
+        <div class="warning-card">
+          <div class="info-card-header">
+            <div class="info-card-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="info-card-title">Límites de retiro</div>
+          </div>
+          <div class="info-card-content">
+            Monto mínimo: $10.00<br>
+            Monto máximo: $1,000.00 por transacción<br>
+            Máximo 3 retiros por día
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Summary and Confirmation -->
+      <div id="step-summary" class="step-section hidden">
+        <div class="section-title">
+          <i class="fas fa-check-circle"></i>
+          Confirmar retiro
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-label">Método:</span>
+            <span class="summary-value" id="summary-method">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Proveedor:</span>
+            <span class="summary-value" id="summary-provider">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Ubicación:</span>
+            <span class="summary-value" id="summary-location">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Beneficiario:</span>
+            <span class="summary-value" id="summary-recipient">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Monto:</span>
+            <span class="summary-value" id="summary-amount">$0.00</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Comisión:</span>
+            <span class="summary-value" id="summary-fee">$0.00</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Total a debitar:</span>
+            <span class="summary-value" id="summary-total">$0.00</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="confirm-withdrawal">
+          <i class="fas fa-paper-plane"></i>
+          Confirmar Retiro
+        </button>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="card" style="padding: 1rem;">
+        <div style="display: flex; gap: 1rem;">
+          <button class="btn btn-outline" id="prev-btn" style="flex: 1;" disabled>
+            <i class="fas fa-arrow-left"></i>
+            Anterior
+          </button>
+          <button class="btn btn-primary" id="next-btn" style="flex: 1;" disabled>
+            Siguiente
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Procesando retiro...</div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="success-modal">
+    <div class="success-card">
+      <div class="success-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <div class="success-title">¡Retiro Exitoso!</div>
+      <div class="success-message">
+        Tu solicitud de retiro ha sido procesada exitosamente. Puedes recoger el efectivo en el lugar seleccionado.
+      </div>
+      <div class="reference-code">
+        <div class="reference-label">Código de referencia:</div>
+        <div class="reference-value" id="reference-code">RTRO-12345678</div>
+      </div>
+      <button class="btn btn-primary" id="close-success">
+        <i class="fas fa-home"></i>
+        Ir al Inicio
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const CONFIG = {
+      EXCHANGE_RATE: 151.10, // USD to VES
+      PROVIDER_FEES: {
+        banesco: 0.025,      // 2.5%
+        mercantil: 0.03,     // 3%
+        venezuela: 0.02,     // 2%
+        italcambio: 0.015,   // 1.5%
+        zoom: 0.04,          // 4%
+        'cambios-plaza': 0.02, // 2%
+        multicambio: 0.018   // 1.8%
+      },
+      LOCATIONS: {
+        'distrito-capital': {
+          'caracas': [
+            {
+              name: 'Sucursal Centro',
+              address: 'Av. Urdaneta, Torre Financiera, Piso 1',
+              phone: '(0212) 555-0001',
+              hours: '8:00 AM - 4:00 PM',
+              services: ['Efectivo', 'Documentos']
+            },
+            {
+              name: 'Sucursal Las Mercedes',
+              address: 'C.C. Las Mercedes, Nivel 1, Local 15',
+              phone: '(0212) 555-0002',
+              hours: '9:00 AM - 6:00 PM',
+              services: ['Efectivo', 'Documentos']
+            },
+            {
+              name: 'Sucursal Altamira',
+              address: 'Av. Luis Roche, Torre Banesco, Planta Baja',
+              phone: '(0212) 555-0003',
+              hours: '8:30 AM - 3:30 PM',
+              services: ['Efectivo', 'Documentos']
+            }
+          ],
+          'petare': [
+            {
+              name: 'Sucursal Petare Centro',
+              address: 'Av. Principal de Petare, C.C. Millennium Plaza',
+              phone: '(0212) 555-0010',
+              hours: '8:00 AM - 4:00 PM',
+              services: ['Efectivo']
+            }
+          ]
+        },
+        'miranda': {
+          'los-teques': [
+            {
+              name: 'Sucursal Los Teques',
+              address: 'Av. Intercomunal, Centro Comercial Milenium',
+              phone: '(0212) 555-0020',
+              hours: '8:00 AM - 4:00 PM',
+              services: ['Efectivo', 'Documentos']
+            }
+          ],
+          'guarenas': [
+            {
+              name: 'Sucursal Guarenas',
+              address: 'Av. Principal, C.C. Plaza Mayor',
+              phone: '(0212) 555-0021',
+              hours: '8:30 AM - 3:30 PM',
+              services: ['Efectivo']
+            }
+          ]
+        },
+        'carabobo': {
+          'valencia': [
+            {
+              name: 'Sucursal Valencia Centro',
+              address: 'Av. Bolívar Norte, Torre Carabobo, Piso 1',
+              phone: '(0241) 555-0030',
+              hours: '8:00 AM - 4:00 PM',
+              services: ['Efectivo', 'Documentos']
+            },
+            {
+              name: 'Sucursal Naguanagua',
+              address: 'C.C. Sambil Valencia, Nivel 1',
+              phone: '(0241) 555-0031',
+              hours: '10:00 AM - 8:00 PM',
+              services: ['Efectivo']
+            }
+          ]
+        },
+        'zulia': {
+          'maracaibo': [
+            {
+              name: 'Sucursal Maracaibo Centro',
+              address: 'Av. 5 de Julio, Edificio Bancario, Planta Baja',
+              phone: '(0261) 555-0040',
+              hours: '8:00 AM - 4:00 PM',
+              services: ['Efectivo', 'Documentos']
+            },
+            {
+              name: 'Sucursal Delicias',
+              address: 'Av. Delicias Norte, C.C. Maracaibo Plaza',
+              phone: '(0261) 555-0041',
+              hours: '9:00 AM - 5:00 PM',
+              services: ['Efectivo']
+            }
+          ]
+        }
+      }
+    };
+
+    // State management
+    let currentStep = 1;
+    let selectedData = {
+      method: '',
+      provider: '',
+      state: '',
+      city: '',
+      location: null,
+      amount: 0,
+      recipient: '',
+      recipientId: ''
+    };
+
+    // DOM elements
+    const steps = document.querySelectorAll('.step-section');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const backBtn = document.getElementById('back-btn');
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      setupEventListeners();
+      updateUI();
+      fixLayout();
+      personalizePage();
+    });
+
+    window.addEventListener('resize', fixLayout);
+
+    // Event listeners
+    function setupEventListeners() {
+      // Navigation
+      nextBtn.addEventListener('click', nextStep);
+      prevBtn.addEventListener('click', prevStep);
+      backBtn.addEventListener('click', goBack);
+
+      // Method selection
+      document.querySelectorAll('.method-option').forEach(option => {
+        option.addEventListener('click', function() {
+          selectMethod(this.dataset.method);
+        });
+      });
+
+      // Provider selection
+      document.querySelectorAll('.provider-card').forEach(card => {
+        card.addEventListener('click', function() {
+          selectProvider(this.dataset.provider);
+        });
+      });
+
+      // Location selection
+      document.getElementById('state-select').addEventListener('change', onStateChange);
+      document.getElementById('city-select').addEventListener('change', onCityChange);
+
+      // Amount input
+      document.getElementById('withdraw-amount').addEventListener('input', updateAmountEquivalent);
+
+      // Form inputs
+      document.getElementById('recipient-name').addEventListener('input', validateForm);
+      document.getElementById('recipient-id').addEventListener('input', validateForm);
+
+      // Confirmation
+      document.getElementById('confirm-withdrawal').addEventListener('click', processWithdrawal);
+      document.getElementById('close-success').addEventListener('click', goToHome);
+    }
+
+    // Method selection
+    function selectMethod(method) {
+      selectedData.method = method;
+      
+      // Update UI
+      document.querySelectorAll('.method-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      document.querySelector(`[data-method="${method}"]`).classList.add('selected');
+
+      // Show appropriate providers
+      document.getElementById('bank-providers').classList.toggle('hidden', method !== 'bank');
+      document.getElementById('exchange-providers').classList.toggle('hidden', method !== 'exchange');
+
+      // Reset provider selection
+      selectedData.provider = '';
+      document.querySelectorAll('.provider-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+
+      updateUI();
+    }
+
+    // Provider selection
+    function selectProvider(provider) {
+      selectedData.provider = provider;
+      
+      // Update UI
+      document.querySelectorAll('.provider-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      document.querySelector(`[data-provider="${provider}"]`).classList.add('selected');
+
+      updateUI();
+    }
+
+    // State change handler
+    function onStateChange() {
+      const stateSelect = document.getElementById('state-select');
+      const citySelect = document.getElementById('city-select');
+      const state = stateSelect.value;
+
+      selectedData.state = state;
+      selectedData.city = '';
+
+      // Clear city selection
+      citySelect.innerHTML = '<option value="">Selecciona una ciudad</option>';
+      citySelect.disabled = !state;
+
+      if (state && CONFIG.LOCATIONS[state]) {
+        const cities = Object.keys(CONFIG.LOCATIONS[state]);
+        cities.forEach(city => {
+          const option = document.createElement('option');
+          option.value = city;
+          option.textContent = city.charAt(0).toUpperCase() + city.slice(1).replace('-', ' ');
+          citySelect.appendChild(option);
+        });
+        citySelect.disabled = false;
+      }
+
+      updateUI();
+    }
+
+    // City change handler
+    function onCityChange() {
+      const citySelect = document.getElementById('city-select');
+      const city = citySelect.value;
+
+      selectedData.city = city;
+
+      if (city) {
+        showLocationResults();
+      } else {
+        document.getElementById('location-results').classList.add('hidden');
+      }
+
+      updateUI();
+    }
+
+    // Show location results
+    function showLocationResults() {
+      const { state, city } = selectedData;
+      const resultsContainer = document.getElementById('location-results');
+
+      if (!CONFIG.LOCATIONS[state] || !CONFIG.LOCATIONS[state][city]) {
+        resultsContainer.classList.add('hidden');
+        return;
+      }
+
+      const locations = CONFIG.LOCATIONS[state][city];
+      resultsContainer.innerHTML = '';
+
+      locations.forEach((location, index) => {
+        const locationItem = document.createElement('div');
+        locationItem.className = 'location-item';
+        locationItem.innerHTML = `
+          <div class="location-name">${location.name}</div>
+          <div class="location-address">${location.address}</div>
+          <div class="location-details">
+            <span><i class="fas fa-phone"></i> ${location.phone}</span>
+            <span><i class="fas fa-clock"></i> ${location.hours}</span>
+            <span><i class="fas fa-tags"></i> ${location.services.join(', ')}</span>
+          </div>
+        `;
+
+        locationItem.addEventListener('click', function() {
+          selectLocation(index);
+        });
+
+        resultsContainer.appendChild(locationItem);
+      });
+
+      resultsContainer.classList.remove('hidden');
+    }
+
+    // Select location
+    function selectLocation(index) {
+      const { state, city } = selectedData;
+      selectedData.location = CONFIG.LOCATIONS[state][city][index];
+
+      // Update UI
+      document.querySelectorAll('.location-item').forEach(item => {
+        item.style.background = 'var(--neutral-100)';
+      });
+      document.querySelectorAll('.location-item')[index].style.background = 'rgba(26, 31, 113, 0.05)';
+
+      updateUI();
+    }
+
+    // Update amount equivalent
+    function updateAmountEquivalent() {
+      const amountInput = document.getElementById('withdraw-amount');
+      const equivalentEl = document.getElementById('amount-equivalent');
+      const amount = parseFloat(amountInput.value) || 0;
+
+      selectedData.amount = amount;
+
+      const bsAmount = amount * CONFIG.EXCHANGE_RATE;
+      equivalentEl.textContent = `≈ Bs ${bsAmount.toLocaleString('es-VE', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+      })}`;
+
+      validateForm();
+      updateUI();
+    }
+
+    // Validate form
+    function validateForm() {
+      const nameInput = document.getElementById('recipient-name');
+      const idInput = document.getElementById('recipient-id');
+
+      selectedData.recipient = nameInput.value.trim();
+      selectedData.recipientId = idInput.value.trim();
+
+      updateUI();
+    }
+
+    // Navigation functions
+    function nextStep() {
+      if (currentStep < 5) {
+        currentStep++;
+        updateUI();
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateUI();
+      }
+    }
+
+    function goBack() {
+      window.history.back();
+    }
+
+    // Update UI based on current step and selections
+    function updateUI() {
+      // Show/hide steps
+      steps.forEach((step, index) => {
+        step.classList.toggle('hidden', index + 1 !== currentStep);
+      });
+
+      // Update navigation buttons
+      prevBtn.disabled = currentStep === 1;
+      
+      let canProceed = false;
+      
+      switch (currentStep) {
+        case 1:
+          canProceed = selectedData.method;
+          break;
+        case 2:
+          canProceed = selectedData.provider;
+          break;
+        case 3:
+          canProceed = selectedData.location;
+          break;
+        case 4:
+          canProceed = selectedData.amount > 0 && selectedData.recipient && selectedData.recipientId;
+          break;
+        case 5:
+          canProceed = true;
+          updateSummary();
+          break;
+      }
+
+      nextBtn.disabled = !canProceed;
+      
+      if (currentStep === 5) {
+        nextBtn.style.display = 'none';
+      } else {
+        nextBtn.style.display = 'flex';
+      }
+    }
+
+    // Update summary
+    function updateSummary() {
+      const methodText = selectedData.method === 'bank' ? 'Banco' : 'Casa de Cambio';
+      const providerName = getProviderName(selectedData.provider);
+      const locationText = `${selectedData.location.name}, ${selectedData.city}`;
+      const fee = selectedData.amount * CONFIG.PROVIDER_FEES[selectedData.provider];
+      const total = selectedData.amount + fee;
+
+      document.getElementById('summary-method').textContent = methodText;
+      document.getElementById('summary-provider').textContent = providerName;
+      document.getElementById('summary-location').textContent = locationText;
+      document.getElementById('summary-recipient').textContent = `${selectedData.recipient} (${selectedData.recipientId})`;
+      document.getElementById('summary-amount').textContent = `$${selectedData.amount.toFixed(2)}`;
+      document.getElementById('summary-fee').textContent = `$${fee.toFixed(2)}`;
+      document.getElementById('summary-total').textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Get provider display name
+    function getProviderName(provider) {
+      const names = {
+        banesco: 'Banesco (MoneyGram)',
+        mercantil: 'Mercantil',
+        venezuela: 'Banco de Venezuela',
+        italcambio: 'Italcambio',
+        zoom: 'Zoom (Western Union)',
+        'cambios-plaza': 'Cambios Plaza',
+        multicambio: 'Multicambio'
+      };
+      return names[provider] || provider;
+    }
+
+    // Process withdrawal
+    function processWithdrawal() {
+      const loadingOverlay = document.getElementById('loading-overlay');
+      const loadingText = document.getElementById('loading-text');
+
+      // Show loading
+      loadingOverlay.style.display = 'flex';
+
+      // Simulate processing
+      let progress = 0;
+      const messages = [
+        'Validando información...',
+        'Procesando con el proveedor...',
+        'Confirmando disponibilidad...',
+        'Generando código de retiro...',
+        '¡Retiro procesado exitosamente!'
+      ];
+
+      const interval = setInterval(() => {
+        loadingText.textContent = messages[Math.floor(progress / 20)];
+        progress += 20;
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+            showSuccess();
+          }, 1000);
+        }
+      }, 800);
+    }
+
+    // Show success modal
+    function showSuccess() {
+      const successModal = document.getElementById('success-modal');
+      const referenceCode = document.getElementById('reference-code');
+
+      // Generate reference code
+      const code = 'RTRO-' + Date.now().toString().slice(-8);
+      referenceCode.textContent = code;
+
+      successModal.style.display = 'flex';
+
+      // Confetti effect
+      setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }, 300);
+    }
+
+    // Go to home
+    function goToHome() {
+      window.location.href = '';
+    }
+
+    function fixLayout() {
+      const header = document.querySelector('.app-header');
+      const container = document.querySelector('.main-container');
+      if (header && container) {
+        const h = header.offsetHeight || 0;
+        container.style.paddingTop = `${h + 16}px`;
+      }
+    }
+
+    function personalizePage() {
+      const creds = JSON.parse(localStorage.getItem('remeexUserCredentials') || 'null');
+      const reg = JSON.parse(localStorage.getItem('visaUserData') || 'null');
+      const name = creds?.name || reg?.preferredName || reg?.firstName || reg?.nickname;
+      if (!name) return;
+      const titleEl = document.querySelector('#step-method .section-title');
+      if (titleEl) {
+        titleEl.innerHTML = `<i class="fas fa-hand-holding-usd"></i> ${name}, ¿Cómo quieres recibir tu dinero?`;
+      }
+    }
+
+    // Load user balance (simulated)
+    function loadUserBalance() {
+      // This would normally come from your backend
+      const balance = 1245.00;
+      document.getElementById('user-balance').textContent = `$${balance.toLocaleString('en-US', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+      })}`;
+    }
+
+    // Initialize balance
+    loadUserBalance();
+  </script>
+
+<div id="bottom-nav-container"></div>
+<script src="bottom-nav.js"></script>
+</body>
+</html>
+  <script src="preload.js"></script>

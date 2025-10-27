@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Servicios - REMEEX VISA</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Paga todos tus servicios desde REMEEX VISA: electricidad, agua, teléfono, internet, TV y más"/>
+  <meta name="keywords" content="pago de servicios venezuela, pagos digitales, facturas"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      /* Modern color palette based on Revolut/N26 style */
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --secondary: #00579f;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --danger: #ff4d4d;
+      --warning: #ffad33;
+      --info: #0095ff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+
+      /* Shadows & Effects */
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+      
+      /* Border radius */
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      
+      /* Transitions */
+      --transition-fast: all 0.2s ease;
+      --transition-base: all 0.3s ease;
+      --transition-slow: all 0.5s ease;
+      
+      /* Card gradients */
+      --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+      --success-gradient: linear-gradient(135deg, #00c057 0%, #00a346 100%);
+      --verified-color: #1DA1F2;
+      --premium-color: #FFD700;
+      --electricity-gradient: linear-gradient(135deg, #ffad33 0%, #ff8c00 100%);
+      --water-gradient: linear-gradient(135deg, #0095ff 0%, #0078d4 100%);
+      --phone-gradient: linear-gradient(135deg, #00d34d 0%, #00a346 100%);
+      --internet-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      --gas-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --tv-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      
+      /* Animations */
+      --animation-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 75%;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--neutral-200);
+      color: var(--neutral-900);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--neutral-100);
+      border-bottom: 1px solid var(--neutral-300);
+      box-shadow: var(--shadow-sm);
+      z-index: 1000;
+      height: 60px;
+    }
+
+    .header-back {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition-base);
+    }
+
+    .header-back:hover {
+      transform: translateX(-3px);
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-action-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--neutral-200);
+      color: var(--neutral-700);
+      border: none;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .header-action-btn:hover {
+      background: var(--neutral-300);
+      transform: translateY(-2px);
+    }
+
+    /* Main Container */
+    .main-container {
+      padding-top: 70px;
+      padding-bottom: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .container-padding {
+      padding: 0 1rem;
+    }
+
+    /* Balance Card */
+    .balance-card {
+      background: var(--card-gradient);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      color: white;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s var(--animation-bounce), box-shadow 0.3s ease;
+    }
+
+    .balance-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .balance-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      100% { left: 200%; }
+    }
+
+    .balance-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .balance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .balance-title {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .balance-amount {
+      font-size: clamp(2rem, 5vw, 2.5rem);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .currency-flag {
+      width: 20px;
+      height: 14px;
+      border-radius: 2px;
+      object-fit: cover;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .balance-refresh-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .balance-refresh-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .balance-refresh-btn.spinning img {
+      animation: spin 0.6s linear;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Services Grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Service Cards */
+    .service-card {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s var(--animation-bounce);
+      border: 1px solid var(--neutral-300);
+      cursor: pointer;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+
+    .service-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .service-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .service-icon.electricity {
+      background: var(--electricity-gradient);
+    }
+
+    .service-icon.water {
+      background: var(--water-gradient);
+    }
+
+    .service-icon.phone {
+      background: var(--phone-gradient);
+    }
+
+    .service-icon.internet {
+      background: var(--internet-gradient);
+    }
+
+    .service-icon.gas {
+      background: var(--gas-gradient);
+    }
+
+    .service-icon.tv {
+      background: var(--tv-gradient);
+    }
+
+    .service-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .service-subtitle {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+    }
+
+    .service-providers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .provider-tag {
+      background: var(--neutral-200);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      color: var(--neutral-700);
+      font-weight: 500;
+    }
+
+    .service-features {
+      list-style: none;
+      margin-bottom: 1rem;
+    }
+
+    .service-features li {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .service-features li i {
+      color: var(--success);
+      font-size: 0.7rem;
+    }
+
+    /* Recent Payments */
+    .recent-payments {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .payment-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      background: var(--neutral-200);
+      border-radius: var(--radius-md);
+      margin-bottom: 0.75rem;
+      transition: var(--transition-base);
+      cursor: pointer;
+    }
+
+    .payment-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .payment-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      color: white;
+      font-size: 1.1rem;
+    }
+
+    .payment-content {
+      flex: 1;
+    }
+
+    .payment-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .payment-details {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      margin-bottom: 0.25rem;
+    }
+
+    .payment-date {
+      font-size: 0.75rem;
+      color: var(--neutral-500);
+    }
+
+    .payment-amount {
+      font-weight: 700;
+      font-size: 1rem;
+      text-align: right;
+      color: var(--primary);
+    }
+
+    /* Forms */
+    .service-form {
+      display: none;
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--neutral-400);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      background: var(--neutral-100);
+      transition: var(--transition-base);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.15);
+    }
+
+    .form-inline {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .form-inline .form-control {
+      flex: 1;
+    }
+
+    /* Buttons */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s var(--animation-bounce);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #00a346;
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: rgba(26, 31, 113, 0.05);
+      transform: translateY(-3px);
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .quick-action {
+      background: var(--neutral-100);
+      border: 1px solid var(--neutral-300);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s var(--animation-bounce);
+      text-decoration: none;
+      color: var(--neutral-900);
+    }
+
+    .quick-action:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .quick-action-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--primary-light);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.75rem;
+      font-size: 1.1rem;
+    }
+
+    .quick-action-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .quick-action-subtitle {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    /* Status Messages */
+    .status-message {
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .status-message.success {
+      background: rgba(0, 211, 77, 0.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    .status-message.error {
+      background: rgba(255, 77, 77, 0.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .status-message.warning {
+      background: rgba(255, 173, 51, 0.1);
+      border: 1px solid var(--warning);
+      color: var(--warning);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1100;
+      display: none;
+    }
+
+    .modal {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 500px;
+      padding: 2rem;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+      border: none;
+    }
+
+    .modal-close:hover {
+      background: var(--neutral-300);
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 70px;
+      right: 16px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .toast {
+      background: var(--neutral-900);
+      color: white;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      min-width: 250px;
+      max-width: 320px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: slideInRight 0.3s ease;
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--success);
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--danger);
+    }
+
+    .toast.warning {
+      border-left: 4px solid var(--warning);
+    }
+
+    .toast.info {
+      border-left: 4px solid var(--info);
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-inline {
+        flex-direction: column;
+      }
+
+      .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .balance-amount {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Bill details */
+    .bill-details {
+      background: var(--neutral-200);
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .bill-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .bill-row:last-child {
+      border-top: 1px solid var(--neutral-300);
+      padding-top: 0.5rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <a href="javascript:history.back()" class="header-back">
+      <i class="fas fa-arrow-left"></i>
+      <span>Volver</span>
+    </a>
+    <div class="header-title">Servicios</div>
+    <div class="header-actions">
+      <button class="header-action-btn" id="history-btn" title="Historial">
+        <i class="fas fa-history"></i>
+      </button>
+      <button class="header-action-btn" id="settings-btn" title="Configuración">
+        <i class="fas fa-cog"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <div class="container-padding">
+      
+      <!-- Balance Card -->
+      <div class="balance-card">
+        <div class="balance-content">
+          <div class="balance-header">
+            <div class="balance-title">Saldo Disponible para Pagos</div>
+            <button id="balance-refresh-btn" class="balance-refresh-btn" aria-label="Actualizar saldo">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+          <div class="balance-amount" id="balance-display">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/Flag_of_Venezuela.svg" class="currency-flag" alt="Bandera de Venezuela">
+            <span>Bs 0,00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="quick-action" id="quick-electricity">
+          <div class="quick-action-icon" style="background: var(--electricity-gradient);">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <div class="quick-action-title">Electricidad</div>
+          <div class="quick-action-subtitle">Pago rápido</div>
+        </div>
+        <div class="quick-action" id="quick-water">
+          <div class="quick-action-icon" style="background: var(--water-gradient);">
+            <i class="fas fa-tint"></i>
+          </div>
+          <div class="quick-action-title">Agua</div>
+          <div class="quick-action-subtitle">Acueducto</div>
+        </div>
+        <div class="quick-action" id="quick-phone">
+          <div class="quick-action-icon" style="background: var(--phone-gradient);">
+            <i class="fas fa-phone"></i>
+          </div>
+          <div class="quick-action-title">Teléfono</div>
+          <div class="quick-action-subtitle">Recarga móvil</div>
+        </div>
+        <div class="quick-action" id="quick-internet">
+          <div class="quick-action-icon" style="background: var(--internet-gradient);">
+            <i class="fas fa-wifi"></i>
+          </div>
+          <div class="quick-action-title">Internet</div>
+          <div class="quick-action-subtitle">Fibra óptica</div>
+        </div>
+      </div>
+
+      <!-- Services Grid -->
+      <div class="services-grid">
+        
+        <!-- Electricity Service -->
+        <div class="service-card" data-service="electricity">
+          <div class="service-header">
+            <div class="service-icon electricity">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <div>
+              <div class="service-title">Electricidad</div>
+              <div class="service-subtitle">Paga tu factura eléctrica</div>
+            </div>
+          </div>
+          <div class="service-providers">
+            <span class="provider-tag">CORPOELEC</span>
+            <span class="provider-tag">Empresas Privadas</span>
+          </div>
+          <ul class="service-features">
+            <li><i class="fas fa-check"></i> Pago inmediato</li>
+            <li><i class="fas fa-check"></i> Sin comisiones</li>
+            <li><i class="fas fa-check"></i> Confirmación automática</li>
+            <li><i class="fas fa-check"></i> Historial de pagos</li>
+          </ul>
+        </div>
+
+        <!-- Water Service -->
+        <div class="service-card" data-service="water">
+          <div class="service-header">
+            <div class="service-icon water">
+              <i class="fas fa-tint"></i>
+            </div>
+            <div>
+              <div class="service-title">Agua</div>
+              <div class="service-subtitle">Servicios de acueducto</div>
+            </div>
+          </div>
+          <div class="service-providers">
+            <span class="provider-tag">Hidroven</span>
+            <span class="provider-tag">Aguas de Venezuela</span>
+            <span class="provider-tag">Regionales</span>
+          </div>
+          <ul class="service-features">
+            <li><i class="fas fa-check"></i> Todas las regiones</li>
+            <li><i class="fas fa-check"></i> Consulta de deuda</li>
+            <li><i class="fas fa-check"></i> Pagos programados</li>
+            <li><i class="fas fa-check"></i> Recibo digital</li>
+          </ul>
+        </div>
+
+        <!-- Phone Service -->
+        <div class="service-card" data-service=" phone">
+          <div class="service-header">
+            <div class="service-icon phone">
+              <i class="fas fa-phone"></i>
+            </div>
+            <div>
+              <div class="service-title">Teléfono</div>
+              <div class="service-subtitle">Recargas y líneas fijas</div>
+            </div>
+          </div>
+          <div class="service-providers">
+            <span class="provider-tag">Movistar</span>
+            <span class="provider-tag">Digitel</span>
+            <span class="provider-tag">Movilnet</span>
+            <span class="provider-tag">CANTV</span>
+          </div>
+          <ul class="service-features">
+            <li><i class="fas fa-check"></i> Recargas móviles</li>
+            <li><i class="fas fa-check"></i> Líneas fijas</li>
+            <li><i class="fas fa-check"></i> Planes postpago</li>
+            <li><i class="fas fa-check"></i> Datos e internet móvil</li>
+          </ul>
+        </div>
+
+        <!-- Internet Service -->
+        <div class="service-card" data-service="internet">
+          <div class="service-header">
+            <div class="service-icon internet">
+              <i class="fas fa-wifi"></i>
+            </div>
+            <div>
+              <div class="service-title">Internet</div>
+              <div class="service-subtitle">Fibra óptica y banda ancha</div>
+            </div>
+          </div>
+          <div class="service-providers">
+            <span class="provider-tag">CANTV</span>
+            <span class="provider-tag">Inter</span>
+            <span class="provider-tag">NetUno</span>
+            <span class="provider-tag">Supercable</span>
+          </div>
+          <ul class="service-features">
+            <li><i class="fas fa-check"></i> Fibra óptica</li>
+            <li><i class="fas fa-check"></i> ADSL</li>
+            <li><i class="fas fa-check"></i> Cable módem</li>
+            <li><i class="fas fa-check"></i> Internet corporativo</li>
+          </ul>
+        </div>
+
+        <!-- Gas Service -->
+        <div class="service-card" data-service="gas">
+          <div class="service-header">
+            <div class="service-icon gas">
+              <i class="fas fa-fire"></i>
+            </div>
+            <div>
+              <div class="service-title">Gas Doméstico</div>
+              <div class="service-subtitle">Bombona y gas directo</div>
+            </div>
+          </div>
+          <div class="service-providers">
+            <span class="provider-tag">PDVSA Gas</span>
+            <span class="provider-tag">Distribuidoras</span>
+          </div>
+          <ul class="service-features">
+            <li><i class="fas fa-check"></i> Entrega a domicilio</li>
+            <li><i class="fas fa-check"></i> Gas directo</li>
+            <li><i class="fas fa-check"></i> Programación de entregas</li>
+            <li><i class="fas fa-check"></i> Múltiples tamaños</li>
+          </ul>
+        </div>
+
+        <!-- TV Service -->
+        <div class="service-card" data-service="tv">
+          <div class="service-header">
+            <div class="service-icon tv">
+              <i class="fas fa-tv"></i>
+            </div>
+            <div>
+              <div class="service-title">Televisión</div>
+              <div class="service-subtitle">Cable y satelital</div>
+            </div>
+          </div>
+          <div class="service-providers">
+            <span class="provider-tag">DirecTV</span>
+            <span class="provider-tag">Intercable</span>
+            <span class="provider-tag">Supercable</span>
+            <span class="provider-tag">SimpleTV</span>
+          </div>
+          <ul class="service-features">
+            <li><i class="fas fa-check"></i> TV por cable</li>
+            <li><i class="fas fa-check"></i> TV satelital</li>
+            <li><i class="fas fa-check"></i> HD y 4K</li>
+            <li><i class="fas fa-check"></i> Canales premium</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Service Payment Form (Hidden by default) -->
+      <div class="service-form" id="payment-form">
+        <div class="section-header">
+          <h3 class="section-title">
+            <i class="fas fa-credit-card"></i>
+            <span id="form-title">Pagar Servicio</span>
+          </h3>
+          <button class="btn btn-outline btn-small" id="close-form">
+            <i class="fas fa-times"></i>
+            Cerrar
+          </button>
+        </div>
+
+        <form id="service-payment-form">
+          <div class="form-group">
+            <label class="form-label">Proveedor del Servicio</label>
+            <select class="form-control" id="service-provider" required>
+              <option value="">Selecciona un proveedor</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Número de Cliente / Cuenta</label>
+            <input type="text" class="form-control" id="account-number" placeholder="Ingresa tu número de cliente" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Documento de Identidad</label>
+            <input type="text" class="form-control" id="customer-id" placeholder="V-12345678" required>
+          </div>
+
+          <div class="form-group">
+            <button type="button" class="btn btn-outline" id="consult-bill">
+              <i class="fas fa-search"></i>
+              Consultar Factura
+            </button>
+          </div>
+
+          <div class="bill-details" id="bill-details">
+            <h4 style="margin-bottom: 0.75rem; color: var(--neutral-900);">Detalles de la Factura</h4>
+            <div class="bill-row">
+              <span>Cliente:</span>
+              <span id="customer-name">Juan Pérez</span>
+            </div>
+            <div class="bill-row">
+              <span>Período:</span>
+              <span id="billing-period">Enero 2024</span>
+            </div>
+            <div class="bill-row">
+              <span>Vencimiento:</span>
+              <span id="due-date">15/02/2024</span>
+            </div>
+            <div class="bill-row">
+              <span>Monto a Pagar:</span>
+              <span id="amount-due">Bs 45.750,00</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Monto a Pagar</label>
+            <div class="form-inline">
+              <input type="number" class="form-control" id="payment-amount" placeholder="0.00" step="0.01" required>
+              <select class="form-control" id="payment-currency">
+                <option value="bs">Bolívares (Bs)</option>
+                <option value="usd">Dólares (USD)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Método de Pago</label>
+            <select class="form-control" id="payment-method" required>
+              <option value="balance">Saldo REMEEX VISA</option>
+              <option value="card">Tarjeta de Débito</option>
+              <option value="transfer">Transferencia</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Observaciones (Opcional)</label>
+            <textarea class="form-control" id="payment-notes" placeholder="Notas adicionales sobre el pago" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+              <input type="checkbox" id="save-service">
+              Guardar este servicio para pagos futuros
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-success" style="width: 100%;">
+            <i class="fas fa-credit-card"></i>
+            Procesar Pago
+          </button>
+
+          <div class="status-message" id="payment-status"></div>
+        </form>
+      </div>
+
+      <!-- Recent Payments -->
+      <div class="recent-payments">
+        <div class="section-header">
+          <h3 class="section-title">
+            <i class="fas fa-history"></i>
+            Pagos Recientes
+          </h3>
+          <button class="btn btn-outline btn-small" id="view-all-payments">
+            <i class="fas fa-list"></i>
+            Ver Todo
+          </button>
+        </div>
+
+        <div id="recent-payments-list">
+          <div class="payment-item">
+            <div class="payment-icon electricity">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <div class="payment-content">
+              <div class="payment-title">CORPOELEC - Electricidad</div>
+              <div class="payment-details">Cliente: 1234567890</div>
+              <div class="payment-date">Hace 2 días</div>
+            </div>
+            <div class="payment-amount">Bs 45.750</div>
+          </div>
+
+          <div class="payment-item">
+            <div class="payment-icon phone">
+              <i class="fas fa-phone"></i>
+            </div>
+            <div class="payment-content">
+              <div class="payment-title">Movistar - Recarga</div>
+              <div class="payment-details">0414-1234567</div>
+              <div class="payment-date">Hace 5 días</div>
+            </div>
+            <div class="payment-amount">Bs 15.000</div>
+          </div>
+
+          <div class="payment-item">
+            <div class="payment-icon water">
+              <i class="fas fa-tint"></i>
+            </div>
+            <div class="payment-content">
+              <div class="payment-title">Hidroven - Agua</div>
+              <div class="payment-details">Cliente: 9876543210</div>
+              <div class="payment-date">Hace 1 semana</div>
+            </div>
+            <div class="payment-amount">Bs 28.500</div>
+          </div>
+
+          <div class="payment-item">
+            <div class="payment-icon internet">
+              <i class="fas fa-wifi"></i>
+            </div>
+            <div class="payment-content">
+              <div class="payment-title">CANTV - Internet</div>
+              <div class="payment-details">0212-1234567</div>
+              <div class="payment-date">Hace 2 semanas</div>
+            </div>
+            <div class="payment-amount">Bs 35.200</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="confirmation-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Confirmar Pago</div>
+        <button class="modal-close" id="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-content" id="modal-content">
+        <!-- Dynamic content -->
+      </div>
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button class="btn btn-outline" style="flex: 1;" id="modal-cancel">Cancelar</button>
+        <button class="btn btn-primary" style="flex: 1;" id="modal-confirm">Confirmar Pago</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // Configuration
+    const CONFIG = {
+      EXCHANGE_RATES: {
+        USD_TO_BS: 151.10,
+        BS_TO_USD: 1 / 151.10,
+        USD_TO_EUR: 0.94,
+        EUR_TO_BS: 151.10 / 0.94
+      },
+      SERVICE_PROVIDERS: {
+        electricity: [
+          { value: 'corpoelec', name: 'CORPOELEC' },
+          { value: 'empresa-privada', name: 'Empresa Privada' }
+        ],
+        water: [
+          { value: 'hidroven', name: 'Hidroven' },
+          { value: 'aguas-venezuela', name: 'Aguas de Venezuela' },
+          { value: 'regional', name: 'Empresa Regional' }
+        ],
+        phone: [
+          { value: 'movistar', name: 'Movistar' },
+          { value: 'digitel', name: 'Digitel' },
+          { value: 'movilnet', name: 'Movilnet' },
+          { value: 'cantv', name: 'CANTV' }
+        ],
+        internet: [
+          { value: 'cantv', name: 'CANTV ABA' },
+          { value: 'inter', name: 'Inter' },
+          { value: 'netuno', name: 'NetUno' },
+          { value: 'supercable', name: 'Supercable' }
+        ],
+        gas: [
+          { value: 'pdvsa-gas', name: 'PDVSA Gas' },
+          { value: 'distribuidora', name: 'Distribuidora Local' }
+        ],
+        tv: [
+          { value: 'directv', name: 'DirecTV' },
+          { value: 'intercable', name: 'Intercable' },
+          { value: 'supercable', name: 'Supercable' },
+          { value: 'simpletv', name: 'SimpleTV' }
+        ]
+      },
+      STORAGE_KEYS: {
+        BALANCE: 'remeexBalance',
+        PAYMENTS_HISTORY: 'remeexPaymentsHistory',
+        SAVED_SERVICES: 'remeexSavedServices'
+      },
+      SESSION_KEYS: {
+        BALANCE: 'remeexSessionBalance',
+        EXCHANGE_RATE: 'remeexSessionExchangeRate'
+      }
+    };
+
+    // Global variables
+    let currentUser = {
+      balance: {
+        usd: 0,
+        bs: 0
+      }
+    };
+
+    let paymentsHistory = [];
+    let currentService = null;
+
+    // Utility functions
+    function getStorageItem(storage, key) {
+      if (!storage || typeof storage.getItem !== 'function') return null;
+      try {
+        return storage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setStorageItem(storage, key, value) {
+      if (!storage || typeof storage.setItem !== 'function') return;
+      try {
+        storage.setItem(key, value);
+      } catch (e) {}
+    }
+
+    function toNumeric(value) {
+      if (value === null || value === undefined) return null;
+      if (typeof value === 'number') {
+        return Number.isFinite(value) ? value : null;
+      }
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return null;
+
+        const sanitized = trimmed.replace(/[^0-9.,-]/g, '');
+        if (!sanitized) return null;
+
+        const lastComma = sanitized.lastIndexOf(',');
+        const lastDot = sanitized.lastIndexOf('.');
+        const separatorIndex = Math.max(lastComma, lastDot);
+        let normalized;
+
+        if (separatorIndex > 0) {
+          const integerPartRaw = sanitized.slice(0, separatorIndex);
+          const decimalPartRaw = sanitized.slice(separatorIndex + 1);
+          const sign = integerPartRaw.trim().startsWith('-') ? '-' : '';
+          const integerDigits = integerPartRaw.replace(/[^0-9]/g, '');
+          const decimalDigits = decimalPartRaw.replace(/[^0-9]/g, '');
+          normalized = `${sign}${integerDigits || '0'}.${decimalDigits}`;
+        } else {
+          const sign = sanitized.trim().startsWith('-') ? '-' : '';
+          const digits = sanitized.replace(/[^0-9]/g, '');
+          normalized = `${sign}${digits}`;
+        }
+
+        if (!normalized || normalized === '-' || normalized === '.' || normalized === '-.') return null;
+
+        const parsed = parseFloat(normalized);
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+      return null;
+    }
+
+    function formatCurrency(amount, currency) {
+      const numericAmount = toNumeric(amount);
+      const value = numericAmount !== null ? numericAmount : 0;
+      if (currency === 'usd') {
+        return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      } else if (currency === 'bs') {
+        return 'Bs ' + value.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      return value.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function getCurrentDateTime() {
+      const date = new Date();
+      return date.toLocaleString('es-ES', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function convertCurrency(amount, fromCurrency, toCurrency) {
+      const numericAmount = toNumeric(amount);
+      if (numericAmount === null) return 0;
+
+      if (fromCurrency === toCurrency) return numericAmount;
+
+      if (fromCurrency === 'bs' && toCurrency === 'usd') {
+        return numericAmount * CONFIG.EXCHANGE_RATES.BS_TO_USD;
+      } else if (fromCurrency === 'usd' && toCurrency === 'bs') {
+        return numericAmount * CONFIG.EXCHANGE_RATES.USD_TO_BS;
+      }
+
+      return numericAmount;
+    }
+
+    function loadExchangeRate() {
+      const localStore = typeof localStorage !== 'undefined' ? localStorage : null;
+      const sessionStore = typeof sessionStorage !== 'undefined' ? sessionStorage : null;
+      const sources = [
+        getStorageItem(localStore, CONFIG.SESSION_KEYS.EXCHANGE_RATE),
+        getStorageItem(sessionStore, CONFIG.SESSION_KEYS.EXCHANGE_RATE)
+      ];
+
+      for (const raw of sources) {
+        if (!raw) continue;
+        try {
+          const data = JSON.parse(raw);
+          if (!data || typeof data !== 'object') continue;
+
+          const usdToBs = toNumeric(data.USD_TO_BS);
+          const bsToUsd = toNumeric(data.BS_TO_USD);
+          const usdToEur = toNumeric(data.USD_TO_EUR);
+          const eurToBs = toNumeric(data.EUR_TO_BS);
+
+          if (usdToBs && usdToBs > 0) {
+            CONFIG.EXCHANGE_RATES.USD_TO_BS = usdToBs;
+            CONFIG.EXCHANGE_RATES.BS_TO_USD = bsToUsd && bsToUsd > 0 ? bsToUsd : 1 / usdToBs;
+          } else if (bsToUsd && bsToUsd > 0) {
+            CONFIG.EXCHANGE_RATES.BS_TO_USD = bsToUsd;
+            CONFIG.EXCHANGE_RATES.USD_TO_BS = 1 / bsToUsd;
+          }
+
+          if (usdToEur && usdToEur > 0) {
+            CONFIG.EXCHANGE_RATES.USD_TO_EUR = usdToEur;
+          }
+
+          if (eurToBs && eurToBs > 0) {
+            CONFIG.EXCHANGE_RATES.EUR_TO_BS = eurToBs;
+          }
+
+          return;
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+
+    function getStoredBalance() {
+      const localStore = typeof localStorage !== 'undefined' ? localStorage : null;
+      const sessionStore = typeof sessionStorage !== 'undefined' ? sessionStorage : null;
+      const sources = [
+        getStorageItem(localStore, CONFIG.STORAGE_KEYS.BALANCE),
+        getStorageItem(sessionStore, CONFIG.SESSION_KEYS.BALANCE)
+      ];
+
+      for (const raw of sources) {
+        if (!raw) continue;
+        try {
+          const data = JSON.parse(raw);
+          if (!data || typeof data !== 'object') continue;
+
+          const usd = toNumeric(data.usd);
+          let bs = toNumeric(data.bs);
+          const eur = toNumeric(data.eur);
+          const usdt = toNumeric(data.usdt);
+          const deviceId = data.deviceId || null;
+
+          let finalUsd = usd;
+          let finalBs = bs;
+
+          if (finalUsd === null && finalBs !== null) {
+            finalUsd = finalBs * CONFIG.EXCHANGE_RATES.BS_TO_USD;
+          }
+
+          if (finalBs === null && finalUsd !== null) {
+            finalBs = finalUsd * CONFIG.EXCHANGE_RATES.USD_TO_BS;
+          }
+
+          if (finalUsd !== null || finalBs !== null) {
+            const result = {
+              usd: finalUsd !== null ? finalUsd : 0,
+              bs: finalBs !== null ? finalBs : 0
+            };
+
+            if (eur !== null) result.eur = eur;
+            if (usdt !== null) result.usdt = usdt;
+            if (deviceId) result.deviceId = deviceId;
+
+            return result;
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+
+      const fallback = toNumeric(getStorageItem(localStore, 'saldo'));
+      if (fallback !== null) {
+        return {
+          usd: fallback,
+          bs: fallback * CONFIG.EXCHANGE_RATES.USD_TO_BS
+        };
+      }
+
+      return null;
+    }
+
+    function normalizeBalanceForStorage(balance) {
+      const normalized = { ...balance };
+      ['usd', 'bs', 'eur', 'usdt'].forEach(key => {
+        if (normalized[key] !== undefined) {
+          const numericValue = toNumeric(normalized[key]);
+          if (numericValue !== null) {
+            normalized[key] = parseFloat(numericValue.toFixed(2));
+          } else {
+            delete normalized[key];
+          }
+        }
+      });
+      return normalized;
+    }
+
+    function showToast(type, title, message, duration = 3000) {
+      const toastContainer = document.getElementById('toast-container');
+      
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const iconMap = {
+        success: 'fas fa-check-circle',
+        error: 'fas fa-exclamation-circle',
+        warning: 'fas fa-exclamation-triangle',
+        info: 'fas fa-info-circle'
+      };
+      
+      toast.innerHTML = `
+        <div class="toast-icon">
+          <i class="${iconMap[type]}"></i>
+        </div>
+        <div class="toast-content">
+          <div style="font-weight: 600; margin-bottom: 0.25rem;">${title}</div>
+          <div style="font-size: 0.85rem; opacity: 0.9;">${message}</div>
+        </div>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
+    }
+
+    function showStatus(elementId, type, message) {
+      const statusEl = document.getElementById(elementId);
+      if (statusEl) {
+        statusEl.className = `status-message ${type}`;
+        statusEl.textContent = message;
+        statusEl.style.display = 'block';
+        
+        setTimeout(() => {
+          statusEl.style.display = 'none';
+        }, 5000);
+      }
+    }
+
+    function loadUserData() {
+      const storedBalance = getStoredBalance();
+      if (!storedBalance) return;
+
+      const usd = toNumeric(storedBalance.usd);
+      const bs = toNumeric(storedBalance.bs);
+      const eur = toNumeric(storedBalance.eur);
+      const usdt = toNumeric(storedBalance.usdt);
+
+      if (usd !== null) {
+        currentUser.balance.usd = usd;
+      }
+
+      if (bs !== null) {
+        currentUser.balance.bs = bs;
+      } else if (usd !== null) {
+        currentUser.balance.bs = usd * CONFIG.EXCHANGE_RATES.USD_TO_BS;
+      }
+
+      if (eur !== null) {
+        currentUser.balance.eur = eur;
+      } else if (toNumeric(CONFIG.EXCHANGE_RATES.USD_TO_EUR) !== null) {
+        currentUser.balance.eur = currentUser.balance.usd * CONFIG.EXCHANGE_RATES.USD_TO_EUR;
+      }
+
+      if (usdt !== null) {
+        currentUser.balance.usdt = usdt;
+      } else {
+        currentUser.balance.usdt = currentUser.balance.usd;
+      }
+
+      if (storedBalance.deviceId) {
+        currentUser.balance.deviceId = storedBalance.deviceId;
+      }
+    }
+
+    function saveBalanceData() {
+      const normalized = normalizeBalanceForStorage(currentUser.balance);
+      const serialized = JSON.stringify(normalized);
+      const localStore = typeof localStorage !== 'undefined' ? localStorage : null;
+      const sessionStore = typeof sessionStorage !== 'undefined' ? sessionStorage : null;
+      setStorageItem(localStore, CONFIG.STORAGE_KEYS.BALANCE, serialized);
+      setStorageItem(sessionStore, CONFIG.SESSION_KEYS.BALANCE, serialized);
+      setStorageItem(localStore, 'saldo', String(normalized.usd !== undefined ? normalized.usd : 0));
+      try {
+        document.dispatchEvent(new CustomEvent('saldoActualizado', {
+          detail: { nuevoSaldo: normalized.usd !== undefined ? normalized.usd : 0 }
+        }));
+      } catch (e) {}
+    }
+
+    function loadPaymentsHistory() {
+      const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.PAYMENTS_HISTORY);
+      if (saved) {
+        try {
+          paymentsHistory = JSON.parse(saved);
+        } catch (e) {
+          paymentsHistory = [];
+        }
+      }
+    }
+
+    function savePaymentsHistory() {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.PAYMENTS_HISTORY, JSON.stringify(paymentsHistory));
+    }
+
+    function updateBalanceDisplay() {
+      const balanceDisplay = document.getElementById('balance-display');
+      if (balanceDisplay) {
+        balanceDisplay.innerHTML = `
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/Flag_of_Venezuela.svg" class="currency-flag" alt="Bandera de Venezuela">
+          <span>${formatCurrency(currentUser.balance.bs, 'bs')}</span>
+        `;
+      }
+    }
+
+    function showServiceForm(serviceType) {
+      currentService = serviceType;
+      const form = document.getElementById('payment-form');
+      const formTitle = document.getElementById('form-title');
+      const providerSelect = document.getElementById('service-provider');
+      
+      // Update form title
+      const serviceTitles = {
+        electricity: 'Pagar Electricidad',
+        water: 'Pagar Agua',
+        phone: 'Recarga Teléfono',
+        internet: 'Pagar Internet',
+        gas: 'Pagar Gas',
+        tv: 'Pagar TV'
+      };
+      
+      formTitle.textContent = serviceTitles[serviceType] || 'Pagar Servicio';
+      
+      // Update providers
+      providerSelect.innerHTML = '<option value="">Selecciona un proveedor</option>';
+      const providers = CONFIG.SERVICE_PROVIDERS[serviceType] || [];
+      providers.forEach(provider => {
+        const option = document.createElement('option');
+        option.value = provider.value;
+        option.textContent = provider.name;
+        providerSelect.appendChild(option);
+      });
+      
+      // Show form
+      form.style.display = 'block';
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function hideServiceForm() {
+      document.getElementById('payment-form').style.display = 'none';
+      document.getElementById('service-payment-form').reset();
+      document.getElementById('bill-details').style.display = 'none';
+      currentService = null;
+    }
+
+    function consultBill() {
+      const provider = document.getElementById('service-provider').value;
+      const accountNumber = document.getElementById('account-number').value;
+      const customerId = document.getElementById('customer-id').value;
+      
+      if (!provider || !accountNumber || !customerId) {
+        showToast('warning', 'Campos Requeridos', 'Completa todos los campos para consultar la factura');
+        return;
+      }
+      
+      // Simulate bill consultation
+      const btn = document.getElementById('consult-bill');
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = '<div class="loading-spinner"></div> Consultando...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        // Generate random bill data
+        const amounts = [25000, 35000, 45000, 55000, 75000];
+        const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
+        
+        const customers = ['Juan Pérez', 'María González', 'Carlos Rodríguez', 'Ana Martínez'];
+        const randomCustomer = customers[Math.floor(Math.random() * customers.length)];
+        
+        const currentDate = new Date();
+        const dueDate = new Date(currentDate.getTime() + (15 * 24 * 60 * 60 * 1000));
+        
+        // Update bill details
+        document.getElementById('customer-name').textContent = randomCustomer;
+        document.getElementById('billing-period').textContent = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+        document.getElementById('due-date').textContent = dueDate.toLocaleDateString('es-ES');
+        document.getElementById('amount-due').textContent = formatCurrency(randomAmount, 'bs');
+        
+        // Set payment amount
+        document.getElementById('payment-amount').value = randomAmount;
+        
+        // Show bill details
+        document.getElementById('bill-details').style.display = 'block';
+        
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        
+        showToast('success', 'Factura Consultada', 'Se encontró la información de la factura');
+      }, 2000);
+    }
+
+    function processPayment() {
+      const provider = document.getElementById('service-provider').value;
+      const accountNumber = document.getElementById('account-number').value;
+      const customerId = document.getElementById('customer-id').value;
+      const amount = parseFloat(document.getElementById('payment-amount').value);
+      const currency = document.getElementById('payment-currency').value;
+      const method = document.getElementById('payment-method').value;
+      const notes = document.getElementById('payment-notes').value;
+      const saveService = document.getElementById('save-service').checked;
+      
+      // Validate
+      if (!provider || !accountNumber || !customerId || !amount || !method) {
+        showToast('error', 'Campos Requeridos', 'Completa todos los campos obligatorios');
+        return;
+      }
+      
+      if (amount <= 0) {
+        showToast('error', 'Monto Inválido', 'El monto debe ser mayor a cero');
+        return;
+      }
+      
+      // Check balance if paying with REMEEX balance
+      if (method === 'balance') {
+        const amountInBs = currency === 'usd' ? convertCurrency(amount, 'usd', 'bs') : amount;
+        const availableBs = toNumeric(currentUser.balance.bs) || 0;
+        if (amountInBs > availableBs) {
+          showToast('error', 'Fondos Insuficientes', 'No tienes suficiente saldo para realizar este pago');
+          return;
+        }
+      }
+      
+      // Show confirmation modal
+      showConfirmationModal({
+        service: currentService,
+        provider,
+        accountNumber,
+        amount,
+        currency,
+        method,
+        notes
+      }, () => {
+        executePayment({
+          service: currentService,
+          provider,
+          accountNumber,
+          customerId,
+          amount,
+          currency,
+          method,
+          notes,
+          saveService
+        });
+      });
+    }
+
+    function showConfirmationModal(data, onConfirm) {
+      const modal = document.getElementById('confirmation-modal');
+      const content = document.getElementById('modal-content');
+      
+      const serviceTitles = {
+        electricity: 'Electricidad',
+        water: 'Agua',
+        phone: 'Teléfono',
+        internet: 'Internet',
+        gas: 'Gas',
+        tv: 'Televisión'
+      };
+      
+      const methodNames = {
+        balance: 'Saldo REMEEX VISA',
+        card: 'Tarjeta de Débito',
+        transfer: 'Transferencia'
+      };
+      
+      content.innerHTML = `
+        <div style="background: var(--neutral-200); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-weight: 600;">Servicio:</span>
+            <span>${serviceTitles[data.service]} - ${data.provider.toUpperCase()}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-weight: 600;">Cuenta:</span>
+            <span>${data.accountNumber}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-weight: 600;">Monto:</span>
+            <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">${formatCurrency(data.amount, data.currency)}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 600;">Método:</span>
+            <span>${methodNames[data.method]}</span>
+          </div>
+        </div>
+        <div style="font-size: 0.9rem; color: var(--neutral-600);">
+          Al confirmar, se procesará inmediatamente el pago del servicio seleccionado.
+        </div>
+      `;
+      
+      modal.style.display = 'flex';
+      
+      document.getElementById('modal-confirm').onclick = () => {
+        modal.style.display = 'none';
+        onConfirm();
+      };
+    }
+
+    function executePayment(paymentData) {
+      const btn = document.querySelector('#service-payment-form button[type="submit"]');
+      const originalText = btn.innerHTML;
+
+      btn.innerHTML = '<div class="loading-spinner"></div> Procesando pago...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        // Deduct from balance if using REMEEX balance
+        if (paymentData.method === 'balance') {
+          const amountInBs = paymentData.currency === 'usd' ?
+            convertCurrency(paymentData.amount, 'usd', 'bs') : paymentData.amount;
+
+          const currentBs = toNumeric(currentUser.balance.bs) || 0;
+          const currentUsd = toNumeric(currentUser.balance.usd) || 0;
+          const amountInUsd = convertCurrency(amountInBs, 'bs', 'usd');
+
+          currentUser.balance.bs = Math.max(0, currentBs - amountInBs);
+          currentUser.balance.usd = Math.max(0, currentUsd - amountInUsd);
+          saveBalanceData();
+          updateBalanceDisplay();
+        }
+        
+        // Add to payments history
+        const payment = {
+          id: Date.now().toString(),
+          service: paymentData.service,
+          provider: paymentData.provider,
+          accountNumber: paymentData.accountNumber,
+          customerId: paymentData.customerId,
+          amount: paymentData.amount,
+          currency: paymentData.currency,
+          method: paymentData.method,
+          notes: paymentData.notes,
+          date: getCurrentDateTime(),
+          status: 'completed'
+        };
+        
+        paymentsHistory.unshift(payment);
+        savePaymentsHistory();
+        
+        // Reset form
+        hideServiceForm();
+        
+        // Show success
+        const serviceTitles = {
+          electricity: 'Electricidad',
+          water: 'Agua',
+          phone: 'Teléfono',
+          internet: 'Internet',
+          gas: 'Gas',
+          tv: 'Televisión'
+        };
+        
+        showToast('success', 'Pago Realizado', 
+          `Se pagó ${formatCurrency(paymentData.amount, paymentData.currency)} por ${serviceTitles[paymentData.service]}`);
+        
+        // Trigger confetti effect
+        setTimeout(() => {
+          if (typeof confetti === 'function') {
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 0.6 }
+            });
+          }
+        }, 500);
+        
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 3000);
+    }
+
+    function setupStorageListeners() {
+      window.addEventListener('storage', (event) => {
+        if (!event) return;
+        if (event.key === CONFIG.STORAGE_KEYS.BALANCE || event.key === CONFIG.SESSION_KEYS.BALANCE) {
+          loadUserData();
+          updateBalanceDisplay();
+        } else if (event.key === CONFIG.SESSION_KEYS.EXCHANGE_RATE) {
+          loadExchangeRate();
+          loadUserData();
+          updateBalanceDisplay();
+        }
+      });
+    }
+
+    function setupEventListeners() {
+      // Balance refresh
+      const refreshBtn = document.getElementById('balance-refresh-btn');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+          refreshBtn.classList.add('spinning');
+          loadExchangeRate();
+          loadUserData();
+          updateBalanceDisplay();
+          setTimeout(() => refreshBtn.classList.remove('spinning'), 600);
+        });
+      }
+      
+      // Service cards
+      document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const serviceType = card.dataset.service;
+          showServiceForm(serviceType);
+        });
+      });
+      
+      // Quick actions
+      document.getElementById('quick-electricity').addEventListener('click', () => showServiceForm('electricity'));
+      document.getElementById('quick-water').addEventListener('click', () => showServiceForm('water'));
+      document.getElementById('quick-phone').addEventListener('click', () => showServiceForm('phone'));
+      document.getElementById('quick-internet').addEventListener('click', () => showServiceForm('internet'));
+      
+      // Form actions
+      document.getElementById('close-form').addEventListener('click', hideServiceForm);
+      document.getElementById('consult-bill').addEventListener('click', consultBill);
+      document.getElementById('service-payment-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        processPayment();
+      });
+      
+      // Modal actions
+      document.getElementById('modal-close').addEventListener('click', () => {
+        document.getElementById('confirmation-modal').style.display = 'none';
+      });
+      
+      document.getElementById('modal-cancel').addEventListener('click', () => {
+        document.getElementById('confirmation-modal').style.display = 'none';
+      });
+    }
+    // Initialize application
+    function init() {
+      loadExchangeRate();
+      loadUserData();
+      loadPaymentsHistory();
+      updateBalanceDisplay();
+      setupEventListeners();
+      setupStorageListeners();
+    }
+
+    // Start the application
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <!-- Additional Scripts -->
+  <script>
+    // Enhanced functionality for services page
+    
+    // Auto-complete for account numbers based on service type
+    function setupAutoComplete() {
+      const accountInput = document.getElementById('account-number');
+      const serviceProvider = document.getElementById('service-provider');
+      
+      accountInput.addEventListener('input', function() {
+        const value = this.value;
+        const provider = serviceProvider.value;
+        
+        // Format account number based on provider
+        if (provider === 'corpoelec' && value.length > 0) {
+          // CORPOELEC format: 1234567890
+          this.value = value.replace(/\D/g, '').substring(0, 10);
+        } else if (provider.includes('movistar') && value.length > 0) {
+          // Phone format: 0414-1234567
+          let cleaned = value.replace(/\D/g, '');
+          if (cleaned.length >= 4) {
+            cleaned = cleaned.substring(0, 4) + '-' + cleaned.substring(4, 11);
+          }
+          this.value = cleaned;
+        }
+      });
+    }
+
+    // Smart bill amount suggestions
+    function generateBillSuggestions(serviceType, provider) {
+      const suggestions = {
+        electricity: {
+          corpoelec: [15000, 25000, 35000, 45000, 65000],
+          'empresa-privada': [35000, 55000, 75000, 95000, 125000]
+        },
+        water: {
+          hidroven: [8000, 12000, 18000, 25000, 35000],
+          'aguas-venezuela': [10000, 15000, 22000, 30000, 45000]
+        },
+        phone: {
+          movistar: [5000, 10000, 15000, 20000, 30000],
+          digitel: [4000, 8000, 12000, 18000, 25000],
+          movilnet: [3000, 6000, 10000, 15000, 20000]
+        },
+        internet: {
+          cantv: [12000, 18000, 25000, 35000, 50000],
+          inter: [45000, 65000, 85000, 120000, 180000],
+          netuno: [35000, 55000, 75000, 105000, 150000]
+        }
+      };
+      
+      return suggestions[serviceType]?.[provider] || [10000, 20000, 30000, 50000, 75000];
+    }
+
+    // Payment scheduling functionality
+    function setupPaymentScheduling() {
+      const scheduleCheckbox = document.createElement('input');
+      scheduleCheckbox.type = 'checkbox';
+      scheduleCheckbox.id = 'schedule-payment';
+      
+      const scheduleLabel = document.createElement('label');
+      scheduleLabel.innerHTML = `
+        <input type="checkbox" id="schedule-payment">
+        Programar pago automático mensual
+      `;
+      scheduleLabel.style.display = 'flex';
+      scheduleLabel.style.alignItems = 'center';
+      scheduleLabel.style.gap = '0.5rem';
+      scheduleLabel.style.fontSize = '0.85rem';
+      
+      const saveServiceGroup = document.getElementById('save-service').parentNode;
+      saveServiceGroup.parentNode.insertBefore(scheduleLabel, saveServiceGroup.nextSibling);
+    }
+
+    // Service usage analytics
+    function trackServiceUsage(serviceType, provider, amount) {
+      const usage = JSON.parse(localStorage.getItem('remeexServiceUsage') || '{}');
+      
+      if (!usage[serviceType]) usage[serviceType] = {};
+      if (!usage[serviceType][provider]) usage[serviceType][provider] = {
+        count: 0,
+        totalAmount: 0,
+        lastPayment: null
+      };
+      
+      usage[serviceType][provider].count++;
+      usage[serviceType][provider].totalAmount += amount;
+      usage[serviceType][provider].lastPayment = new Date().toISOString();
+      
+      localStorage.setItem('remeexServiceUsage', JSON.stringify(usage));
+    }
+
+    // Popular services suggestions
+    function showPopularServices() {
+      const usage = JSON.parse(localStorage.getItem('remeexServiceUsage') || '{}');
+      const popular = [];
+      
+      Object.keys(usage).forEach(service => {
+        Object.keys(usage[service]).forEach(provider => {
+          popular.push({
+            service,
+            provider,
+            count: usage[service][provider].count,
+            lastPayment: usage[service][provider].lastPayment
+          });
+        });
+      });
+      
+      popular.sort((a, b) => b.count - a.count);
+      return popular.slice(0, 3);
+    }
+
+    // Favorite services management
+    function toggleFavoriteService(serviceType, provider, accountNumber) {
+      const favorites = JSON.parse(localStorage.getItem('remeexFavoriteServices') || '[]');
+      const serviceKey = `${serviceType}-${provider}-${accountNumber}`;
+      
+      const existingIndex = favorites.findIndex(fav => fav.key === serviceKey);
+      
+      if (existingIndex >= 0) {
+        favorites.splice(existingIndex, 1);
+        showToast('info', 'Favorito Removido', 'El servicio se removió de favoritos');
+      } else {
+        favorites.push({
+          key: serviceKey,
+          service: serviceType,
+          provider,
+          accountNumber,
+          addedAt: new Date().toISOString()
+        });
+        showToast('success', 'Favorito Agregado', 'El servicio se agregó a favoritos');
+      }
+      
+      localStorage.setItem('remeexFavoriteServices', JSON.stringify(favorites));
+      renderFavoriteServices();
+    }
+
+    function renderFavoriteServices() {
+      const favorites = JSON.parse(localStorage.getItem('remeexFavoriteServices') || '[]');
+      
+      if (favorites.length === 0) return;
+      
+      const container = document.createElement('div');
+      container.className = 'recent-payments';
+      container.style.marginBottom = '2rem';
+      container.innerHTML = `
+        <div class="section-header">
+          <h3 class="section-title">
+            <i class="fas fa-star"></i>
+            Servicios Favoritos
+          </h3>
+        </div>
+        <div id="favorite-services-list"></div>
+      `;
+      
+      const servicesGrid = document.querySelector('.services-grid');
+      servicesGrid.parentNode.insertBefore(container, servicesGrid);
+      
+      const favoritesList = document.getElementById('favorite-services-list');
+      
+      favorites.forEach(favorite => {
+        const item = document.createElement('div');
+        item.className = 'payment-item';
+        item.innerHTML = `
+          <div class="payment-icon ${favorite.service}">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="payment-content">
+            <div class="payment-title">${favorite.provider.toUpperCase()}</div>
+            <div class="payment-details">Cuenta: ${favorite.accountNumber}</div>
+            <div class="payment-date">Favorito</div>
+          </div>
+          <button class="btn btn-outline btn-small" onclick="quickPayFavorite('${favorite.service}', '${favorite.provider}', '${favorite.accountNumber}')">
+            <i class="fas fa-bolt"></i> Pago Rápido
+          </button>
+        `;
+        favoritesList.appendChild(item);
+      });
+    }
+
+    function quickPayFavorite(service, provider, accountNumber) {
+      showServiceForm(service);
+      setTimeout(() => {
+        document.getElementById('service-provider').value = provider;
+        document.getElementById('account-number').value = accountNumber;
+        consultBill();
+      }, 100);
+    }
+
+    // Payment reminders
+    function setupPaymentReminders() {
+      const reminders = JSON.parse(localStorage.getItem('remeexPaymentReminders') || '[]');
+      const today = new Date();
+      
+      reminders.forEach(reminder => {
+        const reminderDate = new Date(reminder.date);
+        const daysDiff = Math.ceil((reminderDate - today) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff <= 3 && daysDiff >= 0) {
+          showToast('warning', 'Recordatorio de Pago', 
+            `Tu ${reminder.service} vence ${daysDiff === 0 ? 'hoy' : `en ${daysDiff} días`}`);
+        }
+      });
+    }
+
+    // Service outage notifications
+    function checkServiceOutages() {
+      // Simulate service outages (in real app, this would come from API)
+      const outages = [
+        {
+          service: 'electricity',
+          provider: 'corpoelec',
+          message: 'Mantenimiento programado el 25/01/2024',
+          severity: 'info'
+        },
+        {
+          service: 'internet',
+          provider: 'cantv',
+          message: 'Intermitencias reportadas en Caracas',
+          severity: 'warning'
+        }
+      ];
+      
+      outages.forEach(outage => {
+        setTimeout(() => {
+          showToast(outage.severity, 'Aviso de Servicio', 
+            `${outage.provider.toUpperCase()}: ${outage.message}`);
+        }, Math.random() * 3000);
+      });
+    }
+
+    // Enhanced initialization
+    function enhancedInit() {
+      init();
+      setupAutoComplete();
+      setupPaymentScheduling();
+      renderFavoriteServices();
+      setupPaymentReminders();
+      
+      // Check for service outages after 5 seconds
+      setTimeout(checkServiceOutages, 5000);
+    }
+
+    // Override the original init
+    document.removeEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', enhancedInit);
+
+    // Export functions for global access
+    window.quickPayFavorite = quickPayFavorite;
+    window.toggleFavoriteService = toggleFavoriteService;
+  </script>
+
+  <!-- Service Worker for offline functionality -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(function(registration) {
+            console.log('ServiceWorker registration successful');
+          }, function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
+
+  <!-- Tawk.to Chat Integration -->
+  <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/68a44855d541a4192285c373/1j30rl42b';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+  </script>
+
+  <!-- Crisp Chat Integration (Alternative) -->
+  <script type="text/javascript">
+    window.$crisp=[];
+    window.CRISP_WEBSITE_ID="c2ba36cb-40b6-496f-b3fa-9a494d1f0d33";
+    (function(){
+      d=document;s=d.createElement("script");
+      s.src="https://client.crisp.chat/l.js";s.async=1;
+      d.getElementsByTagName("head")[0].appendChild(s);
+    })();
+  </script>
+
+</body>
+</html>

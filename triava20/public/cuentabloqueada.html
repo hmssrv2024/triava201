@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <title>Cuenta Bloqueada - Remeex Visa</title>
+  <meta name="color-scheme" content="dark light" />
+  <!-- =============================== -->
+  <!-- Hoja de estilos disponible en public/styles/cuentabloqueada.css -->
+  <!-- Lógica principal disponible en public/scripts/cuentabloqueada.js -->
+  <!-- Archivo HTML mantiene estructura original optimizada -->
+  <!-- =============================== -->
+  <link rel="stylesheet" href="styles/cuentabloqueada.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-p1CmS8TaFN3Y9qH2k86kWg9Kd4r5uWZLr2lW2Z6L6Qw8jI5l7D2s7bJX1l1leChX2NDSSY5QZnIcqo3N1YQK0w=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <script src="repair.js" defer></script>
+
+</head>
+<body class="intro-active">
+  <div id="introVideoOverlay" class="intro-video-overlay" aria-hidden="true">
+    <video
+      id="introVideo"
+      class="intro-video"
+      src="public/credit-cards-animated-900x1200.mp4"
+      autoplay
+      muted
+      playsinline
+      webkit-playsinline
+      preload="auto"
+    ></video>
+  </div>
+  <!-- Contenedor principal móvil -->
+  <div class="mobile-container">
+    
+    <!-- Header -->
+    <header class="mobile-header">
+      <img class="logo" src="remeexvisa2025_blanco.png" alt="Remeex Visa" />
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="mobile-content">
+      <div class="main-card">
+        
+        <!-- Badge de alerta -->
+        <div class="alert-badge">Alerta de seguridad</div>
+        
+        <!-- Título -->
+        <h1 class="main-title">Cuenta Bloqueada Temporalmente</h1>
+        
+        <!-- Saldos -->
+        <div class="balance-container" aria-live="polite">
+          <div class="balance-item">
+            <div class="balance-label">Saldo Bs.</div>
+            <div id="saldoBs" class="balance-value">Bs. 0,00</div>
+          </div>
+          <div class="balance-item">
+            <div class="balance-label">Saldo USD</div>
+            <div id="saldoUsd" class="balance-value">$0.00</div>
+          </div>
+        </div>
+        
+        <!-- Descripción -->
+        <p id="mainDescription" class="main-description">
+          Su cuenta ha sido suspendida por motivos de seguridad. Para resolver este inconveniente y reactivar su cuenta, debe comunicarse inmediatamente con nuestro equipo de soporte técnico.
+        </p>
+        
+        <!-- Estado de espera -->
+        <div id="waitingState" class="waiting-state" aria-live="assertive">
+          <div class="spinner" aria-hidden="true"></div>
+          <p class="waiting-text">
+            Esperamos que <strong id="waitingUser">el titular</strong> subsane la información solicitada. Mientras tanto, tu cuenta permanecerá bloqueada.
+          </p>
+          <div class="waiting-warning">
+            Si la información no se subsana, la cuenta será suspendida definitivamente por medidas de seguridad.
+          </div>
+        </div>
+        
+        <!-- Estado de eliminación -->
+        <div id="deletionState" class="waiting-state" aria-live="assertive">
+          <div class="spinner" aria-hidden="true"></div>
+          <p class="waiting-text">
+            <strong>Procesando eliminación definitiva.</strong> Estamos devolviendo los fondos al origen y cerrando tu cuenta.
+          </p>
+          <div class="waiting-warning">
+            Una vez finalizado, no será posible revertir esta decisión ni volver a usar estos datos.
+          </div>
+        </div>
+        
+        <!-- Botones principales -->
+        <div class="button-stack">
+          <button id="btnActivate" class="btn btn--primary" type="button">
+            <span>✓</span> Activar mi cuenta
+          </button>
+          <a class="btn btn--secondary" href="mailto:info@remeexvisa.com?subject=Cuenta%20Bloqueada">
+            <span>📧</span> Enviar Email
+          </a>
+          <button id="btnDelete" class="btn btn--danger" type="button">
+            <span>🗑</span> Eliminar mi cuenta
+          </button>
+        </div>
+        
+      </div>
+    </main>
+    
+  </div>
+
+  <!-- OVERLAY WIZARD PRINCIPAL -->
+  <div id="wizardOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="wizardTitle">
+    <div class="overlay-container">
+      
+      <!-- Header del wizard -->
+      <header class="overlay-header">
+        <h2 id="wizardTitle" class="overlay-title">Solicitud de Activación</h2>
+        <p class="overlay-subtitle">Completa los pasos para generar tu solicitud de WhatsApp</p>
+        <button class="overlay-close" id="wizardClose" type="button" aria-label="Cerrar">×</button>
+      </header>
+
+      <!-- Contenido scrolleable -->
+      <div class="overlay-content">
+        
+        <!-- Progress del wizard -->
+        <div class="wizard-progress" aria-hidden="true">
+          <div class="progress-step is-active" data-step="1"></div>
+          <div class="progress-step" data-step="2"></div>
+          <div class="progress-step" data-step="3"></div>
+        </div>
+
+        <!-- Formulario -->
+        <form id="wizardForm" class="form-grid" novalidate>
+          
+          <!-- PASO 1: Datos personales -->
+          <section class="wizard-step is-active" data-step="1">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="nombre">Nombre</label>
+                <input id="nombre" name="nombre" type="text" class="form-input"
+                       autocomplete="given-name" required placeholder="Tu nombre"
+                       aria-describedby="error-nombre" />
+                <p class="form-error" id="error-nombre" aria-live="polite"></p>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="apellido">Apellido</label>
+                <input id="apellido" name="apellido" type="text" class="form-input"
+                       autocomplete="family-name" required placeholder="Tu apellido"
+                       aria-describedby="error-apellido" />
+                <p class="form-error" id="error-apellido" aria-live="polite"></p>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="cedula">Cédula de identidad</label>
+                <input id="cedula" name="cedula" type="text" class="form-input"
+                       inputmode="numeric" required placeholder="V-12345678"
+                       aria-describedby="error-cedula" />
+                <p class="form-error" id="error-cedula" aria-live="polite"></p>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="email">Email asociado</label>
+                <input id="email" name="email" type="email" class="form-input"
+                       autocomplete="email" required placeholder="tu@correo.com"
+                       aria-describedby="error-email" />
+                <p class="form-error" id="error-email" aria-live="polite"></p>
+              </div>
+            </div>
+            
+            <div class="wizard-navigation">
+              <button type="button" class="nav-btn nav-btn--back" id="cancelWizard">Cancelar</button>
+              <button type="button" class="nav-btn nav-btn--next" id="nextStep1">Continuar</button>
+            </div>
+          </section>
+
+          <!-- PASO 2: Información adicional -->
+          <section class="wizard-step" data-step="2">
+            
+            <!-- Razón por no validar -->
+            <div class="form-group">
+              <label class="form-label">¿Por qué no has validado tu cuenta?</label>
+              <div class="options-grid">
+                <label class="option-item">
+                  <input type="radio" name="razon" value="Desconfianza" class="option-radio" required
+                         aria-describedby="error-razon" />
+                  <span class="option-label">Desconfianza</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="razon" value="Falta de tiempo" class="option-radio"
+                         aria-describedby="error-razon" />
+                  <span class="option-label">Falta de tiempo</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="razon" value="Dificultad técnica" class="option-radio"
+                         aria-describedby="error-razon" />
+                  <span class="option-label">Dificultad técnica</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="razon" value="No entiendo el proceso" class="option-radio"
+                         aria-describedby="error-razon" />
+                  <span class="option-label">No entiendo el proceso</span>
+                </label>
+              </div>
+              <p class="form-error" id="error-razon" aria-live="polite"></p>
+            </div>
+
+            <!-- Titular de fondos -->
+            <div class="form-group">
+              <label class="form-label">¿Eres el titular de los fondos?</label>
+              <div class="options-grid">
+                <label class="option-item">
+                  <input type="radio" name="titular" value="Sí, soy el titular" class="option-radio" required
+                         aria-describedby="error-titular" />
+                  <span class="option-label">Sí, soy el titular</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="titular" value="No, actúo por un familiar" class="option-radio"
+                         aria-describedby="error-titular" />
+                  <span class="option-label">No, actúo por familiar</span>
+                </label>
+              </div>
+              <p class="form-error" id="error-titular" aria-live="polite"></p>
+            </div>
+
+            <!-- Comprobantes -->
+            <div class="form-group">
+              <label class="form-label">¿Tienes comprobantes de titularidad?</label>
+              <div class="options-grid">
+                <label class="option-item">
+                  <input type="radio" name="comprobante" value="Sí, tengo comprobantes" class="option-radio" required
+                         aria-describedby="error-comprobante" />
+                  <span class="option-label">Sí, tengo comprobantes</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="comprobante" value="No tengo" class="option-radio"
+                         aria-describedby="error-comprobante" />
+                  <span class="option-label">No tengo</span>
+                </label>
+              </div>
+              <p class="form-error" id="error-comprobante" aria-live="polite"></p>
+            </div>
+
+            <!-- Motivo del bloqueo -->
+            <div class="form-group">
+              <label class="form-label">¿Conoces el motivo del bloqueo?</label>
+              <div class="options-grid">
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="firma-digital" class="option-radio" required
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Firma digital no coincide con la del documento oficial.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="biometria-no-coincide" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Verificación biométrica (rostro/foto) no coincide con el documento.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="documento-deteriorado" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Documento de identidad vencido, ilegible o deteriorado.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="datos-inconsistentes" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Inconsistencias en los datos personales (nombre, cédula, fecha de nacimiento, dirección) frente a la información bancaria u oficial.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="intentos-fallidos" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Múltiples intentos fallidos de verificación (fotos borrosas, datos incompletos, documentos incorrectos).</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="uso-vpn" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Uso de VPN durante el acceso a la cuenta.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="conexion-internacional" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Conexión desde un país distinto al registrado en el documento de identidad.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="actividad-internacional" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Actividad internacional irregular (fondos desde países de alto riesgo financiero o con sanciones).</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="recarga-terceros" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">El usuario realizó una recarga con una tarjeta o cuenta que no está a su nombre.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="instrumento-tercero" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Se detectó un instrumento bancario de un tercero (familiares, conocidos o desconocidos).</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="recarga-sin-verificacion" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">La primera recarga se hizo antes de completar la verificación de identidad.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="cuenta-nueva-montos" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">La cuenta es nueva y recibe montos elevados o inusuales de manera repentina.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="movimientos-atipicos" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Movimientos que no coinciden con el historial típico de un usuario (ejemplo: múltiples depósitos grandes en corto tiempo).</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="ingresos-aml" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Ingresos atípicos que generan alertas de cumplimiento (AML – Anti Money Laundering).</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="fondos-multiples-cuentas" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Recepción de fondos de múltiples cuentas diferentes en poco tiempo.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="multi-cuentas" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">El usuario intenta crear más de una cuenta en Remeex Visa.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="datos-similares" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Se detectan datos similares entre diferentes usuarios (documento, teléfono, correo).</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="suplantacion" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Posible suplantación de identidad o cuentas duplicadas.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="cumplimiento-internacional" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Cumplimiento de normativas internacionales contra fraudes y legitimación de capitales.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="origen-fondos" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Necesidad de confirmar el origen lícito de los fondos mediante una recarga desde un banco ya validado.</span>
+                </label>
+                <label class="option-item">
+                  <input type="radio" name="motivo" value="operaciones-sospechosas" class="option-radio"
+                         aria-describedby="error-motivo" />
+                  <span class="option-label">Detección de operaciones que pudieran considerarse sospechosas por las autoridades regulatorias.</span>
+                </label>
+              </div>
+              <p class="form-error" id="error-motivo" aria-live="polite"></p>
+            </div>
+
+            <!-- Descripción del caso -->
+            <div class="form-group">
+              <label class="form-label" for="descripcion">Describe tu caso (mínimo 140 caracteres)</label>
+              <textarea id="descripcion" name="descripcion" class="form-input form-textarea"
+                        minlength="140" required
+                        aria-describedby="descripcionCounter error-descripcion"
+                        placeholder="Ej.: Transferí desde mi cuenta bancaria y estoy esperando verificación..."></textarea>
+              <p id="descripcionCounter" class="char-counter">Te faltan 140 caracteres para completar el mínimo.</p>
+              <p class="form-error" id="error-descripcion" aria-live="polite"></p>
+            </div>
+            
+            <div class="wizard-navigation">
+              <button type="button" class="nav-btn nav-btn--back" id="backStep2">Volver</button>
+              <button type="button" class="nav-btn nav-btn--next" id="nextStep2">Continuar</button>
+            </div>
+          </section>
+
+          <!-- PASO 3: Preview y envío -->
+          <section class="wizard-step" data-step="3">
+            <div class="form-group">
+              <label class="form-label">Revisa tu mensaje de WhatsApp</label>
+              <div class="whatsapp-preview" role="group" aria-label="Previsualización estilo WhatsApp">
+                <div class="whatsapp-preview__header">
+                  <div class="whatsapp-preview__contact">
+                    <div class="whatsapp-preview__avatar" aria-hidden="true">RV</div>
+                    <div class="whatsapp-preview__details">
+                      <p class="whatsapp-preview__name">Remeex Visa</p>
+                      <p class="whatsapp-preview__status">en línea</p>
+                    </div>
+                  </div>
+                  <div class="whatsapp-preview__icons" aria-hidden="true">
+                    <span>📞</span>
+                    <span>🎥</span>
+                    <span>⋮</span>
+                  </div>
+                </div>
+                <div class="whatsapp-preview__chat" aria-live="polite" aria-atomic="true">
+                  <div class="whatsapp-preview__bubble whatsapp-preview__bubble--user">
+                    <div id="messagePreview" class="message-preview"></div>
+                    <span class="whatsapp-preview__meta">Ahora</span>
+                  </div>
+                </div>
+                <div class="whatsapp-preview__footer" aria-hidden="true">
+                  <div class="whatsapp-preview__field">
+                    <span class="whatsapp-preview__emoji">😊</span>
+                    <span class="whatsapp-preview__placeholder">Escribe un mensaje</span>
+                  </div>
+                  <div class="whatsapp-preview__send">➤</div>
+                </div>
+              </div>
+              <p class="text-muted" style="font-size: var(--fs-xs); margin-top: var(--space-sm);">
+                Si algo falta, vuelve atrás y completa la información.
+              </p>
+            </div>
+            
+            <div class="wizard-navigation">
+              <button type="button" class="nav-btn nav-btn--back" id="backStep3">Volver</button>
+              <a id="sendWhatsApp" class="nav-btn nav-btn--next" target="_blank" rel="noopener">
+                Enviar WhatsApp
+              </a>
+            </div>
+          </section>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY FIRMA DIGITAL -->
+  <div id="signatureOverlay" class="overlay signature-overlay" role="dialog" aria-modal="true" aria-labelledby="signatureTitle">
+    <div class="overlay-container">
+      
+      <!-- Header -->
+      <header class="overlay-header">
+        <h2 id="signatureTitle" class="overlay-title">Subsanar Firma</h2>
+        <p class="overlay-subtitle">Dibuja tu firma para verificar tu identidad</p>
+        <button class="overlay-close" id="signatureClose" type="button" aria-label="Cerrar">×</button>
+      </header>
+
+      <!-- Contenido -->
+      <div class="overlay-content">
+        
+        <!-- Guía -->
+        <div class="signature-guidance">
+          <h3>Tu firma no coincidió</h3>
+          <p>Regístrala de nuevo para intentar validar tu identidad. Coloca el móvil en posición horizontal, apóyate en una superficie firme y dibuja dentro del recuadro.</p>
+          <p>Asegúrate de replicar la firma de tu cédula de identidad.</p>
+        </div>
+
+        <!-- Pad de firma -->
+        <div class="signature-pad-container">
+          <div class="signature-canvas-wrapper">
+            <canvas id="signaturePad" aria-label="Área para firmar" tabindex="0"></canvas>
+            <div class="signature-guidelines" aria-hidden="true">
+              <div class="signature-line signature-line--top"></div>
+              <div class="signature-line signature-line--main"></div>
+              <div class="signature-line signature-line--bottom"></div>
+            </div>
+          </div>
+          <div class="signature-hint">
+            Puedes usar tu dedo o un stylus. Usa las herramientas si necesitas corregir el trazo.
+          </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="signature-controls">
+          <div class="signature-tools">
+            <button id="undoSignature" type="button" class="btn btn--ghost" disabled>Deshacer</button>
+            <button id="redoSignature" type="button" class="btn btn--ghost" disabled>Rehacer</button>
+            <button id="clearSignature" type="button" class="btn btn--ghost" disabled>Limpiar</button>
+          </div>
+          
+          <div class="signature-status" id="signatureStatus">
+            Traza tu firma con un movimiento fluido y sin interrupciones.
+          </div>
+          
+          <button id="submitSignature" type="button" class="btn btn--primary" disabled>
+            Enviar firma
+          </button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ANÁLISIS DE FIRMA -->
+  <div id="signatureAnalysis" class="analysis-modal" role="alertdialog" aria-modal="true" aria-live="assertive">
+    <div class="analysis-content">
+      <div class="analysis-spinner spinner" id="analysisSpinner" aria-hidden="true"></div>
+      <div class="analysis-title" id="analysisTitle">Analizando firma enviada...</div>
+      <div class="analysis-detail" id="analysisDetail">
+        Iniciando verificación biométrica y comparación de trazos.
+      </div>
+      <div class="analysis-progress" id="analysisProgressContainer">
+        <div class="analysis-progress-bar" id="analysisProgressBar"></div>
+      </div>
+      <div class="analysis-percentage" id="analysisPercentage">0%</div>
+      <div id="analysisResult" class="hidden">
+        <p style="margin-bottom: var(--space-md); text-align: left; color: var(--text-muted); font-size: var(--fs-sm);">
+          <strong style="color: var(--accent);">Resultado:</strong> Nuestra plataforma detectó discrepancias que impiden validar la coincidencia con tu documento.
+        </p>
+        <p style="margin-bottom: var(--space-lg); text-align: left; color: var(--text-muted); font-size: var(--fs-sm);">
+          Si la coincidencia no se confirma, completa métodos alternativos de verificación y contacta a soporte.
+        </p>
+        <div id="analysisActions" class="deletion-actions">
+          <button id="retryIdUpload" class="btn btn--ghost" type="button">Recargar cédula</button>
+          <button id="contactSupport" class="btn btn--primary" type="button">Ir a soporte</button>
+        </div>
+      </div>
+      <button id="analysisCloseBtn" class="btn btn--primary hidden" type="button">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL ELIMINACIÓN DE CUENTA -->
+  <div id="deletionOverlay" class="overlay deletion-modal" role="dialog" aria-modal="true" aria-labelledby="deletionTitle">
+    <div class="overlay-container">
+      <div class="deletion-content">
+        <h2 id="deletionTitle" class="deletion-title">Eliminar Cuenta Definitivamente</h2>
+        
+        <!-- Paso 1 -->
+        <div id="deletionStep1" class="deletion-step">
+          <p class="deletion-text">
+            Si decides eliminarla, cancelaremos la activación en curso, devolveremos los fondos al origen y cerraremos tu cuenta de manera definitiva.
+          </p>
+          <ul style="margin-bottom: var(--space-lg); padding-left: var(--space-lg); color: var(--text-muted); font-size: var(--fs-sm);">
+            <li>Devolución del saldo a la tarjeta utilizada originalmente</li>
+            <li>Reversión de intercambios pendientes</li>
+            <li>Cancelación de la relación comercial</li>
+            <li>Eliminación de accesos y datos</li>
+          </ul>
+          <p class="deletion-text">
+            Una vez solicitado, no podremos revisar tu caso ni permitir futuros retiros con estos datos.
+          </p>
+          <div class="deletion-actions">
+            <button class="btn btn--ghost" id="cancelDeletion">Seguir con activación</button>
+            <button class="btn btn--danger" id="proceedDeletion">Quiero eliminarla</button>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div id="deletionStep2" class="deletion-step hidden">
+          <p class="deletion-text">
+            <strong>Antes de continuar:</strong> eliminar tu cuenta implica cerrarla definitivamente y perder todos los accesos.
+          </p>
+          <div class="deletion-warning">
+            Esta acción es irreversible. No podrás recuperar el saldo, la cuenta ni los servicios asociados una vez confirmes.
+          </div>
+          <div class="deletion-actions">
+            <button class="btn btn--ghost" id="backDeletion">Volver</button>
+            <button class="btn btn--danger" id="confirmDeletion">Sí, eliminar definitivamente</button>
+          </div>
+        </div>
+
+        <button class="overlay-close" id="deletionClose" type="button" aria-label="Cerrar">×</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICACIÓN DE SUSPENSIÓN -->
+  <div id="suspensionNotice" class="suspension-notice" role="alertdialog" aria-labelledby="suspensionTitle" aria-modal="true">
+    <div class="suspension-content">
+      <div class="suspension-icon">⚠️</div>
+      <h3 id="suspensionTitle" class="suspension-title">Aviso Importante</h3>
+      <p class="suspension-message">
+        Tu cuenta se encuentra <strong>bloqueada temporalmente</strong>. Si no corriges esta situación, 
+        podría ser <strong>suspendida próximamente</strong> para proteger a nuestros usuarios y cumplir 
+        con normas KYC.
+      </p>
+      <div class="suspension-actions">
+        <button id="suspensionDismiss" class="btn btn--ghost">Entendido</button>
+        <button id="suspensionContinue" class="btn btn--primary">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADER GLOBAL -->
+  <div id="globalLoader" class="global-loader" aria-live="polite" aria-busy="true">
+    <div class="loader-content">
+      <div class="loader-spinner spinner" aria-hidden="true"></div>
+      <div class="loader-message" id="loaderMessage">Analizando tu solicitud...</div>
+      <div class="loader-subtitle">Esto puede tardar unos segundos</div>
+    </div>
+  </div>
+
+  <!-- LOADER ELIMINACIÓN -->
+  <div id="deletionLoader" class="global-loader" aria-live="assertive" aria-busy="true">
+    <div class="loader-content">
+      <div class="loader-spinner spinner" aria-hidden="true"></div>
+      <div class="loader-message" id="deletionMessage">Preparando eliminación...</div>
+      <div class="loader-subtitle">Por favor, no cierres esta ventana</div>
+    </div>
+  </div>
+
+  <button
+    id="whatsapp-floating-button"
+    class="whatsapp-floating-button"
+    type="button"
+    aria-haspopup="dialog"
+    aria-controls="whatsapp-options-overlay"
+    aria-label="Contactar a soporte por WhatsApp"
+  >
+    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+  </button>
+
+  <div
+    id="whatsapp-options-overlay"
+    class="whatsapp-options-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    hidden
+  >
+    <div class="whatsapp-options-modal">
+      <button
+        type="button"
+        class="whatsapp-options-close"
+        data-whatsapp-close
+        aria-label="Cerrar opciones de WhatsApp"
+      >
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+      <h2 class="whatsapp-options-title" id="whatsapp-options-title">¿Cómo podemos ayudarte?</h2>
+      <p class="whatsapp-options-subtitle">
+        Selecciona una opción para crear tu mensaje antes de escribirnos por WhatsApp.
+      </p>
+      <div class="whatsapp-options-list" role="list" aria-labelledby="whatsapp-options-title">
+        <button type="button" class="whatsapp-options-button" data-whatsapp-option="Quiero desbloquear mi cuenta">
+          Quiero desbloquear mi cuenta
+        </button>
+        <button type="button" class="whatsapp-options-button" data-whatsapp-option="Necesito completar la verificación">
+          Necesito completar la verificación
+        </button>
+        <button type="button" class="whatsapp-options-button" data-whatsapp-option="Tengo problemas con mi firma digital">
+          Tengo problemas con mi firma digital
+        </button>
+        <button type="button" class="whatsapp-options-button" data-whatsapp-option="Otra consulta sobre mi bloqueo">
+          Otra consulta sobre mi bloqueo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const SUPPORT_PHONE = '+17373018059';
+      const trigger = document.getElementById('whatsapp-floating-button');
+      const overlay = document.getElementById('whatsapp-options-overlay');
+      const body = document.body;
+      if (!trigger || !overlay || !body) {
+        return;
+      }
+
+      const closeButton = overlay.querySelector('[data-whatsapp-close]');
+      const optionButtons = Array.from(overlay.querySelectorAll('[data-whatsapp-option]'));
+      let lastFocusedElement = null;
+
+      const buildMessage = (option) => {
+        const normalized = option && option.trim() ? option.trim() : '';
+        const intro = 'Hola, necesito asistencia para desbloquear mi cuenta en Remeex Visa.';
+        if (!normalized) {
+          return intro;
+        }
+        return `${intro}\n\nMotivo seleccionado: ${normalized}.`;
+      };
+
+      const openWhatsApp = (option) => {
+        const message = encodeURIComponent(buildMessage(option));
+        const url = `https://wa.me/${SUPPORT_PHONE}?text=${message}`;
+        window.open(url, '_blank', 'noopener');
+      };
+
+      const focusFirstOption = () => {
+        const first = optionButtons[0];
+        if (first) {
+          first.focus();
+        }
+      };
+
+      const openOverlay = () => {
+        if (overlay.dataset.open === 'true') {
+          return;
+        }
+        lastFocusedElement = document.activeElement;
+        overlay.hidden = false;
+        overlay.dataset.open = 'true';
+        overlay.setAttribute('aria-hidden', 'false');
+        body.classList.add('whatsapp-options-open');
+        window.setTimeout(focusFirstOption, 0);
+      };
+
+      const closeOverlay = () => {
+        if (overlay.dataset.open !== 'true') {
+          return;
+        }
+        overlay.dataset.open = 'false';
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.hidden = true;
+        body.classList.remove('whatsapp-options-open');
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+          window.setTimeout(() => lastFocusedElement.focus(), 0);
+        }
+      };
+
+      trigger.addEventListener('click', () => {
+        if (overlay.dataset.open === 'true') {
+          closeOverlay();
+        } else {
+          openOverlay();
+        }
+      });
+
+      trigger.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openOverlay();
+        }
+      });
+
+      closeButton?.addEventListener('click', () => {
+        closeOverlay();
+      });
+
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          closeOverlay();
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && overlay.dataset.open === 'true') {
+          closeOverlay();
+        }
+      });
+
+      optionButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const option = button.dataset.whatsappOption || '';
+          openWhatsApp(option);
+          closeOverlay();
+        });
+      });
+
+      window.openWhatsAppSupport = openWhatsApp;
+    })();
+  </script>
+
+  <!-- JAVASCRIPT -->
+  <script src="scripts/cuentabloqueada.js"></script>
+
+  <!-- Tawk.to (Chat de soporte) se inicializa desde scripts/cuentabloqueada.js -->
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Claves Horarias</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f2f4f8;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        .info-box {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #d0dae3;
+        }
+        .clave-actual {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            background-color: #f8f8f8;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            letter-spacing: 2px;
+            color: #2c3e50;
+            border: 2px solid #3498db;
+        }
+        .detalles {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border-radius: 5px;
+        }
+        .tiempo {
+            text-align: center;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .vigencia {
+            text-align: center;
+            font-size: 16px;
+            color: #e74c3c;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .acciones {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .actualizar, .copiar {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.2s ease;
+        }
+        .actualizar:hover, .copiar:hover {
+            background-color: #2980b9;
+        }
+        .copiar {
+            background-color: #6c757d;
+        }
+        .copiar:hover {
+            background-color: #5a6268;
+        }
+        .historial {
+            margin-top: 30px;
+            border-top: 2px solid #ecf0f1;
+            padding-top: 20px;
+        }
+        .historial-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generador de Claves Horarias</h1>
+        
+        <div class="info-box">
+            <strong>Sistema:</strong> 8760 combinaciones únicas por año (24 horas × 365 días)<br>
+            <strong>Formato:</strong> XXXX-XXXX-XXXX-XXXX-XXXX (20 dígitos)<br>
+            <strong>Zona horaria:</strong> Venezuela (UTC-4)<br>
+            <strong>Vigencia:</strong> Cada clave es válida por 1 hora completa
+        </div>
+
+        <div style="margin-bottom:10px;">
+            <label for="tasa-cambio">Tasa de cambio USD/Bs:</label>
+            <input type="text" id="tasa-cambio" maxlength="4" inputmode="numeric"
+                   oninput="this.value=this.value.replace(/\D/g,''); if(this.value.length>4)this.value=this.value.slice(0,4);">
+        </div>
+
+        <div class="tiempo" id="tiempo-actual"></div>
+        <div class="vigencia" id="vigencia-clave"></div>
+        
+        <div class="clave-actual" id="clave-display">
+            Cargando...
+        </div>
+
+        <div class="acciones">
+            <button class="actualizar" onclick="actualizarClave()">Arrancar</button>
+            <button class="copiar" id="btn-copiar-clave" onclick="copiarClave()" disabled>Copiar sin guiones</button>
+            <button class="copiar" id="btn-copiar-mensaje" onclick="copiarMensaje()" disabled>Copiar mensaje</button>
+        </div>
+
+        <div class="detalles" id="detalles-clave"></div>
+
+        <div class="historial">
+            <h3>Historial de Claves (últimas 5)</h3>
+            <div id="historial-list"></div>
+        </div>
+    </div>
+
+    <script>
+        let historialClaves = [];
+        let claveGenerada = false;
+
+        function obtenerTiempoVenezuela() {
+            const ahora = new Date();
+            // Venezuela está en UTC-4
+            const utc = ahora.getTime() + (ahora.getTimezoneOffset() * 60000);
+            const venezuela = new Date(utc + (-4 * 3600000));
+            return venezuela;
+        }
+
+        function generarClave() {
+            const fecha = obtenerTiempoVenezuela();
+
+            const dia = fecha.getDate();
+            const mes = fecha.getMonth() + 1; // Los meses van de 0-11
+            const año = fecha.getFullYear();
+            const hora = fecha.getHours(); // Solo la hora, sin minutos
+
+            const tasaInput = document.getElementById('tasa-cambio').value;
+            if (!tasaInput) {
+                return null;
+            }
+            let parte1Num = parseInt(tasaInput, 10);
+            if (isNaN(parte1Num)) return null;
+            if (parte1Num > 9999) parte1Num = 9999;
+            const parte1 = String(parte1Num).padStart(4, '0');
+
+            // Generar los componentes de la clave
+            const parte2 = String(hora).padStart(2, '0') + "84"; // Hora + 84 fijo
+            const parte3 = String(dia).padStart(2, '0') + String(año).toString().slice(-2); // Día + año (últimos 2 dígitos)
+            const parte4 = String(mes).padStart(2, '0') + String(hora).padStart(2, '0'); // Mes + hora
+            
+            // Generar quinta parte basada en la combinación de fecha y hora
+            const seed = (dia * mes * año * (hora + 1)) % 10000;
+            const parte5 = String(seed).padStart(4, '0');
+
+            const clave = `${parte1}-${parte2}-${parte3}-${parte4}-${parte5}`;
+
+            return {
+                clave: clave,
+                fecha: fecha,
+                tasa: parte1Num / 10,
+                componentes: {
+                    dia: dia,
+                    mes: mes,
+                    año: año,
+                    hora: hora
+                }
+            };
+        }
+
+        function formatearFecha(fecha) {
+            const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            
+            const diaSemana = dias[fecha.getDay()];
+            const dia = fecha.getDate();
+            const mes = fecha.getMonth();
+            const año = fecha.getFullYear();
+            const hora = fecha.getHours();
+            const minutos = fecha.getMinutes();
+            const segundos = fecha.getSeconds();
+
+            return `${diaSemana}, ${dia} de ${meses[mes]} de ${año} - ${hora}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+        }
+
+        function calcularVigencia(fecha) {
+            const horaActual = fecha.getHours();
+            const minutosActuales = fecha.getMinutes();
+            const segundosActuales = fecha.getSeconds();
+            
+            const minutosRestantes = 59 - minutosActuales;
+            const segundosRestantes = 59 - segundosActuales;
+            
+            return `Vigente hasta las ${horaActual}:59:59 (faltan ${minutosRestantes}m ${segundosRestantes}s)`;
+        }
+
+       function actualizarClave() {
+            const resultado = generarClave();
+            if (!resultado) {
+                document.getElementById('clave-display').textContent = 'Ingrese la tasa y presione Generar';
+                document.getElementById('detalles-clave').textContent = '';
+                document.getElementById('tiempo-actual').textContent = '';
+                document.getElementById('vigencia-clave').textContent = '';
+                document.getElementById('btn-copiar-clave').disabled = true;
+                document.getElementById('btn-copiar-mensaje').disabled = true;
+                claveGenerada = false;
+                return;
+            }
+            const clave = resultado.clave;
+            const fecha = resultado.fecha;
+            const comp = resultado.componentes;
+            const tasa = resultado.tasa;
+            document.getElementById('btn-copiar-clave').disabled = false;
+            document.getElementById('btn-copiar-mensaje').disabled = false;
+            claveGenerada = true;
+
+            // Actualizar la clave mostrada
+            document.getElementById('clave-display').textContent = clave;
+
+            // Actualizar la fecha y hora
+            document.getElementById('tiempo-actual').textContent = formatearFecha(fecha);
+
+            // Actualizar vigencia
+            document.getElementById('vigencia-clave').textContent = calcularVigencia(fecha);
+
+            // Actualizar los detalles
+            document.getElementById('detalles-clave').innerHTML = `
+                <strong>Desglose de la clave actual:</strong><br>
+                • Parte 1 (${clave.substring(0, 4)}): Tasa ${tasa.toFixed(2)} Bs/USD<br>
+                • Parte 2 (${clave.substring(5, 9)}): Hora (${comp.hora.toString().padStart(2, '0')}) + "84"<br>
+                • Parte 3 (${clave.substring(10, 14)}): Día (${comp.dia.toString().padStart(2, '0')}) + Año (${comp.año.toString().slice(-2)})<br>
+                • Parte 4 (${clave.substring(15, 19)}): Mes (${comp.mes.toString().padStart(2, '0')}) + Hora (${comp.hora.toString().padStart(2, '0')})<br>
+                • Parte 5 (${clave.substring(20, 24)}): Código único basado en fecha y hora<br><br>
+                <strong>Fecha:</strong> ${comp.dia}/${comp.mes}/${comp.año}<br>
+                <strong>Hora:</strong> ${comp.hora}:00 - ${comp.hora}:59 (hora militar Venezuela)
+            `;
+
+            // Agregar al historial solo si es una hora diferente
+            const entradaHora = `${comp.dia.toString().padStart(2, '0')}/${comp.mes.toString().padStart(2, '0')}/${comp.año} ${comp.hora.toString().padStart(2, '0')}:00`;
+            const entrada = `${entradaHora} → ${clave}`;
+            
+            if (historialClaves.length === 0 || !historialClaves[0].includes(entradaHora)) {
+                historialClaves.unshift(entrada);
+                if (historialClaves.length > 5) {
+                    historialClaves.pop();
+                }
+            }
+
+            // Actualizar historial en pantalla
+        const historialHTML = historialClaves.map(entrada =>
+            `<div class="historial-item">${entrada}</div>`
+        ).join('');
+        document.getElementById('historial-list').innerHTML = historialHTML;
+    }
+
+    function copiarClave() {
+        if (!claveGenerada) return;
+        const texto = document.getElementById('clave-display').textContent.replace(/-/g, '');
+        navigator.clipboard.writeText(texto).then(() => {
+            alert('Clave copiada');
+        });
+    }
+
+    function copiarMensaje() {
+        if (!claveGenerada) return;
+        const clave = document.getElementById('clave-display').textContent.replace(/-/g, '');
+        const fecha = obtenerTiempoVenezuela();
+        const minutosRestantes = 59 - fecha.getMinutes();
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const anio = fecha.getFullYear();
+        const mensaje = `Tu clave Remeex VISA es: ${clave} Tu clave vence en ${minutosRestantes} minutos del dia de hoy ${dia}/${mes}/${anio}`;
+        navigator.clipboard.writeText(mensaje).then(() => {
+            alert('Mensaje copiado');
+        });
+    }
+
+        // Actualizar cada 30 segundos para mostrar el tiempo restante
+        setInterval(() => { if (claveGenerada) actualizarClave(); }, 30000);
+
+        // Cargar la clave inicial
+        actualizarClave();
+    </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Preguntas sobre Validación</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    :root {
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --secondary: #00579f;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --danger: #ff4d4d;
+      --warning: #ffad33;
+      --info: #0095ff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+      --shadow-sm: 0 1px 3px rgba(16,24,40,0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16,24,40,0.1), 0 2px 4px -2px rgba(16,24,40,0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16,24,40,0.08), 0 4px 6px -2px rgba(16,24,40,0.03);
+      --shadow-xl: 0 20px 24px -4px rgba(16,24,40,0.08), 0 8px 8px -4px rgba(16,24,40,0.03);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      --transition-fast: all 0.2s ease;
+      --transition-base: all 0.3s ease;
+      --transition-slow: all 0.5s ease;
+      --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+      --success-gradient: linear-gradient(135deg, #00c057 0%, #00a346 100%);
+      --animation-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --header-height: 70px;
+      --nav-height: 70px;
+      --wizard-nav-height: 60px;
+      --safe-area-top: env(safe-area-inset-top, 0px);
+      --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    @supports (height:100dvh){
+      :root{ --vh:100dvh; }
+    }
+    body{
+      font-family:'Inter', sans-serif;
+      background: var(--neutral-200);
+      color: var(--neutral-900);
+      margin:0;
+    }
+    .main-container{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      padding-top: var(--header-height);
+    }
+    .header-container{
+      position:fixed;
+      top:0;
+      top:var(--safe-area-top);
+      left:0;
+      right:0;
+      background:var(--neutral-100);
+      border-bottom:1px solid var(--neutral-300);
+      box-shadow: var(--shadow-sm);
+      z-index:1000;
+      height:var(--header-height);
+      display:flex;
+      align-items:center;
+      padding:0 1rem;
+    }
+    .header-content{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+    }
+    .header-info{
+      display:flex;
+      flex-direction:column;
+      gap:0.25rem;
+      min-width:0;
+    }
+    .welcome-text{
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+    .greeting{ font-size:0.85rem; color:var(--neutral-600); }
+    .user-name{ font-size:0.85rem; font-weight:600; color:var(--neutral-900); }
+    .users-online{ font-size:0.7rem; color:var(--neutral-500); display:flex; align-items:center; gap:0.25rem; }
+    .users-online::before{
+      content:'';
+      width:6px; height:6px; border-radius:50%;
+      background:var(--success);
+      animation:pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%{ opacity:1;}
+      50%{ opacity:0.3;}
+      100%{ opacity:1;}
+    }
+    .header-avatar{
+      width:32px; height:32px;
+      border-radius:var(--radius-full);
+      background:rgba(255,255,255,0.2);
+      color:white;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:600; font-size:0.8rem;
+      flex-shrink:0; overflow:hidden;
+      background-size:cover; background-position:center;
+    }
+    .balance-card-compact{
+      display:flex; align-items:center; gap:0.75rem;
+      background:var(--card-gradient);
+      color:white;
+      padding:0.5rem 0.75rem;
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-md);
+      min-width:0;
+      flex-shrink:0;
+    }
+    .balance-main{ flex:1; min-width:0; }
+    .balance-amount{ font-size:1rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; margin-bottom:0.125rem; }
+    .balance-equivalent{ font-size:0.65rem; opacity:0.8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .currency-toggle-btn{
+      background:rgba(255,255,255,0.15);
+      border:none; color:white;
+      padding:0.25rem 0.5rem;
+      border-radius:var(--radius-md);
+      font-size:0.65rem;
+      cursor:pointer;
+      transition:var(--transition-base);
+      backdrop-filter:blur(5px);
+      font-weight:500; white-space:nowrap;
+    }
+    .mode-toggle{ display:none; }
+    .faq-container{ padding:1rem; max-width:800px; margin:0 auto; }
+    .faq-item{ border-bottom:1px solid var(--neutral-300); padding:1rem 0; }
+    .faq-question{ font-weight:600; font-size:0.9rem; margin-bottom:0.5rem; }
+    .faq-answer{ font-size:0.85rem; color:var(--neutral-700); line-height:1.4; }
+  </style>
+</head>
+<body>
+  <div class="header-container">
+    <div class="header-content">
+      <div class="header-info">
+        <div class="welcome-text">
+          <span class="greeting">Hola</span>
+          <span class="user-name" id="user-name">Usuario</span>
+          <div class="header-avatar" id="header-avatar"></div>
+        </div>
+        <div id="users-online-count" class="users-online">98 usuarios conectados</div>
+      </div>
+      <div class="balance-card-compact">
+        <div class="balance-main">
+          <div class="balance-amount">
+            <span id="balance-value">Bs 0,00</span>
+            <button id="currency-toggle" class="currency-toggle-btn">USD</button>
+          </div>
+          <div id="balance-equivalent-display" class="balance-equivalent">≈ $0.00 | ≈ €0.00</div>
+        </div>
+        <div class="mode-toggle">
+          <button id="toggle-mode-btn" class="toggle-mode-btn">
+            <i class="fas fa-layer-group"></i>
+            <span id="mode-toggle-text">Clásico</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="faq-container">
+      <div class="faq-item">
+        <div class="faq-question">¿Por qué debo validar mi cuenta?</div>
+        <div class="faq-answer">Porque es un mecanismo obligatorio para confirmar que eres el titular de la cuenta bancaria registrada. Ayuda a prevenir fraudes, suplantaciones de identidad y permite activar todas las funciones de la aplicación.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Por qué se solicita ese monto y no uno menor?</div>
+        <div class="faq-answer">El monto varía según el saldo actual y se calcula automáticamente como parte de medidas de seguridad financiera. Si tienes un saldo menor, el monto será proporcionalmente menor. Está alineado con normativas del Banco Central de Venezuela para controlar flujos de capital sospechosos.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Por qué en el video y las instrucciones se menciona 25 USD, pero se me solicita un monto mayor para mi primera recarga?</div>
+        <div class="faq-answer">Los 25 USD representan el monto mínimo de validación. El sistema ajusta automáticamente tu primera recarga según el saldo que tengas al momento de validar: si dispones de un saldo alto, el monto requerido será mayor; si tu saldo es menor, la recarga de validación también será más baja.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿En qué se basan para determinar ese monto?</div>
+        <div class="faq-answer">Se basa en protocolos de riesgo, comportamiento de uso y regulación financiera nacional. Estas medidas buscan cumplir con normativas impuestas para combatir el lavado de dinero y la financiación de organizaciones criminales desde el extranjero.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Es un pago?</div>
+        <div class="faq-answer">No. No es un pago ni una comisión. Es una recarga que se suma a tu saldo disponible en Remeex Visa. Ese dinero lo podrás usar libremente luego de validar.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Existen métodos alternativos para validar?</div>
+        <div class="faq-answer">Sí. Si no deseas o no puedes realizar tu primera recarga, puedes activar tu cuenta completando al menos una compra de USDT dentro de la plataforma; esa operación equivale a tu primera recarga. También puedes validar realizando una recarga desde tu cuenta bancaria registrada.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Puedo reducir el monto de validación? ¿Qué opciones existen?</div>
+        <div class="faq-answer">Sí. En <strong>Ajustes → Gestión de cuenta → Monto de validación</strong> puedes elegir entre dos escenarios:<br>- <strong>Reducir 5 USD</strong>: aplica una comisión del 0,5 % en tu primera transacción.<br>- <strong>Reducir 10 USD</strong>: aplica una comisión del 1 % y solo puede utilizarse una vez durante 4&nbsp;horas.<br>La reducción de 10&nbsp;USD es única y temporal; después de usarla o vencido el plazo, el monto vuelve al valor estándar.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Puedo validar desde una cuenta que no sea mía?</div>
+        <div class="faq-answer">No. El objetivo de la validación es confirmar que tú eres el verdadero titular de la cuenta bancaria registrada. Esto evita fraudes, bloqueos y suplantaciones.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Cuánto tiempo demora la validación? ¿Debo esperar mucho?</div>
+        <div class="faq-answer">La validación depende de cuándo decidas hacer tu recarga. Una vez recibida, la validación es automática y toma entre 3 a 5 minutos dependiendo del tráfico de operaciones y la hora del día. El sistema está sincronizado con tu banco para máxima velocidad.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Siento temor… ¿Cómo sé que no es una estafa?</div>
+        <div class="faq-answer">Entendemos tus dudas, pero <strong>Remeex Visa no es una estafa</strong>. Es un sistema moderno, regulado y seguro que cumple con normativas nacionales e internacionales.<br>A diferencia de otras apps, permite manejar <strong>altos montos, retiros y funciones avanzadas</strong> como retiros en casas de cambio, cuentas Zelle y más.<br>Si aún tienes dudas, puedes:<br>- Hablar con otros usuarios reales en nuestro foro: <a href="foroRemeex.html">foroRemeex.html</a><br>- Leer opiniones de clientes verificados aquí: <a href="opiniones.html">opiniones.html</a></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Qué pasa si no valido mi cuenta? ¿Aún puedo usar mi saldo?</div>
+        <div class="faq-answer">Sí, pero con funciones limitadas. Podrás usar tu saldo para intercambiar con otros usuarios de Remeex Visa, comprar servicios desde la app y realizar donaciones. No podrás retirar ni usar funciones avanzadas.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Qué pasa si no valido ahorita y lo hago después?</div>
+        <div class="faq-answer">Tus fondos permanecerán seguros y resguardados. Sin embargo, por seguridad, podríamos aplicar un bloqueo temporal para evitar riesgos. Cuando decidas validar, puedes contactar a Soporte y se reactivará tu cuenta. Mientras tanto, siempre podrás ver tu saldo desde la pantalla inicial de login.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">No quiero usar Remeex. ¿Puedo devolver el dinero?</div>
+        <div class="faq-answer">Sí. Si decides no continuar usando Remeex Visa, puedes <strong>anular tus operaciones</strong> ingresando a:<br>👉 Ajustes → Gestión de cuenta → Anular operaciones.<br>Allí puedes revertir transacciones específicas. El monto será <strong>reintegrado automáticamente al origen</strong> del pago: tarjeta de crédito, pago móvil, etc.<br>También puedes:<br>- Enviar tu saldo a otro usuario Remeex desde Intercambio entre usuarios Remeex.<br>- Donar el saldo en la sección Servicios → Donaciones.<br>Una vez tengas tu saldo en $0.00, puedes cerrar tu cuenta desde la misma sección de Gestión de cuenta.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Por qué no se usa la tasa del BCV?</div>
+        <div class="faq-answer">Remeex Visa <strong>no se rige por el tipo de cambio oficial del Banco Central de Venezuela (BCV)</strong>, ya que opera bajo regulación de <strong>SUNACRIP</strong> (Superintendencia Nacional de Criptoactivos). Su funcionamiento se basa en el valor internacional del <strong>USDT (Tether)</strong>, una moneda estable digital respaldada 1:1 con el dólar.<br><br>💡 <strong>¿Qué significa esto para ti como usuario?</strong><br>Significa que recibirás <strong>una mayor cantidad de bolívares por cada dólar enviado o recargado</strong>, ya que el valor del dólar en Remeex Visa suele estar por encima del tipo oficial BCV. Esto hace que Remeex sea <strong>más competitivo, rentable y rápido</strong> que plataformas tradicionales como <strong>MoneyGram, Western Union, El Dorado</strong>, entre otras.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Tienen sede en Venezuela?</div>
+        <div class="faq-answer">Remeex Visa <strong>no tiene sede física propia en Venezuela</strong>, pero <strong>opera legalmente</strong> en el país mediante sus representantes:<br>🏦 <strong>Banco Plaza C.A.</strong><br>🤝 <strong>Crixto Venezuela C.A. – RIF J-50025393-1</strong><br>📍 Torre Banco Plaza, Av. Casanova, entre calle Villa Flor y calle Unión, Sabana Grande, Parroquia El Recreo, Caracas<br>📄 Registro RISEC Nº 76265-3931-4<br>🔒 Licencia SUNACRIP – Código: CI-SUNA 2025002</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Necesito el dinero urgente, no quiero y no puedo validar, ¿pueden adaptarse a mí? Es una urgencia.</div>
+        <div class="faq-answer">Entendemos perfectamente tu situación. Sin embargo, <strong>por tu seguridad y la nuestra</strong>, no podemos hacer excepciones. La validación es un paso <strong>obligatorio y automatizado</strong>, exigido por normas nacionales e internacionales para prevenir fraudes, suplantaciones o delitos financieros.<br><br>👉 Aunque tengas una urgencia, <strong>es imprescindible confirmar que eres el titular real</strong> de la cuenta bancaria. Este paso garantiza que el dinero llegue a la persona correcta, que tu banco no lo bloquee y que no enfrentes problemas legales.<br><br>✨ Lo bueno es que <strong>la validación es rápida, sencilla y se realiza una sola vez</strong>. Una vez hagas tu recarga, el sistema detecta y valida tu cuenta en pocos minutos, sin necesidad de formularios ni esperas prolongadas.<br><br><strong>⏱ Tiempo estimado: 3 a 5 minutos después de recibir tu recarga.</strong></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Por qué Remeex Visa tiene estos requisitos?</div>
+        <div class="faq-answer">Remeex Visa es un sistema premium, diseñado para usuarios de alto nivel y exigencias elevadas.<br><br>Nuestra plataforma ofrece un servicio de remesas exclusivo, respaldado por Visa, que permite envíos instantáneos de entre $500 y $10.000 USD, sin alertas ni comisiones ocultas, con máxima seguridad y eficiencia.<br><br>⚠️ Debido a este nivel de servicio, es necesario cumplir con ciertos estándares de validación y seguridad, conforme a las normativas internacionales y al perfil que exige Visa para operaciones de alto volumen.<br><br>📌 Si no puedes completar los requerimientos solicitados actualmente, no podrás usar los servicios de Remeex Visa hasta que te adaptes a dichas condiciones.<br><br>💬 En ese caso, te recomendamos considerar otros servicios de remesas que se ajusten mejor a tu perfil actual. Y si más adelante deseas acceder a un sistema como Remeex, estaremos encantados de ayudarte a completar el proceso de validación.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿Cuánto tiempo tengo para validar mi cuenta?</div>
+        <div class="faq-answer">Lo ideal es que completes la validación en menos de 6 horas después de tu primera recarga.<br><br>🔍 Por seguridad, el sistema puede levantar una alerta si detecta que has recargado un monto alto (por ejemplo, $500), pero no puedes validar tu cuenta con un monto mínimo proporcional (por ejemplo, $25, que equivale al 5% del depósito).<br><br>💬 Esta situación puede interpretarse como un comportamiento de riesgo y activar medidas de protección automáticas.<br><br>🔒 En estos casos, Remeex Visa podría aplicar un bloqueo temporal preventivo, para proteger los fondos y dar margen ante posibles reclamaciones de terceros.<br><br>✅ La validación es rápida y muy sencilla: solo debes hacer una pequeña recarga desde tu cuenta registrada, y en pocos minutos tu cuenta será validada.<br><br>💡 Recomendación: valida tu cuenta antes de que pasen 6 horas. Así evitarás bloqueos automáticos y podrás disfrutar sin interrupciones de todos los beneficios que ofrece tu cuenta Remeex Visa.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">¿De dónde se estima el precio del dólar en Remeex Visa?</div>
+        <div class="faq-answer">El valor del dólar que ves en Remeex Visa se calcula tomando como referencia el precio del USDT (Tether) en el sistema de Binance, una de las plataformas de intercambio de criptoactivos más reconocidas y confiables a nivel global.<br><br>🔍 <strong>¿Por qué usamos el valor del USDT en Binance?</strong><br>Porque el USDT es una moneda estable (stablecoin) respaldada 1:1 con el dólar estadounidense, cuyo precio refleja en tiempo real la oferta y demanda internacional, sin manipulaciones estatales ni distorsiones artificiales.<br><br>📊 Al basar la tasa en Binance, logramos:<br>- Un valor transparente, competitivo y ajustado al mercado.<br>- Evitar tasas oficiales desfavorables.<br>- Asegurar que recibas más bolívares por cada dólar enviado o recargado.<br><br>💡 Esta metodología nos permite ofrecerte una experiencia más rentable que otras plataformas tradicionales de remesas.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const userData = JSON.parse(localStorage.getItem('visaUserData') || '{}');
+      const balanceData = JSON.parse(localStorage.getItem('remeexBalance') || '{}');
+      const name = userData.firstName || userData.preferredName || 'Usuario';
+      const nameEl = document.getElementById('user-name');
+      if (nameEl) nameEl.textContent = name;
+      const avatarEl = document.getElementById('header-avatar');
+      if (avatarEl) {
+        if (userData.photo) {
+          avatarEl.style.backgroundImage = 'url(' + userData.photo + ')';
+          avatarEl.textContent = '';
+        } else {
+          avatarEl.textContent = name.charAt(0).toUpperCase();
+        }
+      }
+      const bs = balanceData.bs || 0;
+      const usd = balanceData.usd || 0;
+      const eur = balanceData.eur || 0;
+      const balVal = document.getElementById('balance-value');
+      if (balVal) balVal.textContent = 'Bs ' + bs.toLocaleString('es-VE', {minimumFractionDigits:2, maximumFractionDigits:2});
+      const eqEl = document.getElementById('balance-equivalent-display');
+      if (eqEl) eqEl.textContent = '≈ $' + usd.toFixed(2) + ' | ≈ €' + eur.toFixed(2);
+    });
+  </script>
+  <script src="preload.js"></script>
+</body>
+</html>

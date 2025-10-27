@@ -1,0 +1,328 @@
+{
+  "version": "2025-10-02",
+  "notes": "Validar por esquema nacional siempre que exista (CLABE, CBU, CCI, IBAN). Donde el país no tiene estándar único, la longitud puede variar por banco/sucursal.",
+  "countries": [
+    {
+      "country": "México",
+      "scheme": "CLABE",
+      "total_length": 18,
+      "structure": { "bank": 3, "branch": 3, "account": 11, "checksum": 1 },
+      "regex_total": "^\\d{18}$",
+      "banks": [
+        { "name": "Citibanamex", "bank_code": "002" },
+        { "name": "BBVA México", "bank_code": "012" },
+        { "name": "Santander México", "bank_code": "014" },
+        { "name": "HSBC México", "bank_code": "021" },
+        { "name": "Inbursa", "bank_code": "036" },
+        { "name": "Banco del Bajío", "bank_code": "030" },
+        { "name": "Mifel", "bank_code": "042" },
+        { "name": "Scotiabank", "bank_code": "044" },
+        { "name": "Banregio / Hey", "bank_code": "058" },
+        { "name": "Bansi", "bank_code": "060" },
+        { "name": "Afirme", "bank_code": "062" },
+        { "name": "Banorte", "bank_code": "072" },
+        { "name": "Banco Azteca", "bank_code": "127" },
+        { "name": "BanCoppel", "bank_code": "137" },
+        { "name": "STP (fintech/clearing)", "bank_code": "646" }
+      ]
+    },
+    {
+      "country": "Argentina",
+      "scheme": "CBU",
+      "total_length": 22,
+      "structure": {
+        "bank": 3,
+        "branch": 4,
+        "branch_check_digit": 1,
+        "account": 13,
+        "account_check_digit": 1
+      },
+      "regex_total": "^\\d{22}$",
+      "banks": [
+        { "name": "Banco de la Nación Argentina", "bank_code": "011" },
+        { "name": "Banco Provincia de Buenos Aires", "bank_code": "014" },
+        { "name": "Banco Ciudad", "bank_code": "029" },
+        { "name": "Banco Galicia", "bank_code": "007" },
+        { "name": "BBVA Argentina", "bank_code": "017" },
+        { "name": "Santander Argentina", "bank_code": "072" },
+        { "name": "HSBC Argentina", "bank_code": "150" },
+        { "name": "ICBC Argentina", "bank_code": "015" },
+        { "name": "Banco Macro", "bank_code": "285" },
+        { "name": "Banco Credicoop", "bank_code": "191" }
+      ]
+    },
+    {
+      "country": "Brasil",
+      "scheme": "Agência + Conta (con dígito verificador) / PIX",
+      "defaults": { "agencia_length": 4 },
+      "note": "La longitud de 'conta' y el DV varían por banco; PIX acepta clave CPF/CNPJ, email, teléfono o EVP.",
+      "banks": [
+        { "name": "Banco do Brasil", "bank_code": "001", "account_number": { "length_range": [8,9], "has_check_digit": true } },
+        { "name": "Bradesco", "bank_code": "237", "account_number": { "length_range": [7,7], "has_check_digit": true } },
+        { "name": "Itaú", "bank_code": "341", "account_number": { "length_range": [5,5], "has_check_digit": true } },
+        { "name": "Caixa Econômica Federal", "bank_code": "104", "account_number": { "length_range": [1,14], "has_check_digit": true } },
+        { "name": "Santander Brasil", "bank_code": "033", "account_number": { "length_range": [7,10], "has_check_digit": true } },
+        { "name": "Nubank", "bank_code": "260", "account_number": { "length_range": [8,12], "has_check_digit": true } },
+        { "name": "Banco Inter", "bank_code": "077", "account_number": { "length_range": [6,12], "has_check_digit": true } },
+        { "name": "BTG Pactual", "bank_code": "208", "account_number": { "length_range": [7,12], "has_check_digit": true } },
+        { "name": "Banco Original", "bank_code": "212", "account_number": { "length_range": [7,12], "has_check_digit": true } },
+        { "name": "C6 Bank", "bank_code": "336", "account_number": { "length_range": [7,12], "has_check_digit": true } }
+      ]
+    },
+    {
+      "country": "Colombia",
+      "scheme": "Cuenta bancaria local (ACH)",
+      "note": "El código de banco (ACH) es obligatorio; la longitud de cuenta depende del banco.",
+      "banks": [
+        { "name": "Banco de Bogotá", "bank_code": "1001", "account_number": { "expected_digits": "hasta 9" } },
+        { "name": "Banco Popular", "bank_code": "1002", "account_number": { "expected_digits": "hasta 12" } },
+        { "name": "Bancolombia", "bank_code": "1007", "account_number": { "expected_digits": "hasta 11" } },
+        { "name": "Citibank", "bank_code": "1009", "account_number": { "expected_digits": "10 (fijo)" } },
+        { "name": "GNB Sudameris", "bank_code": "1012", "account_number": { "expected_digits": "hasta 11" } },
+        { "name": "BBVA Colombia", "bank_code": "1013", "account_number": { "expected_digits": "9, 10, 16 o 20" } },
+        { "name": "Itaú", "bank_code": "1014", "account_number": { "expected_digits": "9 (fijo)" } },
+        { "name": "Scotiabank Colpatria", "bank_code": "1019", "account_number": { "expected_digits": "10 (fijo)" } },
+        { "name": "Banco de Occidente", "bank_code": "1023", "account_number": { "expected_digits": "hasta 9" } },
+        { "name": "Banco Caja Social", "bank_code": "1032", "account_number": { "expected_digits": "12 (fijo)" } },
+        { "name": "Banco Agrario", "bank_code": "1040", "account_number": { "expected_digits": "11 (fijo)" } },
+        { "name": "Davivienda", "bank_code": "1051", "account_number": { "expected_digits": "12 (fijo)" } }
+      ]
+    },
+    {
+      "country": "Perú",
+      "scheme": "CCI (Código de Cuenta Interbancario)",
+      "total_length": 20,
+      "regex_total": "^\\d{20}$",
+      "note": "Todos los bancos usan CCI de 20 dígitos para transferencias interbancarias.",
+      "banks": [
+        { "name": "BCP" },
+        { "name": "BBVA Perú" },
+        { "name": "Interbank" },
+        { "name": "Scotiabank Perú" },
+        { "name": "BanBif" },
+        { "name": "Banco de la Nación" },
+        { "name": "Banco Pichincha" },
+        { "name": "Banco Falabella" },
+        { "name": "Banco Ripley" }
+      ]
+    },
+    {
+      "country": "Chile",
+      "scheme": "Cuenta bancaria local (sin IBAN)",
+      "note": "Se usa número de cuenta (longitud variable por banco) y RUT. Códigos de banco estandarizados para transferencias.",
+      "banks": [
+        { "name": "Banco de Chile", "bank_code": "001" },
+        { "name": "BancoEstado", "bank_code": "012" },
+        { "name": "Scotiabank Chile", "bank_code": "014" },
+        { "name": "BCI", "bank_code": "016" },
+        { "name": "Banco BICE", "bank_code": "028" },
+        { "name": "Santander Chile", "bank_code": "037" },
+        { "name": "Itaú Corpbanca", "bank_code": "039" },
+        { "name": "Banco Security", "bank_code": "049" },
+        { "name": "Banco Falabella", "bank_code": "051" },
+        { "name": "Banco Ripley", "bank_code": "053" }
+      ]
+    },
+    {
+      "country": "Costa Rica",
+      "scheme": "IBAN",
+      "iban_prefix": "CR",
+      "iban_length": 22,
+      "regex_total": "^[Cc][Rr]\\d{2}[A-Za-z0-9]{18}$",
+      "banks": [
+        { "name": "Banco Nacional de Costa Rica" },
+        { "name": "Banco de Costa Rica (BCR)" },
+        { "name": "BAC San José" },
+        { "name": "Scotiabank Costa Rica" },
+        { "name": "Davivienda Costa Rica" }
+      ]
+    },
+    {
+      "country": "República Dominicana",
+      "scheme": "IBAN",
+      "iban_prefix": "DO",
+      "iban_length": 28,
+      "regex_total": "^[Dd][Oo]\\d{2}[A-Za-z]{4}[A-Za-z0-9]{20}$",
+      "banks": [
+        { "name": "Banreservas" },
+        { "name": "Banco Popular Dominicano" },
+        { "name": "BHD León" },
+        { "name": "Scotiabank RD" }
+      ]
+    },
+    {
+      "country": "El Salvador",
+      "scheme": "IBAN",
+      "iban_prefix": "SV",
+      "iban_length": 28,
+      "regex_total": "^[Ss][Vv]\\d{2}[A-Za-z]{4}[A-Za-z0-9]{20}$",
+      "banks": [
+        { "name": "Banco Agrícola" },
+        { "name": "BAC Credomatic" },
+        { "name": "Davivienda SV" },
+        { "name": "Scotiabank SV" }
+      ]
+    },
+    {
+      "country": "Guatemala",
+      "scheme": "IBAN",
+      "iban_prefix": "GT",
+      "iban_length": 28,
+      "regex_total": "^[Gg][Tt]\\d{2}[A-Za-z]{4}[A-Za-z0-9]{20}$",
+      "banks": [
+        { "name": "Banco Industrial" },
+        { "name": "Banrural" },
+        { "name": "G&T Continental" },
+        { "name": "BAC Guatemala" }
+      ]
+    },
+    {
+      "country": "Honduras",
+      "scheme": "IBAN",
+      "iban_prefix": "HN",
+      "iban_length": 28,
+      "regex_total": "^[Hh][Nn]\\d{2}[A-Za-z]{4}[A-Za-z0-9]{20}$",
+      "banks": [
+        { "name": "Banco Atlántida" },
+        { "name": "BAC Honduras" },
+        { "name": "Ficohsa" },
+        { "name": "Banpaís" }
+      ]
+    },
+    {
+      "country": "Nicaragua",
+      "scheme": "IBAN",
+      "iban_prefix": "NI",
+      "iban_length": 28,
+      "regex_total": "^[Nn][Ii]\\d{2}[A-Za-z]{4}[A-Za-z0-9]{20}$",
+      "banks": [
+        { "name": "BANPRO" },
+        { "name": "BAC Nicaragua" },
+        { "name": "LAFISE" },
+        { "name": "BDF" }
+      ]
+    },
+    {
+      "country": "Panamá",
+      "scheme": "Cuenta bancaria local (sin IBAN)",
+      "note": "Operativa local vía ACH Panamá con códigos de banco; número de cuenta longitud variable por banco.",
+      "banks": [
+        { "name": "Banco General" },
+        { "name": "Banistmo" },
+        { "name": "BAC International Bank" },
+        { "name": "Banco Nacional de Panamá" }
+      ]
+    },
+    {
+      "country": "Uruguay",
+      "scheme": "Cuenta bancaria local (sin IBAN)",
+      "note": "Transferencias internacionales por SWIFT; no hay IBAN local publicado.",
+      "banks": [
+        { "name": "BROU" },
+        { "name": "Santander Uruguay" },
+        { "name": "BBVA Uruguay" },
+        { "name": "Itaú Uruguay" },
+        { "name": "Scotiabank Uruguay" }
+      ]
+    },
+    {
+      "country": "Paraguay",
+      "scheme": "Cuenta bancaria local (sin IBAN)",
+      "note": "Longitud de cuenta variable por banco.",
+      "banks": [
+        { "name": "Banco Itaú Paraguay" },
+        { "name": "BBVA Paraguay" },
+        { "name": "Banco Continental" },
+        { "name": "Visión Banco" }
+      ]
+    },
+    {
+      "country": "Ecuador",
+      "scheme": "Cuenta bancaria local (sin IBAN)",
+      "note": "Se usan códigos de institución; la longitud de cuenta varía por banco.",
+      "banks": [
+        { "name": "Banco Pichincha", "institution_code": "010" },
+        { "name": "Banco de Guayaquil", "institution_code": "017" },
+        { "name": "Banco del Pacífico", "institution_code": "030" },
+        { "name": "Banco Internacional", "institution_code": "032" },
+        { "name": "Banco del Austro", "institution_code": "035" },
+        { "name": "Banco Bolivariano", "institution_code": "037" },
+        { "name": "Produbanco / Promerica", "institution_code": "036" },
+        { "name": "Banco Solidario", "institution_code": "059" },
+        { "name": "Banco ProCredit", "institution_code": "060" }
+      ]
+    },
+    {
+      "country": "Puerto Rico",
+      "scheme": "ABA (EE. UU.) + número de cuenta",
+      "routing_number_length": 9,
+      "account_number_length_range": [4,17],
+      "banks": [
+        { "name": "Banco Popular de Puerto Rico" },
+        { "name": "FirstBank Puerto Rico" },
+        { "name": "Oriental Bank" }
+      ]
+    },
+    {
+      "country": "Bolivia",
+      "scheme": "Cuenta bancaria local (ACH)",
+      "note": "Cuentas Corriente (C) y Ahorros (S) aceptadas; longitud de cuenta entre 7 y 14 dígitos según banco.",
+      "account_number_length_range": [7,14],
+      "banks": [
+        { "name": "Banco Nacional de Bolivia" },
+        { "name": "Banco Mercantil Santa Cruz" },
+        { "name": "Banco BISA" },
+        { "name": "Banco Ganadero" }
+      ]
+    },
+    {
+      "country": "Belice",
+      "scheme": "Cuenta bancaria local (sin IBAN)",
+      "note": "Longitud variable por banco; transferencias internacionales por SWIFT.",
+      "banks": [
+        { "name": "Atlantic Bank" },
+        { "name": "Belize Bank" },
+        { "name": "Heritage Bank" }
+      ]
+    },
+    {
+      "country": "Guyana",
+      "scheme": "Cuenta bancaria local (sin IBAN)",
+      "note": "Longitud variable por banco; transferencias internacionales por SWIFT.",
+      "banks": [
+        { "name": "Republic Bank (Guyana)" },
+        { "name": "GTT Co-operative/hand-in-hand Trust" },
+        { "name": "Scotia Guyana" }
+      ]
+    },
+    {
+      "country": "Surinam",
+      "scheme": "Cuenta bancaria local (sin IBAN)",
+      "note": "Longitud variable por banco; transferencias internacionales por SWIFT.",
+      "banks": [
+        { "name": "De Surinaamsche Bank" },
+        { "name": "Republic Bank (Suriname)" }
+      ]
+    },
+    {
+      "country": "Haití",
+      "scheme": "Cuenta bancaria local (sin IBAN)",
+      "note": "Longitud variable por banco; transferencias internacionales por SWIFT.",
+      "banks": [
+        { "name": "UNIBANK" },
+        { "name": "Sogebank" },
+        { "name": "Banque Nationale de Crédit (BNC)" }
+      ]
+    },
+    {
+      "country": "Cuba",
+      "scheme": "Cuenta bancaria local (sin IBAN)",
+      "note": "Longitud variable por banco; transferencias internacionales por SWIFT.",
+      "banks": [
+        { "name": "Banco Metropolitano" },
+        { "name": "BANDEC" },
+        { "name": "BPA" }
+      ]
+    }
+  ]
+}

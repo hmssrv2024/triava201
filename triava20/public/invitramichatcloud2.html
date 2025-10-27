@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asistente de Redacción - Remeex Visa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <main class="container mx-auto p-4 md:p-8 max-w-4xl">
+    <header class="text-center mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-blue-600">Asistente de Redacción</h1>
+      <p class="text-gray-600 mt-2">Mejora tus mensajes de WhatsApp para clientes de Remeex Visa.</p>
+    </header>
+
+    <!-- Sección de Carga de Contexto -->
+    <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-xl font-semibold mb-4 border-b pb-2">1. Nutrir Base de Conocimiento</h2>
+      <p class="text-sm text-gray-500 mb-4">Carga hasta 10 PDFs y añade texto manualmente. La información se guardará en tu navegador para futuras sesiones.</p>
+      
+      <label class="block text-sm font-medium text-gray-700 mb-2">Cargar Archivos PDF:</label>
+      <input type="file" id="pdfFiles" accept=".pdf" multiple class="block w-full text-sm text-gray-500
+        file:mr-4 file:py-2 file:px-4
+        file:rounded-full file:border-0
+        file:text-sm file:font-semibold
+        file:bg-blue-50 file:text-blue-700
+        hover:file:bg-blue-100" onchange="handleFilesSelect(event)">
+      <div id="file-list" class="mt-4 text-sm text-gray-600 space-y-1"></div>
+
+      <label for="manualContext" class="block text-sm font-medium text-gray-700 mt-6 mb-2">Añadir Contexto Manualmente:</label>
+      <textarea id="manualContext" rows="6" class="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Pega aquí información adicional, guiones, preguntas frecuentes, etc."></textarea>
+      
+      <div class="flex items-center justify-between mt-4">
+        <button onclick="saveManualContext()" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300">
+          Guardar Contexto Manual
+        </button>
+        <button onclick="clearAllContext()" class="bg-red-500 text-white font-bold py-2 px-4 rounded-md hover:bg-red-600 transition duration-300">
+          Borrar Todo el Contexto
+        </button>
+      </div>
+      <div id="context-info" class="mt-4 text-sm text-green-600"></div>
+    </section>
+
+    <!-- Sección de Datos del Cliente -->
+    <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-xl font-semibold mb-4 border-b pb-2">2. Extraer Datos del Cliente (Opcional)</h2>
+      <p class="text-sm text-gray-500 mb-4">Pega aquí cualquier información que tengas del cliente (un correo, notas, etc.). La IA extraerá los datos clave para personalizar la respuesta.</p>
+      <textarea id="clientDataInput" rows="6" class="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Ej: Cliente: Juan Pérez, Caso #12345, Correo: juan.p@email.com, quiere saber sobre el estado de su trámite..."></textarea>
+      <button onclick="extractClientData()" id="extractBtn" class="mt-4 bg-indigo-500 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-600 transition duration-300">
+        Extraer Información
+      </button>
+      <div id="extractionLoader" class="hidden my-4"><div class="loader"></div></div>
+      <div id="extractedDataContainer" class="mt-4 text-sm text-gray-700 space-y-2"></div>
+    </section>
+
+    <!-- Sección de Mensajes -->
+    <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+       <h2 class="text-xl font-semibold mb-4 border-b pb-2">3. Redactar o Mejorar Mensaje</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="clientMessage" class="block text-sm font-medium text-gray-700 mb-2">Mensaje del Cliente (Si respondes)</label>
+          <textarea id="clientMessage" rows="8" class="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Pega aquí el mensaje del cliente..."></textarea>
+        </div>
+        <div>
+          <label for="operatorInstructions" class="block text-sm font-medium text-gray-700 mb-2">Tus Instrucciones o Mensaje a Mejorar</label>
+          <textarea id="operatorInstructions" rows="8" class="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Escribe aquí tus ideas o instrucciones. Ej: entra a ajustes, luego a gestion de cuenta y selecciona tasa de bcv"></textarea>
+        </div>
+      </div>
+      <button onclick="generateResponse()" id="generateBtn" class="mt-6 w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-md hover:bg-blue-700 transition duration-300 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path><path d="M5 3v4"></path><path d="M19 17v4"></path><path d="M3 5h4"></path><path d="M17 19h4"></path></svg>
+        Mejorar Redacción
+      </button>
+    </section>
+
+    <!-- Sección de Respuesta -->
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold mb-4 border-b pb-2">4. Respuesta Sugerida</h2>
+      <div id="loader" class="hidden">
+        <div class="loader"></div>
+        <p class="text-center text-gray-500">Generando respuesta...</p>
+      </div>
+      <div id="response-container" class="hidden">
+        <div id="response" class="w-full bg-gray-50 p-4 border rounded-md min-h-[150px] whitespace-pre-wrap"></div>
+        <button onclick="copyToClipboard()" id="copyBtn" class="mt-4 bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 transition duration-300 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+          Copiar Texto
+        </button>
+      </div>
+    </section>
+
+    <footer class="text-center mt-8 text-sm text-gray-500">
+      <p>Powered by Gemini 2.5 Flash</p>
+    </footer>
+  </main>
+
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+    const MAX_FILES = 10;
+    const STORAGE_KEY = 'remeexAppContext';
+    let combinedContext = "";
+    let clientDataContext = null;
+
+    document.addEventListener('DOMContentLoaded', loadContextFromStorage);
+
+    function getStoredData() {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data) : { pdfFiles: [], manualText: "" };
+    }
+
+    function updateStoredData(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        updateCombinedContext();
+        updateUI();
+    }
+    
+    function updateUI() {
+        const data = getStoredData();
+        const fileListDiv = document.getElementById('file-list');
+        fileListDiv.innerHTML = '';
+        if (data.pdfFiles.length > 0) {
+            const list = document.createElement('ul');
+            list.className = 'list-disc list-inside';
+            data.pdfFiles.forEach(file => {
+                const item = document.createElement('li');
+                item.textContent = `✅ ${file.name}`;
+                list.appendChild(item);
+            });
+            fileListDiv.appendChild(list);
+        } else {
+            fileListDiv.textContent = 'No hay archivos cargados.';
+        }
+        document.getElementById('manualContext').value = data.manualText;
+    }
+
+    function updateCombinedContext() {
+        const data = getStoredData();
+        const pdfText = data.pdfFiles.map(f => f.text).join('\n\n---\n\n');
+        combinedContext = `${pdfText}\n\n---\n\n${data.manualText}`;
+    }
+
+    function loadContextFromStorage() {
+        updateCombinedContext();
+        updateUI();
+    }
+
+    async function handleFilesSelect(event) {
+        const files = Array.from(event.target.files);
+        const data = getStoredData();
+        const contextInfo = document.getElementById('context-info');
+
+        if (files.length + data.pdfFiles.length > MAX_FILES) {
+            alert(`Puedes subir un máximo de ${MAX_FILES} archivos en total.`);
+            return;
+        }
+
+        contextInfo.textContent = 'Procesando archivos...';
+        for (const file of files) {
+            if (file.type !== 'application/pdf') continue;
+            if (data.pdfFiles.some(f => f.name === file.name)) continue;
+            const fileText = await readPdfFile(file);
+            data.pdfFiles.push({ name: file.name, text: fileText });
+        }
+        
+        updateStoredData(data);
+        contextInfo.textContent = `¡Archivos procesados y guardados!`;
+        setTimeout(() => contextInfo.textContent = '', 3000);
+        event.target.value = '';
+    }
+    
+    function readPdfFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const typedarray = new Uint8Array(e.target.result);
+                    const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+                    let fullText = "";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        fullText += textContent.items.map(item => item.str).join(' ') + '\n\n';
+                    }
+                    resolve(fullText);
+                } catch (error) { reject(error); }
+            };
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    function saveManualContext() {
+        const manualText = document.getElementById('manualContext').value;
+        const data = getStoredData();
+        data.manualText = manualText;
+        updateStoredData(data);
+        const contextInfo = document.getElementById('context-info');
+        contextInfo.textContent = '¡Contexto manual guardado!';
+        setTimeout(() => contextInfo.textContent = '', 3000);
+    }
+    
+    function clearAllContext() {
+        if (confirm('¿Estás seguro de que quieres borrar toda la base de conocimiento (archivos y texto manual)?')) {
+            localStorage.removeItem(STORAGE_KEY);
+            loadContextFromStorage();
+        }
+    }
+
+    async function extractClientData() {
+        const clientDataInput = document.getElementById('clientDataInput').value;
+        if (!clientDataInput.trim()) {
+            alert('Por favor, pega la información del cliente en la caja de texto.');
+            return;
+        }
+
+        const loader = document.getElementById('extractionLoader');
+        const container = document.getElementById('extractedDataContainer');
+        const extractBtn = document.getElementById('extractBtn');
+
+        loader.classList.remove('hidden');
+        extractBtn.disabled = true;
+        container.innerHTML = '';
+        clientDataContext = null;
+
+        const apiKey = "";
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+        const prompt = `
+          Analiza el siguiente texto y extrae la información clave del cliente.
+          Debes devolver únicamente un objeto JSON válido.
+          Las claves deben ser "nombre", "caso", "email", "telefono", y "asunto".
+          Si un dato no se encuentra, su valor debe ser null.
+
+          Texto a analizar:
+          ---
+          ${clientDataInput}
+          ---
+
+          JSON resultante:
+        `;
+
+        const body = JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: "application/json" }
+        });
+
+        try {
+            const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body });
+            if (!response.ok) throw new Error(`Error en la solicitud: ${response.status}`);
+
+            const data = await response.json();
+            const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+            
+            let extractedJSON;
+            try {
+               const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+               extractedJSON = JSON.parse(cleanedText);
+            } catch (e) {
+                console.error("Error parsing JSON from AI response:", e);
+                throw new Error("La IA devolvió un formato de datos no válido.");
+            }
+            clientDataContext = extractedJSON;
+
+            container.innerHTML = '<p class="font-semibold mb-2">Datos Extraídos:</p>';
+            const list = document.createElement('ul');
+            list.className = 'list-disc list-inside bg-gray-50 p-3 rounded-md';
+            const keyMap = { nombre: "Nombre", caso: "Nº Caso/Trámite", email: "Email", telefono: "Teléfono", asunto: "Asunto Principal" };
+            
+            for (const key in clientDataContext) {
+                if (clientDataContext[key]) {
+                    const item = document.createElement('li');
+                    item.innerHTML = `<span class="font-medium">${keyMap[key] || key}:</span> ${clientDataContext[key]}`;
+                    list.appendChild(item);
+                }
+            }
+            if (list.children.length === 0) {
+                container.innerHTML = '<p class="text-red-500">No se pudo extraer información estructurada.</p>';
+            } else {
+                 container.appendChild(list);
+            }
+        } catch (err) {
+            console.error(err);
+            container.innerHTML = `<p class="text-red-500">Error al extraer datos: ${err.message}</p>`;
+            clientDataContext = null;
+        } finally {
+            loader.classList.add('hidden');
+            extractBtn.disabled = false;
+        }
+    }
+
+    async function generateResponse() {
+      const clientMessage = document.getElementById('clientMessage').value;
+      const operatorInstructions = document.getElementById('operatorInstructions').value;
+      
+      if (!clientMessage && !operatorInstructions) {
+        alert("Por favor, ingresa el mensaje de un cliente o tus propias instrucciones para mejorar.");
+        return;
+      }
+
+      const loader = document.getElementById('loader');
+      const responseContainer = document.getElementById('response-container');
+      const generateBtn = document.getElementById('generateBtn');
+
+      loader.classList.remove('hidden');
+      responseContainer.classList.add('hidden');
+      generateBtn.disabled = true;
+      generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      const apiKey = ""; 
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+      const clientContextText = clientDataContext 
+        ? `---
+        **Datos Clave del Cliente (Extraídos Automáticamente):**
+        - Nombre: ${clientDataContext.nombre || 'No disponible'}
+        - Nº Caso/Trámite: ${clientDataContext.caso || 'No disponible'}
+        - Contacto: ${clientDataContext.email || clientDataContext.telefono || 'No disponible'}
+        - Asunto: ${clientDataContext.asunto || 'No disponible'}
+        ---`
+        : "";
+
+      let prompt = `
+        Eres un asistente de redacción experto para Remeex Visa. Tu especialidad es crear mensajes claros, concisos y profesionales para WhatsApp.
+
+        **Reglas Fundamentales:**
+        1.  **Formato WhatsApp:** SIEMPRE usa formato de WhatsApp. Usa asteriscos para negrita (*así*) y guiones bajos para cursiva (_así_). No uses Markdown ni otro formato.
+        2.  **Brevedad y Claridad:** Los mensajes deben ser cortos, directos y muy fáciles de entender. Evita párrafos largos y usa listas si es necesario.
+        3.  **Tono:** Mantén un tono profesional, amable y servicial.
+        4.  **Contexto:** Basa tus respuestas en la información de la base de conocimiento para que sean precisas.
+        5.  **Personalización:** Usa los datos clave del cliente para personalizar el saludo y la respuesta si es posible.
+        
+        ${clientContextText}
+
+        **Base de Conocimiento (Archivos y Texto Manual):**
+        ${combinedContext ? combinedContext : "No se proporcionó contexto."}
+        ---
+
+        **Tu Tarea (elige un escenario):**
+
+        **Escenario 1: Responder a un Cliente.**
+        (Si el "Mensaje del Cliente" tiene texto)
+        - Lee el mensaje del cliente y redacta la respuesta ideal.
+        - Si el operador escribió un borrador en "Tus Instrucciones", úsalo como base para mejorar tu respuesta.
+        
+        **Escenario 2: Mejorar o Crear un Mensaje del Operador.**
+        (Si el "Mensaje del Cliente" está vacío)
+        - Toma el texto o las instrucciones del operador y transfórmalo en un mensaje sublime: claro, bien formateado y profesional, listo para enviar a un cliente.
+        - Convierte listas de pasos en instrucciones numeradas y fáciles de seguir.
+
+        ---
+        **Datos para tu Tarea:**
+
+        **Mensaje del Cliente:**
+        ${clientMessage ? clientMessage : "No proporcionado (Estás en Escenario 2)."}
+
+        **Texto/Instrucciones del Operador:**
+        ${operatorInstructions ? operatorInstructions : "No proporcionado."}
+
+        ---
+        **Respuesta Final (genera únicamente el texto para copiar y pegar en WhatsApp):**
+      `;
+
+      const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
+
+      try {
+        let response;
+        let retries = 3;
+        let delay = 1000;
+        for (let i = 0; i < retries; i++) {
+          response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body });
+          if (response.ok) break;
+          if (response.status === 429 || response.status >= 500) {
+            await new Promise(res => setTimeout(res, delay));
+            delay *= 2;
+          } else { break; }
+        }
+        
+        if (!response.ok) throw new Error(`Error en la solicitud: ${response.status} ${response.statusText}`);
+        
+        const data = await response.json();
+        const output = data.candidates?.[0]?.content?.parts?.[0]?.text || "No se pudo generar una respuesta. Intenta de nuevo.";
+        document.getElementById('response').textContent = output.trim();
+        responseContainer.classList.remove('hidden');
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('response').textContent = "Error al conectar con la API: " + err.message;
+        responseContainer.classList.remove('hidden');
+      } finally {
+        loader.classList.add('hidden');
+        generateBtn.disabled = false;
+        generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    function copyToClipboard() {
+      const responseText = document.getElementById('response').textContent;
+      const copyBtn = document.getElementById('copyBtn');
+      const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = responseText;
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempTextArea);
+
+      copyBtn.textContent = '¡Copiado!';
+      setTimeout(() => {
+        copyBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+          Copiar Texto`;
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

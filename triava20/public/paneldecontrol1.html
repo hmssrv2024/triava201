@@ -1,0 +1,2268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Remeex Visa - Gestión financiera segura y profesional">
+    <meta name="theme-color" content="#1A1F71">
+    <title>Remeex Visa | Servicios Financieros VISA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== VARIABLES DEL SISTEMA DE DISEÑO ===== */
+        :root {
+            /* Colores principales de Visa */
+            --visa-blue: #1A1F71;
+            --visa-blue-light: #293497;
+            --visa-blue-dark: #0F144D;
+            --visa-gold: #F7B600;
+            --visa-gold-light: #FFCD44;
+            --visa-gold-dark: #D99C00;
+            
+            /* Colores secundarios */
+            --visa-cyan: #00A1DF;
+            --visa-success: #00AB4E;
+            --visa-warning: #FF8000;
+            --visa-danger: #D22730;
+            --visa-danger-light: #F7E6E7;
+            
+            /* Neutrales */
+            --white: #FFFFFF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            
+            /* Radios de borde */
+            --radius-sm: 4px;
+            --radius: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+            
+            /* Espaciado */
+            --space-xxs: 0.25rem;
+            --space-xs: 0.5rem;
+            --space-sm: 0.75rem;
+            --space: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+            --space-xxl: 4rem;
+            
+            /* Sombras */
+            --shadow-xs: 0 1px 2px rgba(17, 24, 39, 0.05);
+            --shadow-sm: 0 1px 3px rgba(17, 24, 39, 0.1), 0 1px 2px rgba(17, 24, 39, 0.06);
+            --shadow: 0 4px 6px -1px rgba(17, 24, 39, 0.1), 0 2px 4px -1px rgba(17, 24, 39, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(17, 24, 39, 0.1), 0 4px 6px -2px rgba(17, 24, 39, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(17, 24, 39, 0.1), 0 10px 10px -5px rgba(17, 24, 39, 0.04);
+            --shadow-xl: 0 25px 50px -12px rgba(17, 24, 39, 0.25);
+            
+            /* Transiciones */
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Dimensiones del layout */
+            --header-height: 70px;
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+        }
+        
+        /* ===== RESET Y ESTILOS BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--gray-800);
+            background-color: var(--gray-50);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        button, input, select, textarea {
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+        }
+        
+        button {
+            cursor: pointer;
+            border: none;
+            background: none;
+            box-shadow: none;
+        }
+        
+        ul, ol {
+            list-style: none;
+        }
+        
+        img, svg {
+            max-width: 100%;
+            height: auto;
+            vertical-align: middle;
+        }
+        
+        /* ===== LAYOUT PRINCIPAL ===== */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(165deg, var(--visa-blue) 0%, var(--visa-blue-dark) 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform var(--transition), width var(--transition);
+            overflow-x: hidden;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+        
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--space-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .sidebar-logo img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+        
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--white);
+            transition: opacity var(--transition-fast);
+        }
+        
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        
+        .sidebar-menu {
+            padding: var(--space-sm) 0 var(--space-md);
+        }
+        
+        .menu-section {
+            margin-bottom: var(--space-md);
+        }
+        
+        .menu-header {
+            padding: 0 var(--space-md);
+            margin-bottom: var(--space-xs);
+            transition: opacity var(--transition-fast);
+        }
+        
+        .menu-title {
+            text-transform: uppercase;
+            color: var(--gray-400);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            opacity: 0.7;
+        }
+        
+        .sidebar.collapsed .menu-header {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            margin: 0;
+        }
+        
+        .menu-item {
+            position: relative;
+            margin-bottom: 2px;
+        }
+        
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: var(--space-xs) var(--space-md);
+            color: var(--gray-300);
+            transition: all var(--transition);
+            border-left: 3px solid transparent;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-link:hover {
+            color: var(--white);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+        
+        .menu-link.active {
+            color: var(--white);
+            background-color: rgba(255, 255, 255, 0.12);
+            border-left: 3px solid var(--visa-gold);
+        }
+        
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        .menu-text {
+            margin-left: var(--space-sm);
+            transition: opacity var(--transition-fast);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        
+        .menu-badge {
+            position: absolute;
+            top: 50%;
+            right: var(--space-md);
+            transform: translateY(-50%);
+            background-color: var(--visa-gold);
+            color: var(--visa-blue);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.15rem var(--space-xs);
+            border-radius: var(--radius-full);
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+        
+        .sidebar.collapsed .menu-badge {
+            right: var(--space-sm);
+            width: 8px;
+            height: 8px;
+            padding: 0;
+            font-size: 0;
+            min-width: 0;
+        }
+        
+        /* Contenido principal */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left var(--transition);
+            background-color: var(--gray-50);
+        }
+        
+        .sidebar.collapsed ~ .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+        
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            z-index: 40;
+            transition: left var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-lg);
+        }
+        
+        .sidebar.collapsed ~ .header {
+            left: var(--sidebar-collapsed);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space);
+        }
+        
+        .menu-toggle {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--visa-blue);
+            transition: all var(--transition);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .menu-toggle:hover {
+            background-color: var(--gray-100);
+            color: var(--visa-blue-light);
+        }
+        
+        .user-greeting {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .greeting-text {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+        
+        .user-name-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space);
+        }
+        
+        .header-action {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+            transition: all var(--transition);
+            position: relative;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .header-action:hover {
+            background-color: var(--gray-100);
+            color: var(--visa-blue);
+        }
+        
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            background-color: var(--visa-gold);
+            color: var(--visa-blue);
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--white);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: 5px;
+            padding-right: var(--space-sm);
+            border-radius: var(--radius-lg);
+            transition: all var(--transition);
+            border: 1px solid var(--gray-200);
+            cursor: pointer;
+        }
+        
+        .user-profile:hover {
+            background-color: var(--gray-100);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Page Content */
+        .page-content {
+            padding: calc(var(--header-height) + var(--space)) var(--space-lg) var(--space-lg);
+        }
+        
+        /* ===== COMPONENTES DE LA INTERFAZ ===== */
+        
+        /* Card */
+        .card {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all var(--transition);
+            height: 100%;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            padding: var(--space);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .card-title-icon {
+            color: var(--visa-gold);
+        }
+        
+        .card-body {
+            padding: var(--space);
+        }
+        
+        .card-footer {
+            padding: var(--space);
+            border-top: 1px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--gray-50);
+        }
+        
+        /* Botones */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space);
+            font-weight: 500;
+            border-radius: var(--radius);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--visa-blue);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--visa-blue-light);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--visa-blue);
+            border: 1px solid var(--visa-blue);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--gray-50);
+            transform: translateY(-1px);
+        }
+        
+        .btn-gold {
+            background-color: var(--visa-gold);
+            color: var(--visa-blue-dark);
+        }
+        
+        .btn-gold:hover {
+            background-color: var(--visa-gold-light);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--gray-100);
+            border-color: var(--gray-400);
+            transform: translateY(-1px);
+        }
+        
+        .btn-sm {
+            padding: var(--space-xxs) var(--space-sm);
+            font-size: 0.85rem;
+        }
+        
+        .btn-lg {
+            padding: var(--space) var(--space-lg);
+            font-size: 1.1rem;
+        }
+        
+        .btn-link {
+            padding: 0;
+            background: none;
+            color: var(--visa-blue);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xxs);
+        }
+        
+        .btn-link:hover {
+            color: var(--visa-blue-light);
+            text-decoration: underline;
+        }
+        
+        /* Grid Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .no-margin {
+            margin-bottom: 0;
+        }
+        
+        .col-span-3 { grid-column: span 3; }
+        .col-span-4 { grid-column: span 4; }
+        .col-span-5 { grid-column: span 5; }
+        .col-span-6 { grid-column: span 6; }
+        .col-span-7 { grid-column: span 7; }
+        .col-span-8 { grid-column: span 8; }
+        .col-span-9 { grid-column: span 9; }
+        .col-span-12 { grid-column: span 12; }
+        
+        /* Tarjeta de crédito */
+        .credit-card-container {
+            position: relative;
+            margin-top: var(--space);
+        }
+        
+        .credit-card {
+            width: 100%;
+            max-width: 360px;
+            height: 200px;
+            background: linear-gradient(135deg, var(--visa-blue) 0%, var(--visa-blue-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+            color: var(--white);
+            overflow: hidden;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            margin: 0 auto;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .credit-card:hover {
+            transform: rotateY(10deg) translateZ(5px);
+        }
+        
+        .credit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            z-index: 1;
+        }
+        
+        .card-decoration {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            bottom: -80px;
+            right: -60px;
+            z-index: 0;
+        }
+        
+        .card-decoration:nth-child(2) {
+            width: 100px;
+            height: 100px;
+            top: -30px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .card-chip {
+            width: 42px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--visa-gold), var(--visa-gold-light));
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-chip::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.15);
+            top: 50%;
+        }
+        
+        .card-chip::after {
+            content: '';
+            position: absolute;
+            height: 100%;
+            width: 1px;
+            background: rgba(0, 0, 0, 0.15);
+            left: 50%;
+        }
+        
+        .card-logo {
+            width: 60px;
+            height: auto;
+            filter: brightness(0) invert(1);
+        }
+        
+        .card-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.25rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin: var(--space-sm) 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 0;
+            border: none;
+            background: transparent;
+        }
+        
+        .card-holder, .card-expires {
+            text-transform: uppercase;
+        }
+        
+        .card-label {
+            font-size: 0.65rem;
+            opacity: 0.8;
+            margin-bottom: 3px;
+        }
+        
+        .card-value {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        /* Balance */
+        .balance-header {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: var(--space);
+        }
+        
+        .balance-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: var(--space-xs);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .currency-toggle {
+            display: flex;
+            background-color: var(--gray-100);
+            border-radius: var(--radius-full);
+            padding: 3px;
+            margin-left: auto;
+        }
+        
+        .currency-btn {
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        
+        .currency-btn.active {
+            background-color: var(--white);
+            color: var(--visa-blue);
+            box-shadow: var(--shadow-xs);
+        }
+        
+        .currency-flag {
+            width: 24px;
+            height: 16px;
+            border-radius: 2px;
+            margin-right: var(--space-xs);
+            object-fit: cover;
+            vertical-align: middle;
+        }
+        
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .balance-currency {
+            font-size: 1.5rem;
+            color: var(--gray-700);
+        }
+        
+        .balance-secondary {
+            font-size: 1rem;
+            color: var(--gray-600);
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .exchange-rate {
+            background-color: rgba(247, 182, 0, 0.1);
+            color: var(--visa-gold-dark);
+            padding: 4px 8px;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: var(--space-xs);
+        }
+        
+        .balance-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            background-color: rgba(0, 171, 78, 0.1);
+            color: var(--visa-success);
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: var(--space-sm);
+        }
+        
+        /* Operation Buttons */
+        .operations-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space);
+            margin-top: var(--space);
+        }
+        
+        .operation-button {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space);
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            cursor: pointer;
+            border: 1px solid var(--gray-200);
+            height: 100%;
+        }
+        
+        .operation-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--visa-gold);
+        }
+        
+        .operation-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius);
+            background-color: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--visa-blue);
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+        
+        .operation-button:hover .operation-icon {
+            background-color: var(--visa-blue);
+            color: var(--white);
+        }
+        
+        .operation-content {
+            flex: 1;
+        }
+        
+        .operation-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--gray-800);
+            margin-bottom: 2px;
+        }
+        
+        .operation-description {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+        
+        /* Transactions */
+        .transactions-container {
+            margin-top: var(--space);
+        }
+        
+        .transaction-filters {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            margin-bottom: var(--space);
+        }
+        
+        .filter-btn {
+            padding: var(--space-xs) var(--space);
+            background-color: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            transition: all var(--transition);
+        }
+        
+        .filter-btn:hover {
+            background-color: var(--gray-100);
+            color: var(--visa-blue);
+            transform: translateY(-1px);
+        }
+        
+        .filter-btn.active {
+            background-color: var(--visa-blue);
+            color: var(--white);
+            border-color: var(--visa-blue);
+        }
+        
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space);
+            padding: var(--space);
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            border: 1px solid var(--gray-200);
+            cursor: pointer;
+        }
+        
+        .transaction-item:hover {
+            background-color: var(--gray-50);
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+        
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .transaction-icon.income {
+            background-color: rgba(0, 171, 78, 0.1);
+            color: var(--visa-success);
+        }
+        
+        .transaction-icon.expense {
+            background-color: rgba(210, 39, 48, 0.1);
+            color: var(--visa-danger);
+        }
+        
+        .transaction-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .transaction-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--gray-800);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .transaction-details {
+            display: flex;
+            align-items: center;
+            gap: var(--space);
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+        
+        .transaction-category {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .transaction-date {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .transaction-amount {
+            margin-left: auto;
+            font-weight: 600;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+        
+        .amount-income {
+            color: var(--visa-success);
+        }
+        
+        .amount-expense {
+            color: var(--visa-danger);
+        }
+        
+        /* Quick Actions */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space);
+        }
+        
+        .quick-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: var(--space);
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            cursor: pointer;
+            border: 1px solid var(--gray-200);
+            height: 100%;
+        }
+        
+        .quick-action:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--visa-gold);
+        }
+        
+        .action-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: var(--radius-full);
+            background-color: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--visa-blue);
+            margin-bottom: var(--space-sm);
+            transition: all var(--transition);
+        }
+        
+        .quick-action:hover .action-icon {
+            background-color: var(--visa-blue);
+            color: var(--white);
+        }
+        
+        .action-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+        }
+        
+        .action-description {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        
+        /* Servicios */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space);
+            margin-top: var(--space-sm);
+        }
+        
+        .service-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: var(--space-sm);
+            background-color: var(--white);
+            border-radius: var(--radius);
+            transition: all var(--transition);
+            cursor: pointer;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .service-item:hover {
+            background-color: var(--gray-50);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--visa-gold);
+        }
+        
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius);
+            background-color: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--visa-blue);
+            margin-bottom: var(--space-xs);
+            transition: all var(--transition);
+        }
+        
+        .service-item:hover .service-icon {
+            background-color: var(--visa-blue);
+            color: var(--white);
+        }
+        
+        .service-name {
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--gray-800);
+        }
+        
+        /* Seguridad */
+        .security-badge {
+            display: flex;
+            align-items: center;
+            padding: var(--space-xs) var(--space-sm);
+            background-color: rgba(0, 171, 78, 0.1);
+            color: var(--visa-success);
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: var(--space);
+        }
+        
+        .security-badge i {
+            margin-right: 4px;
+        }
+        
+        /* Visa Secure */
+        .visa-secure {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xxs) var(--space-xs);
+            background-color: rgba(26, 31, 113, 0.1);
+            color: var(--visa-blue);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* Help Button */
+        .help-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-full);
+            background-color: var(--visa-gold);
+            color: var(--visa-blue-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            z-index: 50;
+            transition: all var(--transition);
+        }
+        
+        .help-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(247, 182, 0, 0.3);
+        }
+
+        /* Chat Button */
+        .chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 82px;
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-full);
+            background-color: var(--visa-blue);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            z-index: 50;
+            transition: all var(--transition);
+        }
+        
+        .chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(26, 31, 113, 0.3);
+        }
+        
+        /* Support Button */
+        .support-button {
+            position: fixed;
+            bottom: 20px;
+            right: 144px;
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-full);
+            background-color: var(--visa-cyan);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            z-index: 50;
+            transition: all var(--transition);
+        }
+        
+        .support-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(0, 161, 223, 0.3);
+        }
+        
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fadeInUp {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.05s; }
+        .delay-2 { animation-delay: 0.1s; }
+        .delay-3 { animation-delay: 0.15s; }
+        .delay-4 { animation-delay: 0.2s; }
+        .delay-5 { animation-delay: 0.25s; }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--white);
+            z-index: 50;
+            box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .mobile-menu-items {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            padding: var(--space-xs) 0;
+        }
+        
+        .mobile-menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--space-xs);
+            color: var(--gray-600);
+            transition: all var(--transition);
+        }
+        
+        .mobile-menu-item.active {
+            color: var(--visa-blue);
+        }
+        
+        .mobile-menu-icon {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+        }
+        
+        .mobile-menu-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .col-lg-12 { grid-column: span 12; }
+            .col-lg-6 { grid-column: span 6; }
+            .col-lg-4 { grid-column: span 4; }
+            
+            .dashboard-grid, .dashboard-row {
+                gap: var(--space);
+            }
+            
+            .page-content {
+                padding-left: var(--space);
+                padding-right: var(--space);
+            }
+            
+            .operations-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .col-md-12 { grid-column: span 12; }
+            .col-md-6 { grid-column: span 6; }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 100;
+            }
+            
+            .sidebar.mobile-active {
+                transform: translateX(0);
+            }
+            
+            .header, .main-content {
+                margin-left: 0 !important;
+            }
+            
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 99;
+            }
+            
+            .overlay.active {
+                display: block;
+            }
+            
+            .header {
+                left: 0;
+                padding: 0 var(--space);
+            }
+            
+            .greeting-text {
+                display: none;
+            }
+            
+            .user-name-header {
+                font-size: 1rem;
+            }
+            
+            .user-info {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .page-content {
+                padding-bottom: calc(var(--space) + 60px);
+            }
+            
+            .help-button, .chat-button, .support-button {
+                bottom: 80px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .col-sm-12 { grid-column: span 12; }
+            .col-sm-6 { grid-column: span 6; }
+            
+            .dashboard-grid, .dashboard-row {
+                gap: var(--space-sm);
+            }
+            
+            .operations-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header-action {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .credit-card {
+                height: 180px;
+            }
+            
+            .card-number {
+                font-size: 1.1rem;
+                margin: var(--space-xs) 0;
+            }
+            
+            .balance-amount {
+                font-size: 2rem;
+            }
+            
+            .transaction-item {
+                padding: var(--space-sm);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .col-xs-12 { grid-column: span 12; }
+            
+            .page-content {
+                padding: calc(var(--header-height) + var(--space-sm)) var(--space-sm) var(--space-sm);
+            }
+            
+            .credit-card {
+                height: 160px;
+                padding: var(--space);
+            }
+            
+            .card-number {
+                font-size: 0.95rem;
+                letter-spacing: 1px;
+            }
+            
+            .user-name-header {
+                font-size: 0.9rem;
+            }
+            
+            .balance-amount {
+                font-size: 1.8rem;
+            }
+            
+            .card-header, .card-body, .card-footer {
+                padding: var(--space-sm);
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .security-badge {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="VISA Logo">
+                    <span class="logo-text">Remeex</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-header">
+                        <div class="menu-title">Principal</div>
+                    </div>
+                    <ul>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link active">
+                                <div class="menu-icon"><i class="fas fa-home"></i></div>
+                                <span class="menu-text">Inicio</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-exchange-alt"></i></div>
+                                <span class="menu-text">Transferencias</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-credit-card"></i></div>
+                                <span class="menu-text">Tarjetas</span>
+                                <span class="menu-badge">2</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-history"></i></div>
+                                <span class="menu-text">Movimientos</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="menu-section">
+                    <div class="menu-header">
+                        <div class="menu-title">Servicios</div>
+                    </div>
+                    <ul>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-mobile-alt"></i></div>
+                                <span class="menu-text">Recargas</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-file-invoice"></i></div>
+                                <span class="menu-text">Pagar Servicios</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-gift"></i></div>
+                                <span class="menu-text">Tarjetas Regalo</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-globe"></i></div>
+                                <span class="menu-text">Cambio de Divisa</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="menu-section">
+                    <div class="menu-header">
+                        <div class="menu-title">Mi Cuenta</div>
+                    </div>
+                    <ul>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-user"></i></div>
+                                <span class="menu-text">Perfil</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-shield-alt"></i></div>
+                                <span class="menu-text">Seguridad</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-bell"></i></div>
+                                <span class="menu-text">Notificaciones</span>
+                                <span class="menu-badge">5</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+                                <span class="menu-text">Cerrar Sesión</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Overlay for mobile -->
+        <div class="overlay" id="overlay"></div>
+        
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="user-greeting">
+                    <span class="greeting-text">Bienvenido</span>
+                    <h1 class="user-name-header">Carlos Rodríguez</h1>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i>
+                    <span>Conexión segura</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-action" aria-label="Buscar">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="header-action" aria-label="Notificaciones">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </button>
+                <button class="header-action" aria-label="Configuración">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/76.jpg" alt="Foto de perfil">
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">Carlos Rodríguez</div>
+                        <div class="user-role">Premium <i class="fas fa-crown" style="color: var(--visa-gold); font-size: 0.7rem;"></i></div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.8rem; color: var(--gray-500); margin-left: 4px;"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-content">
+                <!-- Dashboard Grid -->
+                <div class="dashboard-row animate-fadeInUp delay-1">
+                    <div class="col-span-7 col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-wallet card-title-icon"></i>
+                                    Saldo disponible
+                                </div>
+                                <div class="visa-secure">
+                                    <i class="fas fa-shield-alt"></i>
+                                    VISA Secure
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="balance-header">
+                                    <div class="balance-title">
+                                        <span>Balance actual</span>
+                                        <div class="currency-toggle">
+                                            <button class="currency-btn active" id="toggleVES">VES</button>
+                                            <button class="currency-btn" id="toggleUSD">USD</button>
+                                        </div>
+                                    </div>
+                                    <div class="balance-amount" id="balanceAmount">
+                                        <span class="balance-currency" id="currencySymbol">Bs</span>
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/Flag_of_Venezuela.svg" 
+                                             class="currency-flag" alt="Venezuela" id="currencyFlag">
+                                        15.245,50
+                                        <span class="balance-trend">
+                                            <i class="fas fa-arrow-up"></i> 8.5%
+                                        </span>
+                                    </div>
+                                    <div class="balance-secondary" id="secondaryBalance">
+                                        ≈ 149,46 USD
+                                        <span class="exchange-rate">
+                                            <i class="fas fa-exchange-alt"></i> 1 USD = 102 Bs
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="operations-container">
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Transferir</div>
+                                            <div class="operation-description">A cuentas</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-qrcode"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Pagar QR</div>
+                                            <div class="operation-description">Rápido</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-plus"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Agregar</div>
+                                            <div class="operation-description">Fondos</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Servicios</div>
+                                            <div class="operation-description">Facturas</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-span-5 col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-credit-card card-title-icon"></i>
+                                    Tarjeta principal
+                                </div>
+                                <button class="btn btn-outline btn-sm">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="credit-card-container">
+                                    <div class="credit-card" id="creditCard">
+                                        <div class="card-decoration"></div>
+                                        <div class="card-decoration"></div>
+                                        <div class="card-content">
+                                            <div class="card-top">
+                                                <div class="card-chip"></div>
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" class="card-logo">
+                                            </div>
+                                            <div class="card-number">**** **** **** 4578</div>
+                                            <div class="card-footer">
+                                                <div class="card-holder">
+                                                    <div class="card-label">Titular</div>
+                                                    <div class="card-value">Carlos Rodríguez</div>
+                                                </div>
+                                                <div class="card-expires">
+                                                    <div class="card-label">Vence</div>
+                                                    <div class="card-value">04/27</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Funcionalidades adicionales -->
+                <div class="dashboard-row animate-fadeInUp delay-2">
+                    <div class="col-span-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-bolt card-title-icon"></i>
+                                    Servicios financieros
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="operations-container">
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-exchange-alt"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Convertir</div>
+                                            <div class="operation-description">Cambiar divisa</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-chart-line"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Invertir</div>
+                                            <div class="operation-description">Gana intereses</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Seguros</div>
+                                            <div class="operation-description">Protección</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-hand-holding-heart"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Donar</div>
+                                            <div class="operation-description">Ayuda social</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="operations-container" style="margin-top: var(--space-md);">
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-university"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Crear cuenta</div>
+                                            <div class="operation-description">Recibir fondos</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-credit-card"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Tarjeta virtual</div>
+                                            <div class="operation-description">Compras seguras</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Alertas</div>
+                                            <div class="operation-description">Notificaciones</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-button">
+                                        <div class="operation-icon">
+                                            <i class="fas fa-calculator"></i>
+                                        </div>
+                                        <div class="operation-content">
+                                            <div class="operation-title">Conversor</div>
+                                            <div class="operation-description">Calculadora</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Transactions -->
+                <div class="dashboard-row animate-fadeInUp delay-3">
+                    <div class="col-span-8 col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-history card-title-icon"></i>
+                                    Movimientos recientes
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline btn-sm">
+                                        <i class="fas fa-filter"></i>
+                                        <span>Filtrar</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="transaction-filters">
+                                    <button class="filter-btn active">Todas</button>
+                                    <button class="filter-btn">Ingresos</button>
+                                    <button class="filter-btn">Gastos</button>
+                                    <button class="filter-btn">Pendientes</button>
+                                </div>
+                                <div class="transactions-list">
+                                    <div class="transaction-item">
+                                        <div class="transaction-icon income">
+                                            <i class="fas fa-arrow-down"></i>
+                                        </div>
+                                        <div class="transaction-content">
+                                            <div class="transaction-title">Transferencia recibida</div>
+                                            <div class="transaction-details">
+                                                <div class="transaction-category">
+                                                    <i class="fas fa-tag" style="font-size: 0.7rem;"></i>
+                                                    Ingresos
+                                                </div>
+                                                <div class="transaction-date">
+                                                    <i class="fas fa-clock" style="font-size: 0.7rem;"></i>
+                                                    Hoy, 10:30
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="transaction-amount amount-income">+1.500,00 Bs</div>
+                                    </div>
+                                    <div class="transaction-item">
+                                        <div class="transaction-icon expense">
+                                            <i class="fas fa-arrow-up"></i>
+                                        </div>
+                                        <div class="transaction-content">
+                                            <div class="transaction-title">Pago de servicio</div>
+                                            <div class="transaction-details">
+                                                <div class="transaction-category">
+                                                    <i class="fas fa-tag" style="font-size: 0.7rem;"></i>
+                                                    Servicios
+                                                </div>
+                                                <div class="transaction-date">
+                                                    <i class="fas fa-clock" style="font-size: 0.7rem;"></i>
+                                                    Ayer, 15:45
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="transaction-amount amount-expense">-450,50 Bs</div>
+                                    </div>
+                                    <div class="transaction-item">
+                                        <div class="transaction-icon income">
+                                            <i class="fas fa-arrow-down"></i>
+                                        </div>
+                                        <div class="transaction-content">
+                                            <div class="transaction-title">Depósito Bancario</div>
+                                            <div class="transaction-details">
+                                                <div class="transaction-category">
+                                                    <i class="fas fa-tag" style="font-size: 0.7rem;"></i>
+                                                    Ingresos
+                                                </div>
+                                                <div class="transaction-date">
+                                                    <i class="fas fa-clock" style="font-size: 0.7rem;"></i>
+                                                    22 Abr, 09:20
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="transaction-amount amount-income">+3.500,00 Bs</div>
+                                    </div>
+                                    <div class="transaction-item">
+                                        <div class="transaction-icon expense">
+                                            <i class="fas fa-arrow-up"></i>
+                                        </div>
+                                        <div class="transaction-content">
+                                            <div class="transaction-title">Retiro a Banco</div>
+                                            <div class="transaction-details">
+                                                <div class="transaction-category">
+                                                    <i class="fas fa-tag" style="font-size: 0.7rem;"></i>
+                                                    Retiros
+                                                </div>
+                                                <div class="transaction-date">
+                                                    <i class="fas fa-clock" style="font-size: 0.7rem;"></i>
+                                                    20 Abr, 14:15
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="transaction-amount amount-expense">-1.200,00 Bs</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="#" class="btn-link">
+                                    Ver todos los movimientos
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-span-4 col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-th card-title-icon"></i>
+                                    Servicios populares
+                                </div>
+                                <button class="btn btn-outline btn-sm">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="services-grid">
+                                    <div class="service-item">
+                                        <div class="service-icon">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </div>
+                                        <div class="service-name">Recargas</div>
+                                    </div>
+                                    <div class="service-item">
+                                        <div class="service-icon">
+                                            <i class="fas fa-lightbulb"></i>
+                                        </div>
+                                        <div class="service-name">Luz</div>
+                                    </div>
+                                    <div class="service-item">
+                                        <div class="service-icon">
+                                            <i class="fas fa-wifi"></i>
+                                        </div>
+                                        <div class="service-name">Internet</div>
+                                    </div>
+                                    <div class="service-item">
+                                        <div class="service-icon">
+                                            <i class="fas fa-tv"></i>
+                                        </div>
+                                        <div class="service-name">TV Cable</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="#" class="btn-link">
+                                    Ver todos los servicios
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="dashboard-row no-margin animate-fadeInUp delay-4">
+                    <div class="col-span-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-bolt card-title-icon"></i>
+                                    Acciones rápidas
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="actions-grid">
+                                    <div class="quick-action">
+                                        <div class="action-icon">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </div>
+                                        <div class="action-title">Transferir</div>
+                                        <div class="action-description">A otros bancos</div>
+                                    </div>
+                                    <div class="quick-action">
+                                        <div class="action-icon">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </div>
+                                        <div class="action-title">Recargar</div>
+                                        <div class="action-description">Saldo móvil</div>
+                                    </div>
+                                    <div class="quick-action">
+                                        <div class="action-icon">
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        <div class="action-title">Beneficios</div>
+                                        <div class="action-description">Promociones</div>
+                                    </div>
+                                    <div class="quick-action">
+                                        <div class="action-icon">
+                                            <i class="fas fa-gift"></i>
+                                        </div>
+                                        <div class="action-title">Regalos</div>
+                                        <div class="action-description">Tarjetas</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <nav class="mobile-menu">
+        <div class="mobile-menu-items">
+            <a href="#" class="mobile-menu-item active">
+                <div class="mobile-menu-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="mobile-menu-label">Inicio</div>
+            </a>
+            <a href="#" class="mobile-menu-item">
+                <div class="mobile-menu-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="mobile-menu-label">Transferir</div>
+            </a>
+            <a href="#" class="mobile-menu-item">
+                <div class="mobile-menu-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <div class="mobile-menu-label">Tarjetas</div>
+            </a>
+            <a href="#" class="mobile-menu-item">
+                <div class="mobile-menu-icon">
+                    <i class="fas fa-th"></i>
+                </div>
+                <div class="mobile-menu-label">Servicios</div>
+            </a>
+            <a href="#" class="mobile-menu-item">
+                <div class="mobile-menu-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="mobile-menu-label">Perfil</div>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Help Button -->
+    <div class="help-button" id="helpButton" aria-label="Ayuda">
+        <i class="fas fa-question"></i>
+    </div>
+    
+    <!-- Chat Button -->
+    <div class="chat-button" id="chatButton" aria-label="Chat en vivo">
+        <i class="fas fa-comments"></i>
+    </div>
+    
+    <!-- Support Button -->
+    <div class="support-button" id="supportButton" aria-label="Atención al cliente">
+        <i class="fas fa-headset"></i>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const creditCard = document.getElementById('creditCard');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const isMobile = window.innerWidth < 992;
+            
+            // Toggle sidebar
+            menuToggle.addEventListener('click', function() {
+                if (isMobile) {
+                    sidebar.classList.toggle('mobile-active');
+                    overlay.classList.toggle('active');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                }
+            });
+            
+            // Close sidebar when clicking overlay
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('mobile-active');
+                overlay.classList.remove('active');
+            });
+            
+            // Credit Card 3D effect
+            document.addEventListener('mousemove', function(e) {
+                if (!isMobile && creditCard) {
+                    const cardRect = creditCard.getBoundingClientRect();
+                    const cardCenterX = cardRect.left + cardRect.width / 2;
+                    const cardCenterY = cardRect.top + cardRect.height / 2;
+                    
+                    // Calculate distance from mouse to center
+                    const distX = e.clientX - cardCenterX;
+                    const distY = e.clientY - cardCenterY;
+                    
+                    // Apply rotation if mouse is near the card
+                    if (Math.abs(distX) < cardRect.width * 2 && Math.abs(distY) < cardRect.height * 2) {
+                        const rotateY = (distX / (cardRect.width * 2)) * 12;
+                        const rotateX = (distY / (cardRect.height * 2)) * -12;
+                        creditCard.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+                    }
+                }
+            });
+            
+            // Reset card rotation
+            document.addEventListener('mouseleave', function() {
+                if (creditCard) {
+                    creditCard.style.transform = 'rotateY(0deg) rotateX(0deg)';
+                }
+            });
+            
+            // Transaction Filters
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Currency toggle
+            const toggleVES = document.getElementById('toggleVES');
+            const toggleUSD = document.getElementById('toggleUSD');
+            const balanceAmount = document.getElementById('balanceAmount');
+            const secondaryBalance = document.getElementById('secondaryBalance');
+            const currencySymbol = document.getElementById('currencySymbol');
+            const currencyFlag = document.getElementById('currencyFlag');
+            
+            toggleVES.addEventListener('click', function() {
+                if (!this.classList.contains('active')) {
+                    this.classList.add('active');
+                    toggleUSD.classList.remove('active');
+                    balanceAmount.innerHTML = `
+                        <span class="balance-currency" id="currencySymbol">Bs</span>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/Flag_of_Venezuela.svg" 
+                             class="currency-flag" alt="Venezuela" id="currencyFlag">
+                        15.245,50
+                        <span class="balance-trend">
+                            <i class="fas fa-arrow-up"></i> 8.5%
+                        </span>
+                    `;
+                    secondaryBalance.innerHTML = `
+                        ≈ 149,46 USD
+                        <span class="exchange-rate">
+                            <i class="fas fa-exchange-alt"></i> 1 USD = 102 Bs
+                        </span>
+                    `;
+                }
+            });
+            
+            toggleUSD.addEventListener('click', function() {
+                if (!this.classList.contains('active')) {
+                    this.classList.add('active');
+                    toggleVES.classList.remove('active');
+                    balanceAmount.innerHTML = `
+                        <span class="balance-currency" id="currencySymbol">$</span>
+                        <img src="https://flagcdn.com/us.svg" 
+                             class="currency-flag" alt="USA" id="currencyFlag">
+                        149,46
+                        <span class="balance-trend">
+                            <i class="fas fa-arrow-up"></i> 3.2%
+                        </span>
+                    `;
+                    secondaryBalance.innerHTML = `
+                        ≈ 15.245,50 Bs
+                        <span class="exchange-rate">
+                            <i class="fas fa-exchange-alt"></i> 1 USD = 102 Bs
+                        </span>
+                    `;
+                }
+            });
+            
+            // Chat and support buttons
+            const chatButton = document.getElementById('chatButton');
+            const supportButton = document.getElementById('supportButton');
+            
+            chatButton.addEventListener('click', function() {
+                alert('Iniciando chat en vivo...');
+            });
+            
+            supportButton.addEventListener('click', function() {
+                alert('Conectando con atención al cliente...');
+            });
+            
+            // Responsive adjustments
+            window.addEventListener('resize', function() {
+                const newIsMobile = window.innerWidth < 992;
+                
+                // If transitioning between mobile and desktop
+                if (newIsMobile !== isMobile) {
+                    // If transitioning to desktop, remove mobile classes
+                    if (!newIsMobile) {
+                        sidebar.classList.remove('mobile-active');
+                        overlay.classList.remove('active');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

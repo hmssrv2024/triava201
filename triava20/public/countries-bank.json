@@ -1,0 +1,376 @@
+{
+  "Argentina": {
+    "banks": [
+      "Banco de la Nación Argentina",
+      "Banco Provincia de Buenos Aires",
+      "Banco Ciudad de Buenos Aires",
+      "Banco de Galicia y Buenos Aires (Banco Galicia)",
+      "BBVA Argentina",
+      "Banco Santander Argentina",
+      "Banco Macro",
+      "Banco Supervielle",
+      "Banco Patagonia",
+      "HSBC Argentina",
+      "ICBC Argentina",
+      "Banco Comafi",
+      "Banco Credicoop",
+      "Banco Columbia",
+      "Banco Hipotecario",
+      "Banco del Sol",
+      "Banco Piano",
+      "Brubank",
+      "Ualá",
+      "Naranja X",
+      "Prex (AR)",
+      "Reba",
+      "Mercado Pago"
+    ]
+  },
+  "Bolivia": {
+    "banks": [
+      "Banco Nacional de Bolivia (BNB)",
+      "Banco Mercantil Santa Cruz",
+      "Banco Unión",
+      "Banco de Crédito de Bolivia (BCP)",
+      "Banco Bisa",
+      "Banco Económico",
+      "Banco Ganadero",
+      "BancoSol",
+      "Banco Fortaleza",
+      "Tigo Money",
+      "Simple (BNB Digital)"
+    ]
+  },
+  "Brasil": {
+    "banks": [
+      "Itaú Unibanco",
+      "Bradesco",
+      "Banco do Brasil",
+      "Caixa Econômica Federal",
+      "Santander Brasil",
+      "BTG Pactual",
+      "Banco Safra",
+      "Banrisul",
+      "Banco Pan",
+      "Banco Votorantim (BV)",
+      "Banco BMG",
+      "Banco Daycoval",
+      "Banco Sofisa",
+      "Banco Inter",
+      "Nubank",
+      "C6 Bank",
+      "Neon",
+      "Banco Original",
+      "Next",
+      "iti Itaú",
+      "PagBank",
+      "PicPay",
+      "Mercado Pago Brasil",
+      "Banco BS2",
+      "Banco Modal (modalmais)",
+      "XP Banco"
+    ]
+  },
+  "Chile": {
+    "banks": [
+      "Banco de Chile",
+      "BancoEstado",
+      "Banco Santander Chile",
+      "BCI",
+      "Scotiabank Chile",
+      "Itaú Chile",
+      "Banco Security",
+      "Banco Falabella",
+      "Banco Ripley",
+      "Banco Consorcio",
+      "Banco BICE",
+      "Banco Internacional",
+      "Tenpo",
+      "MACH"
+    ]
+  },
+  "Colombia": {
+    "banks": [
+      "Bancolombia",
+      "Banco de Bogotá",
+      "Davivienda",
+      "BBVA Colombia",
+      "Banco de Occidente",
+      "Banco Popular",
+      "Scotiabank Colpatria",
+      "Itaú Colombia",
+      "Banco AV Villas",
+      "Banco GNB Sudameris",
+      "Banco Caja Social",
+      "Banco Agrario de Colombia",
+      "Banco Pichincha Colombia",
+      "Banco W",
+      "Banco Finandina",
+      "Nequi",
+      "Daviplata",
+      "Lulo Bank",
+      "RappiPay",
+      "Nubank Colombia",
+      "Movii"
+    ]
+  },
+  "Costa Rica": {
+    "banks": [
+      "Banco Nacional de Costa Rica",
+      "Banco de Costa Rica",
+      "BAC Credomatic",
+      "Scotiabank Costa Rica",
+      "Davivienda Costa Rica",
+      "Banco Popular y de Desarrollo Comunal",
+      "Banco Promerica Costa Rica",
+      "Banco Lafise Costa Rica",
+      "Banco BCT"
+    ]
+  },
+  "Cuba": {
+    "banks": [
+      "Banco de Crédito y Comercio (BANDEC)",
+      "Banco Popular de Ahorro (BPA)",
+      "Banco Metropolitano",
+      "Banco Internacional de Comercio S.A. (BICSA)"
+    ]
+  },
+  "República Dominicana": {
+    "banks": [
+      "Banreservas",
+      "Banco Popular Dominicano",
+      "Banco BHD León",
+      "Scotiabank República Dominicana",
+      "Banco Santa Cruz",
+      "Banco Caribe",
+      "Banco Promerica República Dominicana",
+      "Banco Lafise RD",
+      "Banco Múltiple Ademi",
+      "Banco Vimenca",
+      "Banco BDI",
+      "Qik"
+    ]
+  },
+  "Ecuador": {
+    "banks": [
+      "Banco Pichincha",
+      "Banco Guayaquil",
+      "Produbanco",
+      "Banco del Pacífico",
+      "Banco Internacional",
+      "Banco Bolivariano",
+      "Banco del Austro",
+      "Banco General Rumiñahui",
+      "Banco Solidario",
+      "Banco de Machala"
+    ]
+  },
+  "El Salvador": {
+    "banks": [
+      "Banco Agrícola",
+      "Davivienda El Salvador",
+      "Banco Cuscatlán",
+      "BAC Credomatic El Salvador",
+      "Banco Promerica El Salvador",
+      "Banco Hipotecario de El Salvador",
+      "Banco Azul de El Salvador",
+      "Chivo Wallet"
+    ]
+  },
+  "Guatemala": {
+    "banks": [
+      "Banco Industrial",
+      "G&T Continental",
+      "Banrural",
+      "BAC Credomatic Guatemala",
+      "Banco Agromercantil (BAM)",
+      "Bantrab (Banco de los Trabajadores)",
+      "Banco Promerica Guatemala",
+      "Crédito Hipotecario Nacional (CHN)",
+      "Banco Azteca Guatemala",
+      "Tigo Money Guatemala"
+    ]
+  },
+  "Haití": {
+    "banks": [
+      "Unibank",
+      "Sogebank",
+      "Banque Nationale de Crédit (BNC)",
+      "Capital Bank",
+      "Banque de l'Union Haïtienne (BUH)",
+      "MonCash"
+    ]
+  },
+  "Honduras": {
+    "banks": [
+      "Banco Atlántida",
+      "Banco de Occidente",
+      "Banco Ficohsa",
+      "BAC Credomatic Honduras",
+      "Davivienda Honduras",
+      "Banco Promerica Honduras",
+      "Banco Lafise Honduras",
+      "Banrural Honduras",
+      "Tigo Money Honduras"
+    ]
+  },
+  "México": {
+    "banks": [
+      "BBVA México",
+      "Citibanamex",
+      "Santander México",
+      "Banorte",
+      "HSBC México",
+      "Scotiabank México",
+      "Banco Azteca",
+      "BanCoppel",
+      "Banco del Bajío",
+      "Banca Mifel",
+      "Afirme",
+      "Banregio",
+      "Inbursa",
+      "Monex",
+      "Intercam Banco",
+      "Bansi",
+      "Banco Sabadell México",
+      "Actinver",
+      "Banco Ve por Más (BX+)",
+      "Compartamos Banco",
+      "Nu México (Nubank)",
+      "albo",
+      "Klar",
+      "Stori",
+      "Fondeadora",
+      "Hey Banco",
+      "Cuenca",
+      "Spin by OXXO",
+      "RappiCard México",
+      "Ualá México",
+      "Mercado Pago México",
+      "Kueski Pay"
+    ]
+  },
+  "Nicaragua": {
+    "banks": [
+      "Banpro (Banco de la Producción)",
+      "BAC Credomatic Nicaragua",
+      "Banco Lafise Bancentro",
+      "Banco de Finanzas (BDF)",
+      "Avanz",
+      "Tigo Money Nicaragua"
+    ]
+  },
+  "Panamá": {
+    "banks": [
+      "Banco General",
+      "Banistmo",
+      "Global Bank",
+      "BAC Credomatic Panamá",
+      "Caja de Ahorros",
+      "Banesco Panamá",
+      "Multibank",
+      "Banco Nacional de Panamá",
+      "Scotiabank Panamá",
+      "Towerbank",
+      "Canal Bank",
+      "Banco Aliado",
+      "Banisi",
+      "Banco Delta",
+      "St. Georges Bank & Co.",
+      "Metrobank",
+      "Nequi Panamá",
+      "Yappy"
+    ]
+  },
+  "Paraguay": {
+    "banks": [
+      "Banco Itaú Paraguay",
+      "Banco Continental",
+      "Banco Regional",
+      "Visión Banco",
+      "Banco Familiar",
+      "Banco GNB Paraguay",
+      "Banco Basa",
+      "Banco Atlas",
+      "Sudameris Bank Paraguay",
+      "Banco Nacional de Fomento",
+      "ueno bank",
+      "Zimple",
+      "Tigo Money Paraguay",
+      "Personal Pay"
+    ]
+  },
+  "Perú": {
+    "banks": [
+      "Banco de Crédito del Perú (BCP)",
+      "BBVA Perú",
+      "Scotiabank Perú",
+      "Interbank",
+      "Banco de la Nación",
+      "BanBif",
+      "Mibanco",
+      "Banco Pichincha Perú",
+      "Banco Falabella Perú",
+      "Banco Ripley Perú",
+      "Citibank del Perú",
+      "Banco GNB Perú",
+      "Banco de Comercio",
+      "Yape",
+      "Plin",
+      "RappiBank Perú",
+      "B89"
+    ]
+  },
+  "Puerto Rico": {
+    "banks": [
+      "Banco Popular de Puerto Rico",
+      "FirstBank Puerto Rico",
+      "Oriental Bank",
+      "Banco Cooperativo de Puerto Rico",
+      "ATH Móvil"
+    ]
+  },
+  "Uruguay": {
+    "banks": [
+      "Banco de la República Oriental del Uruguay (BROU)",
+      "Santander Uruguay",
+      "BBVA Uruguay",
+      "Scotiabank Uruguay",
+      "Itaú Uruguay",
+      "HSBC Uruguay",
+      "Bandes Uruguay",
+      "Banque Heritage (Uruguay)",
+      "Prex Uruguay"
+    ]
+  },
+  "Guyana": {
+    "banks": [
+      "Republic Bank (Guyana) Limited",
+      "Demerara Bank",
+      "Guyana Bank for Trade and Industry (GBTI)",
+      "Citizens Bank Guyana",
+      "Bank of Baroda Guyana",
+      "MMG (Mobile Money Guyana)"
+    ]
+  },
+  "Surinam": {
+    "banks": [
+      "De Surinaamsche Bank (DSB)",
+      "Hakrinbank",
+      "Finabank",
+      "Trustbank Amanah",
+      "TRiOS (fintech/ecosistema)"
+    ]
+  },
+  "Belice": {
+    "banks": [
+      "Belize Bank",
+      "Heritage Bank",
+      "Atlantic Bank",
+      "National Bank of Belize",
+      "Caye International Bank",
+      "E-Kyash",
+      "DigiWallet"
+    ]
+  }
+}

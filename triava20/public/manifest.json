@@ -1,0 +1,101 @@
+{
+  "name": "Remeex VISA",
+  "short_name": "Remeex",
+  "id": "./",
+  "description": "Remeex VISA: transferencias globales sin comisiones.",
+  "start_url": "/",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay"],
+  "title_bar_overlay": {
+    "color": "#1434CB",
+    "foreground_color": "#FFFFFF"
+  },
+  "background_color": "#1434CB",
+  "theme_color": "#1434CB",
+  "orientation": "portrait",
+  "dir": "ltr",
+  "lang": "es-ES",
+  "iarc_rating_id": "NOT-YET-RATED",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "edge_side_panel": {
+    "preferred_width": 500
+  },
+  "file_handlers": [
+    {
+      "action": "abrir",
+      "accept": {
+        "text/plain": [".txt"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "handle_links": "preferred",
+  "categories": ["finance", "payments"],
+  "screenshots": [
+    {
+      "src": "screenshotremeexpremium1.jpg",
+      "sizes": "768x1408",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshotremeexpremium3.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.remeex.app",
+      "id": "com.remeex.app"
+    }
+  ],
+  "scope_extensions": [
+    {
+      "origin": "https://remeex.com"
+    }
+  ],
+  "icons": [
+    {
+      "src": "icons8-visa-color-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icons8-visa-color-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icons8-visa-color-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icons8-visa-color-152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "icons8-visa-color-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "visablu192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "visablu512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

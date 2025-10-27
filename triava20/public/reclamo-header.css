@@ -1,0 +1,190 @@
+.main-container { padding-top: var(--header-height); }
+.header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--neutral-100);
+  border-bottom: 1px solid var(--neutral-300);
+  box-shadow: var(--shadow-sm);
+  z-index: 1000;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+}
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.welcome-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.greeting {
+  font-size: 0.85rem;
+  color: var(--neutral-600);
+}
+.user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+.users-online {
+  font-size: 0.7rem;
+  color: var(--neutral-500);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.users-online::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulse 1.5s infinite;
+}
+.header-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+.balance-card-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--card-gradient);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  min-width: 0;
+  flex-shrink: 0;
+}
+.balance-main { flex: 1; min-width: 0; }
+.balance-amount {
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.125rem;
+}
+.balance-equivalent {
+  font-size: 0.65rem;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.currency-toggle-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-md);
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: var(--transition-base);
+  backdrop-filter: blur(5px);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.currency-toggle-btn:hover { background: rgba(255,255,255,0.25); }
+.mode-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+.toggle-mode-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 0.35rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+  backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  min-width: 50px;
+}
+.toggle-mode-btn:hover { background: rgba(255,255,255,0.25); }
+.toggle-mode-btn i { font-size: 0.9rem; }
+.progress-container-wizard {
+  padding: 0.75rem;
+  background: var(--neutral-100);
+  border-bottom: 1px solid var(--neutral-300);
+}
+.progress-bar-wizard {
+  width: 100%;
+  height: 6px;
+  background: var(--neutral-300);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+.progress-fill-wizard {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--accent));
+  border-radius: var(--radius-full);
+  transition: width 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+  width: 0%;
+  position: relative;
+}
+.progress-fill-wizard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+.progress-text-wizard {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--neutral-900);
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+.progress-percentage-wizard {
+  color: var(--primary);
+  font-weight: 700;
+}
+

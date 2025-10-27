@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administracion - WhatsApp Bot</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <header class="sidebar__header">
+                <div>
+                    <h1 class="sidebar__title">WhatsApp Bot</h1>
+                    <p class="sidebar__subtitle">Panel de control en tiempo real</p>
+                </div>
+                <div class="status-indicator" id="bot-status">
+                    <span class="status-indicator__dot status-indicator__dot--offline"></span>
+                    <span class="status-indicator__label">Sin conexion</span>
+                    <button class="btn btn--small btn--danger" id="logout-btn" style="display: none; margin-left: 10px;">
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </header>
+            <div class="qr-banner" id="qr-container" hidden>
+                <p class="qr-banner__title">Reconectar sesion</p>
+                <p class="qr-banner__text">Se genero un nuevo codigo QR. Escanealo desde la app de WhatsApp para recuperar la conexion.</p>
+                <div class="qr-banner__token" id="qr-content"></div>
+            </div>
+            <nav class="sidebar__nav">
+                <div class="sidebar__nav-header">
+                    <h2>Conversaciones</h2>
+                    <span class="sidebar__nav-count" id="conversation-count">0</span>
+                </div>
+                <ul class="conversation-list" id="conversation-list"></ul>
+            </nav>
+        </aside>
+        <main class="chat">
+            <header class="chat__header">
+                <div>
+                    <h2 class="chat__title" id="chat-title">Selecciona un chat</h2>
+                    <p class="chat__subtitle" id="chat-subtitle">No hay conversacion activa</p>
+                </div>
+                <div class="chat__meta" id="chat-meta"></div>
+            </header>
+            <section class="external-tools" aria-label="Herramientas externas">
+                <h3 class="external-tools__title">Herramientas rapidas</h3>
+                <div class="external-tools__actions">
+                    <button type="button" class="btn btn--ghost" id="open-sandbox-chat">
+                        Chat IA libre
+                    </button>
+                    <button type="button" class="btn btn--ghost" id="open-tool-aispeech">
+                        Generador de voz (Google AI Studio)
+                    </button>
+                    <button type="button" class="btn btn--ghost" id="open-tool-invi">
+                        Generador clave INVI
+                    </button>
+                </div>
+            </section>
+            <section class="direct-message" aria-label="Envío directo por número">
+                <h3 class="direct-message__title">Envío Directo por Número</h3>
+                <div class="direct-message__form">
+                    <label class="direct-message__field">
+                        <span>Número de WhatsApp</span>
+                        <input type="tel" id="direct-number" placeholder="+584144272486" autocomplete="off">
+                    </label>
+                    <label class="direct-message__field direct-message__field--message">
+                        <span>Mensaje directo</span>
+                        <textarea id="direct-message" rows="3" placeholder="Escribe el mensaje que quieres enviar" autocomplete="off"></textarea>
+                        <small class="direct-message__hint">El mensaje se enviará inmediatamente al número indicado.</small>
+                    </label>
+                    <div class="direct-message__actions">
+                        <button type="button" class="btn btn--primary" id="direct-send-btn">
+                            Enviar mensaje directo
+                        </button>
+                    </div>
+                </div>
+                <div class="direct-message__status" id="direct-message-status" role="status" aria-live="polite"></div>
+            </section>
+            <section class="chat__personalization" id="personalization-panel">
+                <div class="personalization__header">
+                    <h3>Datos personalizados</h3>
+                    <button type="button" class="btn btn--ghost btn--compact" id="toggle-personalization">
+                        Ocultar
+                    </button>
+                </div>
+                <form id="personalization-form">
+                    <div class="personalization__grid">
+                        <label class="personalization__field">
+                            <span>Nombre del cliente</span>
+                            <input type="text" id="personalization-name" autocomplete="off">
+                        </label>
+                        <label class="personalization__field">
+                            <span>Banco</span>
+                            <input type="text" id="personalization-bank" autocomplete="off">
+                        </label>
+                        <label class="personalization__field">
+                            <span>Saldo en USD</span>
+                            <input type="text" id="personalization-balance" autocomplete="off" inputmode="decimal">
+                        </label>
+                        <label class="personalization__field">
+                            <span>Tasa de cambio</span>
+                            <input type="text" id="personalization-fx" autocomplete="off" inputmode="decimal">
+                        </label>
+                        <label class="personalization__field">
+                            <span>Monto de validaci&oacute;n</span>
+                            <input type="text" id="personalization-validation" autocomplete="off" inputmode="decimal">
+                        </label>
+                    </div>
+                    <div class="personalization__actions">
+                        <button type="submit" class="btn btn--primary btn--compact">Guardar datos</button>
+                        <button type="button" class="btn btn--ghost btn--compact" id="personalization-clear">Limpiar</button>
+                        <span class="personalization__status" id="personalization-status" data-tone="info"></span>
+                    </div>
+                </form>
+            </section>
+            <section class="chat__messages" id="messages" data-empty="Aun no has seleccionado un chat."></section>
+            <!-- Modal de Respuestas Rápidas -->
+            <div class="quick-responses-modal" id="quick-responses-modal" hidden>
+                <div class="quick-responses-modal__backdrop" id="quick-responses-backdrop"></div>
+                <div class="quick-responses-modal__panel" id="quick-responses-panel" role="dialog" aria-modal="true" aria-labelledby="quick-responses-title" tabindex="-1">
+                    <header class="quick-responses-modal__header">
+                        <div>
+                            <h3 class="quick-responses-modal__title" id="quick-responses-title">Respuestas Rápidas</h3>
+                            <p class="quick-responses-modal__subtitle">Selecciona una respuesta para enviar</p>
+                        </div>
+                        <button type="button" class="btn btn--ghost btn--compact quick-responses-modal__close" id="close-quick-responses" aria-label="Cerrar respuestas rápidas">&times;</button>
+                    </header>
+                    <div class="quick-responses-modal__body">
+                        <div class="quick-responses__content">
+                            <div class="quick-responses__categories" id="quick-responses-categories">
+                                <!-- Las categorías se cargarán dinámicamente -->
+                            </div>
+                            <div class="quick-responses__messages" id="quick-responses-messages">
+                                <!-- Los mensajes se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="chat__composer">
+                <form id="composer-form">
+                    <label class="composer__input-wrapper">
+                        <span class="visually-hidden">Mensaje</span>
+                        <textarea
+                            id="composer-input"
+                            placeholder="Escribe tu respuesta..."
+                            rows="3"
+                            autocomplete="off"
+                        ></textarea>
+                    </label>
+                    <div class="composer__actions">
+                        <div class="composer__enhancer">
+                            <button type="button" id="quick-responses-btn" class="btn btn--ghost">Respuestas rápidas</button>
+                            <button type="button" id="improve-btn" class="btn btn--ghost">Mejorar texto</button>
+                            <select id="tone-select" class="select">
+                                <option value="profesional" selected>Tono profesional</option>
+                                <option value="amigable">Tono amigable</option>
+                                <option value="entusiasta">Tono entusiasta</option>
+                                <option value="informal">Tono informal</option>
+                            </select>
+                            <select id="audience-select" class="select">
+                                <option value="general" selected>Audiencia general</option>
+                                <option value="cliente">Cliente</option>
+                                <option value="proveedor">Proveedor</option>
+                                <option value="equipo">Equipo interno</option>
+                            </select>
+                            <select id="length-select" class="select">
+                                <option value="corto">Respuesta corta</option>
+                                <option value="medio" selected>Respuesta media</option>
+                                <option value="detallado">Respuesta detallada</option>
+                            </select>
+                            <select id="language-select" class="select">
+                                <option value="es" selected>Espanol</option>
+                                <option value="en">Ingles</option>
+                            </select>
+                        </div>
+                        <div class="composer__submit">
+                            <div class="composer__attachments">
+                                <label class="upload-button">
+                                    <input type="file" id="composer-audio" accept="audio/*">
+                                    <span>Adjuntar nota de voz (se convertira a .opus)</span>
+                                </label>
+                                <button type="button" class="btn btn--ghost btn--compact" id="record-btn">Grabar nota</button>
+                                <button type="button" class="btn btn--ghost btn--compact" id="stop-record-btn" hidden>Detener</button>
+                                <span class="recording-indicator" id="recording-indicator" hidden>Grabando 00:00</span>
+                                <span class="upload-filename" id="audio-filename" hidden></span>
+                                <button type="button" class="btn btn--ghost btn--compact" id="clear-audio" hidden>Quitar audio</button>
+                                <div class="composer__library">
+                                    <select id="library-audio-select" class="select select--compact">
+                                        <option value="">Cargando audios guardados...</option>
+                                    </select>
+                                    <div class="composer__library-actions">
+                                        <button type="button" class="btn btn--ghost btn--compact" id="refresh-library-audio">Actualizar lista</button>
+                                        <button type="button" class="btn btn--ghost btn--compact" id="send-library-audio" disabled>Enviar audio guardado</button>
+                                    </div>
+                                </div>
+                                <label class="upload-button">
+                                    <input type="file" id="composer-media" accept="image/*">
+                                    <span>Adjuntar Imagen (JPG, PNG, WEBP)</span>
+                                </label>
+                                <span class="upload-filename" id="media-filename" hidden></span>
+                                <button type="button" class="btn btn--ghost btn--compact" id="clear-media" hidden>Quitar imagen</button>
+                            </div>
+                            <div class="composer__send-controls">
+                                <label class="toggle">
+                                    <input type="checkbox" id="send-audio">
+                                    <span>Enviar tambien como nota de voz</span>
+                                </label>
+                                <button type="submit" class="btn btn--primary" id="send-btn">
+                                    Enviar mensaje
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="composer__status" id="composer-status"></p>
+                </form>
+            </footer>
+        </main>
+    </div>
+    <div class="external-overlay" id="external-overlay" hidden>
+        <div class="external-overlay__backdrop" id="external-overlay-backdrop"></div>
+        <div class="external-overlay__panel" id="external-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="external-overlay-title" tabindex="-1">
+            <header class="external-overlay__header">
+                <h3 class="external-overlay__title" id="external-overlay-title">Herramienta externa</h3>
+                <div class="external-overlay__controls">
+                    <button type="button" class="btn btn--ghost btn--compact" id="external-overlay-open-new">Abrir en nueva pesta&ntilde;a</button>
+                    <button type="button" class="btn btn--ghost btn--compact external-overlay__close" id="external-overlay-close" aria-label="Cerrar">&times;</button>
+                </div>
+            </header>
+            <div class="external-overlay__body">
+                <p class="external-overlay__info" id="external-overlay-info">
+                    Cargando herramienta externa. Si la pagina aparece en blanco, el sitio puede bloquear la visualizacion embebida: usa el boton para abrirla en una nueva pesta&ntilde;a.
+                </p>
+                <iframe
+                    id="external-overlay-frame"
+                    title="Visor de herramientas externas"
+                    class="external-overlay__frame"
+                    sandbox="allow-scripts allow-forms allow-popups allow-downloads"
+                    allow="clipboard-write; fullscreen"
+                ></iframe>
+            </div>
+        </div>
+    </div>
+    <div class="sandbox-modal" id="sandbox-modal" hidden>
+        <div class="sandbox-modal__backdrop" id="sandbox-modal-backdrop"></div>
+        <div class="sandbox-modal__panel" id="sandbox-modal-panel" role="dialog" aria-modal="true" aria-labelledby="sandbox-modal-title" tabindex="-1">
+            <header class="sandbox-modal__header">
+                <div>
+                    <h3 class="sandbox-modal__title" id="sandbox-modal-title">Chat IA Libre</h3>
+                    <p class="sandbox-modal__subtitle">Escribe cualquier indicacion para obtener una respuesta independiente del contenido de Remeex.</p>
+                </div>
+                <button type="button" class="btn btn--ghost btn--compact sandbox-modal__close" id="sandbox-modal-close" aria-label="Cerrar chat IA">&times;</button>
+            </header>
+            <div class="sandbox-modal__body">
+                <form class="sandbox-modal__form" id="sandbox-form">
+                    <label class="sandbox-modal__label">
+                        Prompt
+                        <textarea id="sandbox-prompt" rows="5" placeholder="Describe lo que necesitas..."></textarea>
+                    </label>
+                    <label class="sandbox-modal__label">
+                        Modelo
+                        <select id="sandbox-model">
+                            <option value="default" selected>Seguir configuracion del bot</option>
+                        </select>
+                    </label>
+                    <label class="sandbox-modal__label">
+                        Instrucciones del sistema (opcional)
+                        <textarea id="sandbox-system-prompt" rows="3" placeholder="Define el rol o reglas para la respuesta."></textarea>
+                    </label>
+                    <div class="sandbox-modal__actions">
+                        <button type="submit" class="btn btn--primary" id="sandbox-submit">Generar respuesta</button>
+                        <button type="button" class="btn btn--ghost btn--compact" id="sandbox-clear">Limpiar</button>
+                    </div>
+                </form>
+                <section class="sandbox-modal__output" id="sandbox-output" aria-live="polite" aria-label="Resultado del chat IA">
+                    <p class="sandbox-modal__placeholder">La respuesta aparecera aqui.</p>
+                </section>
+            </div>
+        </div>
+    </div>
+    <div class="alerts" id="alerts"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="admin.js"></script>
+    <script src="debug_admin.js"></script>
+</body>
+</html>
+
+

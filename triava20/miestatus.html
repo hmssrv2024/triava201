@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="public/repair.js"></script>
+    <script src="public/js/validation-amounts.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.85">
+    <title>Estado de tu Cuenta - REMEEX Visa</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="public/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="public/favicon-16x16.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --visa-blue: #1a1f71;
+            --visa-blue-light: #2e3a8c;
+            --visa-blue-dark: #0d1247;
+            --visa-gold: #f7b731;
+            --visa-white: #ffffff;
+            --visa-light-blue: #e8f4fd;
+            --visa-success: #2ecc71;
+            --visa-warning: #f39c12;
+            --visa-info: #3498db;
+            --neutral-50: #fafbfc;
+            --neutral-100: #f5f7fa;
+            --neutral-200: #ebeef2;
+            --neutral-300: #dde1e6;
+            --neutral-400: #9ca3af;
+            --neutral-500: #6b7280;
+            --neutral-600: #4b5563;
+            --neutral-700: #374151;
+            --neutral-800: #1f2937;
+            --neutral-900: #111827;
+            --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+            --radius-md: 12px;
+            --transition-base: all 0.3s ease;
+        }
+        html{font-size:85%;}
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--visa-light-blue) 0%, var(--neutral-50) 100%);
+            color: var(--neutral-700);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .logo {
+            height: 64px;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--visa-blue) 0%, var(--visa-blue-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--neutral-500);
+            font-size: 1.125rem;
+            font-weight: 400;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius-xl);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--visa-blue), var(--visa-gold), var(--visa-blue));
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 200% 0; }
+            50% { background-position: -200% 0; }
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--visa-blue) 0%, var(--visa-blue-light) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            background: linear-gradient(45deg, var(--visa-blue), var(--visa-gold), var(--visa-blue));
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .user-name {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--neutral-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .user-email {
+            text-align: center;
+            color: var(--neutral-500);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .progress-summary {
+            background: linear-gradient(135deg, var(--visa-blue) 0%, var(--visa-blue-light) 100%);
+            border-radius: var(--border-radius-xl);
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-summary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .progress-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: conic-gradient(var(--visa-gold) 0deg, var(--visa-gold) calc(95 * 3.6deg), rgba(255,255,255,0.2) calc(95 * 3.6deg));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-circle::before {
+            content: '';
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: var(--visa-blue);
+            position: absolute;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-text {
+            position: relative;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            z-index: 2;
+        }
+
+        .progress-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-subtitle {
+            opacity: 0.9;
+            font-size: 1rem;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--visa-success), var(--visa-warning));
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 2rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 4px solid var(--visa-success);
+            background: var(--visa-success);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 1);
+        }
+
+        .timeline-item.current::before {
+            background: var(--visa-warning);
+            border-color: var(--visa-warning);
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-item.final-step {
+            border: 2px solid var(--visa-warning);
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.05) 0%, rgba(243, 156, 18, 0.1) 100%);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 4px rgba(255, 255, 255, 1), 0 0 0 8px rgba(243, 156, 18, 0.3);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 4px rgba(255, 255, 255, 1), 0 0 0 12px rgba(243, 156, 18, 0.1);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 4px rgba(255, 255, 255, 1), 0 0 0 8px rgba(243, 156, 18, 0.3);
+            }
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem;
+            font-size: 1.25rem;
+            color: white;
+            background: linear-gradient(135deg, var(--visa-success) 0%, #27ae60 100%);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .step-icon.current {
+            background: linear-gradient(135deg, var(--visa-warning) 0%, #e67e22 100%);
+        }
+
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--neutral-800);
+        }
+
+        .step-description {
+            color: var(--neutral-600);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .step-status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--visa-success);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .status-current {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--visa-warning);
+            border: 1px solid rgba(243, 156, 18, 0.2);
+        }
+
+        .bank-info {
+            background: rgba(26, 31, 113, 0.05);
+            border: 1px solid rgba(26, 31, 113, 0.1);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .bank-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .bank-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            margin-right: 1.5rem;
+            object-fit: contain;
+            background: white;
+            padding: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .bank-details h4 {
+            color: var(--visa-blue);
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .bank-details p {
+            color: var(--neutral-600);
+            font-size: 0.9rem;
+        }
+
+        .validation-steps {
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.08) 0%, rgba(243, 156, 18, 0.12) 100%);
+            border-left: 4px solid var(--visa-warning);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .validation-steps h4 {
+            color: var(--visa-warning);
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .validation-steps ol {
+            padding-left: 1.5rem;
+            color: var(--neutral-700);
+        }
+
+        .validation-steps li {
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .amount-display {
+            background: linear-gradient(135deg, var(--visa-blue) 0%, var(--visa-blue-light) 100%);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            color: white;
+            text-align: center;
+        }
+
+        .amount-display h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .amount-usd {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .amount-bs {
+            font-size: 1.25rem;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--visa-warning) 0%, #e67e22 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--visa-blue);
+            border: 2px solid var(--visa-blue);
+        }
+
+        .btn-outline:hover {
+            background: var(--visa-blue);
+            color: white;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            color: var(--visa-blue);
+            font-size: 1.25rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--visa-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--visa-white);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+            z-index: 900;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            padding: 0.4rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: var(--visa-blue);
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: translateY(-3px);
+        }
+
+        .nav-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+
+        .final-message {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(26, 31, 113, 0.1) 100%);
+            border: 2px solid var(--visa-info);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .final-message h3 {
+            color: var(--visa-blue);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .final-message p {
+            color: var(--neutral-700);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .balance-info {
+            font-weight: 700;
+            color: var(--visa-blue);
+            margin-top: 1rem;
+        }
+
+        /* SVG Icons */
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                max-width: 640px;
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem 0.75rem;
+            }
+            
+            .title {
+                font-size: 1.875rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .timeline {
+                padding-left: 2.5rem;
+            }
+            
+            .timeline::before {
+                left: 16px;
+            }
+            
+            .timeline-item::before {
+                left: -28px;
+            }
+
+            .timeline-item {
+                padding: 1.5rem;
+            }
+
+            .progress-circle {
+                width: 120px;
+                height: 120px;
+            }
+
+            .progress-circle::before {
+                width: 90px;
+                height: 90px;
+            }
+
+            .progress-text {
+                font-size: 1.75rem;
+            }
+
+            .user-avatar {
+                width: 64px;
+                height: 64px;
+                font-size: 1.5rem;
+            }
+
+            .step-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                margin-right: 1rem;
+            }
+
+            .back-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 1rem;
+                top: 1rem;
+                left: 1rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                padding: 1rem 0;
+                margin-bottom: 2rem;
+            }
+
+            .user-info {
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .progress-summary {
+                padding: 2rem 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .timeline-item {
+                margin-bottom: 2rem;
+            }
+
+            .step-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .step-icon {
+                margin-right: 0;
+            }
+
+            .amount-usd {
+                font-size: 1.75rem;
+            }
+
+            .amount-bs {
+                font-size: 1.125rem;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .title {
+                font-size: 1.625rem;
+            }
+
+            .user-info, .timeline-item, .validation-steps, .bank-info, .amount-display {
+                padding: 1rem;
+            }
+
+            .progress-summary {
+                padding: 1.5rem 1rem;
+            }
+
+            .progress-circle {
+                width: 100px;
+                height: 100px;
+            }
+
+            .progress-circle::before {
+                width: 75px;
+                height: 75px;
+            }
+
+            .progress-text {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .timeline-item, .user-info {
+                border: 2px solid var(--neutral-300);
+            }
+            
+            .btn-primary {
+                border: 2px solid var(--neutral-800);
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="goBack()" aria-label="Volver">
+        <svg class="icon" viewBox="0 0 24 24">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+    </button>
+
+    <div class="container">
+        <header class="header">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5LcO3QUPBws01fNImCBJZ55Tr5ii86EJ0THqkMDpRmAkg3Pl_rC_cYhUHqcoSF1o-YKbd2A48STpWey4T8V2hKIddC_QmP5mh3II0tqw7eDtwYe5nUkoMQv5vLvqBz7qAe6X7qRWqpATZiPBoz5KH65Nk8JYfTNgHht2ezHGAvBom1NWuwtXFtUhaiio/s320/visaremeexlogo2025.png" alt="REMEEX Visa" class="logo">
+            <h1 class="title">Estado de tu Cuenta</h1>
+            <p class="subtitle" id="welcome-text">Ya casi terminas. Solo falta un paso</p>
+        </header>
+
+        <section class="user-info">
+            <div class="user-avatar" id="user-avatar">?</div>
+            <div class="user-name" id="user-name">Cargando...</div>
+            <div class="user-email" id="user-email">Cargando...</div>
+        </section>
+
+        <section class="progress-summary">
+            <div class="progress-circle">
+                <div class="progress-text">95%</div>
+            </div>
+            <div class="progress-title">Cuenta casi lista</div>
+            <div class="progress-subtitle">Solo falta validar tu cuenta bancaria</div>
+        </section>
+
+        <main class="timeline">
+            <!-- Paso 1: Registro -->
+            <article class="timeline-item">
+                <div class="step-header">
+                    <div class="step-icon">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div class="step-title">Registro Completado</div>
+                </div>
+                <div class="step-description">Tu cuenta REMEEX ha sido creada exitosamente</div>
+                <div class="step-status">Completado</div>
+            </article>
+
+            <!-- Paso 2: Primera Recarga -->
+            <article class="timeline-item">
+                <div class="step-header">
+                    <div class="step-icon">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                        </svg>
+                    </div>
+                    <div class="step-title">Primera Recarga Realizada</div>
+                </div>
+                <div class="step-description">Has recargado tu cuenta con tarjeta de crédito</div>
+                <div class="step-status">Completado</div>
+            </article>
+
+            <!-- Paso 3: Verificación -->
+            <article class="timeline-item">
+                <div class="step-header">
+                    <div class="step-icon">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                    </div>
+                    <div class="step-title">Identidad Verificada</div>
+                </div>
+                <div class="step-description">Tus documentos han sido validados correctamente</div>
+                <div class="step-status">Completado</div>
+            </article>
+
+            <!-- Paso 4: Registro de Banco -->
+            <article class="timeline-item">
+                <div class="step-header">
+                    <div class="step-icon">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M11.5,1L2,6V8H21V6M16,10V17H19V19H4V17H7V10H9V17H11V10H13V17H15V10H16Z"/>
+                        </svg>
+                    </div>
+                    <div class="step-title">Cuenta Bancaria Registrada</div>
+                </div>
+                <div class="step-description">Has registrado tu cuenta bancaria en nuestro sistema</div>
+                <div class="step-status">Completado</div>
+                
+                <div class="bank-info" id="bank-info">
+                    <div class="bank-header">
+                        <img id="bank-logo" src="" alt="Logo del banco" class="bank-logo">
+                        <div class="bank-details">
+                            <h4 id="bank-name">Cargando...</h4>
+                            <p>Cuenta registrada: <span id="account-number">••••••••</span></p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Paso 5: Validación Final -->
+            <article class="timeline-item current final-step">
+                <div class="step-header">
+                    <div class="step-icon current">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
+                        </svg>
+                    </div>
+                    <div class="step-title">Validación de Cuenta Bancaria</div>
+                </div>
+                <div class="step-description">
+                    <strong>Último paso:</strong> Realiza una recarga en bolívares desde tu cuenta bancaria registrada para confirmar que eres el titular.
+                </div>
+                <div class="step-status status-current">Paso final pendiente</div>
+
+                <div class="amount-display">
+                    <h4>Monto mínimo requerido</h4>
+                    <div class="amount-usd" id="amount-usd">$-- USD</div>
+                    <div class="amount-bs" id="amount-bs">≈ Bs. 0.00</div>
+                </div>
+
+                <div class="validation-steps">
+                    <h4>
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"/>
+                        </svg>
+                        Pasos para validar tu cuenta
+                    </h4>
+                    <ol>
+                        <li>Realiza una recarga por <strong id="required-usd"></strong> usando Pago Móvil</li>
+                        <li>La recarga debe hacerse desde <strong>tu cuenta registrada</strong> (<span id="validation-bank-name">tu banco</span>)</li>
+                        <li>Usa <strong>exactamente el mismo nombre</strong> que registraste</li>
+                        <li>Una vez validada, podrás retirar todos tus fondos</li>
+                    </ol>
+                </div>
+
+                <a href="#" id="validate-payment" class="btn btn-primary">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M17,19H7V5H17M17,1H7C5.89,1 5,1.89 5,3V21C5,22.11 5.89,23 7,23H17C18.11,23 19,22.11 19,21V3C19,1.89 18.11,1 17,1Z"/>
+                    </svg>
+                    Validar Cuenta con Pago Móvil
+                </a>
+            </article>
+        </main>
+
+        <section class="final-message">
+            <h3>Ya casi terminas</h3>
+            <p>
+                Una vez que valides tu cuenta bancaria, tendrás acceso completo a todas las funciones de REMEEX,
+                incluyendo retiros ilimitados a tu cuenta registrada.
+            </p>
+            <p><strong>Este es el último paso para completar tu activación al 100%</strong></p>
+            <p id="current-balance" class="balance-info"></p>
+            <a href="#" id="return-recarga" class="btn btn-primary">Volver a Recarga</a>
+        </section>
+    </div>
+
+    <script>
+        function getRecargaPage() {
+            try {
+                const reg = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+                return reg.useOldRecarga ? 'recarga3.html' : 'homevisa.html';
+            } catch(e) {
+                return 'homevisa.html';
+            }
+        }
+
+        // Configuración
+        const BANK_NAME_MAP = {
+            banesco: 'Banesco',
+            mercantil: 'Mercantil',
+            venezuela: 'Banco de Venezuela',
+            provincial: 'BBVA Provincial',
+            bancaribe: 'Bancaribe',
+            bod: 'BOD',
+            exterior: 'Banco Exterior',
+            activo: 'Banco Activo',
+            plaza: 'Banco Plaza',
+            sofitasa: 'Sofitasa',
+            fondo_comun: 'Fondo Común',
+            bancamiga: 'Bancamiga',
+            banplus: 'Banplus',
+            banco_del_tesoro: 'Banco del Tesoro',
+            bicentenario: 'Banco Bicentenario',
+            banco_agricola: 'Banco Agrícola',
+            mi_banco: 'Mi Banco',
+            'banco-n58': 'N58 Banco Digital',
+            otros: 'Otros'
+        };
+
+        // Tasa de cambio USD a BS (actualizada dinámicamente)
+        let exchangeRate = 38.50; // Valor por defecto
+
+        // Función para obtener logo del banco
+        function getBankLogo(bankId) {
+            const logos = {
+                banesco: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Banesco_logo.svg/200px-Banesco_logo.svg.png',
+                mercantil: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Banco_Mercantil_logo.svg/200px-Banco_Mercantil_logo.svg.png',
+                venezuela: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Banco_de_Venezuela_logo.svg/200px-Banco_de_Venezuela_logo.svg.png',
+                provincial: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/BBVA_Provincial_logo.svg/200px-BBVA_Provincial_logo.svg.png'
+            };
+            
+            return logos[bankId] || 'https://via.placeholder.com/48x48/1a1f71/ffffff?text=BANK';
+        }
+
+        // Función para obtener tasa de cambio
+        async function getExchangeRate() {
+            try {
+                // Simular llamada a API de tasa de cambio
+                // En producción, esto vendría de una API real
+                const response = await fetch('/api/exchange-rate');
+                if (response.ok) {
+                    const data = await response.json();
+                    exchangeRate = data.rate;
+                }
+            } catch (error) {
+                console.log('Usando tasa de cambio por defecto');
+            }
+            updateAmountDisplay();
+        }
+
+        // Función para actualizar el display de montos
+        function updateAmountDisplay() {
+            const amountBsEl = document.getElementById('amount-bs');
+            const amountUsdEl = document.getElementById('amount-usd');
+            const requiredUsdEl = document.getElementById('required-usd');
+            const requiredUsd = getVerificationAmountUsd(userData.balanceUsd || 0);
+            const usdFormatted = requiredUsd.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            const bsAmount = (requiredUsd * exchangeRate).toLocaleString('es-VE', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            if (amountUsdEl) amountUsdEl.textContent = `$${usdFormatted} USD`;
+            if (requiredUsdEl) requiredUsdEl.textContent = `$${usdFormatted} USD mínimo`;
+            if (amountBsEl) amountBsEl.textContent = `≈ Bs. ${bsAmount}`;
+        }
+
+        // Datos del usuario
+        let userData = {};
+
+        // Cargar datos del usuario
+        function loadUserData() {
+            try {
+                // Datos de registro
+                const regData = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+                const userDataStored = JSON.parse(localStorage.getItem('visaUserData') || '{}');
+                const bankingData = JSON.parse(localStorage.getItem('remeexVerificationBanking') || '{}');
+                const balanceData = JSON.parse(localStorage.getItem('remeexBalance') || '{}');
+                
+                userData = {
+                    name: regData.preferredName || userDataStored.fullName || `${regData.firstName || ''} ${regData.lastName || ''}`.trim() || 'Usuario',
+                    email: regData.email || userDataStored.email || 'email@ejemplo.com',
+                    primaryBank: regData.primaryBank || 'banesco',
+                    bankName: BANK_NAME_MAP[regData.primaryBank] || BANK_NAME_MAP[bankingData.bankId] || 'Tu Banco',
+                    accountNumber: bankingData.accountNumber || regData.accountNumber || '••••••••',
+                    bankLogo: bankingData.bankLogo || regData.primaryBankLogo || getBankLogo(regData.primaryBank),
+                    balanceUsd: balanceData.usd || 0,
+                    balanceBs: balanceData.bs || 0
+                };
+
+                console.log('Datos cargados:', userData);
+                return true;
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                // Datos por defecto si no se pueden cargar
+                userData = {
+                    name: 'Usuario',
+                    email: 'usuario@ejemplo.com',
+                    bankName: 'Tu Banco',
+                    accountNumber: '••••••••',
+                    bankLogo: getBankLogo('banesco')
+                };
+                return true;
+            }
+        }
+
+        // Renderizar interfaz
+        function renderUI() {
+            // Información del usuario
+            const userAvatar = document.getElementById('user-avatar');
+            const userName = document.getElementById('user-name');
+            const userEmail = document.getElementById('user-email');
+            const welcomeText = document.getElementById('welcome-text');
+
+            const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            userAvatar.textContent = initials;
+            userName.textContent = userData.name;
+            userEmail.textContent = userData.email;
+            
+            const firstName = userData.name.split(' ')[0];
+            welcomeText.textContent = `${firstName}, ya casi terminas. Solo falta un paso`;
+
+            // Información del banco
+            const bankLogo = document.getElementById('bank-logo');
+            const bankName = document.getElementById('bank-name');
+            const accountNumber = document.getElementById('account-number');
+            const validationBankName = document.getElementById('validation-bank-name');
+            const currentBalance = document.getElementById('current-balance');
+
+            if (bankLogo) bankLogo.src = userData.bankLogo;
+            if (bankName) bankName.textContent = userData.bankName;
+            if (accountNumber) accountNumber.textContent = `••••${userData.accountNumber.slice(-4)}`;
+            if (validationBankName) validationBankName.textContent = userData.bankName;
+            if (currentBalance) {
+                const usd = userData.balanceUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const bs = userData.balanceBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                currentBalance.textContent = `Saldo actual: $${usd} | Bs. ${bs}`;
+            }
+        }
+
+        // Función para volver atrás
+        function goBack() {
+            if (document.referrer && document.referrer.includes(window.location.hostname)) {
+                window.history.back();
+            } else {
+                window.location.href = getRecargaPage();
+            }
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            const recargaPage = getRecargaPage();
+            const validateLink = document.getElementById('validate-payment');
+            if (validateLink) validateLink.href = `${recargaPage}?section=mobile-payment`;
+            const returnLink = document.getElementById('return-recarga');
+            if (returnLink) returnLink.href = recargaPage;
+            loadUserData();
+            renderUI();
+            getExchangeRate();
+            
+            // Animar elementos al cargar
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    item.style.transition = 'all 0.6s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+        });
+
+        // Actualizar tasa de cambio cada 5 minutos
+        setInterval(getExchangeRate, 300000);
+    </script>
+
+    <nav class="bottom-nav">
+        <a class="nav-item" href="recarga#servicios">
+            <div class="nav-icon"><i class="fas fa-list-alt"></i></div>
+            <div class="nav-label">Servicios</div>
+        </a>
+        <a class="nav-item" href="recarga#tarjetas">
+            <div class="nav-icon"><i class="fas fa-credit-card"></i></div>
+            <div class="nav-label">Tarjetas</div>
+        </a>
+        <a class="nav-item active" href="recarga">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <div class="nav-label">Inicio</div>
+        </a>
+        <a class="nav-item" href="dudas">
+            <div class="nav-icon"><i class="fas fa-headset"></i></div>
+            <div class="nav-label">Ayuda</div>
+        </a>
+        <a class="nav-item" href="ajustes">
+            <div class="nav-icon"><i class="fas fa-cog"></i></div>
+            <div class="nav-label">Ajustes</div>
+        </a>
+    </nav>
+</body>
+</html>

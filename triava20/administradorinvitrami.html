@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administrador Invitrami</title>
+    <style>
+      /* Diseño básico para centrar el contenido y dar formato a la tabla */
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 2rem;
+        color: #333;
+      }
+
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      h1 {
+        margin-top: 0;
+        text-align: center;
+      }
+
+      #status {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-weight: bold;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background-color: #fafafa;
+      }
+
+      tbody tr:nth-child(odd) {
+        background-color: #fafafa;
+      }
+
+      .file-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      .file-links a {
+        color: #1a73e8;
+        text-decoration: none;
+        word-break: break-all;
+      }
+
+      .file-links a:hover {
+        text-decoration: underline;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Panel de usuarios Invitrami</h1>
+      <p id="status">Cargando información...</p>
+      <table aria-describedby="status">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Archivos</th>
+          </tr>
+        </thead>
+        <tbody id="users-table-body"></tbody>
+      </table>
+    </main>
+
+    <!-- Importamos supabase-js desde CDN para poder usarlo sin instalación adicional -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      // Configuración provista por el usuario para conectarnos a Supabase
+      const SUPABASE_URL = "https://zjbbniliprbksblevrlq.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqYmJuaWxpcHJia3NibGV2cmxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzA3NzQsImV4cCI6MjA3NTE0Njc3NH0.sWpZpvkaEYcExxzKQgkI5KNPGHyqF5L_Ww6BKzdwRIo";
+
+      // Creamos el cliente de Supabase usando la librería disponible en window.supabase
+      const supabaseClient = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
+
+      // Elementos del DOM que reutilizaremos a lo largo del script
+      const statusElement = document.getElementById("status");
+      const tableBody = document.getElementById("users-table-body");
+
+      // Obtiene un nombre legible del registro de usuario (según los campos disponibles)
+      const resolveUserName = (user) => {
+        return (
+          user?.name ||
+          user?.nombre ||
+          user?.full_name ||
+          user?.display_name ||
+          "Sin nombre"
+        );
+      };
+
+      // Similar para el email, devolviendo un texto por defecto si no existe
+      const resolveUserEmail = (user) => {
+        return user?.email || user?.correo || user?.mail || "Sin email";
+      };
+
+      // Devuelve un arreglo con posibles carpetas asociadas al usuario dentro del bucket
+      const getUserPrefixes = (user) => {
+        const candidates = [
+          user?.id,
+          user?.uuid,
+          user?.user_id,
+          user?.email,
+          user?.correo,
+        ]
+          .filter(Boolean)
+          .map((value) => String(value));
+
+        // Evitamos duplicados manteniendo el orden de prioridad
+        return [...new Set(candidates)];
+      };
+
+      // Consulta los archivos del bucket user-files para un usuario dado.
+      const fetchFilesForUser = async (user) => {
+        const prefixes = getUserPrefixes(user);
+
+        for (const prefix of prefixes) {
+          const { data: files, error } = await supabaseClient.storage
+            .from("user-files")
+            .list(prefix, { limit: 100 });
+
+          if (error) {
+            console.warn(`No se pudo listar archivos para ${prefix}:`, error);
+            continue;
+          }
+
+          // Filtramos para quedarnos únicamente con los elementos que son archivos
+          const filesOnly = (files || []).filter((entry) => entry?.id);
+
+          if (filesOnly.length > 0) {
+            return { prefix, files: filesOnly };
+          }
+        }
+
+        // Como último recurso intentamos listar en la raíz del bucket
+        const { data: rootFiles, error: rootError } = await supabaseClient.storage
+          .from("user-files")
+          .list("", { limit: 100 });
+
+        if (rootError) {
+          console.warn("Error al listar la raíz del bucket:", rootError);
+          return { prefix: null, files: [] };
+        }
+
+        // Sin prefijo solo podemos mostrar archivos directamente en la raíz
+        const filesOnly = (rootFiles || []).filter((entry) => entry?.id);
+        return { prefix: null, files: filesOnly };
+      };
+
+      // Construye elementos de enlace descargable para los archivos encontrados
+      const buildFileLinksElement = (prefix, files) => {
+        if (!files.length) {
+          return document.createTextNode("Sin archivos");
+        }
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "file-links";
+
+        files.forEach((file) => {
+          const path = prefix ? `${prefix}/${file.name}` : file.name;
+          const { data } = supabaseClient.storage
+            .from("user-files")
+            .getPublicUrl(path);
+
+          const link = document.createElement("a");
+          link.href = data.publicUrl;
+          link.target = "_blank";
+          link.rel = "noopener";
+          link.textContent = file.name;
+          wrapper.appendChild(link);
+        });
+
+        return wrapper;
+      };
+
+      // Carga los usuarios y sus archivos al cargar la página
+      const loadUsers = async () => {
+        statusElement.classList.remove("hidden");
+        statusElement.textContent = "Cargando información...";
+        tableBody.innerHTML = "";
+
+        const { data: users, error } = await supabaseClient
+          .from("users")
+          .select("*");
+
+        if (error) {
+          console.error("Error al recuperar usuarios:", error);
+          statusElement.textContent = "Error al cargar usuarios.";
+          return;
+        }
+
+        if (!users || users.length === 0) {
+          statusElement.textContent = "No se encontraron usuarios.";
+          return;
+        }
+
+        // Procesamos cada usuario en secuencia para simplificar el manejo de errores
+        for (const user of users) {
+          const row = document.createElement("tr");
+
+          const nameCell = document.createElement("td");
+          nameCell.textContent = resolveUserName(user);
+          row.appendChild(nameCell);
+
+          const emailCell = document.createElement("td");
+          emailCell.textContent = resolveUserEmail(user);
+          row.appendChild(emailCell);
+
+          const filesCell = document.createElement("td");
+          try {
+            const { prefix, files } = await fetchFilesForUser(user);
+            const filesElement = buildFileLinksElement(prefix, files);
+            filesCell.appendChild(filesElement);
+          } catch (err) {
+            console.error("Error al consultar archivos para el usuario:", err);
+            filesCell.textContent = "Error al cargar archivos";
+          }
+
+          row.appendChild(filesCell);
+          tableBody.appendChild(row);
+        }
+
+        statusElement.textContent = "";
+        statusElement.classList.add("hidden");
+      };
+
+      // Iniciamos el proceso cuando el documento está listo
+      document.addEventListener("DOMContentLoaded", loadUsers);
+    </script>
+  </body>
+</html>

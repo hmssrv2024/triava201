@@ -1,0 +1,221 @@
+{
+  "meta": {
+    "version": "2025-10-02",
+    "note": "Prefijos por operadora son orientativos; en la mayoría de países hay portabilidad numérica. Usa validación HLR/carrier lookup para detectar operador en producción.",
+    "fields": {
+      "cc": "Código de país E.164",
+      "nsn_max": "Cantidad máxima de dígitos del número nacional (sin cc)",
+      "operators[].name": "Nombre comercial de la operadora",
+      "operators[].prefixes": "Prefijos/marcadores nacionales típicos asociados a la operadora (no garantizados por portabilidad)"
+    }
+  },
+  "countries": {
+    "Argentina": {
+      "cc": "+54",
+      "nsn_max": 10,
+      "operators": [
+        { "name": "Movistar", "prefixes": [] },
+        { "name": "Claro", "prefixes": [] },
+        { "name": "Personal (Telecom)", "prefixes": [] }
+      ]
+    },
+    "Bolivia": {
+      "cc": "+591",
+      "nsn_max": 8,
+      "operators": [
+        { "name": "Entel Bolivia", "prefixes": ["6", "7"] },
+        { "name": "Tigo Bolivia", "prefixes": ["6", "7"] },
+        { "name": "Viva (Nuevatel)", "prefixes": ["6", "7"] }
+      ]
+    },
+    "Brasil": {
+      "cc": "+55",
+      "nsn_max": 11,
+      "operators": [
+        { "name": "Vivo (Telefônica Brasil)", "prefixes": ["(AA)9xxxx-xxxx"] },
+        { "name": "Claro Brasil", "prefixes": ["(AA)9xxxx-xxxx"] },
+        { "name": "TIM Brasil", "prefixes": ["(AA)9xxxx-xxxx"] },
+        { "name": "Oi/Algar/Outros & MVNOs", "prefixes": ["(AA)9xxxx-xxxx"] }
+      ]
+    },
+    "Chile": {
+      "cc": "+56",
+      "nsn_max": 9,
+      "operators": [
+        { "name": "Entel", "prefixes": ["9xxxxxxxx"] },
+        { "name": "Movistar", "prefixes": ["9xxxxxxxx"] },
+        { "name": "Claro", "prefixes": ["9xxxxxxxx"] },
+        { "name": "WOM", "prefixes": ["9xxxxxxxx"] },
+        { "name": "Virgin Mobile (MVNO)", "prefixes": ["9xxxxxxxx"] }
+      ]
+    },
+    "Colombia": {
+      "cc": "+57",
+      "nsn_max": 10,
+      "operators": [
+        { "name": "Claro", "prefixes": ["300","301","302","303","320","321","322","323","304","305"] },
+        { "name": "Movistar", "prefixes": ["310","311","312","313","314"] },
+        { "name": "Tigo", "prefixes": ["315","316","317","318","319"] },
+        { "name": "WOM", "prefixes": ["350","351"] },
+        { "name": "Virgin/ETB & otros (MVNO)", "prefixes": ["304","305","318","319"] }
+      ]
+    },
+    "Costa Rica": {
+      "cc": "+506",
+      "nsn_max": 8,
+      "operators": [
+        { "name": "Kölbi (ICE)", "prefixes": ["8xxxxxxx"] },
+        { "name": "Claro", "prefixes": ["7xxxxxxx"] },
+        { "name": "Liberty (ex Movistar)", "prefixes": ["6xxxxxxx"] }
+      ]
+    },
+    "Cuba": {
+      "cc": "+53",
+      "nsn_max": 8,
+      "operators": [
+        { "name": "Cubacel (ETECSA)", "prefixes": ["5xxxxxxx"] }
+      ]
+    },
+    "República Dominicana": {
+      "cc": "+1",
+      "nsn_max": 10,
+      "operators": [
+        { "name": "Claro Dominicana", "prefixes": ["809","829","849"] },
+        { "name": "Altice Dominicana", "prefixes": ["809","829","849"] },
+        { "name": "Viva", "prefixes": ["809","829","849"] }
+      ]
+    },
+    "Ecuador": {
+      "cc": "+593",
+      "nsn_max": 9,
+      "operators": [
+        { "name": "Claro", "prefixes": ["099","098"] },
+        { "name": "Movistar", "prefixes": ["098","097"] },
+        { "name": "CNT", "prefixes": ["096"] }
+      ]
+    },
+    "El Salvador": {
+      "cc": "+503",
+      "nsn_max": 8,
+      "operators": [
+        { "name": "Tigo", "prefixes": ["7xxxxxxx"] },
+        { "name": "Claro", "prefixes": ["6xxxxxxx"] }
+      ]
+    },
+    "Guatemala": {
+      "cc": "+502",
+      "nsn_max": 8,
+      "operators": [
+        { "name": "Tigo", "prefixes": ["5xxxxxxx"] },
+        { "name": "Claro", "prefixes": ["4xxxxxxx"] },
+        { "name": "Movistar/Tuenti", "prefixes": ["3xxxxxxx"] }
+      ]
+    },
+    "Haití": {
+      "cc": "+509",
+      "nsn_max": 8,
+      "operators": [
+        { "name": "Digicel", "prefixes": ["32","33","34","35","36","37"] },
+        { "name": "Natcom", "prefixes": ["38"] }
+      ]
+    },
+    "Honduras": {
+      "cc": "+504",
+      "nsn_max": 8,
+      "operators": [
+        { "name": "Tigo", "prefixes": ["9xxxxxxx"] },
+        { "name": "Claro", "prefixes": ["3xxxxxxx"] }
+      ]
+    },
+    "México": {
+      "cc": "+52",
+      "nsn_max": 10,
+      "operators": [
+        { "name": "Telcel", "prefixes": [] },
+        { "name": "AT&T México", "prefixes": [] },
+        { "name": "Movistar México", "prefixes": [] },
+        { "name": "MVNOs (Bait, OXXO CEL, Virgin, etc.)", "prefixes": [] }
+      ]
+    },
+    "Nicaragua": {
+      "cc": "+505",
+      "nsn_max": 8,
+      "operators": [
+        { "name": "Claro", "prefixes": ["8xxxxxxx"] },
+        { "name": "Tigo (ex Movistar)", "prefixes": ["7xxxxxxx"] },
+        { "name": "Cootel", "prefixes": ["5xxxxxxx"] }
+      ]
+    },
+    "Panamá": {
+      "cc": "+507",
+      "nsn_max": 8,
+      "operators": [
+        { "name": "+Móvil (Cable & Wireless)", "prefixes": ["6xxxxxxx"] },
+        { "name": "Tigo Panamá", "prefixes": ["6xxxxxxx"] },
+        { "name": "Claro Panamá", "prefixes": ["6xxxxxxx"] }
+      ]
+    },
+    "Paraguay": {
+      "cc": "+595",
+      "nsn_max": 9,
+      "operators": [
+        { "name": "Tigo", "prefixes": ["097"] },
+        { "name": "Personal", "prefixes": ["098"] },
+        { "name": "Claro", "prefixes": ["099"] }
+      ]
+    },
+    "Perú": {
+      "cc": "+51",
+      "nsn_max": 9,
+      "operators": [
+        { "name": "Movistar", "prefixes": ["99"] },
+        { "name": "Claro", "prefixes": ["98"] },
+        { "name": "Entel", "prefixes": ["94","97"] },
+        { "name": "Bitel", "prefixes": ["96"] }
+      ]
+    },
+    "Puerto Rico": {
+      "cc": "+1",
+      "nsn_max": 10,
+      "operators": [
+        { "name": "T-Mobile Puerto Rico", "prefixes": ["787","939"] },
+        { "name": "Claro Puerto Rico", "prefixes": ["787","939"] },
+        { "name": "Liberty Mobile Puerto Rico", "prefixes": ["787","939"] }
+      ]
+    },
+    "Uruguay": {
+      "cc": "+598",
+      "nsn_max": 9,
+      "operators": [
+        { "name": "Antel", "prefixes": ["09"] },
+        { "name": "Movistar", "prefixes": ["09"] },
+        { "name": "Claro", "prefixes": ["09"] }
+      ]
+    },
+    "Guyana": {
+      "cc": "+592",
+      "nsn_max": 7,
+      "operators": [
+        { "name": "GTT (Guyana Telephone & Telegraph)", "prefixes": ["6xx-xxxx"] },
+        { "name": "Digicel Guyana", "prefixes": ["6xx-xxxx"] },
+        { "name": "ENet", "prefixes": ["6xx-xxxx"] }
+      ]
+    },
+    "Surinam": {
+      "cc": "+597",
+      "nsn_max": 7,
+      "operators": [
+        { "name": "Telesur (TeleG)", "prefixes": [] },
+        { "name": "Digicel Suriname", "prefixes": [] }
+      ]
+    },
+    "Belice": {
+      "cc": "+501",
+      "nsn_max": 7,
+      "operators": [
+        { "name": "Digi (BTL)", "prefixes": ["6xx-xxxx"] },
+        { "name": "Smart (Speednet)", "prefixes": ["6xx-xxxx","7xx-xxxx"] }
+      ]
+    }
+  }
+}

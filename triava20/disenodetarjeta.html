@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diseñador de Tarjetas Personalizado</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: "Inter", sans-serif;
+      font-size: 16px;
+      margin: 0;
+      color: #2c3e50;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    *:focus {
+      outline: none;
+    }
+    
+    .wrapper {
+      min-height: 100vh;
+      display: flex;
+      padding: 40px 20px;
+    }
+    
+    @media screen and (max-width: 700px), (max-height: 500px) {
+      .wrapper {
+        flex-wrap: wrap;
+        flex-direction: column;
+      }
+    }
+
+    .card-form {
+      max-width: 580px;
+      margin: auto;
+      width: 100%;
+    }
+    
+    @media screen and (max-width: 576px) {
+      .card-form {
+        margin: 0 auto;
+      }
+    }
+
+    .card-form__inner {
+      background: #ffffff;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 40px;
+      padding-top: 200px;
+      border: 1px solid #e8ecef;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-form__inner {
+        padding: 30px;
+        padding-top: 180px;
+      }
+    }
+    
+    @media screen and (max-width: 360px) {
+      .card-form__inner {
+        padding: 20px;
+        padding-top: 165px;
+      }
+    }
+
+    .card-form__title {
+      text-align: center;
+      color: #2c3e50;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .card-form__subtitle {
+      text-align: center;
+      color: #64748b;
+      font-size: 16px;
+      margin-bottom: 30px;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .card-form__button {
+      width: 100%;
+      height: 56px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: "Inter", sans-serif;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+      color: #ffffff;
+      margin-top: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.02em;
+    }
+    
+    .card-form__button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .card-form__button:active {
+      transform: translateY(0);
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-form__button {
+        margin-top: 20px;
+        height: 50px;
+      }
+    }
+
+    .card-item {
+      max-width: 430px;
+      height: 270px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      z-index: 2;
+      width: 100%;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item {
+        max-width: 310px;
+        height: 220px;
+        width: 90%;
+      }
+    }
+    
+    @media screen and (max-width: 360px) {
+      .card-item {
+        height: 180px;
+      }
+    }
+
+    .card-item__focus {
+      position: absolute;
+      z-index: 3;
+      border-radius: 5px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      transition: all 0.35s cubic-bezier(0.71, 0.03, 0.56, 0.85);
+      opacity: 0;
+      pointer-events: none;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.65);
+    }
+    
+    .card-item__focus:after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgb(8, 20, 47);
+      height: 100%;
+      border-radius: 5px;
+      filter: blur(25px);
+      opacity: 0.5;
+    }
+    
+    .card-item__focus.-active {
+      opacity: 1;
+    }
+
+    .card-item__side {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px 0 rgba(14, 42, 90, 0.55);
+      transform: perspective(2000px) rotateY(0deg) rotateX(0deg) rotate(0deg);
+      transform-style: preserve-3d;
+      transition: all 0.8s cubic-bezier(0.71, 0.03, 0.56, 0.85);
+      backface-visibility: hidden;
+      height: 100%;
+    }
+
+    .card-item__bg {
+      max-width: 100%;
+      display: block;
+      max-height: 100%;
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .card-item__cover {
+      height: 100%;
+      background-color: #1c1d27;
+      position: absolute;
+      height: 100%;
+      left: 0;
+      top: 0;
+      width: 100%;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    
+    .card-item__cover:after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(6, 2, 29, 0.45);
+    }
+
+    .card-item__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      padding: 0 10px;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item__top {
+        margin-bottom: 25px;
+      }
+    }
+    
+    @media screen and (max-width: 360px) {
+      .card-item__top {
+        margin-bottom: 15px;
+      }
+    }
+
+    .card-item__chip {
+      width: 60px;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item__chip {
+        width: 50px;
+      }
+    }
+    
+    @media screen and (max-width: 360px) {
+      .card-item__chip {
+        width: 40px;
+      }
+    }
+
+    .card-item__type {
+      height: 45px;
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      max-width: 100px;
+      margin-left: auto;
+      width: 100%;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item__type {
+        height: 40px;
+        max-width: 90px;
+      }
+    }
+    
+    @media screen and (max-width: 360px) {
+      .card-item__type {
+        height: 30px;
+      }
+    }
+
+    .card-item__typeImg {
+      max-width: 100%;
+      object-fit: contain;
+      max-height: 100%;
+      object-position: top right;
+    }
+
+    .card-item__info {
+      color: #fff;
+      width: 100%;
+      max-width: calc(100% - 85px);
+      padding: 10px 15px;
+      font-weight: 500;
+      display: block;
+      cursor: pointer;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item__info {
+        padding: 10px;
+      }
+    }
+
+    .card-item__holder {
+      opacity: 0.7;
+      font-size: 13px;
+      margin-bottom: 6px;
+      font-weight: 400;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item__holder {
+        font-size: 12px;
+        margin-bottom: 5px;
+      }
+    }
+
+    .card-item__wrapper {
+      font-family: "JetBrains Mono", monospace;
+      padding: 25px 15px;
+      position: relative;
+      z-index: 4;
+      height: 100%;
+      text-shadow: 7px 6px 10px rgba(14, 42, 90, 0.8);
+      user-select: none;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item__wrapper {
+        padding: 20px 10px;
+      }
+    }
+
+    .card-item__name {
+      font-size: 18px;
+      line-height: 1;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item__name {
+        font-size: 16px;
+      }
+    }
+
+    .card-item__nameItem {
+      display: inline-block;
+      min-width: 8px;
+      position: relative;
+    }
+
+    .card-item__number {
+      font-weight: 500;
+      line-height: 1;
+      color: #fff;
+      font-size: 27px;
+      margin-bottom: 35px;
+      display: inline-block;
+      padding: 10px 15px;
+      cursor: pointer;
+      letter-spacing: 2px;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item__number {
+        font-size: 21px;
+        margin-bottom: 15px;
+        padding: 10px 10px;
+      }
+    }
+    
+    @media screen and (max-width: 360px) {
+      .card-item__number {
+        font-size: 19px;
+        margin-bottom: 10px;
+        padding: 10px 10px;
+      }
+    }
+
+    .card-item__content {
+      color: #fff;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .card-item__date {
+      flex-wrap: wrap;
+      font-size: 18px;
+      margin-left: auto;
+      padding: 10px;
+      display: inline-flex;
+      width: 80px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item__date {
+        font-size: 16px;
+      }
+    }
+
+    .card-item__dateItem {
+      position: relative;
+    }
+    
+    .card-item__dateItem span {
+      width: 22px;
+      display: inline-block;
+    }
+
+    .card-item__dateTitle {
+      opacity: 0.7;
+      font-size: 13px;
+      padding-bottom: 6px;
+      width: 100%;
+      font-weight: 400;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-item__dateTitle {
+        font-size: 12px;
+        padding-bottom: 5px;
+      }
+    }
+
+    .card-list {
+      margin-bottom: -130px;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .card-list {
+        margin-bottom: -120px;
+      }
+    }
+
+    .card-input {
+      margin-bottom: 24px;
+    }
+    
+    .card-input__label {
+      font-size: 15px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #374151;
+      width: 100%;
+      display: block;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .card-input__input {
+      width: 100%;
+      height: 52px;
+      border-radius: 8px;
+      box-shadow: none;
+      border: 2px solid #e5e7eb;
+      transition: all 0.2s ease-in-out;
+      font-size: 16px;
+      padding: 0 16px;
+      background: #ffffff;
+      color: #374151;
+      font-family: "Inter", sans-serif;
+      font-weight: 400;
+    }
+    
+    .card-input__input:hover {
+      border-color: #d1d5db;
+    }
+    
+    .card-input__input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .card-input__input::placeholder {
+      color: #9ca3af;
+      font-weight: 400;
+    }
+
+    .slide-fade-up-enter-active {
+      transition: all 0.25s ease-in-out;
+      transition-delay: 0.1s;
+      position: relative;
+    }
+
+    .slide-fade-up-leave-active {
+      transition: all 0.25s ease-in-out;
+      position: absolute;
+    }
+
+    .slide-fade-up-enter {
+      opacity: 0;
+      transform: translateY(15px);
+      pointer-events: none;
+    }
+
+    .slide-fade-up-leave-to {
+      opacity: 0;
+      transform: translateY(-15px);
+      pointer-events: none;
+    }
+
+    .slide-fade-right-enter-active {
+      transition: all 0.25s ease-in-out;
+      transition-delay: 0.1s;
+      position: relative;
+    }
+
+    .slide-fade-right-leave-active {
+      transition: all 0.25s ease-in-out;
+      position: absolute;
+    }
+
+    .slide-fade-right-enter {
+      opacity: 0;
+      transform: translateX(10px) rotate(45deg);
+      pointer-events: none;
+    }
+
+    .slide-fade-right-leave-to {
+      opacity: 0;
+      transform: translateX(-10px) rotate(45deg);
+      pointer-events: none;
+    }
+
+    .preview-section {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .preview-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-text {
+      font-family: "JetBrains Mono", monospace;
+      color: #1e293b;
+      font-size: 16px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .info-section {
+      background: #f0f9ff;
+      border: 1px solid #e0f2fe;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .info-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0369a1;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-text {
+      font-size: 14px;
+      color: #0369a1;
+      line-height: 1.5;
+    }
+
+    .user-icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .eye-icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .info-icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper" id="app">
+    <div class="card-form">
+      <div class="card-list">
+        <div class="card-item">
+          <div class="card-item__side -front">
+            <div class="card-item__focus" v-bind:class="{'-active' : focusElementStyle }" v-bind:style="focusElementStyle" ref="focusElement"></div>
+            <div class="card-item__cover">
+              <img v-bind:src="'https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/' + currentCardBackground + '.jpeg'" class="card-item__bg">
+            </div>
+            
+            <div class="card-item__wrapper">
+              <div class="card-item__top">
+                <img src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/chip.png" class="card-item__chip">
+                <div class="card-item__type">
+                  <img src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/visa.png" alt="Visa" class="card-item__typeImg">
+                </div>
+              </div>
+              <div class="card-item__number" ref="cardNumber">4123 4567 8901 XXXX</div>
+              <div class="card-item__content">
+                <label for="cardName" class="card-item__info" ref="cardName">
+                  <div class="card-item__holder">Titular de la Tarjeta</div>
+                  <transition name="slide-fade-up">
+                    <div class="card-item__name" v-if="cardName.length" key="1">
+                      <transition-group name="slide-fade-right">
+                        <span class="card-item__nameItem" v-for="(n, $index) in cardName.replace(/\s\s+/g, ' ')" v-if="$index === $index" v-bind:key="$index + 1">{{n}}</span>
+                      </transition-group>
+                    </div>
+                    <div class="card-item__name" v-else key="2">Nombre del Titular</div>
+                  </transition>
+                </label>
+                <div class="card-item__date" ref="cardDate">
+                  <label class="card-item__dateTitle">Vence</label>
+                  <label class="card-item__dateItem">
+                    <span>09</span>
+                  </label>
+                  /
+                  <label class="card-item__dateItem">
+                    <span>32</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-form__inner">
+        <h1 class="card-form__title">Diseñador de Tarjetas</h1>
+        <p class="card-form__subtitle">Personaliza el nombre que aparecerá en tu tarjeta. La tarjeta se actualiza en tiempo real con tus cambios.</p>
+        
+        <div class="info-section">
+          <div class="info-title">
+            <svg class="info-icon" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+            Información
+          </div>
+          <p class="info-text">Los números de tarjeta y fecha de vencimiento son únicamente para fines de demostración.</p>
+        </div>
+        
+        <div class="preview-section">
+          <div class="preview-label">
+            <svg class="eye-icon" viewBox="0 0 24 24">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+            Vista Previa
+          </div>
+          <div class="preview-text">{{ cardName || 'NOMBRE DEL TITULAR' }}</div>
+        </div>
+        
+        <div class="card-input">
+          <label for="cardName" class="card-input__label">
+            <svg class="user-icon" viewBox="0 0 24 24">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            Nombre del Titular
+          </label>
+          <input 
+            type="text" 
+            id="cardName" 
+            class="card-input__input" 
+            v-model="cardName" 
+            v-on:focus="focusInput" 
+            v-on:blur="blurInput" 
+            data-ref="cardName" 
+            placeholder="Ej: María José García López" 
+            maxlength="25"
+            autocomplete="off">
+        </div>
+
+        <button class="card-form__button" @click="generateCard">
+          Generar Tarjeta Personalizada
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    new Vue({
+      el: "#app",
+      data() {
+        return {
+          currentCardBackground: Math.floor(Math.random()* 25 + 1),
+          cardName: "",
+          focusElementStyle: null,
+          isInputFocused: false
+        };
+      },
+      mounted() {
+        document.getElementById("cardName").focus();
+      },
+      methods: {
+        generateCard() {
+          if (this.cardName.trim()) {
+            alert(`Tarjeta generada exitosamente\n\nTitular: ${this.cardName}\nNúmero: 4123 4567 8901 XXXX\nVencimiento: 09/32\nTipo: VISA\n\nTu tarjeta personalizada está lista.`);
+          } else {
+            alert('Por favor, ingresa un nombre para generar la tarjeta.');
+          }
+        },
+        focusInput(e) {
+          this.isInputFocused = true;
+          let targetRef = e.target.dataset.ref;
+          let target = this.$refs[targetRef];
+          this.focusElementStyle = {
+            width: `${target.offsetWidth}px`,
+            height: `${target.offsetHeight}px`,
+            transform: `translateX(${target.offsetLeft}px) translateY(${target.offsetTop}px)`
+          }
+        },
+        blurInput() {
+          let vm = this;
+          setTimeout(() => {
+            if (!vm.isInputFocused) {
+              vm.focusElementStyle = null;
+            }
+          }, 300);
+          vm.isInputFocused = false;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

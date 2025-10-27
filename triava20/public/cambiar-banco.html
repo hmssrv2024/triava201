@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <script src="global-data.js"></script>
+  <script src="bank-data.js"></script>
+  <script src="theme.js"></script>
+  <script>
+    function getRecargaPage(){
+      try{
+        const reg=JSON.parse(localStorage.getItem('visaRegistrationCompleted')||'{}');
+        return reg.useOldRecarga?'recarga3.html':'homevisa.html';
+      }catch(e){return 'homevisa.html';}
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Actualizar banco de retiro</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    :root {
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --accent: #f7b600;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+      --radius-lg: 16px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--neutral-200, #f5f7fa);
+      color: var(--neutral-900, #1a1f37);
+    }
+
+    .header {
+      text-align: center;
+      padding: 1.5rem 1rem 1rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .header p {
+      margin: 0 auto 1.5rem;
+      font-size: 0.9rem;
+      color: var(--neutral-800, #293249);
+      max-width: 420px;
+    }
+
+    .card {
+      background: var(--neutral-100, #fff);
+      border-radius: var(--radius-lg, 16px);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      margin: 0 1rem 1.5rem;
+      max-width: 480px;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--neutral-300, #ccc);
+      border-radius: 4px;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      background: var(--primary, #1a1f71);
+      color: #fff;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: var(--neutral-400, #ccc);
+      cursor: not-allowed;
+    }
+
+    .reasons h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .reasons ul {
+      padding-left: 1.2rem;
+      margin: 0;
+    }
+
+    .reasons li {
+      margin-bottom: 0.5rem;
+    }
+
+    .note {
+      font-size: 0.8rem;
+      text-align: center;
+      color: var(--neutral-800, #293249);
+      margin-bottom: 1.5rem;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .overlay.active { visibility: visible; opacity: 1; }
+
+    .overlay-card {
+      background: var(--neutral-100, #fff);
+      padding: 2rem;
+      border-radius: var(--radius-lg, 16px);
+      text-align: center;
+    }
+
+    .overlay-card i {
+      font-size: 2rem;
+      color: var(--primary, #1a1f71);
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1><i class="fas fa-university"></i> Actualizar banco de retiro</h1>
+    <p>Mantén tu cuenta bancaria actualizada para recibir tus fondos sin demoras.</p>
+  </header>
+
+  <main class="card">
+    <div class="form-group">
+      <label>Banco actual</label>
+      <div id="currentBankText"></div>
+    </div>
+    <div class="form-group">
+      <label for="bankSelect">Nuevo banco</label>
+      <select id="bankSelect">
+        <option value="">Seleccione un banco</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="accountType">Tipo de cuenta</label>
+      <select id="accountType">
+        <option value="">Seleccione el tipo</option>
+        <option value="corriente">Cuenta Corriente</option>
+        <option value="ahorro">Cuenta de Ahorro</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="accountNumber">Número de cuenta</label>
+      <input type="text" id="accountNumber" placeholder="0102-0000-00-0000000000" />
+    </div>
+    <div class="form-group">
+      <label for="accountHolder">Titular</label>
+      <input type="text" id="accountHolder" />
+    </div>
+    <div class="form-group">
+      <label for="holderId">Cédula</label>
+      <input type="text" id="holderId" />
+    </div>
+    <button id="saveBtn">Actualizar Banco</button>
+  </main>
+
+  <section class="card reasons">
+    <h2>¿Por qué actualizar tu banco?</h2>
+    <ul>
+      <li>Cambiaste de entidad financiera y deseas recibir los pagos en la nueva cuenta.</li>
+      <li>Tu banco actual presenta fallas o limitaciones con nuestros retiros.</li>
+      <li>Buscas aprovechar mejores servicios o promociones en otra institución.</li>
+    </ul>
+  </section>
+
+  <p class="note">Podrás modificar esta información en cualquier momento desde el menú de ajustes.</p>
+
+  <div class="overlay" id="successOverlay">
+    <div class="overlay-card">
+      <i class="fas fa-check-circle"></i>
+      <p>¡Datos actualizados correctamente!</p>
+      <button id="gotoRecharge">Aceptar</button>
+    </div>
+  </div>
+
+  <div id="bottom-nav-container"></div>
+  <script src="bottom-nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      const bankSelect = document.getElementById('bankSelect');
+      if(window.BANK_DATA && BANK_DATA.NACIONAL){
+        BANK_DATA.NACIONAL.forEach(b=>{
+          const opt = document.createElement('option');
+          opt.value = b.id;
+          opt.textContent = b.name;
+          bankSelect.appendChild(opt);
+        });
+      }
+      const reg = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+      const bankMap = window.BANK_NAME_MAP || {};
+      const currentBankText = document.getElementById('currentBankText');
+      if(currentBankText) currentBankText.textContent = reg.primaryBank ? (bankMap[reg.primaryBank] || reg.primaryBank) : 'Sin banco registrado';
+      document.getElementById('accountHolder').value = reg.fullName || ((reg.firstName||'') + ' ' + (reg.lastName||'')).trim();
+      document.getElementById('holderId').value = reg.documentNumber || '';
+      document.getElementById('saveBtn').addEventListener('click', function(){
+        const bank = bankSelect.value;
+        const accountType = document.getElementById('accountType').value;
+        const accountNumber = document.getElementById('accountNumber').value.trim();
+        const holder = document.getElementById('accountHolder').value.trim();
+        const holderId = document.getElementById('holderId').value.trim();
+        if(!bank || !accountType || !accountNumber || !holder || !holderId){
+          alert('Por favor complete todos los campos');
+          return;
+        }
+        reg.primaryBank = bank;
+        reg.primaryBankLogo = typeof getBankLogo==='function' ? getBankLogo(bank) : '';
+        reg.accountNumber = accountNumber;
+        try{ localStorage.setItem('visaRegistrationCompleted', JSON.stringify(reg)); }catch(e){}
+        document.getElementById('successOverlay').classList.add('active');
+      });
+      document.getElementById('gotoRecharge').addEventListener('click', function(){
+        window.location.href = getRecargaPage();
+      });
+    });
+  </script>
+</body>
+</html>
+<script src="preload.js"></script>
+

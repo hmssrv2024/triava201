@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <title>REMEEX Compras - Marketplace</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
+  <style>
+    :root {
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --secondary: #00579f;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --danger: #ff4d4d;
+      --warning: #ffad33;
+      --info: #0095ff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+      
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+      
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      
+      --transition-fast: all 0.2s ease;
+      --transition-base: all 0.3s ease;
+      --transition-slow: all 0.5s ease;
+      
+      --gradient-primary: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+      --gradient-success: linear-gradient(135deg, #00c057 0%, #00a346 100%);
+      --gradient-warning: linear-gradient(135deg, #ffad33 0%, #f7b600 100%);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--neutral-200);
+      color: var(--neutral-900);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .shopping-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: var(--neutral-100);
+      border-bottom: 1px solid var(--neutral-300);
+      box-shadow: var(--shadow-sm);
+      z-index: 1000;
+      height: 70px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+      border: none;
+    }
+
+    .back-btn:hover {
+      background: var(--neutral-300);
+      transform: translateX(-2px);
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .header-logo {
+      height: 36px;
+      width: auto;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .search-btn, .cart-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+      border: none;
+      position: relative;
+    }
+
+    .search-btn:hover, .cart-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--danger);
+      color: white;
+      border-radius: var(--radius-full);
+      font-size: 0.6rem;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    /* Container */
+    .shopping-container {
+      padding-top: 80px;
+      padding-bottom: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    /* Search Bar */
+    .search-container {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 48px;
+      padding: 0 1rem 0 3rem;
+      border: 1px solid var(--neutral-300);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      color: var(--neutral-900);
+      background: var(--neutral-100);
+      transition: var(--transition-base);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--neutral-500);
+      font-size: 1rem;
+    }
+
+    /* Categories Grid */
+    .categories-section {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+
+    .category-card {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid transparent;
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+    }
+
+    .category-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(26, 31, 113, 0.05), transparent);
+      transition: left 0.5s;
+    }
+
+    .category-card:hover::before {
+      left: 100%;
+    }
+
+    .category-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 1rem;
+      color: white;
+      position: relative;
+      z-index: 1;
+    }
+
+    .category-icon.tech {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .category-icon.home {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .category-icon.food {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .category-icon.fashion {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    }
+
+    .category-icon.health {
+      background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+    }
+
+    .category-icon.vehicles {
+      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+    }
+
+    .category-icon.entertainment {
+      background: linear-gradient(135deg, #fdbb2d 0%, #22c1c3 100%);
+    }
+
+    .category-icon.travel {
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    }
+
+    .category-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .category-count {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    /* Store Section */
+    .stores-section {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .stores-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .stores-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      background: var(--neutral-200);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .filter-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .stores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .store-card {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      border: 2px solid transparent;
+    }
+
+    .store-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .store-card.available {
+      border-color: var(--success);
+    }
+
+    .store-card.unavailable {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .store-card.unavailable::after {
+      content: 'Próximamente';
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--warning);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.7rem;
+      font-weight: 600;
+      z-index: 2;
+    }
+
+    .store-image {
+      height: 120px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .store-logo {
+      font-size: 2.5rem;
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .store-content {
+      padding: 1.25rem;
+    }
+
+    .store-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .store-category {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .store-description {
+      font-size: 0.85rem;
+      color: var(--neutral-700);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .store-features {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .feature-tag {
+      background: rgba(26, 31, 113, 0.1);
+      color: var(--primary);
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-full);
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .store-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .store-rating {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    .store-action {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .store-action:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .store-action:disabled {
+      background: var(--neutral-400);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Status Indicators */
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-dot.available {
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.unavailable {
+      background: var(--warning);
+    }
+
+    .status-text {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-text.available {
+      color: var(--success);
+    }
+
+    .status-text.unavailable {
+      color: var(--warning);
+    }
+
+    /* Special Offers */
+    .offers-section {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin: 2rem 0;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .offers-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    .offers-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .offers-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .offers-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+
+    .offers-btn {
+      background: white;
+      color: var(--primary);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .offers-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+    }
+
+    /* Cart Sidebar */
+    .cart-sidebar {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 400px;
+      height: 100vh;
+      background: var(--neutral-100);
+      box-shadow: var(--shadow-xl);
+      transition: right 0.3s ease;
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cart-sidebar.open {
+      right: 0;
+    }
+
+    .cart-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--neutral-300);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cart-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .cart-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+    }
+
+    .cart-content {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .cart-empty {
+      text-align: center;
+      color: var(--neutral-600);
+      font-size: 0.9rem;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(26, 31, 113, 0.2);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    /* Store Detail Modal */
+    .store-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1200;
+      padding: 1rem;
+    }
+
+    .store-modal-content {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: scaleIn 0.3s ease;
+    }
+
+    .store-modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--neutral-300);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .store-modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .store-modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+    }
+
+    .store-modal-body {
+      padding: 1.5rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stores-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cart-sidebar {
+        width: 100%;
+        right: -100%;
+      }
+
+      .search-container {
+        margin: 0.5rem;
+      }
+
+      .shopping-container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    @keyframes rotate {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 80px;
+      right: 16px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .toast {
+      background: var(--neutral-900);
+      color: white;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      min-width: 250px;
+      max-width: 320px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: slideInRight 0.3s ease;
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--success);
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--danger);
+    }
+
+    .toast.warning {
+      border-left: 4px solid var(--warning);
+    }
+
+    .toast.info {
+      border-left: 4px solid var(--info);
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="shopping-header">
+    <div class="header-left">
+      <button class="back-btn" id="back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <img src="remeex%20visa.jpg" alt="Remeex Visa" class="header-logo">
+      <h1 class="header-title">REMEEX Compras</h1>
+    </div>
+    <div class="header-right">
+      <button class="search-btn" id="search-btn">
+        <i class="fas fa-search"></i>
+      </button>
+      <button class="cart-btn" id="cart-btn">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-badge" id="cart-badge" style="display: none;">0</span>
+      </button>
+    </div>
+  </header>
+  <!-- Main Container -->
+  <div class="shopping-container">
+    <!-- Search Container -->
+    <div class="search-container">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="search-input" id="search-input" placeholder="Buscar tiendas, productos o servicios...">
+      </div>
+    </div>
+<!-- Special Offers Section -->
+<div class="offers-section">
+  <div class="offers-content">
+    <h2 class="offers-title">🎉 Ofertas Especiales</h2>
+    <p class="offers-subtitle">Descuentos exclusivos para usuarios REMEEX</p>
+    <button class="offers-btn" onclick="showToast('info', 'Ofertas Especiales', 'Próximamente tendremos descuentos exclusivos para ti')">
+      Ver Ofertas
+    </button>
+  </div>
+</div>
+
+<!-- Categories Section -->
+<div class="categories-section" id="categories-section">
+  <h2 class="section-title">
+    <i class="fas fa-th-large"></i>
+    Categorías
+  </h2>
+  <div class="categories-grid">
+    <div class="category-card" data-category="technology">
+      <div class="category-icon tech">
+        <i class="fas fa-laptop"></i>
+      </div>
+      <div class="category-name">Tecnología</div>
+      <div class="category-count">8 tiendas</div>
+    </div>
+
+    <div class="category-card" data-category="home">
+      <div class="category-icon home">
+        <i class="fas fa-home"></i>
+      </div>
+      <div class="category-name">Hogar</div>
+      <div class="category-count">6 tiendas</div>
+    </div>
+
+    <div class="category-card" data-category="food">
+      <div class="category-icon food">
+        <i class="fas fa-utensils"></i>
+      </div>
+      <div class="category-name">Alimentos</div>
+      <div class="category-count">12 tiendas</div>
+    </div>
+
+    <div class="category-card" data-category="fashion">
+      <div class="category-icon fashion">
+        <i class="fas fa-tshirt"></i>
+      </div>
+      <div class="category-name">Vestimenta</div>
+      <div class="category-count">8 tiendas</div>
+    </div>
+
+    <div class="category-card" data-category="health">
+      <div class="category-icon health">
+        <i class="fas fa-heartbeat"></i>
+      </div>
+      <div class="category-name">Salud</div>
+      <div class="category-count">10 tiendas</div>
+    </div>
+
+    <div class="category-card" data-category="vehicles">
+      <div class="category-icon vehicles">
+        <i class="fas fa-motorcycle"></i>
+      </div>
+      <div class="category-name">Vehículos</div>
+      <div class="category-count">5 tiendas</div>
+    </div>
+
+    <div class="category-card" data-category="entertainment">
+      <div class="category-icon entertainment">
+        <i class="fas fa-film"></i>
+      </div>
+      <div class="category-name">Entretenimiento</div>
+      <div class="category-count">7 tiendas</div>
+    </div>
+
+    <div class="category-card" data-category="travel">
+      <div class="category-icon travel">
+        <i class="fas fa-plane"></i>
+      </div>
+      <div class="category-name">Viajes</div>
+      <div class="category-count">9 tiendas</div>
+    </div>
+  </div>
+</div>
+
+<!-- Stores Section -->
+<div class="stores-section" id="stores-section">
+  <div class="stores-header">
+    <h2 class="stores-title" id="stores-title">
+      <i class="fas fa-store"></i>
+      Tiendas
+    </h2>
+    <button class="filter-btn" id="back-to-categories">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
+  <div class="stores-grid" id="stores-grid">
+    <!-- Stores will be populated by JavaScript -->
+  </div>
+</div>
+
+<!-- Loading Spinner -->
+<div class="loading-spinner" id="loading-spinner">
+  <div class="spinner"></div>
+</div>
+  </div>
+  <!-- Cart Sidebar -->
+  <div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+      <h3 class="cart-title">Mi Carrito</h3>
+      <button class="cart-close" id="cart-close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="cart-content">
+      <div class="cart-empty">
+        <i class="fas fa-shopping-cart" style="font-size: 3rem; color: var(--neutral-400); margin-bottom: 1rem;"></i>
+        <p>Tu carrito está vacío</p>
+        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Agrega productos para comenzar a comprar</p>
+      </div>
+    </div>
+  </div>
+  <!-- Store Detail Modal -->
+  <div class="store-modal" id="store-modal">
+    <div class="store-modal-content">
+      <div class="store-modal-header">
+        <h3 class="store-modal-title" id="modal-store-name">Tienda</h3>
+        <button class="store-modal-close" id="store-modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="store-modal-body" id="store-modal-body">
+        <!-- Modal content will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+  <script>
+    // Store data
+    const storeData = {
+      technology: [
+        {
+          name: "Latinphone",
+          category: "Tecnología",
+          description: "Teléfonos, accesorios y equipos móviles de última generación",
+          features: ["Envío gratis", "Garantía extendida", "Financiamiento"],
+          rating: 4.8,
+          available: true,
+          logo: "📱"
+        },
+        {
+          name: "IVOO",
+          category: "Tecnología", 
+          description: "Electrónicos y tecnología para el hogar y oficina",
+          features: ["Productos originales", "Servicio técnico"],
+          rating: 4.5,
+          available: false,
+          logo: "💻"
+        },
+        {
+          name: "DAKA",
+          category: "Tecnología",
+          description: "Electrodomésticos y tecnología con los mejores precios",
+          features: ["Precios competitivos", "Múltiples marcas"],
+          rating: 4.3,
+          available: false,
+          logo: "🔌"
+        },
+        {
+          name: "Multimax Store",
+          category: "Tecnología",
+          description: "Cadena de tiendas de tecnología y electrodomésticos",
+          features: ["Red nacional", "Servicio al cliente"],
+          rating: 4.2,
+          available: false,
+          logo: "🏪"
+        },
+        {
+          name: "CLX",
+          category: "Tecnología",
+          description: "Especialistas en computación y gaming",
+          features: ["Gaming", "Computadoras", "Accesorios"],
+          rating: 4.6,
+          available: false,
+          logo: "🎮"
+        },
+        {
+          name: "SoyTechno",
+          category: "Tecnología",
+          description: "Tecnología innovadora y gadgets modernos",
+          features: ["Innovación", "Gadgets", "Smart devices"],
+          rating: 4.4,
+          available: false,
+          logo: "⚡"
+        },
+        {
+          name: "TiendaTecno",
+          category: "Tecnología",
+          description: "Accesorios y reparaciones tecnológicas",
+          features: ["Reparaciones", "Accesorios", "Soporte"],
+          rating: 4.1,
+          available: false,
+          logo: "🔧"
+        },
+        {
+          name: "DigitalPlus",
+          category: "Tecnología",
+          description: "Cámaras, audio y video profesional",
+          features: ["Audio profesional", "Video", "Fotografía"],
+          rating: 4.7,
+          available: false,
+          logo: "📷"
+        }
+      ],
+      home: [
+        {
+          name: "Beco",
+          category: "Hogar",
+          description: "Todo para el hogar: muebles, decoración y electrodomésticos",
+          features: ["Muebles", "Decoración", "Electrodomésticos"],
+          rating: 4.5,
+          available: true,
+          logo: "🏠"
+        },
+        {
+          name: "EPA",
+          category: "Hogar",
+          description: "Ferretería y construcción para tu hogar",
+          features: ["Ferretería", "Construcción", "Herramientas"],
+          rating: 4.3,
+          available: false,
+          logo: "🔨"
+        },
+        {
+          name: "HomeCenter",
+          category: "Hogar",
+          description: "Centro de mejoramiento del hogar y jardín",
+          features: ["Jardín", "Mejoramiento", "DIY"],
+          rating: 4.4,
+          available: false,
+          logo: "🌱"
+        },
+        {
+          name: "Makro Mobiliario",
+          category: "Hogar",
+          description: "Muebles y decoración para espacios modernos",
+          features: ["Diseño moderno", "Muebles", "Decoración"],
+          rating: 4.2,
+          available: false,
+          logo: "🛋️"
+        },
+        {
+          name: "Casa Linda",
+          category: "Hogar",
+          description: "Artículos de decoración y organización",
+          features: ["Organización", "Decoración", "Accesorios"],
+          rating: 4.1,
+          available: false,
+          logo: "🎨"
+        },
+        {
+          name: "ElectroHogar",
+          category: "Hogar",
+          description: "Electrodomésticos para la cocina y el hogar",
+          features: ["Cocina", "Limpieza", "Electrodomésticos"],
+          rating: 4.6,
+          available: false,
+          logo: "⚡"
+        }
+      ],
+      food: [
+        {
+          name: "Yummy",
+          category: "Alimentos",
+          description: "Delivery de comida rápida y restaurantes",
+          features: ["Delivery", "Variedad", "Rápido"],
+          rating: 4.2,
+          available: true,
+          logo: "🍔"
+        },
+        {
+          name: "PedidosYa",
+          category: "Alimentos",
+          description: "Plataforma de delivery de comida y supermercado",
+          features: ["Múltiples restaurantes", "Supermercado", "Express"],
+          rating: 4.4,
+          available: true,
+          logo: "🛵"
+        },
+        {
+          name: "Gama",
+          category: "Alimentos",
+          description: "Supermercado con productos frescos y de calidad",
+          features: ["Productos frescos", "Calidad", "Variedad"],
+          rating: 4.3,
+          available: false,
+          logo: "🛒"
+        },
+        {
+          name: "Makro",
+          category: "Alimentos",
+          description: "Mayorista de alimentos y productos para el hogar",
+          features: ["Mayorista", "Precios especiales", "Volumen"],
+          rating: 4.5,
+          available: false,
+          logo: "🏬"
+        },
+        {
+          name: "Cinex",
+          category: "Entretenimiento",
+          description: "Cines y entretenimiento familiar",
+          features: ["Cine", "Entretenimiento", "Familia"],
+          rating: 4.6,
+          available: true,
+          logo: "🎬"
+        },
+        {
+          name: "CinePic",
+          category: "Entretenimiento",
+          description: "Cadena de cines premium con tecnología avanzada",
+          features: ["Cine premium", "Tecnología", "Confort"],
+          rating: 4.7,
+          available: false,
+          logo: "🎭"
+        },
+        {
+          name: "Cashea",
+          category: "Alimentos",
+          description: "Supermercado online con delivery rápido",
+          features: ["Online", "Delivery", "Productos básicos"],
+          rating: 4.1,
+          available: true,
+          logo: "📦"
+        },
+        {
+          name: "Central Madeirense",
+          category: "Alimentos",
+          description: "Supermercado tradicional con productos importados",
+          features: ["Productos importados", "Tradición", "Calidad"],
+          rating: 4.4,
+          available: false,
+          logo: "🏪"
+        },
+        {
+          name: "Automercado",
+          category: "Alimentos",
+          description: "Red de supermercados con productos nacionales",
+          features: ["Productos nacionales", "Red amplia", "Precios justos"],
+          rating: 4.2,
+          available: false,
+          logo: "🏬"
+        },
+        {
+          name: "Farmatodo Express",
+          category: "Alimentos",
+          description: "Conveniencia y productos básicos 24/7",
+          features: ["24/7", "Conveniencia", "Productos básicos"],
+          rating: 4.0,
+          available: false,
+          logo: "🌙"
+        },
+        {
+          name: "Delivery Club",
+          category: "Alimentos",
+          description: "Plataforma de delivery premium",
+          features: ["Premium", "Delivery rápido", "Restaurantes"],
+          rating: 4.3,
+          available: false,
+          logo: "👑"
+        },
+        {
+          name: "Food Express",
+          category: "Alimentos",
+          description: "Comida rápida y saludable a domicilio",
+          features: ["Saludable", "Rápido", "Domicilio"],
+          rating: 4.2,
+          available: false,
+          logo: "🥗"
+        }
+      ],
+      fashion: [
+        {
+          name: "Beco Fashion",
+          category: "Vestimenta",
+          description: "Moda y vestimenta para toda la familia",
+          features: ["Toda la familia", "Moda", "Calidad"],
+          rating: 4.3,
+          available: true,
+          logo: "👗"
+        },
+        {
+          name: "Zara",
+          category: "Vestimenta",
+          description: "Moda internacional con las últimas tendencias",
+          features: ["Tendencias", "Internacional", "Diseño"],
+          rating: 4.6,
+          available: false,
+          logo: "👠"
+        },
+        {
+          name: "Pull & Bear",
+          category: "Vestimenta",
+          description: "Ropa casual y urbana para jóvenes",
+          features: ["Casual", "Urbano", "Jóvenes"],
+          rating: 4.4,
+          available: false,
+          logo: "👕"
+        },
+        {
+          name: "Sambil Fashion",
+          category: "Vestimenta",
+          description: "Centro comercial con múltiples marcas de moda",
+          features: ["Múltiples marcas", "Centro comercial", "Variedad"],
+          rating: 4.5,
+          available: false,
+          logo: "🏬"
+        },
+        {
+          name: "H&M",
+          category: "Vestimenta",
+          description: "Moda accesible y sostenible",
+          features: ["Accesible", "Sostenible", "Moda"],
+          rating: 4.3,
+          available: false,
+          logo: "🌿"
+        },
+        {
+          name: "Mango",
+          category: "Vestimenta",
+          description: "Moda femenina elegante y moderna",
+          features: ["Femenino", "Elegante", "Moderno"],
+          rating: 4.4,
+          available: false,
+          logo: "💃"
+        },
+        {
+          name: "Nike Store",
+          category: "Vestimenta",
+          description: "Ropa deportiva y calzado de alta calidad",
+          features: ["Deportivo", "Calzado", "Alta calidad"],
+          rating: 4.7,
+          available: false,
+          logo: "👟"
+        },
+        {
+          name: "Adidas Original",
+          category: "Vestimenta",
+          description: "Marca deportiva con estilo urbano",
+          features: ["Deportivo", "Urbano", "Original"],
+          rating: 4.6,
+          available: false,
+          logo: "⚽"
+        }
+      ],
+      health: [
+        {
+          name: "RedVital",
+          category: "Salud",
+          description: "Red de farmacias con productos de salud y bienestar",
+          features: ["Red amplia", "Bienestar", "Productos de salud"],
+          rating: 4.4,
+          available: true,
+          logo: "💊"
+        },
+        {
+          name: "Farmatodo",
+          category: "Salud",
+          description: "Farmacia líder con servicios de salud integral",
+          features: ["Servicios integrales", "Líder", "Salud"],
+          rating: 4.5,
+          available: false,
+          logo: "🏥"
+        },
+        {
+          name: "Clínica El Ávila",
+          category: "Salud",
+          description: "Centro médico privado de alta complejidad",
+          features: ["Alta complejidad", "Privado", "Especialistas"],
+          rating: 4.8,
+          available: false,
+          logo: "🏨"
+        },
+        {
+          name: "Hospital de Clínicas Caracas",
+          category: "Salud",
+          description: "Hospital privado con tecnología avanzada",
+          features: ["Tecnología avanzada", "Privado", "Especialidades"],
+          rating: 4.7,
+          available: false,
+          logo: "🏥"
+        },
+        {
+          name: "Centro Médico La Trinidad",
+          category: "Salud",
+          description: "Centro médico integral con múltiples especialidades",
+          features: ["Integral", "Múltiples especialidades", "Moderno"],
+          rating: 4.6,
+          available: false,
+          logo: "⚕️"
+        },
+        {
+          name: "Policlínica Metropolitana",
+          category: "Salud",
+          description: "Servicios médicos especializados en Caracas",
+          features: ["Especializado", "Caracas", "Calidad"],
+          rating: 4.5,
+          available: false,
+          logo: "🏩"
+        },
+        {
+          name: "Locatel",
+          category: "Salud",
+          description: "Farmacia con productos de cuidado personal",
+          features: ["Cuidado personal", "Farmacia", "Productos"],
+          rating: 4.3,
+          available: false,
+          logo: "💄"
+        },
+        {
+          name: "Farmahorro",
+          category: "Salud",
+          description: "Farmacia con precios accesibles",
+          features: ["Precios accesibles", "Farmacia", "Ahorro"],
+          rating: 4.2,
+          available: false,
+          logo: "💰"
+        },
+        {
+          name: "Centro Médico Docente La Trinidad",
+          category: "Salud",
+          description: "Hospital universitario con servicios especializados",
+          features: ["Universitario", "Especializado", "Docente"],
+          rating: 4.4,
+          available: false,
+          logo: "🎓"
+        },
+        {
+          name: "Sanatorio San Jorge",
+          category: "Salud",
+          description: "Sanatorio privado con atención personalizada",
+          features: ["Privado", "Personalizado", "Atención"],
+          rating: 4.6,
+          available: false,
+          logo: "🏥"
+        }
+      ],
+      vehicles: [
+        {
+          name: "Yamaha Venezuela",
+          category: "Vehículos",
+          description: "Motocicletas Yamaha con tecnología japonesa",
+          features: ["Tecnología japonesa", "Calidad", "Repuestos"],
+          rating: 4.7,
+          available: true,
+          logo: "🏍️"
+        },
+        {
+          name: "Honda Motos",
+          category: "Vehículos",
+          description: "Motocicletas Honda confiables y duraderas",
+          features: ["Confiable", "Durable", "Servicio"],
+          rating: 4.6,
+          available: false,
+          logo: "🏍️"
+        },
+        {
+          name: "Suzuki Venezuela",
+          category: "Vehículos",
+          description: "Motocicletas Suzuki para todo terreno",
+          features: ["Todo terreno", "Potencia", "Resistencia"],
+          rating: 4.5,
+          available: false,
+          logo: "🏍️"
+        },
+        {
+          name: "Bera Motos",
+          category: "Vehículos",
+          description: "Motocicletas económicas y repuestos",
+          features: ["Económicas", "Repuestos", "Accesible"],
+          rating: 4.2,
+          available: false,
+          logo: "🛵"
+        },
+        {
+          name: "Italika Venezuela",
+          category: "Vehículos",
+          description: "Motocicletas modernas con diseño italiano",
+          features: ["Diseño italiano", "Modernas", "Estilo"],
+          rating: 4.3,
+          available: false,
+          logo: "🏍️"
+        }
+      ],
+      entertainment: [
+        {
+          name: "Cinex",
+          category: "Entretenimiento",
+          description: "Cines con la mejor experiencia cinematográfica",
+          features: ["Mejor experiencia", "Cine", "Entretenimiento"],
+          rating: 4.6,
+          available: true,
+          logo: "🎬"
+        },
+        {
+          name: "CinePic",
+          category: "Entretenimiento",
+          description: "Cines premium con tecnología 4D",
+          features: ["Premium", "4D", "Tecnología"],
+          rating: 4.7,
+          available: false,
+          logo: "🎭"
+        },
+        {
+          name: "GameLand",
+          category: "Entretenimiento",
+          description: "Centro de videojuegos y entretenimiento familiar",
+          features: ["Videojuegos", "Familiar", "Diversión"],
+          rating: 4.4,
+          available: false,
+          logo: "🎮"
+        },
+        {
+          name: "Bowling Venezuela",
+          category: "Entretenimiento",
+          description: "Pistas de bowling y entretenimiento nocturno",
+          features: ["Bowling", "Nocturno", "Grupos"],
+          rating: 4.3,
+          available: false,
+          logo: "🎳"
+        },
+        {
+          name: "Karaoke Plus",
+          category: "Entretenimiento",
+          description: "Salas de karaoke privadas y fiestas",
+          features: ["Karaoke", "Privado", "Fiestas"],
+          rating: 4.2,
+          available: false,
+          logo: "🎤"
+        },
+        {
+          name: "Laser Tag Arena",
+          category: "Entretenimiento",
+          description: "Juegos de laser tag y realidad virtual",
+          features: ["Laser tag", "Realidad virtual", "Aventura"],
+          rating: 4.5,
+          available: false,
+          logo: "🔫"
+        },
+        {
+          name: "Parque de Diversiones",
+          category: "Entretenimiento",
+          description: "Atracciones mecánicas y juegos familiares",
+          features: ["Atracciones", "Familiar", "Diversión"],
+          rating: 4.4,
+          available: false,
+          logo: "🎡"
+        }
+      ],
+      travel: [
+        {
+          name: "Conviasa",
+          category: "Viajes",
+          description: "Aerolínea nacional con vuelos domésticos e internacionales",
+          features: ["Nacional", "Internacional", "Vuelos"],
+          rating: 3.8,
+          available: true,
+          logo: "✈️"
+        },
+        {
+          name: "Hotel Tamanaco",
+          category: "Viajes",
+          description: "Hotel 5 estrellas en el corazón de Caracas",
+          features: ["5 estrellas", "Caracas", "Lujo"],
+          rating: 4.6,
+          available: false,
+          logo: "🏨"
+        },
+        {
+          name: "JW Marriott Hotel",
+          category: "Viajes",
+          description: "Hotel de lujo internacional en Venezuela",
+          features: ["Lujo", "Internacional", "Servicio premium"],
+          rating: 4.8,
+          available: false,
+          logo: "🏨"
+        },
+        {
+          name: "Hotel Ávila",
+          category: "Viajes",
+          description: "Hotel boutique con vista a la montaña",
+          features: ["Boutique", "Vista montaña", "Exclusivo"],
+          rating: 4.7,
+          available: false,
+          logo: "🏔️"
+        },
+        {
+          name: "Viajes Kueka",
+          category: "Viajes",
+          description: "Agencia de viajes especializada en turismo nacional",
+          features: ["Turismo nacional", "Especializada", "Paquetes"],
+          rating: 4.4,
+          available: false,
+          logo: "🧳"
+        },
+        {
+          name: "Copa Airlines",
+          category: "Viajes",
+          description: "Aerolínea regional con conexiones internacionales",
+          features: ["Regional", "Conexiones", "Internacional"],
+          rating: 4.3,
+          available: false,
+          logo: "✈️"
+        },
+        {
+          name: "American Airlines",
+          category: "Viajes",
+          description: "Aerolínea internacional con vuelos a USA",
+          features: ["Internacional", "USA", "Frecuentes"],
+          rating: 4.2,
+          available: false,
+          logo: "🇺🇸"
+        },
+        {
+          name: "Turismo Caracas",
+          category: "Viajes",
+          description: "Tours y excursiones por Venezuela",
+          features: ["Tours", "Excursiones", "Venezuela"],
+          rating: 4.1,
+          available: false,
+          logo: "🚌"
+        },
+        {
+          name: "Resort Los Roques",
+          category: "Viajes",
+          description: "Resort exclusivo en el archipiélago Los Roques",
+          features: ["Exclusivo", "Los Roques", "Playa"],
+          rating: 4.9,
+          available: false,
+          logo: "🏝️"
+        }
+      ]
+    };
+
+    let currentCategory = null;
+    let cartItems = [];
+
+    // DOM Elements
+    const backBtn = document.getElementById('back-btn');
+    const searchBtn = document.getElementById('search-btn');
+    const cartBtn = document.getElementById('cart-btn');
+    const searchInput = document.getElementById('search-input');
+    const categoriesSection = document.getElementById('categories-section');
+    const storesSection = document.getElementById('stores-section');
+    const storesTitle = document.getElementById('stores-title');
+    const storesGrid = document.getElementById('stores-grid');
+    const backToCategoriesBtn = document.getElementById('back-to-categories');
+    const cartSidebar = document.getElementById('cart-sidebar');
+    const cartClose = document.getElementById('cart-close');
+    const storeModal = document.getElementById('store-modal');
+    const storeModalClose = document.getElementById('store-modal-close');
+    const loadingSpinner = document.getElementById('loading-spinner');
+
+    // Event Listeners
+    backBtn.addEventListener('click', goBack);
+    searchBtn.addEventListener('click', toggleSearch);
+    cartBtn.addEventListener('click', toggleCart);
+    cartClose.addEventListener('click', toggleCart);
+    backToCategoriesBtn.addEventListener('click', showCategories);
+    storeModalClose.addEventListener('click', closeStoreModal);
+    searchInput.addEventListener('input', handleSearch);
+
+    // Category click handlers
+    document.querySelectorAll('.category-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const category = this.dataset.category;
+        showStores(category);
+      });
+    });
+
+    // Functions
+    function goBack() {
+      // Implement navigation back to main app
+      if (typeof window.history !== 'undefined' && window.history.length > 1) {
+        window.history.back();
+      } else {
+        // Fallback - redirect to main page
+        // Usar URL limpia para volver a la página principal
+        window.location.href = '';
+      }
+    }
+
+    function toggleSearch() {
+      const searchContainer = document.querySelector('.search-container');
+      if (searchContainer.style.display === 'none') {
+        searchContainer.style.display = 'block';
+        searchInput.focus();
+      } else {
+        searchContainer.style.display = 'none';
+      }
+    }
+
+    function toggleCart() {
+      cartSidebar.classList.toggle('open');
+    }
+
+    function showCategories() {
+      currentCategory = null;
+      categoriesSection.style.display = 'block';
+      storesSection.style.display = 'none';
+      
+      // Update header title
+      document.querySelector('.header-title').textContent = 'REMEEX Compras';
+    }
+
+    function showStores(category) {
+      currentCategory = category;
+      const stores = storeData[category] || [];
+      
+      // Show loading
+      loadingSpinner.style.display = 'flex';
+      categoriesSection.style.display = 'none';
+      
+      setTimeout(() => {
+        loadingSpinner.style.display = 'none';
+        storesSection.style.display = 'block';
+        
+        // Update title
+        const categoryNames = {
+          technology: 'Tecnología',
+          home: 'Hogar',
+          food: 'Alimentos',
+          fashion: 'Vestimenta',
+          health: 'Salud',
+          vehicles: 'Vehículos',
+          entertainment: 'Entretenimiento',
+          travel: 'Viajes'
+        };
+        
+        storesTitle.innerHTML = `
+          <i class="fas fa-store"></i>
+          ${categoryNames[category]}
+        `;
+        
+        // Populate stores
+        renderStores(stores);
+      }, 800);
+    }
+
+    function renderStores(stores) {
+      storesGrid.innerHTML = '';
+      
+      stores.forEach(store => {
+        const storeCard = createStoreCard(store);
+        storesGrid.appendChild(storeCard);
+      });
+      
+      // Animate cards
+      gsap.fromTo('.store-card', {
+        opacity: 0,
+        y: 20
+      }, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        stagger: 0.1
+      });
+    }
+
+    function createStoreCard(store) {
+      const card = document.createElement('div');
+      card.className = `store-card ${store.available ? 'available' : 'unavailable'}`;
+      
+      card.innerHTML = `
+        <div class="store-image">
+          <div class="store-logo">${store.logo}</div>
+        </div>
+        <div class="store-content">
+          <h3 class="store-name">${store.name}</h3>
+          <div class="store-category">${store.category}</div>
+          <div class="status-indicator">
+            <div class="status-dot ${store.available ? 'available' : 'unavailable'}"></div>
+            <div class="status-text ${store.available ? 'available' : 'unavailable'}">
+              ${store.available ? 'Disponible' : 'Próximamente'}
+            </div>
+          </div>
+          <p class="store-description">${store.description}</p>
+          <div class="store-features">
+            ${store.features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
+          </div>
+          <div class="store-footer">
+            <div class="store-rating">
+              <i class="fas fa-star" style="color: #ffd700;"></i>
+              <span>${store.rating}</span>
+            </div>
+            <button class="store-action" ${!store.available ? 'disabled' : ''} onclick="handleStoreAction('${store.name}', ${store.available})">
+              ${store.available ? 'Visitar' : 'Próximamente'}
+            </button>
+          </div>
+        </div>
+      `;
+      
+      if (store.available) {
+        card.addEventListener('click', () => showStoreModal(store));
+      }
+      
+      return card;
+    }
+
+    function handleStoreAction(storeName, available) {
+      if (available) {
+        showToast('success', 'Redirigiendo', `Conectando con ${storeName}...`);
+        // Here you would implement the actual store connection
+        setTimeout(() => {
+          showToast('info', 'Conexión establecida', `Ahora puedes explorar ${storeName}`);
+        }, 2000);
+      } else {
+        showToast('info', 'Próximamente', 'Esta tienda estará disponible muy pronto');
+      }
+    }
+
+    function showStoreModal(store) {
+      const modalTitle = document.getElementById('modal-store-name');
+      const modalBody = document.getElementById('store-modal-body');
+      
+      modalTitle.textContent = store.name;
+      modalBody.innerHTML = `
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div style="font-size: 4rem; margin-bottom: 1rem;">${store.logo}</div>
+          <h3 style="margin-bottom: 0.5rem;">${store.name}</h3>
+          <p style="color: var(--neutral-600); margin-bottom: 1rem;">${store.description}</p>
+          
+          <div class="status-indicator" style="justify-content: center; margin-bottom: 1rem;">
+            <div class="status-dot ${store.available ? 'available' : 'unavailable'}"></div>
+            <div class="status-text ${store.available ? 'available' : 'unavailable'}">
+              ${store.available ? 'Disponible para compras' : 'Próximamente disponible'}
+            </div>
+          </div>
+          
+          <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+            <i class="fas fa-star" style="color: #ffd700;"></i>
+            <span style="font-weight: 600;">${store.rating}</span>
+            <span style="color: var(--neutral-600);">• Calificación promedio</span>
+          </div>
+          
+          <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            ${store.features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
+          </div>
+          
+          ${store.available ? `
+            <button class="store-action" style="width: 100%; padding: 0.75rem;" onclick="handleStoreAction('${store.name}', true)">
+              <i class="fas fa-external-link-alt"></i> Visitar Tienda
+            </button>
+          ` : `
+            <button class="store-action" disabled style="width: 100%; padding: 0.75rem;">
+              <i class="fas fa-clock"></i> Próximamente
+            </button>
+          `}
+        </div>
+      `;
+      
+      storeModal.style.display = 'flex';
+    }
+
+    function closeStoreModal() {
+      storeModal.style.display = 'none';
+    }
+
+    function handleSearch() {
+      const query = searchInput.value.toLowerCase().trim();
+      
+      if (query.length < 2) {
+        if (currentCategory) {
+          renderStores(storeData[currentCategory]);
+        }
+        return;
+      }
+      
+      // Search across all categories
+      let results = [];
+      Object.values(storeData).forEach(categoryStores => {
+        const filtered = categoryStores.filter(store => 
+          store.name.toLowerCase().includes(query) ||
+          store.description.toLowerCase().includes(query) ||
+          store.features.some(feature => feature.toLowerCase().includes(query))
+        );
+        results = results.concat(filtered);
+      });
+      
+      if (currentCategory) {
+        renderStores(results);
+      } else {
+        // If searching from categories view, show results
+        if (results.length > 0) {
+          categoriesSection.style.display = 'none';
+          storesSection.style.display = 'block';
+          storesTitle.innerHTML = `
+            <i class="fas fa-search"></i>
+            Resultados para "${query}"
+          `;
+          renderStores(results);
+        }
+      }
+      
+      if (results.length === 0) {
+        showToast('info', 'Sin resultados', `No se encontraron tiendas para "${query}"`);
+      }
+    }
+
+    function showToast(type, title, message, duration = 3000) {
+      const toastContainer = document.getElementById('toast-container');
+      
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const iconMap = {
+        success: 'check-circle',
+        error: 'exclamation-circle',
+        warning: 'exclamation-triangle',
+        info: 'info-circle'
+      };
+      
+      toast.innerHTML = `
+        <div>
+          <i class="fas fa-${iconMap[type]}"></i>
+        </div>
+        <div>
+          <div style="font-weight: 600; margin-bottom: 0.25rem;">${title}</div>
+          <div style="font-size: 0.85rem; opacity: 0.9;">${message}</div>
+        </div>
+        <div style="cursor: pointer;" onclick="this.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </div>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      // Auto remove
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.remove();
+        }
+      }, duration);
+    }
+
+    // Close modal when clicking outside
+    storeModal.addEventListener('click', function(e) {
+      if (e.target === storeModal) {
+        closeStoreModal();
+      }
+    });
+
+    // Close cart when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!cartSidebar.contains(e.target) && !cartBtn.contains(e.target) && cartSidebar.classList.contains('open')) {
+        toggleCart();
+      }
+    });
+
+    // Initial animation
+    gsap.fromTo('.category-card', {
+      opacity: 0,
+      y: 20
+    }, {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      delay: 0.2
+    });
+
+    // Welcome message
+    setTimeout(() => {
+      showToast('success', '¡Bienvenido!', 'Explora nuestro marketplace y descubre las mejores tiendas');
+    }, 1000);
+  </script>
+<div id="bottom-nav-container"></div>
+<script src="bottom-nav.js"></script>
+</body>
+</html>
+  <script src="preload.js"></script>

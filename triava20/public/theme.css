@@ -1,0 +1,89 @@
+body.dark-mode{
+  --neutral-100:#1a1f37;
+  --neutral-200:#293249;
+  --neutral-300:#4f5d75;
+  --neutral-900:#ffffff;
+  background:#121212 !important;
+  /* Texto claro para mejor contraste */
+  color:var(--neutral-900) !important;
+}
+body.dark-mode .card,
+body.dark-mode .settings-container,
+body.dark-mode .bottom-nav,
+body.dark-mode .app-header,
+body.dark-mode .modal{
+  background:#1a1f37 !important;
+  color:var(--neutral-900) !important;
+}
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea{
+  background:#293249 !important;
+  color:#ffffff !important;
+  border-color:#4f5d75 !important;
+}
+
+body.silver-mode{
+  --neutral-100:rgba(255,255,255,0.8);
+  --neutral-200:rgba(255,255,255,0.6);
+  --neutral-300:rgba(255,255,255,0.4);
+  --neutral-900:#1a1f37;
+  backdrop-filter:blur(10px);
+  background:linear-gradient(135deg,rgba(255,255,255,0.9),rgba(230,240,255,0.8)) !important;
+  color:var(--neutral-900) !important;
+}
+body.silver-mode .card,
+body.silver-mode .settings-container,
+body.silver-mode .bottom-nav,
+body.silver-mode .app-header,
+body.silver-mode .modal{
+  background:rgba(255,255,255,0.5) !important;
+  backdrop-filter:blur(10px);
+}
+
+/* Ajustes de navegación */
+body.dark-mode .nav-item.active{
+  color:var(--accent) !important;
+}
+body.silver-mode .nav-item.active{
+  color:var(--primary-dark) !important;
+}
+
+body.dark-mode .btn-primary,
+body.dark-mode .btn-outline{
+  background:var(--primary-dark) !important;
+  color:#fff !important;
+  border-color:var(--primary-dark) !important;
+}
+
+body.dark-mode .btn-outline{
+  background:transparent !important;
+}
+
+body.silver-mode .btn-primary,
+body.silver-mode .btn-outline{
+  background:var(--primary) !important;
+  color:var(--neutral-900) !important;
+  border-color:var(--primary) !important;
+}
+
+body.silver-mode .btn-outline{
+  background:transparent !important;
+}
+
+/* Golden mode styles - only main balance card */
+body.gold-mode #main-balance-card{
+  background:linear-gradient(135deg,var(--visa-gold-dark),var(--visa-gold-light)) !important;
+  box-shadow:0 0 20px rgba(255,215,0,0.4),0 0 40px rgba(255,215,0,0.3);
+  animation:goldPulse 3s infinite;
+}
+
+@keyframes goldPulse{
+  0%{box-shadow:0 0 10px rgba(255,215,0,0.5),0 0 30px rgba(255,215,0,0.3);}
+  50%{box-shadow:0 0 25px rgba(255,215,0,0.8),0 0 50px rgba(255,215,0,0.5);}
+ 100%{box-shadow:0 0 10px rgba(255,215,0,0.5),0 0 30px rgba(255,215,0,0.3);}
+}
+
+.swal2-actions-centered {
+  justify-content: center;
+}

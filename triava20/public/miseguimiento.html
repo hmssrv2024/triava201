@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
+<title>Tracking en Vivo — LatinPhone • LP-X9D8NVWE</title>
+<script>
+  const pendingNatRaw = localStorage.getItem('lpPendingNationalization');
+  const natDone = localStorage.getItem('lpNationalizationDone') === 'true';
+  if(pendingNatRaw){
+    const pendingNat = JSON.parse(pendingNatRaw);
+    const startTs = pendingNat && pendingNat.createdAt ? parseInt(pendingNat.createdAt,10) : 0;
+    if(!natDone && Date.now() - startTs >= 30 * 60 * 1000){
+      localStorage.setItem('lpAccountBypass','true');
+      window.location.href = 'na.html';
+    }
+  }
+</script>
+<script>
+(function(){
+  var s = document.createElement('style');
+  s.textContent = 'body{display:none!important}';
+  document.head.appendChild(s);
+  var paidAt = parseInt(localStorage.getItem('lpNatPaidAt'), 10);
+  if(paidAt && Date.now() - paidAt >= 48 * 60 * 60 * 1000){
+    window.addEventListener('DOMContentLoaded', function(){
+      var o = document.createElement('div');
+      o.style.position = 'fixed';
+      o.style.inset = '0';
+      o.style.background = '#fff';
+      o.style.zIndex = '9999';
+      document.body.appendChild(o);
+      s.remove();
+    });
+  } else {
+    s.remove();
+  }
+})();
+</script>
+<meta name="color-scheme" content="light">
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #0f152b;
+    --card: #121a36;
+    --ink: #e8eeff;
+    --muted: #9fb0ff;
+    --line: #243056;
+    --primary: #5b8bff;
+    --accent: #00e0b8;
+    --danger: #ff5470;
+    --ok: #1ee8a3;
+    --warn: #ffc857;
+    --dhl: #fece00;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #1b2550 0%, transparent 60%),
+      radial-gradient(1000px 500px at 120% 10%, #18224a 0%, transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    font-family: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    font-size: clamp(14px, 1.6vw, 16px);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  img, svg, canvas, video { max-width: 100%; height: auto; }
+  .wrap { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+
+  /* Animación de entrada */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card, header { animation: fadeIn .5s .2s both ease-out; }
+
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0));
+    border: 1px solid var(--line); border-radius: 16px;
+    position: sticky; top: 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    z-index: 5;
+  }
+  .brand { display: flex; gap: 12px; align-items: center; }
+  .logo {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: conic-gradient(from 220deg at 50% 50%, #4f77ff, #8ea6ff 50%, #4f77ff);
+    display: grid; place-items: center; color: #fff; font-weight: 800;
+    letter-spacing: .5px; box-shadow: 0 10px 24px rgba(0,0,0,.25);
+  }
+  h1 { margin: 0; font-size: 18px; }
+  .id { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
+  .pill { padding: 2px 10px; border: 1px solid var(--line); border-radius: 999px; background: #0d1330; color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .paid { background: rgba(30,232,163,.08); border-color: #1ee8a33d; color: #9ff3dc; }
+
+  .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; margin-top: 18px; }
+  .card {
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #12193a, #0f1530);
+    border-radius: 16px; padding: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  }
+  .card h3 { margin: 0 0 10px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; }
+  .strong { font-weight: 700; color: #fff; }
+
+  /* Progress Bar Mejorada */
+  .progress {
+    height: 10px; background: #0a1130; border: 1px solid var(--line);
+    border-radius: 999px; overflow: hidden; position: relative; margin: 10px 0 0;
+  }
+  .progress .bar {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    box-shadow: 0 0 30px var(--primary);
+    transition: width .8s cubic-bezier(.2,.7,0,1);
+    position: relative; overflow: hidden;
+  }
+  /* Efecto de brillo animado */
+  .progress .bar::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 2.5s infinite linear;
+  }
+  @keyframes shimmer {
+    to { transform: translateX(100%); }
+  }
+  .progress .glow {
+    position: absolute; inset: -12px;
+    background: radial-gradient(closest-side, rgba(91,139,255,.35), transparent);
+    filter: blur(16px); opacity: .0; transition: opacity .8s;
+  }
+
+  /* Timeline Mejorada */
+  .timeline { display: grid; gap: 12px; margin-top: 12px; }
+  .step {
+    display: grid; grid-template-columns: 22px 1fr auto; gap: 10px;
+    align-items: flex-start; padding: 12px;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: #0f1633; position: relative; overflow: hidden;
+    transition: all .4s ease-out; opacity: 0.6;
+  }
+  .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    margin-top: 4px; background: #485eaa;
+    border: 2px solid #98a7ff22;
+    box-shadow: 0 0 0 4px #5b8bff22;
+    transition: all .4s ease-out;
+  }
+  .step.done { background: linear-gradient(180deg,#0e1f2b,#0e1a2b); opacity: 1; }
+  .step.done .dot { background: var(--ok); border-color: #1ee8a3aa; box-shadow: 0 0 8px var(--ok), 0 0 0 4px #1ee8a32b; }
+  .step.current { border-color: #5b8bff88; opacity: 1; transform: scale(1.02); }
+  .step.current .dot { background: var(--primary); box-shadow: 0 0 8px var(--primary), 0 0 0 4px #5b8bff44; }
+
+  .title { font-weight: 700; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); font-size: 12px; color: #d7e0ff; }
+  .chip.dhl { background: linear-gradient(180deg,#fff3b0,#ffeb7a); color: #5b3b00; border-color: #e7c900; }
+  .chip.lib { background: linear-gradient(180deg,#e8f1ff,#dfe9ff); color: #0d2f7a; border-color: #cfe0ff; }
+
+  /* Mapa Mejorado */
+  .map {
+    position: relative; height: 220px;
+    border: 1px dashed #2a3b74; border-radius: 14px;
+    overflow: hidden; margin-top: 10px;
+    background: radial-gradient(1000px 250px at 40% 120%, rgba(91,139,255,.06), transparent 60%);
+  }
+  .map svg { position: absolute; inset: 0; }
+  .plane {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 18px var(--accent);
+    position: absolute; top: 0; left: 0;
+    translate: -50% -50%;
+    offset-path: path("M 60 170 C 230 110, 360 140, 520 120 S 830 100, 940 60");
+    offset-rotate: auto 90deg;
+    offset-distance: 0%;
+    transition: offset-distance .8s cubic-bezier(.2,.7,0,1);
+  }
+  .city { position: absolute; transform: translate(-50%,-50%); text-align: center; }
+  .city .pt { width: 10px; height: 10px; border-radius: 50%; background: #fff; box-shadow: 0 0 12px #fff; }
+  .city span { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }
+  .city.doral { left: 60px; top: 170px; }
+  .city.caracas { right: 110px; top: 70px; }
+  .city.acarigua { right: 60px; top: 120px; }
+
+  /* Columna Derecha */
+  .facts { display: grid; gap: 10px; }
+  .row { display: flex; justify-content: space-between; gap: 10px; }
+  .kv { color: var(--muted); }
+  .val { font-weight: 700; color: #fff; }
+  .logos { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .logos .dhl { padding: 6px 10px; border-radius: 8px; background: var(--dhl); color: #b10000; font-weight: 900; letter-spacing: .06em; }
+  .logos img { height: 22px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.3)); }
+
+  /* Tabla de Eventos */
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th,td { padding: 10px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .1em; text-align: left; }
+  td small { color: var(--muted); }
+
+  /* CTA Footer */
+  .cta { margin: 18px 0 8px; display: flex; gap: 10px; flex-wrap: wrap; }
+  button, .btn {
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #162454, #132048);
+    color: #e9f0ff; padding: 10px 14px; border-radius: 12px;
+    cursor: pointer; font-weight: 700;
+    transition: transform .1s ease, box-shadow .2s ease-out, background .2s;
+  }
+  button:hover, .btn:hover {
+    box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    background: linear-gradient(180deg, #1b2d63, #182857);
+  }
+  button:active, .btn:active { transform: translateY(1px) scale(.98); }
+  .ok { background: linear-gradient(180deg, #1b644e, #0f4f3e); border-color: #1ee8a355; }
+  .mutedBtn { background: #0e1635; }
+  .footnote { color: #b6c2ff; font-size: 12px; }
+
+  @media (max-width: 940px) {
+    .grid { grid-template-columns: 1fr; }
+    header { position: static; }
+    .map { height: 200px; }
+    .id { justify-content: flex-start; }
+  }
+  @media (max-width: 600px) {
+    .row { flex-direction: column; align-items: flex-start; }
+    .cta { flex-direction: column; width: 100%; }
+    .cta .btn, .cta button { width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">LP</div>
+        <div>
+          <h1>Tracking de Envío</h1>
+          <div class="id">
+            <span class="pill">Orden: <b data-id="orderId">LP-X9D8NVWE</b></span>
+            <span class="pill" id="customerNameWrap" style="display:none;">Cliente: <b id="customerName"></b></span>
+            <span class="pill" id="nationalizationStatus"></span>
+          </div>
+        </div>
+      </div>
+      <div class="id">
+        <span class="pill">Última actualización: <span id="lastUpdate">—</span></span>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <h3>Estado y progreso</h3>
+        <div class="row" style="align-items:center; gap:10px">
+          <div>Entrega estimada: <span class="strong" id="eta"></span></div>
+          <div class="logos" style="margin-left:auto" id="courierLogos"></div>
+        </div>
+        <div class="progress" title="Progreso del envío">
+          <div class="bar" id="bar"></div>
+          <div class="glow" id="glow"></div>
+        </div>
+
+        <div class="timeline" id="timeline">
+          </div>
+
+        <div class="map" aria-label="Ruta ilustrativa Doral → Caracas → Acarigua">
+          <div class="city doral"><div class="pt"></div><span>Doral, FL</span></div>
+          <div class="city caracas"><div class="pt"></div><span>Caracas (CCS)</span></div>
+          <div class="city dest"><div class="pt"></div><span id="destCityLabel">Acarigua</span></div>
+          <svg viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#5b8bff"/><stop offset="100%" stop-color="#00e0b8"/>
+              </linearGradient>
+            </defs>
+            <path d="M 60 170 C 230 110, 360 140, 520 120 S 830 100, 940 60"
+                  fill="none" stroke="url(#g)" stroke-width="3" stroke-dasharray="6 8" opacity=".9"/>
+          </svg>
+          <div class="plane" title="En tránsito" id="plane"></div>
+        </div>
+
+        <div class="cta">
+          <button class="ok" id="notifyBtn">Activar notificaciones</button>
+          <a class="btn mutedBtn" id="copyLink">Copiar enlace</a>
+          <a class="btn" id="printBtn">Imprimir / PDF</a>
+        </div>
+        <div class="footnote">* Ruta y animación ilustrativas. Los hitos y fechas son reales según tu orden.</div>
+      </div>
+
+      <aside class="card">
+        <h3>Datos del paquete</h3>
+        <div class="facts">
+          <div class="row"><div class="kv">Estado</div><div class="val" id="stateTxt">Calculando...</div></div>
+          <div class="row"><div class="kv">Courier internacional</div><div class="val">DHL • <a id="dhlAwbLink" target="_blank"><span id="dhlAwb"></span></a></div></div>
+          <div class="row"><div class="kv">Courier local</div><div class="val" id="localCourier"></div></div>
+          <div class="row"><div class="kv">Origen</div><div class="val">Doral, Florida (USA)</div></div>
+          <div class="row"><div class="kv">Destino final</div><div class="val" id="finalDest"></div></div>
+          <div class="row"><div class="kv">Retiro</div><div class="val">Solo titular con cédula</div></div>
+          <div class="row"><div class="kv">Contacto sucursal</div><div class="val">+58 212-277951</div></div>
+        </div>
+
+        <h3 style="margin-top:16px">Eventos</h3>
+        <table aria-label="Eventos de tracking" id="events">
+          <thead><tr><th>Fecha</th><th>Evento</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </aside>
+    </section>
+
+    <footer class="footnote" style="margin-top:16px; text-align:center">
+      LatinPhone • Envíos Doral → Venezuela con DHL & <span id="footerCourier">Liberty</span> • © 2025
+    </footer>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const orders = JSON.parse(localStorage.getItem('lpOrders') || '[]');
+  const user = JSON.parse(localStorage.getItem('lpUser') || '{}');
+  const addresses = JSON.parse(localStorage.getItem('lpAddresses') || '[]');
+  const latestOrder = orders[orders.length - 1];
+  const nationalizationDone = localStorage.getItem('lpNationalizationDone') === 'true';
+
+  const defaultAddress = addresses.find(a => a.default) || addresses[0] || {};
+  const courierMap = {
+    liberty: { name: 'Liberty Express', logo: 'https://libertyexpress.com/wp-content/themes/kutis/assets/svg/logo_banner.svg', code: 'liberty' },
+    mrw: { name: 'MRW', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/MRW_logo.svg/477px-MRW_logo.svg.png', code: 'mrw' },
+    zoom: { name: 'ZOOM', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/71/Grupo_ZOOM_logo.png?20211116211646', code: 'zoom' },
+    tealca: { name: 'TEALCA', logo: 'https://www.tealca.es/wp-content/uploads/logo.png', code: 'tealca' },
+    dhl: { name: 'DHL', logo: 'https://www.logo.wine/a/logo/DHL/DHL-Logo.wine.svg', code: 'dhl' },
+    fedex: { name: 'FedEx', logo: 'https://www.logo.wine/a/logo/FedEx_Express/FedEx_Express-Logo.wine.svg', code: 'fedex' }
+  };
+
+  const courierCode = (latestOrder && latestOrder.shipping && latestOrder.shipping.courier || '').toLowerCase();
+  const localCourier = courierMap[courierCode] || courierMap.liberty;
+
+  // ====== 1. DATOS DEL ENVÍO (Puedes editar aquí) ======
+  const defaultSteps = [
+      { date: "2025-09-07T13:15:00Z", title: "Pago confirmado", meta: "LatinPhone • Todo al día", courier: "LATINPHONE" },
+      { date: "2025-09-07T17:40:00Z", title: "Recibido en almacén", meta: "Doral, FL", courier: "LATINPHONE" },
+      { date: "2025-09-08T03:20:00Z", title: "Salida de centro de clasificación", meta: "DHL • Miami Hub", courier: "DHL" },
+      { date: "2025-09-09T12:10:00Z", title: "Arribo a Venezuela (CCS)", meta: "DHL • Caracas", courier: "DHL" },
+      { date: "2025-09-09T18:00:00Z", title: "Traspaso de courier", meta: `DHL → ${localCourier.name}`, courier: localCourier.name.toUpperCase() },
+      { date: "2025-09-10T14:45:00Z", title: "En ruta a destino", meta: `${localCourier.name} • ${defaultAddress.city || ''}`, courier: localCourier.name.toUpperCase() },
+      { date: "2025-09-10T21:00:00Z", title: "Listo para retiro", meta: `${localCourier.name} — ${defaultAddress.city || ''}`, courier: localCourier.name.toUpperCase() }
+  ];
+
+  const data = {
+    orderId: "LP-X9D8NVWE",
+    paid: nationalizationDone,
+    purchaseUTC: "2025-09-07T13:00:00Z",
+    etaUTC: "2025-09-10T21:00:00Z",
+    dhlAwb: "9876 4521 309",
+    handoffUTC: "2025-09-09T18:00:00Z",
+    destCity: defaultAddress.city || 'Acarigua',
+    courierLocal: localCourier,
+    steps: defaultSteps
+  };
+
+  if (latestOrder) {
+    data.orderId = latestOrder.id || data.orderId;
+    data.purchaseUTC = latestOrder.date ? new Date(latestOrder.date).toISOString() : data.purchaseUTC;
+    if (latestOrder.shipping) {
+      data.etaUTC = latestOrder.shipping.eta ? new Date(latestOrder.shipping.eta).toISOString() : data.etaUTC;
+      if (latestOrder.shipping.tracking) data.dhlAwb = latestOrder.shipping.tracking;
+      const shippingCourier = (latestOrder.shipping.courier || '').toLowerCase();
+      if (courierMap[shippingCourier]) data.courierLocal = courierMap[shippingCourier];
+      if (latestOrder.shipping.steps && latestOrder.shipping.steps.length) {
+        const userSteps = latestOrder.shipping.steps.map(s => ({
+          date: s.when.includes('T') ? s.when + 'Z' : s.when.replace(' ', 'T') + 'Z',
+          title: s.text,
+          meta: '',
+          courier: (latestOrder.shipping.courier || '').toUpperCase() || 'LATINPHONE'
+        }));
+        data.steps = userSteps.concat(defaultSteps.slice(1));
+      }
+    }
+  }
+
+  // ====== 2. ELEMENTOS DEL DOM ======
+  const DOMElements = {
+    orderId: document.querySelector('[data-id="orderId"]'),
+    eta: document.getElementById('eta'),
+    dhlAwb: document.getElementById('dhlAwb'),
+    finalDest: document.getElementById('finalDest'),
+    lastUpdate: document.getElementById('lastUpdate'),
+    timeline: document.getElementById('timeline'),
+    bar: document.getElementById('bar'),
+    glow: document.getElementById('glow'),
+    plane: document.getElementById('plane'),
+    eventsTbody: document.querySelector('#events tbody'),
+    stateTxt: document.getElementById('stateTxt'),
+    notifyBtn: document.getElementById('notifyBtn'),
+    copyLinkBtn: document.getElementById('copyLink'),
+    printBtn: document.getElementById('printBtn'),
+    customerNameWrap: document.getElementById('customerNameWrap'),
+    customerName: document.getElementById('customerName'),
+    dhlAwbLink: document.getElementById('dhlAwbLink'),
+    logos: document.getElementById('courierLogos'),
+    localCourier: document.getElementById('localCourier'),
+    destCityLabel: document.getElementById('destCityLabel'),
+    nationalizationStatus: document.getElementById('nationalizationStatus'),
+    map: document.querySelector('.map'),
+    footerCourier: document.getElementById('footerCourier')
+  };
+
+  // ====== 3. UTILIDADES (Formateo de fechas) ======
+  const country = localStorage.getItem('lpCountry');
+  const locale = country === 'colombia' ? 'es-CO' : 'es-VE';
+  const fmt = (iso) => new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' }).format(new Date(iso));
+  const fmtDate = (iso) => new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(new Date(iso));
+  
+  const timeAgo = (date) => {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) return `hace ${Math.floor(interval)} años`;
+    interval = seconds / 2592000;
+    if (interval > 1) return `hace ${Math.floor(interval)} meses`;
+    interval = seconds / 86400;
+    if (interval > 1) return `hace ${Math.floor(interval)} días`;
+    interval = seconds / 3600;
+    if (interval > 1) return `hace ${Math.floor(interval)} horas`;
+    interval = seconds / 60;
+    if (interval > 1) return `hace ${Math.floor(interval)} minutos`;
+    return 'justo ahora';
+  };
+  
+  // ====== 4. RENDERIZADO INICIAL (Contenido que no cambia) ======
+  function renderStaticContent() {
+    DOMElements.orderId.textContent = data.orderId;
+    if (user.name) {
+      DOMElements.customerName.textContent = user.name;
+      DOMElements.customerNameWrap.style.display = 'inline-flex';
+    }
+    DOMElements.eta.textContent = fmtDate(data.etaUTC);
+    DOMElements.dhlAwb.textContent = `AWB: ${data.dhlAwb}`;
+    if (DOMElements.dhlAwbLink) {
+      const awbClean = data.dhlAwb.replace(/\s+/g, '');
+      DOMElements.dhlAwbLink.href = `https://www.dhl.com/global-en/home/tracking/tracking-express.html?submit=1&tracking-id=${encodeURIComponent(awbClean)}`;
+    }
+    DOMElements.localCourier.textContent = data.courierLocal.name;
+    DOMElements.finalDest.textContent = `${data.courierLocal.name} — ${data.destCity}`;
+    DOMElements.destCityLabel.textContent = data.destCity;
+    if (DOMElements.map) DOMElements.map.setAttribute('aria-label', `Ruta ilustrativa Doral → Caracas → ${data.destCity}`);
+    let logos = '';
+    if (data.courierLocal.code !== 'dhl') logos += '<div class="dhl" title="Courier internacional">DHL</div>';
+    logos += `<img src="${data.courierLocal.logo}" alt="${data.courierLocal.name}" title="Courier local">`;
+    DOMElements.logos.innerHTML = logos;
+    if (DOMElements.nationalizationStatus) {
+      if (data.paid) {
+        DOMElements.nationalizationStatus.textContent = 'Todo pago ✓';
+        DOMElements.nationalizationStatus.classList.add('paid');
+      } else {
+        DOMElements.nationalizationStatus.textContent = 'Nacionalización pendiente';
+        DOMElements.nationalizationStatus.classList.remove('paid');
+      }
+    }
+    if (DOMElements.footerCourier) DOMElements.footerCourier.textContent = data.courierLocal.name;
+
+    // Renderizar Timeline (estructura)
+    DOMElements.timeline.innerHTML = data.steps.map((s, i) => {
+      const courierName = s.courier === 'DHL' ? 'DHL' : s.courier === data.courierLocal.name.toUpperCase() ? data.courierLocal.name : 'LatinPhone';
+      const chipClass = s.courier === 'DHL' ? 'dhl' : (s.courier === 'LIBERTY' ? 'lib' : '');
+      return `
+        <div class="step" data-step-date="${s.date}">
+          <div class="dot"></div>
+          <div>
+            <div class="title">${s.title}</div>
+            <div class="meta">${s.meta} • <span class="chip ${chipClass}">${courierName}</span></div>
+          </div>
+          <div class="meta">${fmt(s.date)}</div>
+        </div>`;
+    }).join('');
+
+    // Renderizar Tabla de Eventos
+    DOMElements.eventsTbody.innerHTML = [...data.steps].reverse().map(s => {
+      const courierName = s.courier === 'DHL' ? 'DHL' : s.courier === data.courierLocal.name.toUpperCase() ? data.courierLocal.name : 'LatinPhone';
+      return `
+        <tr>
+          <td>${fmt(s.date)}</td>
+          <td><b>${s.title}</b><br><small>${s.meta} — ${courierName}</small></td>
+        </tr>`;
+    }).join('');
+  }
+
+  // ====== 5. ACTUALIZACIÓN DINÁMICA (Se ejecuta periódicamente) ======
+  function updateDynamicContent() {
+    const now = new Date();
+    const start = new Date(data.purchaseUTC).getTime();
+    const end = new Date(data.etaUTC).getTime();
+    
+    // Calcular progreso
+    const progress = Math.max(0, Math.min(100, ((now - start) / (end - start)) * 100));
+
+    // Actualizar barra y avión
+    DOMElements.bar.style.width = `${progress}%`;
+    DOMElements.plane.style.offsetDistance = `${progress}%`;
+    if (progress > 1) DOMElements.glow.style.opacity = '0.6';
+
+    // Actualizar Timeline
+    let currentStepIndex = -1;
+    document.querySelectorAll('.step').forEach((stepEl, i) => {
+      const stepDate = new Date(stepEl.dataset.stepDate);
+      stepEl.classList.remove('done', 'current');
+      if (now >= stepDate) {
+        stepEl.classList.add('done');
+        currentStepIndex = i;
+      }
+    });
+    
+    const nextStepEl = DOMElements.timeline.children[currentStepIndex + 1];
+    if (nextStepEl) {
+      nextStepEl.classList.add('current');
+    }
+
+    // Actualizar texto de estado principal
+    const delivered = now >= new Date(data.etaUTC);
+    if (delivered) {
+      DOMElements.stateTxt.textContent = 'Listo para retiro';
+    } else if (now >= new Date(data.handoffUTC)) {
+      DOMElements.stateTxt.textContent = `Con ${data.courierLocal.name}`;
+    } else {
+      DOMElements.stateTxt.textContent = 'En tránsito con DHL';
+    }
+    
+    // Actualizar hora de "última actualización"
+    DOMElements.lastUpdate.textContent = timeAgo(now);
+    DOMElements.lastUpdate.title = new Date().toLocaleString('es-VE');
+    
+    // Lanzar confeti si ya fue entregado (solo la primera vez que se detecta)
+    if (delivered && !document.body.dataset.confettiFired) {
+      fireConfetti();
+      document.body.dataset.confettiFired = "true";
+    }
+  }
+
+  // ====== 6. ACCIONES Y EVENTOS ======
+  function setupEventListeners() {
+    DOMElements.printBtn.onclick = () => window.print();
+
+    DOMElements.copyLinkBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        alert('Enlace de tracking copiado al portapapeles.');
+      } catch (e) {
+        alert('Error: No se pudo copiar el enlace.');
+      }
+    };
+
+    DOMElements.notifyBtn.onclick = async () => {
+      if (!("Notification" in window)) {
+        return alert("Tu navegador no soporta notificaciones.");
+      }
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        new Notification("¡Seguimiento activado! ✅", {
+          body: "Te avisaremos cuando tu paquete esté listo para retirar.",
+          icon: "https://cdn-icons-png.flaticon.com/512/3039/3039427.png"
+        });
+      }
+    };
+  }
+  
+  // ====== 7. EFECTOS ESPECIALES (Confeti) ======
+  function fireConfetti() {
+    const confettiContainer = document.createElement('div');
+    confettiContainer.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:9999;';
+    document.body.appendChild(confettiContainer);
+    
+    for (let i = 0; i < 150; i++) {
+        const p = document.createElement('i');
+        p.style.cssText = `
+            position: absolute;
+            left: ${Math.random() * 100}%;
+            top: -20px;
+            width: ${6 + Math.random() * 4}px;
+            height: ${10 + Math.random() * 6}px;
+            background: ${['#5b8bff','#00e0b8','#ff5470','#ffc857'][i % 4]};
+            opacity: 0.9;
+            border-radius: 2px;
+            transform: rotate(${Math.random() * 360}deg);
+            animation: fall ${3 + Math.random() * 2}s ${Math.random()}s linear forwards;
+        `;
+        confettiContainer.appendChild(p);
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `@keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }`;
+    document.head.appendChild(style);
+
+    setTimeout(() => confettiContainer.remove(), 6000);
+  }
+
+  // ====== 8. INICIALIZACIÓN ======
+  function init() {
+    renderStaticContent();
+    updateDynamicContent(); // Primera ejecución inmediata
+    setInterval(updateDynamicContent, 30000); // Actualizar cada 30 segundos
+    setupEventListeners();
+  }
+
+  init();
+});
+</script>
+</body>
+</html>

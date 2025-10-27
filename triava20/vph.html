@@ -1,0 +1,3806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>VPH: Estrategias Integrales de Prevención y Control | Presentación Profesional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary: #7c3aed;
+    --accent: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --radius: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+    --bg-hue: 215;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #f8fafc;
+    background: radial-gradient(
+      circle at 20% 20%,
+      hsl(var(--bg-hue), 90%, 97%) 0%,
+      hsl(calc(var(--bg-hue) + 30), 85%, 92%) 45%,
+      hsl(calc(var(--bg-hue) + 60), 80%, 88%) 100%
+    );
+    color: var(--gray-900);
+    line-height: 1.6;
+    overflow: hidden;
+    overflow-x: hidden;
+    height: 100vh;
+    transition: transform 0.35s ease, background 1.2s ease;
+    transform-origin: center center;
+    cursor: zoom-in;
+  }
+
+  body.zoomed {
+    transform: scale(1.1);
+    cursor: zoom-out;
+  }
+
+  .presentation {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    perspective: 1800px;
+    transform-style: preserve-3d;
+    isolation: isolate;
+  }
+
+  .presentation.going-forward,
+  .presentation.going-backward {
+    animation-duration: 1.05s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: forwards;
+  }
+
+  .presentation.going-forward {
+    animation-name: canvasDriftForward;
+  }
+
+  .presentation.going-backward {
+    animation-name: canvasDriftBackward;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 3rem;
+    padding-bottom: 5.5rem;
+    opacity: 0;
+    transform: translate3d(0, 0, -220px) scale(0.85) rotateZ(0deg);
+    filter: blur(18px);
+    transition: opacity 0.6s ease,
+      transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.9s ease;
+    pointer-events: none;
+    background: white;
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    transform-origin: center center;
+    backface-visibility: hidden;
+    will-change: transform, opacity, filter;
+    z-index: 0;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+    filter: blur(0);
+    pointer-events: all;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 8;
+  }
+
+  .slide.prev,
+  .slide.next {
+    opacity: 0.2;
+    filter: blur(14px);
+    z-index: 1;
+  }
+
+  .slide.prev {
+    transform: translate3d(-26%, -10%, -320px) scale(0.72) rotateZ(-10deg);
+  }
+
+  .slide.next {
+    transform: translate3d(26%, 10%, -320px) scale(0.72) rotateZ(10deg);
+  }
+
+  .slide.transition-in,
+  .slide.transition-out {
+    animation-duration: 1.05s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: forwards;
+  }
+
+  .slide.transition-in {
+    z-index: 10;
+  }
+
+  .slide.transition-out {
+    z-index: 6;
+    pointer-events: none !important;
+  }
+
+  .slide.transition-in.forward {
+    animation-name: preziInForward;
+  }
+
+  .slide.transition-in.backward {
+    animation-name: preziInBackward;
+  }
+
+  .slide.transition-out.forward {
+    animation-name: preziOutForward;
+  }
+
+  .slide.transition-out.backward {
+    animation-name: preziOutBackward;
+  }
+
+  @keyframes canvasDriftForward {
+    0% {
+      transform: translate3d(0, 0, 0) rotateZ(0deg) scale(1);
+    }
+    45% {
+      transform: translate3d(-2.5%, -1.5%, 140px) rotateZ(-0.8deg) scale(1.02);
+    }
+    100% {
+      transform: translate3d(0, 0, 0) rotateZ(0deg) scale(1);
+    }
+  }
+
+  @keyframes canvasDriftBackward {
+    0% {
+      transform: translate3d(0, 0, 0) rotateZ(0deg) scale(1);
+    }
+    45% {
+      transform: translate3d(2.5%, 1.5%, 140px) rotateZ(0.8deg) scale(1.02);
+    }
+    100% {
+      transform: translate3d(0, 0, 0) rotateZ(0deg) scale(1);
+    }
+  }
+
+  @keyframes preziInForward {
+    0% {
+      opacity: 0;
+      transform: translate3d(60%, -45%, -800px) scale(0.25) rotateZ(-14deg);
+      filter: blur(18px);
+    }
+    65% {
+      opacity: 1;
+      transform: translate3d(-6%, 3%, 140px) scale(1.08) rotateZ(2deg);
+      filter: blur(2px);
+    }
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes preziOutForward {
+    0% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+      filter: blur(0);
+    }
+    45% {
+      opacity: 1;
+      transform: translate3d(-8%, 6%, 180px) scale(1.12) rotateZ(4deg);
+      filter: blur(4px);
+    }
+    100% {
+      opacity: 0;
+      transform: translate3d(-48%, 42%, 560px) scale(1.36) rotateZ(14deg);
+      filter: blur(18px);
+    }
+  }
+
+  @keyframes preziInBackward {
+    0% {
+      opacity: 0;
+      transform: translate3d(-60%, 45%, -800px) scale(0.25) rotateZ(14deg);
+      filter: blur(18px);
+    }
+    65% {
+      opacity: 1;
+      transform: translate3d(6%, -4%, 140px) scale(1.08) rotateZ(-2deg);
+      filter: blur(2px);
+    }
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes preziOutBackward {
+    0% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+      filter: blur(0);
+    }
+    45% {
+      opacity: 1;
+      transform: translate3d(8%, -6%, 180px) scale(1.12) rotateZ(-4deg);
+      filter: blur(4px);
+    }
+    100% {
+      opacity: 0;
+      transform: translate3d(48%, -42%, 560px) scale(1.36) rotateZ(-14deg);
+      filter: blur(18px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .presentation,
+    .slide,
+    .nav-btn,
+    .progress-indicator-fill {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+
+    .presentation {
+      animation: none !important;
+      transform: none !important;
+    }
+
+    .slide.transition-in,
+    .slide.transition-out {
+      animation: none !important;
+      filter: none !important;
+    }
+
+    .slide {
+      transform: translate3d(0, 0, 0) scale(1) !important;
+      filter: none !important;
+    }
+
+    .slide.prev,
+    .slide.next {
+      display: none !important;
+    }
+  }
+
+  .slide-header {
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .slide-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .slide-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+  }
+
+  .slide-subtitle {
+    font-size: 1.125rem;
+    color: var(--gray-600);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* Grid layouts */
+  .grid {
+    display: grid;
+    gap: 2rem;
+    width: 100%;
+  }
+
+  .grid-2 {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .grid-4 {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .grid-asymmetric {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  @media (min-width: 1200px) {
+    .grid-asymmetric {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  /* Cards */
+  .card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--gray-100);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .card.primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+  }
+
+  .card.secondary {
+    background: linear-gradient(135deg, var(--secondary), #8b5cf6);
+    color: white;
+    border: none;
+  }
+
+  .card.accent {
+    background: linear-gradient(135deg, var(--accent), #10b981);
+    color: white;
+    border: none;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .card-content {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Icons */
+  .icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray-100);
+    color: var(--gray-600);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .icon.primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .icon.secondary {
+    background: var(--secondary);
+    color: white;
+  }
+
+  .icon.accent {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* Statistics */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stat {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--gray-100);
+  }
+
+  .stat-number {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--primary);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+
+  /* Progress bars */
+  .progress-item {
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .progress-bar {
+    height: 0.75rem;
+    background: var(--gray-200);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: var(--radius-full);
+    transition: width 1s ease-out;
+    width: 0%;
+  }
+
+  /* Lists */
+  .list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    border-left: 4px solid var(--primary);
+  }
+
+  .list-item-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+
+  .list-item-content {
+    flex: 1;
+  }
+
+  .list-item-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--gray-900);
+  }
+
+  .list-item-description {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    background: var(--gray-100);
+    color: var(--gray-700);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge.success {
+    background: #dcfce7;
+    color: var(--success);
+  }
+
+  .badge.warning {
+    background: #fef3c7;
+    color: var(--warning);
+  }
+
+  .badge.danger {
+    background: #fecaca;
+    color: var(--danger);
+  }
+
+  /* Charts */
+  .chart-container {
+    position: relative;
+    height: 300px;
+    padding: 1rem;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1rem;
+    z-index: 1000;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    font-size: 0.875rem;
+  }
+
+  .nav-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .nav-btn.secondary {
+    background: var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .nav-btn.secondary:hover {
+    background: var(--gray-300);
+  }
+
+  /* Progress indicator */
+  .progress-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gray-200);
+    z-index: 1001;
+  }
+
+  .progress-indicator-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  /* Slide counter */
+  .slide-counter {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    box-shadow: var(--shadow);
+    z-index: 1000;
+  }
+
+  /* Animations */
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slideInUp 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .slide {
+      padding: 2.5rem 2rem 5rem;
+    }
+
+    .slide-title {
+      font-size: 2.25rem;
+    }
+
+    .hero-title {
+      font-size: 3.25rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.3rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    body {
+      height: auto;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .presentation {
+      min-height: 100vh;
+    }
+
+    .slide {
+      padding: 2rem 1.5rem 5rem;
+    }
+
+    .slide-title {
+      font-size: 2rem;
+    }
+
+    .hero-content {
+      padding: 0 0.5rem;
+    }
+
+    .hero-title {
+      font-size: 2.75rem;
+    }
+
+    .hero-subtitle,
+    .hero-tagline {
+      font-size: 1.05rem;
+    }
+
+    .presenter-card {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .presenter-info {
+      text-align: center;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4,
+    .grid-asymmetric {
+      grid-template-columns: 1fr;
+    }
+
+    .nav {
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      transform: none;
+      gap: 0.75rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .slide {
+      padding: 1.75rem 1.25rem 5.5rem;
+    }
+
+    .hero-title {
+      font-size: 2.35rem;
+    }
+
+    .slide-title {
+      font-size: 1.75rem;
+    }
+
+    .nav {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .nav-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  /* Custom elements for specific slides */
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    gap: 2rem;
+  }
+
+  .cover-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--radius-full);
+    background: rgba(37, 99, 235, 0.12);
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .presenter-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.75rem 2.25rem;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--gray-100);
+    backdrop-filter: blur(6px);
+    max-width: 640px;
+  }
+
+  .presenter-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    font-weight: 700;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .presenter-info {
+    text-align: left;
+  }
+
+  .presenter-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+  }
+
+  .presenter-role {
+    font-size: 1rem;
+    color: var(--gray-600);
+    margin-bottom: 0.35rem;
+  }
+
+  .presenter-details {
+    font-size: 0.875rem;
+    color: var(--primary);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero-tagline {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    max-width: 720px;
+    line-height: 1.6;
+  }
+
+  .hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+    color: var(--gray-600);
+    max-width: 800px;
+    line-height: 1.4;
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--gray-100);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .toc-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary);
+  }
+
+  .toc-number {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+
+  .toc-content {
+    flex: 1;
+  }
+
+  .toc-title {
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+  }
+
+  .toc-description {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    line-height: 1.4;
+  }
+
+  .closing-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 2.5rem;
+  }
+
+  .reflection-card {
+    max-width: 720px;
+    padding: 2.75rem 3rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(124, 58, 237, 0.12));
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(37, 99, 235, 0.15);
+  }
+
+  .reflection-quote {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+
+  .reflection-message {
+    font-size: 1rem;
+    color: var(--gray-600);
+    line-height: 1.7;
+  }
+
+  .closing-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .closing-footnote {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    max-width: 520px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+  <div class="presentation" id="presentation">
+    <!-- Progress indicator -->
+    <div class="progress-indicator">
+      <div class="progress-indicator-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter">1 / 22</div>
+
+    <!-- Slide 1: Hero -->
+    <div class="slide active" data-slide="1">
+      <div class="hero-content">
+        <div class="cover-label animate-fade-in">Presentación Magistral</div>
+        <div class="hero-title animate-slide-up">Virus del Papiloma Humano</div>
+        <div class="hero-subtitle animate-fade-in">Guía práctica para prevenir, acompañar y tratar con empatía</div>
+        <div class="presenter-card animate-slide-up">
+          <div class="presenter-avatar">RM</div>
+          <div class="presenter-info">
+            <div class="presenter-name">Dra. Rosvely Medina</div>
+            <div class="presenter-role">Médico Cirujano · Especialista en Ginecología y Obstetricia (UCV)</div>
+            <div class="presenter-details">Universidad Central de Venezuela · Atención integral en salud femenina</div>
+          </div>
+        </div>
+        <p class="hero-tagline animate-fade-in">Recorramos juntos lo esencial del VPH con palabras sencillas, pasos claros y consejos que puedes aplicar de inmediato en la consulta o en la comunidad.</p>
+        <div class="stat-grid animate-fade-in" style="margin-top: 1rem;">
+          <div class="stat">
+            <span class="stat-number">37,800</span>
+            <div class="stat-label">Cánceres por VPH anuales (EE.UU.)</div>
+          </div>
+          <div class="stat">
+            <span class="stat-number">70%</span>
+            <div class="stat-label">Prevención con vacunación</div>
+          </div>
+          <div class="stat">
+            <span class="stat-number">200+</span>
+            <div class="stat-label">Genotipos de VPH</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Índice -->
+    <div class="slide" data-slide="2">
+      <div class="slide-header">
+        <div class="slide-number">02</div>
+        <h1 class="slide-title">Índice de Contenidos</h1>
+        <p class="slide-subtitle">Explora los temas paso a paso</p>
+      </div>
+      <div class="slide-content">
+        <div class="toc-grid">
+          <div class="toc-item" onclick="goToSlide(3)">
+            <div class="toc-number">1</div>
+            <div class="toc-content">
+              <div class="toc-title">Fundamentos del VPH</div>
+              <div class="toc-description">Biología viral, clasificación y patogénesis</div>
+            </div>
+          </div>
+          <div class="toc-item" onclick="goToSlide(6)">
+            <div class="toc-number">2</div>
+            <div class="toc-content">
+              <div class="toc-title">Epidemiología Global</div>
+              <div class="toc-description">Incidencia, prevalencia y carga de enfermedad</div>
+            </div>
+          </div>
+          <div class="toc-item" onclick="goToSlide(9)">
+            <div class="toc-number">3</div>
+            <div class="toc-content">
+              <div class="toc-title">Prevención Primaria</div>
+              <div class="toc-description">Vacunación, educación y estrategias preventivas</div>
+            </div>
+          </div>
+          <div class="toc-item" onclick="goToSlide(15)">
+            <div class="toc-number">4</div>
+            <div class="toc-content">
+              <div class="toc-title">Prevención Secundaria</div>
+              <div class="toc-description">Cribado, diagnóstico y manejo clínico</div>
+            </div>
+          </div>
+          <div class="toc-item" onclick="goToSlide(20)">
+            <div class="toc-number">5</div>
+            <div class="toc-content">
+              <div class="toc-title">Políticas y trabajo en red</div>
+              <div class="toc-description">Cómo llevar las acciones al territorio</div>
+            </div>
+          </div>
+          <div class="toc-item" onclick="goToSlide(22)">
+            <div class="toc-number">6</div>
+            <div class="toc-content">
+              <div class="toc-title">Cierre y compromisos</div>
+              <div class="toc-description">Ideas clave para llevar a tu equipo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Biología del VPH -->
+    <div class="slide" data-slide="3">
+      <div class="slide-header">
+        <div class="slide-number">03</div>
+        <h1 class="slide-title">Biología del VPH</h1>
+        <p class="slide-subtitle">Lo básico del virus y cómo actúa en el cuerpo</p>
+      </div>
+      <div class="slide-content">
+        <div class="card" style="background: var(--gray-50);">
+          <div class="card-title">
+            <div class="icon primary">📝</div>
+            En pocas palabras
+          </div>
+          <div class="card-content" style="color: var(--gray-600); font-size: 0.95rem;">
+            <ul style="list-style: disc; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <li>El VPH es un virus muy común que prefiere las células de la piel y las mucosas.</li>
+              <li>Algunos genotipos son inofensivos y otros pueden causar lesiones que debemos vigilar.</li>
+              <li>La mayoría de las infecciones desaparecen solas cuando el sistema inmune responde.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card primary">
+            <div class="card-title">
+              <div class="icon">🧬</div>
+              Características Virológicas
+            </div>
+            <div class="card-content">
+              <ul class="list">
+                <li class="list-item">
+                  <div class="list-item-icon">1</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">ADN de doble cadena</div>
+                    <div class="list-item-description">Genoma circular de ~8,000 pb con 8 genes principales</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon">2</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Sin envoltura</div>
+                    <div class="list-item-description">Cápside icosaédrica de 55 nm de diámetro</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon">3</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Tropismo epitelial</div>
+                    <div class="list-item-description">Infecta células basales del epitelio escamoso</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <div class="icon secondary">⚠️</div>
+              Clasificación por Riesgo Oncogénico
+            </div>
+            <div class="card-content">
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Alto Riesgo</strong> (Oncogénicos)</span>
+                  <span>16 genotipos</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="75"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
+                  VPH 16, 18, 31, 33, 35, 39, 45, 51, 52, 56, 58, 59, 68, 73, 82, 97
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Bajo Riesgo</strong> (No oncogénicos)</span>
+                  <span>12+ genotipos</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="25"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
+                  VPH 6, 11, 40, 42, 43, 44, 54, 61, 70, 72, 81, CP6108
+                </div>
+              </div>
+              <div class="stat-grid" style="margin-top: 1.5rem;">
+                <div class="stat">
+                  <span class="stat-number" style="color: var(--danger);">70%</span>
+                  <div class="stat-label">Ca. cérvix por VPH 16/18</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number" style="color: var(--warning);">90%</span>
+                  <div class="stat-label">Verrugas por VPH 6/11</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Historia Natural -->
+    <div class="slide" data-slide="4">
+      <div class="slide-header">
+        <div class="slide-number">04</div>
+        <h1 class="slide-title">Historia Natural de la Infección</h1>
+        <p class="slide-subtitle">Del primer contacto a las posibles complicaciones</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-asymmetric">
+          <div class="card">
+            <div class="card-title">
+              <div class="icon accent">📊</div>
+              Progresión Temporal
+            </div>
+            <div class="card-content">
+              <div class="chart-container">
+                <svg viewBox="0 0 600 250" width="100%" height="250">
+                  <!-- Timeline -->
+                  <defs>
+                    <linearGradient id="timelineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" style="stop-color:#2563eb"/>
+                      <stop offset="50%" style="stop-color:#7c3aed"/>
+                      <stop offset="100%" style="stop-color:#dc2626"/>
+                    </linearGradient>
+                  </defs>
+                  
+                  <!-- Main timeline -->
+                  <line x1="50" y1="200" x2="550" y2="200" stroke="url(#timelineGrad)" stroke-width="4"/>
+                  
+                  <!-- Time markers -->
+                  <g font-family="Inter" font-size="12" text-anchor="middle">
+                    <!-- Initial infection -->
+                    <circle cx="80" cy="200" r="8" fill="#2563eb"/>
+                    <text x="80" y="225" fill="#64748b">0-6 meses</text>
+                    <text x="80" y="180" font-weight="600" fill="#0f172a">Infección</text>
+                    <text x="80" y="165" font-size="10" fill="#64748b">Inicial</text>
+                    
+                    <!-- Clearance point -->
+                    <circle cx="200" cy="150" r="6" fill="#16a34a"/>
+                    <path d="M200,200 L200,150" stroke="#16a34a" stroke-width="2" stroke-dasharray="3,3"/>
+                    <text x="200" y="225" fill="#64748b">6-24 meses</text>
+                    <text x="200" y="140" font-weight="600" fill="#16a34a">Aclaramiento</text>
+                    <text x="200" y="125" font-size="10" fill="#64748b">90% de casos</text>
+                    
+                    <!-- Persistence -->
+                    <circle cx="320" cy="200" r="8" fill="#d97706"/>
+                    <text x="320" y="225" fill="#64748b">2-5 años</text>
+                    <text x="320" y="180" font-weight="600" fill="#0f172a">Persistencia</text>
+                    <text x="320" y="165" font-size="10" fill="#64748b">10% de casos</text>
+                    
+                    <!-- Dysplasia -->
+                    <circle cx="440" cy="200" r="8" fill="#dc2626"/>
+                    <text x="440" y="225" fill="#64748b">5-15 años</text>
+                    <text x="440" y="180" font-weight="600" fill="#0f172a">CIN 2/3</text>
+                    <text x="440" y="165" font-size="10" fill="#64748b">Displasia</text>
+                    
+                    <!-- Cancer -->
+                    <circle cx="520" cy="200" r="8" fill="#991b1b"/>
+                    <text x="520" y="225" fill="#64748b">15-20+ años</text>
+                    <text x="520" y="180" font-weight="600" fill="#0f172a">Cáncer</text>
+                    <text x="520" y="165" font-size="10" fill="#64748b">Invasivo</text>
+                  </g>
+                  
+                  <!-- Risk percentages -->
+                  <g font-family="Inter" font-size="11" fill="#64748b">
+                    <text x="260" y="50" text-anchor="middle" font-weight="600">Factores de Progresión</text>
+                    <text x="120" y="75">• Inmunosupresión</text>
+                    <text x="120" y="90">• Tabaquismo</text>
+                    <text x="120" y="105">• Coinfecciones (VIH, Clamidia)</text>
+                    <text x="320" y="75">• VPH alto riesgo persistente</text>
+                    <text x="320" y="90">• Multiparidad</text>
+                    <text x="320" y="105">• Uso prolongado de AOC</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card secondary">
+            <div class="card-title">
+              <div class="icon">🎯</div>
+              Puntos de Intervención
+            </div>
+            <div class="card-content">
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: #fbbf24;">
+                  <div class="list-item-icon" style="background: #fbbf24;">P</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Prevención Primaria</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Vacunación antes de exposición, educación sexual, uso de preservativo</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: #34d399;">
+                  <div class="list-item-icon" style="background: #34d399;">D</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Detección Temprana</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Cribado con citología y/o test VPH, colposcopia</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: #f87171;">
+                  <div class="list-item-icon" style="background: #f87171;">T</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Tratamiento Precoz</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Manejo de lesiones CIN 2/3, seguimiento post-tratamiento</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Transmisión y Factores de Riesgo -->
+    <div class="slide" data-slide="5">
+      <div class="slide-header">
+        <div class="slide-number">05</div>
+        <h1 class="slide-title">Transmisión y Factores de Riesgo</h1>
+        <p class="slide-subtitle">Mecanismos de contagio y poblaciones vulnerables</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-3">
+          <div class="card">
+            <div class="card-title">
+              <div class="icon primary">🔄</div>
+              Vías de Transmisión
+            </div>
+            <div class="card-content">
+              <ul class="list">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--danger);">98%</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Contacto sexual</div>
+                    <div class="list-item-description">Vaginal, anal, oral - contacto piel/mucosa</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--warning);">1.5%</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Contacto íntimo</div>
+                    <div class="list-item-description">Genital-genital sin penetración</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--accent);">&lt;1%</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Vertical</div>
+                    <div class="list-item-description">Madre-hijo perinatal (papilomatosis laríngea)</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="icon secondary">⚠️</div>
+              Factores de Riesgo
+            </div>
+            <div class="card-content">
+              <div class="stat-grid">
+                <div class="stat">
+                  <span class="stat-number" style="font-size: 1.5rem; color: var(--danger);">3.2x</span>
+                  <div class="stat-label">Riesgo con >6 parejas sexuales</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number" style="font-size: 1.5rem; color: var(--warning);">2.1x</span>
+                  <div class="stat-label">Riesgo en fumadoras</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number" style="font-size: 1.5rem; color: var(--primary);">5.8x</span>
+                  <div class="stat-label">Riesgo con VIH+</div>
+                </div>
+              </div>
+              <div style="margin-top: 1rem;">
+                <div class="badge warning">Inicio sexual temprano (&lt;16 años)</div>
+                <div class="badge danger" style="margin-top: 0.5rem;">Inmunosupresión</div>
+                <div class="badge" style="margin-top: 0.5rem; background: #fecaca; color: #991b1b;">Otras ITS concomitantes</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">🛡️</div>
+              Medidas Preventivas
+            </div>
+            <div class="card-content">
+              <div class="progress-item">
+                <div class="progress-label" style="color: white;">
+                  <span><strong>Preservativo</strong></span>
+                  <span>60-70% reducción</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="65" style="background: linear-gradient(90deg, #fbbf24, #f59e0b);"></div>
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label" style="color: white;">
+                  <span><strong>Vacunación</strong></span>
+                  <span>90-95% reducción</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="93" style="background: linear-gradient(90deg, #10b981, #059669);"></div>
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label" style="color: white;">
+                  <span><strong>Cribado regular</strong></span>
+                  <span>85% reducción ca. cérvix</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="85" style="background: linear-gradient(90deg, #3b82f6, #2563eb);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Epidemiología Global -->
+    <div class="slide" data-slide="6">
+      <div class="slide-header">
+        <div class="slide-number">06</div>
+        <h1 class="slide-title">Epidemiología Global del VPH</h1>
+        <p class="slide-subtitle">Dónde estamos y qué nos falta por hacer</p>
+      </div>
+      <div class="slide-content">
+        <div class="card" style="background: var(--gray-50);">
+          <div class="card-title">
+            <div class="icon primary">🌍</div>
+            En pocas palabras
+          </div>
+          <div class="card-content" style="color: var(--gray-600); font-size: 0.95rem;">
+            <ul style="list-style: disc; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <li>El cáncer cervical sigue concentrándose en países con menor acceso a servicios de salud.</li>
+              <li>Vacunar y tamizar salva vidas, pero todavía hay brechas grandes en cobertura.</li>
+              <li>Con datos sencillos podemos priorizar recursos donde más se necesitan.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-title">
+              <div class="icon primary">🌍</div>
+              Estadísticas Globales 2024
+            </div>
+            <div class="card-content">
+              <div class="stat-grid">
+                <div class="stat">
+                  <span class="stat-number">660,000</span>
+                  <div class="stat-label">Nuevos casos de cáncer cervical/año</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">350,000</span>
+                  <div class="stat-label">Muertes anuales por cáncer cervical</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">85%</span>
+                  <div class="stat-label">Ocurren en países de bajos ingresos</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">99.7%</span>
+                  <div class="stat-label">Ca. cervical causado por VPH</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="icon secondary">📈</div>
+              Distribución de Genotipos
+            </div>
+            <div class="card-content">
+              <div class="chart-container">
+                <svg viewBox="0 0 300 200" width="100%" height="200">
+                  <!-- Pie chart representation -->
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#e2e8f0" stroke-width="20"/>
+                  
+                  <!-- VPH 16 -->
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#dc2626" stroke-width="20"
+                          stroke-dasharray="151 503" stroke-dashoffset="0" transform="rotate(-90 100 100)">
+                    <animate attributeName="stroke-dasharray" dur="2s" values="0 503;151 503" />
+                  </circle>
+                  
+                  <!-- VPH 18 -->
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#ea580c" stroke-width="20"
+                          stroke-dasharray="63 503" stroke-dashoffset="-151" transform="rotate(-90 100 100)">
+                    <animate attributeName="stroke-dasharray" dur="2s" begin="0.5s" values="0 503;63 503" />
+                  </circle>
+                  
+                  <!-- Otros AR -->
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#d97706" stroke-width="20"
+                          stroke-dasharray="126 503" stroke-dashoffset="-214" transform="rotate(-90 100 100)">
+                    <animate attributeName="stroke-dasharray" dur="2s" begin="1s" values="0 503;126 503" />
+                  </circle>
+                  
+                  <!-- Bajo riesgo -->
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#16a34a" stroke-width="20"
+                          stroke-dasharray="63 503" stroke-dashoffset="-340" transform="rotate(-90 100 100)">
+                    <animate attributeName="stroke-dasharray" dur="2s" begin="1.5s" values="0 503;63 503" />
+                  </circle>
+                  
+                  <!-- Labels -->
+                  <g font-family="Inter" font-size="11" font-weight="600">
+                    <text x="220" y="40" fill="#dc2626">VPH 16 (53%)</text>
+                    <text x="220" y="60" fill="#ea580c">VPH 18 (17%)</text>
+                    <text x="220" y="80" fill="#d97706">Otros AR (20%)</text>
+                    <text x="220" y="100" fill="#16a34a">Bajo riesgo (10%)</text>
+                    
+                    <text x="100" y="105" text-anchor="middle" font-size="14" fill="#0f172a">Cáncer</text>
+                    <text x="100" y="120" text-anchor="middle" font-size="14" fill="#0f172a">Cervical</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card" style="margin-top: 2rem;">
+          <div class="card-title">
+            <div class="icon accent">🎯</div>
+            Recomendaciones clave de la OMS
+          </div>
+          <div class="card-content">
+            <div class="grid grid-3">
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Vacunación</strong></span>
+                  <span>90% niñas</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="90"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
+                  Vacunar a casi todas las niñas antes de los 15 años.
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Cribado</strong></span>
+                  <span>70% mujeres</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="70"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
+                  Ofrecer pruebas de tamizaje de calidad a los 35 y 45 años.
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Tratamiento</strong></span>
+                  <span>90% lesiones</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="90"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
+                  Asegurar que toda mujer con lesión reciba tratamiento oportuno.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Manifestaciones Clínicas -->
+    <div class="slide" data-slide="7">
+      <div class="slide-header">
+        <div class="slide-number">07</div>
+        <h1 class="slide-title">Manifestaciones Clínicas del VPH</h1>
+        <p class="slide-subtitle">Cómo se presenta según la zona afectada</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-4">
+          <div class="card">
+            <div class="card-title">
+              <div class="icon primary">🎯</div>
+              Cérvix
+            </div>
+            <div class="card-content">
+              <ul class="list">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--success);">✓</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Infección asintomática</div>
+                    <div class="list-item-description">80-90% de casos</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--warning);">!</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">CIN 1-3</div>
+                    <div class="list-item-description">Neoplasia intraepitelial</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--danger);">⚠</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Carcinoma invasivo</div>
+                    <div class="list-item-description">99.7% VPH+</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="icon secondary">🔗</div>
+              Ano
+            </div>
+            <div class="card-content">
+              <div class="stat">
+                <span class="stat-number" style="font-size: 2rem;">88%</span>
+                <div class="stat-label">Ca. anal VPH+</div>
+              </div>
+              <ul class="list" style="margin-top: 1rem;">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--warning);">AIN</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Neoplasia anal</div>
+                    <div class="list-item-description">AIN 1-3, mayor riesgo en HSH y VIH+</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="icon accent">👥</div>
+              Genitales Externos
+            </div>
+            <div class="card-content">
+              <div class="stat">
+                <span class="stat-number" style="font-size: 2rem;">95%</span>
+                <div class="stat-label">Verrugas por VPH 6/11</div>
+              </div>
+              <ul class="list" style="margin-top: 1rem;">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--primary);">V</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Vulva/Vagina</div>
+                    <div class="list-item-description">VIN/VaIN, Ca. vulvar (30% VPH+)</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--secondary);">P</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Pene</div>
+                    <div class="list-item-description">PIN, Ca. pene (50% VPH+)</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="icon" style="background: var(--warning);">🗣️</div>
+              Orofaringe
+            </div>
+            <div class="card-content">
+              <div class="stat">
+                <span class="stat-number" style="font-size: 2rem;">70%</span>
+                <div class="stat-label">Ca. orofaríngeo VPH+</div>
+              </div>
+              <ul class="list" style="margin-top: 1rem;">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--primary);">↗</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Incidencia creciente</div>
+                    <div class="list-item-description">Especialmente en hombres jóvenes</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--success);">✓</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Mejor pronóstico</div>
+                    <div class="list-item-description">VPH+ vs tabaco/alcohol</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Continue with more slides... -->
+    <!-- Slide 8: Carga Global de Enfermedad -->
+    <div class="slide" data-slide="8">
+      <div class="slide-header">
+        <div class="slide-number">08</div>
+        <h1 class="slide-title">Carga Global de Enfermedad</h1>
+        <p class="slide-subtitle">Impacto del VPH en morbimortalidad mundial y años de vida perdidos</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-2">
+          <div class="card primary">
+            <div class="card-title">
+              <div class="icon">📊</div>
+              Estadísticas Clave 2024
+            </div>
+            <div class="card-content">
+              <div class="stat-grid">
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">4.5M</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">AVAD perdidos anualmente</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">95%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">Casos prevenibles con vacunación</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">$4.6B</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">Costo global tratamiento anual</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">15:1</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">ROI vacunación vs tratamiento</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-title">
+              <div class="icon secondary">🌍</div>
+              Distribución por Regiones
+            </div>
+            <div class="card-content">
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>África Subsahariana</strong></span>
+                  <span>68,000 casos/año</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="85" style="background: linear-gradient(90deg, #dc2626, #991b1b);"></div>
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>América Latina</strong></span>
+                  <span>35,000 casos/año</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="65" style="background: linear-gradient(90deg, #ea580c, #c2410c);"></div>
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Asia Oriental</strong></span>
+                  <span>28,000 casos/año</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="45" style="background: linear-gradient(90deg, #d97706, #b45309);"></div>
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Europa/Norteamérica</strong></span>
+                  <span>12,000 casos/año</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="25" style="background: linear-gradient(90deg, #16a34a, #15803d);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Vacunas VPH - Tipos y Características -->
+    <div class="slide" data-slide="9">
+      <div class="slide-header">
+        <div class="slide-number">09</div>
+        <h1 class="slide-title">Vacunas contra el VPH</h1>
+        <p class="slide-subtitle">Opciones de vacuna y qué protege cada una</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-3">
+          <div class="card">
+            <div class="card-title">
+              <div class="icon primary">💉</div>
+              Bivalente (Cervarix®)
+            </div>
+            <div class="card-content">
+              <div class="badge success" style="margin-bottom: 1rem;">VPH 16, 18</div>
+              <ul class="list">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--success);">✓</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Eficacia</div>
+                    <div class="list-item-description">99% CIN2+ por VPH 16/18</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--primary);">🔬</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Adyuvante AS04</div>
+                    <div class="list-item-description">Respuesta inmune prolongada</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--warning);">⏱</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Protección cruzada</div>
+                    <div class="list-item-description">VPH 31, 33, 45 (parcial)</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="icon secondary">💉</div>
+              Tetravalente (Gardasil®)
+            </div>
+            <div class="card-content">
+              <div class="badge warning" style="margin-bottom: 1rem;">VPH 6, 11, 16, 18</div>
+              <ul class="list">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--success);">✓</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Verrugas genitales</div>
+                    <div class="list-item-description">99% prevención VPH 6/11</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--primary);">👫</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Ambos sexos</div>
+                    <div class="list-item-description">Aprobada para hombres</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--accent);">🛡️</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Inmunidad grupo</div>
+                    <div class="list-item-description">Reducción transmisión</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">💉</div>
+              Nonavalente (Gardasil® 9)
+            </div>
+            <div class="card-content">
+              <div class="badge" style="background: white; color: var(--accent); margin-bottom: 1rem;">VPH 6,11,16,18,31,33,45,52,58</div>
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">90%</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Cobertura cáncer</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Previene 90% ca. cervical</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">⭐</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Gold standard</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Máxima protección actual</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">💰</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Costo-efectiva</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">ROI superior a largo plazo</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: Esquemas de Vacunación -->
+    <div class="slide" data-slide="10">
+      <div class="slide-header">
+        <div class="slide-number">10</div>
+        <h1 class="slide-title">Esquemas de Vacunación</h1>
+        <p class="slide-subtitle">Quién debe vacunarse y cuándo hacerlo</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-title">
+              <div class="icon primary">📅</div>
+              Esquemas por Edad
+            </div>
+            <div class="card-content">
+              <div class="chart-container">
+                <svg viewBox="0 0 500 250" width="100%" height="250">
+                  <!-- Age timeline -->
+                  <defs>
+                    <linearGradient id="ageGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" style="stop-color:#16a34a"/>
+                      <stop offset="50%" style="stop-color:#2563eb"/>
+                      <stop offset="100%" style="stop-color:#7c3aed"/>
+                    </linearGradient>
+                  </defs>
+                  
+                  <!-- Main timeline -->
+                  <line x1="50" y1="150" x2="450" y2="150" stroke="url(#ageGrad)" stroke-width="6"/>
+                  
+                  <!-- Age markers -->
+                  <g font-family="Inter" font-size="11" text-anchor="middle">
+                    <!-- 9-14 years -->
+                    <circle cx="120" cy="150" r="12" fill="#16a34a"/>
+                    <text x="120" y="155" fill="white" font-weight="600" font-size="9">2D</text>
+                    <text x="120" y="180" font-weight="600" fill="#16a34a">9-14 años</text>
+                    <text x="120" y="195" font-size="9" fill="#64748b">2 dosis</text>
+                    <text x="120" y="208" font-size="9" fill="#64748b">0, 6-12 meses</text>
+                    
+                    <!-- 15-26 years -->
+                    <circle cx="250" cy="150" r="12" fill="#2563eb"/>
+                    <text x="250" y="155" fill="white" font-weight="600" font-size="9">3D</text>
+                    <text x="250" y="180" font-weight="600" fill="#2563eb">15-26 años</text>
+                    <text x="250" y="195" font-size="9" fill="#64748b">3 dosis</text>
+                    <text x="250" y="208" font-size="9" fill="#64748b">0, 1-2, 6 meses</text>
+                    
+                    <!-- 27-45 years -->
+                    <circle cx="380" cy="150" r="12" fill="#7c3aed"/>
+                    <text x="380" y="155" fill="white" font-weight="600" font-size="9">3D</text>
+                    <text x="380" y="180" font-weight="600" fill="#7c3aed">27-45 años</text>
+                    <text x="380" y="195" font-size="9" fill="#64748b">Decisión individual</text>
+                    <text x="380" y="208" font-size="9" fill="#64748b">Consulta médica</text>
+                  </g>
+                  
+                  <!-- Efficacy indicators -->
+                  <g font-family="Inter" font-size="10" fill="#64748b">
+                    <text x="120" y="50" text-anchor="middle" font-weight="600">Máxima eficacia</text>
+                    <text x="120" y="65" text-anchor="middle">Pre-exposición</text>
+                    
+                    <text x="250" y="50" text-anchor="middle" font-weight="600">Alta eficacia</text>
+                    <text x="250" y="65" text-anchor="middle">Catch-up</text>
+                    
+                    <text x="380" y="50" text-anchor="middle" font-weight="600">Beneficio limitado</text>
+                    <text x="380" y="65" text-anchor="middle">Post-exposición</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M120,80 L120,130" stroke="#16a34a" stroke-width="2" marker-end="url(#arrowGreen)"/>
+                    <path d="M250,80 L250,130" stroke="#2563eb" stroke-width="2" marker-end="url(#arrowBlue)"/>
+                    <path d="M380,80 L380,130" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowPurple)"/>
+                  </g>
+                  
+                  <!-- Arrow markers -->
+                  <defs>
+                    <marker id="arrowGreen" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                      <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a"/>
+                    </marker>
+                    <marker id="arrowBlue" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+                    </marker>
+                    <marker id="arrowPurple" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                      <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/>
+                    </marker>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="icon secondary">👥</div>
+              Poblaciones Especiales
+            </div>
+            <div class="card-content">
+              <ul class="list">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--danger);">VIH+</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Inmunocomprometidos</div>
+                    <div class="list-item-description">3 dosis hasta 26 años, considerar hasta 45</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--warning);">HSH</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Hombres que tienen sexo con hombres</div>
+                    <div class="list-item-description">Prioridad hasta 26 años</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--accent);">🤰</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Embarazo</div>
+                    <div class="list-item-description">Contraindicada, diferir hasta postparto</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--primary);">💊</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Trasplantados</div>
+                    <div class="list-item-description">3 dosis, respuesta inmune variable</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 11: Eficacia de las Vacunas -->
+    <div class="slide" data-slide="11">
+      <div class="slide-header">
+        <div class="slide-number">11</div>
+        <h1 class="slide-title">Eficacia y Efectividad Vacunal</h1>
+        <p class="slide-subtitle">Evidencia clara en estudios y en la vida real</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-2">
+          <div class="card primary">
+            <div class="card-title">
+              <div class="icon">📈</div>
+              Eficacia en Ensayos Clínicos
+            </div>
+            <div class="card-content">
+              <div class="stat-grid">
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">99.0%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">CIN 2/3 VPH 16/18</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">95.8%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">AIN 2/3 VPH 16/18</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">99.9%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">Verrugas VPH 6/11</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">93.2%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">Ca. orofaríngeo VPH+</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="icon accent">🌍</div>
+              Efectividad Poblacional
+            </div>
+            <div class="card-content">
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Verrugas genitales</strong></span>
+                  <span>85-90% ↓</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="88"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
+                  Australia, Reino Unido (10 años post-introducción)
+                </div>
+              </div>
+
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>CIN 2/3 en &lt;20 años</strong></span>
+                  <span>75-85% ↓</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="80"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
+                  Escocia, Suecia (2008-2019)
+                </div>
+              </div>
+
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Ca. cervical invasivo</strong></span>
+                  <span>87% ↓</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="87"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
+                  Inglaterra (vacunadas 12-13 años vs no vacunadas)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+          <div class="card-title">
+            <div class="icon secondary">🛡️</div>
+            Inmunidad de Grupo (Herd Immunity)
+          </div>
+          <div class="card-content">
+            <div class="grid grid-3">
+              <div class="stat">
+                <span class="stat-number">65%</span>
+                <div class="stat-label">Cobertura mínima para inmunidad de grupo</div>
+              </div>
+              <div class="stat">
+                <span class="stat-number">48%</span>
+                <div class="stat-label">Reducción verrugas en hombres no vacunados</div>
+              </div>
+              <div class="stat">
+                <span class="stat-number">28%</span>
+                <div class="stat-label">Reducción CIN en mujeres no vacunadas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 12: Seguridad de las Vacunas -->
+    <div class="slide" data-slide="12">
+      <div class="slide-header">
+        <div class="slide-number">12</div>
+        <h1 class="slide-title">Seguridad de las Vacunas VPH</h1>
+        <p class="slide-subtitle">Lo que muestran 15 años de seguimiento cercano</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-2">
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">✅</div>
+              Eventos Adversos Comunes
+            </div>
+            <div class="card-content">
+              <div class="progress-item">
+                <div class="progress-label" style="color: white;">
+                  <span><strong>Dolor local</strong></span>
+                  <span>83-89%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="86" style="background: linear-gradient(90deg, #fbbf24, #f59e0b);"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; color: rgba(255,255,255,0.8);">
+                  Leve a moderado, resuelve en 1-3 días
+                </div>
+              </div>
+
+              <div class="progress-item">
+                <div class="progress-label" style="color: white;">
+                  <span><strong>Eritema/inflamación</strong></span>
+                  <span>25-35%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="30" style="background: linear-gradient(90deg, #f97316, #ea580c);"></div>
+                </div>
+              </div>
+
+              <div class="progress-item">
+                <div class="progress-label" style="color: white;">
+                  <span><strong>Cefalea</strong></span>
+                  <span>10-15%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="12" style="background: linear-gradient(90deg, #8b5cf6, #7c3aed);"></div>
+                </div>
+              </div>
+
+              <div class="progress-item">
+                <div class="progress-label" style="color: white;">
+                  <span><strong>Síncope</strong></span>
+                  <span>0.2%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="0.2" style="background: linear-gradient(90deg, #dc2626, #b91c1c);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="icon primary">🔬</div>
+              Vigilancia de Seguridad
+            </div>
+            <div class="card-content">
+              <div class="stat-grid">
+                <div class="stat">
+                  <span class="stat-number">270M+</span>
+                  <div class="stat-label">Dosis administradas globalmente</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">15</span>
+                  <div class="stat-label">Años de vigilancia post-comercialización</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">0</span>
+                  <div class="stat-label">Eventos adversos graves causales confirmados</div>
+                </div>
+              </div>
+
+              <ul class="list" style="margin-top: 1.5rem;">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--success);">✓</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">No aumenta riesgo</div>
+                    <div class="list-item-description">Enfermedades autoinmunes, trastornos neurológicos</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--success);">✓</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">No afecta fertilidad</div>
+                    <div class="list-item-description">Estudios de cohorte a largo plazo</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--primary);">📋</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Recomendación OMS</div>
+                    <div class="list-item-description">Perfil de seguridad excelente</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 13: Programas de Vacunación Exitosos -->
+    <div class="slide" data-slide="13">
+      <div class="slide-header">
+        <div class="slide-number">13</div>
+        <h1 class="slide-title">Programas de Vacunación Exitosos</h1>
+        <p class="slide-subtitle">Aprendizajes de países que ya avanzaron</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-3">
+          <div class="card primary">
+            <div class="card-title">
+              <div class="icon">🇦🇺</div>
+              Australia
+            </div>
+            <div class="card-content" style="color: white;">
+              <div class="stat" style="background: rgba(255,255,255,0.1); margin-bottom: 1rem;">
+                <span class="stat-number" style="color: white;">2007</span>
+                <div class="stat-label" style="color: rgba(255,255,255,0.8);">Primer programa nacional</div>
+              </div>
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">📈</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Cobertura >80%</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Niñas y niños en escuelas</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">🎯</div>
+                  <div class="list-item-content">
+                  <div class="list-item-title" style="color: white;">Compromiso de eliminación</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Ca. cervical para 2035</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">📊</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">93% ↓ verrugas</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">En mujeres &lt;21 años</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card secondary">
+            <div class="card-title">
+              <div class="icon">🏴󠁧󠁢󠁳󠁣󠁴󠁿</div>
+              Escocia
+            </div>
+            <div class="card-content" style="color: white;">
+              <div class="stat" style="background: rgba(255,255,255,0.1); margin-bottom: 1rem;">
+                <span class="stat-number" style="color: white;">89%</span>
+                <div class="stat-label" style="color: rgba(255,255,255,0.8);">Reducción CIN3 en vacunadas</div>
+              </div>
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--secondary);">📚</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Programa escolar</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Integrado al sistema educativo</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--secondary);">📱</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Sistema digital</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Registro y seguimiento</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--secondary);">🔬</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Evidencia sólida</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Estudios de cohorte robustos</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">🇷🇼</div>
+              Ruanda
+            </div>
+            <div class="card-content" style="color: white;">
+              <div class="stat" style="background: rgba(255,255,255,0.1); margin-bottom: 1rem;">
+                <span class="stat-number" style="color: white;">95%</span>
+                <div class="stat-label" style="color: rgba(255,255,255,0.8);">Cobertura 3 dosis</div>
+              </div>
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">💪</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Liderazgo político</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Compromiso gubernamental fuerte</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">🌐</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Alianzas GAVI</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Financiamiento internacional</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">👥</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Participación comunitaria</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Educación y aceptación</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 14: Desafíos en Implementación -->
+    <div class="slide" data-slide="14">
+      <div class="slide-header">
+        <div class="slide-number">14</div>
+        <h1 class="slide-title">Desafíos en la Implementación</h1>
+        <p class="slide-subtitle">Obstáculos frecuentes y cómo sortearlos</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-title">
+              <div class="icon danger" style="background: var(--danger);">⚠️</div>
+              Principales Barreras
+            </div>
+            <div class="card-content">
+              <ul class="list">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--danger);">💰</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Costo de vacunas</div>
+                    <div class="list-item-description">$150-200 USD esquema completo en países de altos ingresos</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--warning);">🏛️</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Voluntad política</div>
+                    <div class="list-item-description">Falta de priorización en políticas de salud pública</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--secondary);">📚</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Desinformación</div>
+                    <div class="list-item-description">Mitos sobre seguridad y efectos en fertilidad</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--primary);">🎯</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Acceso poblacional</div>
+                    <div class="list-item-description">Dificultades en zonas rurales y poblaciones vulnerables</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">✅</div>
+              Estrategias de Solución
+            </div>
+            <div class="card-content" style="color: white;">
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">🤝</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Negociación precios</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Compras consolidadas, GAVI, PAHO Revolving Fund</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">📢</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Comunicación efectiva</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Mensajes basados en evidencia, líderes de opinión</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">📱</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Tecnología</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Registros digitales, recordatorios, telemedicina</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">🎓</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Educación integral</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Profesionales, familias, adolescentes</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 15: Cribado Cervical -->
+    <div class="slide" data-slide="15">
+      <div class="slide-header">
+        <div class="slide-number">15</div>
+        <h1 class="slide-title">Cribado del Cáncer Cervical</h1>
+        <p class="slide-subtitle">Pruebas disponibles y cuándo usarlas</p>
+      </div>
+      <div class="slide-content">
+        <div class="card" style="background: var(--gray-50);">
+          <div class="card-title">
+            <div class="icon primary">🧾</div>
+            En pocas palabras
+          </div>
+          <div class="card-content" style="color: var(--gray-600); font-size: 0.95rem;">
+            <ul style="list-style: disc; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <li>La citología sigue siendo útil, pero la prueba de VPH detecta más lesiones tempranas.</li>
+              <li>Co-test y autotoma ayudan a espaciar controles cuando los resultados son negativos.</li>
+              <li>El seguimiento claro evita confusiones y reduce ansiedad en nuestras pacientes.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid grid-3">
+          <div class="card primary">
+            <div class="card-title">
+              <div class="icon">🔬</div>
+              Citología (Papanicolaou)
+            </div>
+            <div class="card-content" style="color: white;">
+              <div class="stat-grid">
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">53%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">Sensibilidad CIN2+</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">97%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">Especificidad</div>
+                </div>
+              </div>
+              <ul class="list" style="margin-top: 1rem;">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">📅</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Intervalos</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Cada 3 años (21-65 años)</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">💰</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Costo-efectiva</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Tecnología establecida</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card secondary">
+            <div class="card-title">
+              <div class="icon">🧬</div>
+              Test de VPH-AR
+            </div>
+            <div class="card-content" style="color: white;">
+              <div class="stat-grid">
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">95%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">Sensibilidad CIN2+</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.1);">
+                  <span class="stat-number" style="color: white;">85%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.8);">Especificidad</div>
+                </div>
+              </div>
+              <ul class="list" style="margin-top: 1rem;">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--secondary);">🎯</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Primario ≥30 años</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Cada 5 años si negativo</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--secondary);">📈</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Mayor sensibilidad</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Detecta lesiones precursoras</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">🔬</div>
+              Co-testing
+            </div>
+            <div class="card-content" style="color: white;">
+              <div class="stat" style="background: rgba(255,255,255,0.1); margin-bottom: 1rem;">
+                <span class="stat-number" style="color: white;">30-65</span>
+                <div class="stat-label" style="color: rgba(255,255,255,0.8);">años de edad</div>
+              </div>
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">🔍</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Citología + VPH</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Máxima sensibilidad</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">📅</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Intervalos largos</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">5 años si ambos negativos</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">💲</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Mayor costo</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Consideración económica</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+          <div class="card-title">
+            <div class="icon primary">📋</div>
+            Recomendaciones de Cribado por Edad
+          </div>
+          <div class="card-content">
+            <div class="chart-container">
+              <svg viewBox="0 0 700 200" width="100%" height="200">
+                <!-- Age groups timeline -->
+                <defs>
+                  <linearGradient id="screeningGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#dc2626"/>
+                    <stop offset="15%" style="stop-color:#16a34a"/>
+                    <stop offset="40%" style="stop-color:#2563eb"/>
+                    <stop offset="70%" style="stop-color:#7c3aed"/>
+                    <stop offset="100%" style="stop-color:#6b7280"/>
+                  </linearGradient>
+                </defs>
+                
+                <!-- Main timeline -->
+                <line x1="50" y1="100" x2="650" y2="100" stroke="url(#screeningGrad)" stroke-width="8"/>
+                
+                <!-- Age markers -->
+                <g font-family="Inter" font-size="12" text-anchor="middle">
+                  <!-- No screening -->
+                  <circle cx="100" cy="100" r="15" fill="#dc2626"/>
+                  <text x="100" y="106" fill="white" font-weight="600" font-size="10">&lt;21</text>
+                  <text x="100" y="130" font-weight="600" fill="#dc2626">No cribado</text>
+                  <text x="100" y="145" font-size="10" fill="#64748b">Inicio sexual tardío</text>
+                  
+                  <!-- Cytology -->
+                  <circle cx="200" cy="100" r="15" fill="#16a34a"/>
+                  <text x="200" y="106" fill="white" font-weight="600" font-size="9">21-29</text>
+                  <text x="200" y="130" font-weight="600" fill="#16a34a">Citología</text>
+                  <text x="200" y="145" font-size="10" fill="#64748b">Cada 3 años</text>
+                  
+                  <!-- HPV primary or co-test -->
+                  <circle cx="350" cy="100" r="15" fill="#2563eb"/>
+                  <text x="350" y="106" fill="white" font-weight="600" font-size="9">30-65</text>
+                  <text x="350" y="130" font-weight="600" fill="#2563eb">VPH primario</text>
+                  <text x="350" y="145" font-size="10" fill="#64748b">c/5a o co-test c/5a</text>
+                  
+                  <!-- Post-65 -->
+                  <circle cx="550" cy="100" r="15" fill="#6b7280"/>
+                  <text x="550" y="106" fill="white" font-weight="600" font-size="9">&gt;65</text>
+                  <text x="550" y="130" font-weight="600" fill="#6b7280">Considerar parar</text>
+                  <text x="550" y="145" font-size="10" fill="#64748b">Si cribado adecuado previo</text>
+                </g>
+                
+                <!-- Arrows showing transitions -->
+                <g stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="3,3">
+                  <path d="M130,90 L170,90" marker-end="url(#arrow)"/>
+                  <path d="M230,90 L320,90" marker-end="url(#arrow)"/>
+                  <path d="M380,90 L520,90" marker-end="url(#arrow)"/>
+                </g>
+                
+                <defs>
+                  <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 16: Manejo de Resultados Anormales -->
+    <div class="slide" data-slide="16">
+      <div class="slide-header">
+        <div class="slide-number">16</div>
+        <h1 class="slide-title">Manejo de Resultados Anormales</h1>
+        <p class="slide-subtitle">Qué hacer ante resultados anormales</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-title">
+              <div class="icon primary">🔍</div>
+              Algoritmo de Manejo Citológico
+            </div>
+            <div class="card-content">
+              <div class="chart-container">
+                <svg viewBox="0 0 400 350" width="100%" height="350">
+                  <!-- Flowchart for cytology management -->
+                  <!-- Normal -->
+                  <rect x="150" y="20" width="100" height="40" fill="#16a34a" rx="5"/>
+                  <text x="200" y="35" text-anchor="middle" font-family="Inter" font-size="10" fill="white" font-weight="600">NORMAL</text>
+                  <text x="200" y="48" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Repetir 3-5 años</text>
+                  
+                  <!-- ASC-US -->
+                  <rect x="20" y="100" width="80" height="40" fill="#d97706" rx="5"/>
+                  <text x="60" y="115" text-anchor="middle" font-family="Inter" font-size="10" fill="white" font-weight="600">ASC-US</text>
+                  <text x="60" y="128" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Test VPH</text>
+                  
+                  <!-- LSIL -->
+                  <rect x="120" y="100" width="80" height="40" fill="#ea580c" rx="5"/>
+                  <text x="160" y="115" text-anchor="middle" font-family="Inter" font-size="10" fill="white" font-weight="600">LSIL</text>
+                  <text x="160" y="128" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Colposcopia</text>
+                  
+                  <!-- ASC-H -->
+                  <rect x="220" y="100" width="80" height="40" fill="#dc2626" rx="5"/>
+                  <text x="260" y="115" text-anchor="middle" font-family="Inter" font-size="10" fill="white" font-weight="600">ASC-H</text>
+                  <text x="260" y="128" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Colposcopia</text>
+                  
+                  <!-- HSIL -->
+                  <rect x="320" y="100" width="80" height="40" fill="#991b1b" rx="5"/>
+                  <text x="360" y="115" text-anchor="middle" font-family="Inter" font-size="10" fill="white" font-weight="600">HSIL</text>
+                  <text x="360" y="128" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Colposcopia</text>
+                  
+                  <!-- HPV positive from ASC-US -->
+                  <rect x="20" y="180" width="80" height="30" fill="#7c3aed" rx="5"/>
+                  <text x="60" y="195" text-anchor="middle" font-family="Inter" font-size="9" fill="white" font-weight="600">VPH (+)</text>
+                  <text x="60" y="208" text-anchor="middle" font-family="Inter" font-size="8" fill="white">→ Colposcopia</text>
+                  
+                  <!-- HPV negative from ASC-US -->
+                  <rect x="20" y="230" width="80" height="30" fill="#16a34a" rx="5"/>
+                  <text x="60" y="245" text-anchor="middle" font-family="Inter" font-size="9" fill="white" font-weight="600">VPH (-)</text>
+                  <text x="60" y="258" text-anchor="middle" font-family="Inter" font-size="8" fill="white">→ Repetir 3 años</text>
+                  
+                  <!-- Colposcopy results -->
+                  <rect x="150" y="280" width="100" height="40" fill="#2563eb" rx="5"/>
+                  <text x="200" y="295" text-anchor="middle" font-family="Inter" font-size="10" fill="white" font-weight="600">COLPOSCOPIA</text>
+                  <text x="200" y="308" text-anchor="middle" font-family="Inter" font-size="9" fill="white">+ Biopsia dirigida</text>
+                  
+                  <!-- Arrows -->
+                  <g stroke="#64748b" stroke-width="2" fill="none">
+                    <path d="M60,140 L60,180" marker-end="url(#arrowGray)"/>
+                    <path d="M160,140 L200,280" marker-end="url(#arrowGray)"/>
+                    <path d="M260,140 L220,280" marker-end="url(#arrowGray)"/>
+                    <path d="M360,140 L250,280" marker-end="url(#arrowGray)"/>
+                    <path d="M60,210 L150,290" marker-end="url(#arrowGray)"/>
+                  </g>
+                  
+                  <defs>
+                    <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                      <polygon points="0 0, 8 3, 0 6" fill="#64748b"/>
+                    </marker>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="icon secondary">📊</div>
+              Resultados Histológicos y Manejo
+            </div>
+            <div class="card-content">
+              <ul class="list">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--success);">N</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Normal/CIN 1</div>
+                    <div class="list-item-description">Seguimiento conservador, repetir citología en 12 meses</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--warning);">2</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">CIN 2</div>
+                    <div class="list-item-description">Observación en &lt;25 años, tratamiento excisional &gt;25 años</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--danger);">3</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">CIN 3</div>
+                    <div class="list-item-description">Tratamiento excisional (LEEP, conización)</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--secondary);">Ca</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Carcinoma invasivo</div>
+                    <div class="list-item-description">Derivación urgente a oncología ginecológica</div>
+                  </div>
+                </li>
+              </ul>
+
+              <div class="stat-grid" style="margin-top: 2rem;">
+                <div class="stat">
+                  <span class="stat-number" style="color: var(--success);">32%</span>
+                  <div class="stat-label">Regresión espontánea CIN 2</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number" style="color: var(--danger);">5%</span>
+                  <div class="stat-label">Progresión CIN 2 a Ca invasivo</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 17: Tratamiento de Lesiones VPH -->
+    <div class="slide" data-slide="17">
+      <div class="slide-header">
+        <div class="slide-number">17</div>
+        <h1 class="slide-title">Tratamiento de Lesiones por VPH</h1>
+        <p class="slide-subtitle">Opciones de tratamiento claras y comparables</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-2">
+          <div class="card primary">
+            <div class="card-title">
+              <div class="icon">🏥</div>
+              Verrugas Anogenitales
+            </div>
+            <div class="card-content" style="color: white;">
+              <div class="stat" style="background: rgba(255,255,255,0.1); margin-bottom: 1.5rem;">
+                <span class="stat-number" style="color: white;">VPH 6/11</span>
+                <div class="stat-label" style="color: rgba(255,255,255,0.8);">Causa en 90% de casos</div>
+              </div>
+              
+              <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: white; margin-bottom: 0.5rem;">Tratamientos Tópicos</h4>
+                <div class="progress-item">
+                  <div class="progress-label" style="color: white;">
+                    <span><strong>Imiquimod 5%</strong></span>
+                    <span>45-90% curación</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" data-width="67" style="background: linear-gradient(90deg, #10b981, #059669);"></div>
+                  </div>
+                </div>
+                <div class="progress-item">
+                  <div class="progress-label" style="color: white;">
+                    <span><strong>Podofilotoxina 0.5%</strong></span>
+                    <span>45-88% curación</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" data-width="66" style="background: linear-gradient(90deg, #3b82f6, #2563eb);"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 style="color: white; margin-bottom: 0.5rem;">Tratamientos Ablativos</h4>
+                <div class="progress-item">
+                  <div class="progress-label" style="color: white;">
+                    <span><strong>Crioterapia</strong></span>
+                    <span>60-88% curación</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" data-width="74" style="background: linear-gradient(90deg, #8b5cf6, #7c3aed);"></div>
+                  </div>
+                </div>
+                <div class="progress-item">
+                  <div class="progress-label" style="color: white;">
+                    <span><strong>Electrocauterio</strong></span>
+                    <span>94% curación inicial</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" data-width="94" style="background: linear-gradient(90deg, #f59e0b, #d97706);"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">⚕️</div>
+              Lesiones Precancerosas (CIN)
+            </div>
+            <div class="card-content" style="color: white;">
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">LEEP</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Escisión electroquirúrgica</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">95% curación, permite histopatología completa</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">CKC</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Conización quirúrgica</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Para lesiones extensas o adenocarcinoma in situ</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">❄️</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Crioablación</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">85-90% curación, no permite histopatología</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">🔥</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Ablación térmica</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Alternativa en recursos limitados</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+          <div class="card-title">
+            <div class="icon secondary">📋</div>
+            Consideraciones Post-Tratamiento
+          </div>
+          <div class="card-content">
+            <div class="grid grid-3">
+              <div>
+                <h4 style="color: var(--secondary); margin-bottom: 0.5rem;">Seguimiento</h4>
+                <ul class="list">
+                  <li class="list-item">
+                    <div class="list-item-icon" style="background: var(--primary);">6m</div>
+                    <div class="list-item-content">
+                      <div class="list-item-title">Test de curación</div>
+                      <div class="list-item-description">Citología + VPH a los 6 meses</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div class="list-item-icon" style="background: var(--accent);">20a</div>
+                    <div class="list-item-content">
+                      <div class="list-item-title">Seguimiento prolongado</div>
+                      <div class="list-item-description">Hasta 20 años por riesgo de recurrencia</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 style="color: var(--secondary); margin-bottom: 0.5rem;">Complicaciones</h4>
+                <ul class="list">
+                  <li class="list-item">
+                    <div class="list-item-icon" style="background: var(--warning);">🤰</div>
+                    <div class="list-item-content">
+                      <div class="list-item-title">Parto prematuro</div>
+                      <div class="list-item-description">RR 1.7 (IC 95%: 1.1-2.8)</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div class="list-item-icon" style="background: var(--danger);">⚠️</div>
+                    <div class="list-item-content">
+                      <div class="list-item-title">Incompetencia cervical</div>
+                      <div class="list-item-description">Si resección >15mm profundidad</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 style="color: var(--secondary); margin-bottom: 0.5rem;">Pronóstico</h4>
+                <div class="stat-grid">
+                  <div class="stat">
+                    <span class="stat-number" style="color: var(--success);">95%</span>
+                    <div class="stat-label">Tasa de curación LEEP</div>
+                  </div>
+                  <div class="stat">
+                    <span class="stat-number" style="color: var(--warning);">15%</span>
+                    <div class="stat-label">Recurrencia a 2 años</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 18: Innovaciones Tecnológicas -->
+    <div class="slide" data-slide="18">
+      <div class="slide-header">
+        <div class="slide-number">18</div>
+        <h1 class="slide-title">Innovaciones Tecnológicas</h1>
+        <p class="slide-subtitle">Tecnologías que facilitan el día a día</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-3">
+          <div class="card primary">
+            <div class="card-title">
+              <div class="icon">🔬</div>
+              Diagnóstico Molecular
+            </div>
+            <div class="card-content" style="color: white;">
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">PCR</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">PCR en tiempo real</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Genotipificación específica, cuantificación viral</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">NGS</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Secuenciación masiva</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Detección múltiples genotipos simultáneamente</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">🏠</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Auto-muestreo</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Kits domiciliarios, mayor accesibilidad</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card secondary">
+            <div class="card-title">
+              <div class="icon">🤖</div>
+              Inteligencia Artificial
+            </div>
+            <div class="card-content" style="color: white;">
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--secondary);">👁️</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Colposcopia digital</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Algoritmos de reconocimiento de lesiones</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--secondary);">📱</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Apps móviles</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Recordatorios, educación, telemedicina</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--secondary);">📊</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Análisis predictivo</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Modelos de riesgo personalizados</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">💊</div>
+              Terapias Futuras
+            </div>
+            <div class="card-content" style="color: white;">
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">💉</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Vacunas terapéuticas</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Tratamiento de infecciones establecidas</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">🧬</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Inmunoterapia</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Moduladores inmunes, interferones</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">🎯</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Terapia dirigida</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Inhibidores específicos E6/E7</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+          <div class="card-title">
+            <div class="icon primary">🌟</div>
+            Tecnologías Emergentes en Desarrollo
+          </div>
+          <div class="card-content">
+            <div class="stat-grid">
+              <div class="stat">
+                <span class="stat-number">Próximos años</span>
+                <div class="stat-label">Vacunas pan-VPH de amplio espectro</div>
+              </div>
+              <div class="stat">
+                <span class="stat-number">Fase II/III</span>
+                <div class="stat-label">Vacunas terapéuticas en ensayos</div>
+              </div>
+              <div class="stat">
+                <span class="stat-number">90%+</span>
+                <div class="stat-label">Precisión AI en detección lesiones</div>
+              </div>
+              <div class="stat">
+                <span class="stat-number">$10-50</span>
+                <div class="stat-label">Costo test VPH punto de atención</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 19: Aspectos Psicosociales -->
+    <div class="slide" data-slide="19">
+      <div class="slide-header">
+        <div class="slide-number">19</div>
+        <h1 class="slide-title">Aspectos Psicosociales del VPH</h1>
+        <p class="slide-subtitle">Cómo hablar del tema y apoyar emociones</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-title">
+              <div class="icon primary">🧠</div>
+              Impacto Psicológico
+            </div>
+            <div class="card-content">
+              <div class="stat-grid">
+                <div class="stat">
+                  <span class="stat-number">65%</span>
+                  <div class="stat-label">Mujeres reportan ansiedad post-diagnóstico</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">42%</span>
+                  <div class="stat-label">Experimentan culpa o vergüenza</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">38%</span>
+                  <div class="stat-label">Preocupaciones sobre fertilidad</div>
+                </div>
+              </div>
+
+              <ul class="list" style="margin-top: 1.5rem;">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--danger);">😰</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Miedo al cáncer</div>
+                    <div class="list-item-description">Percepción exagerada del riesgo de progresión</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--warning);">💔</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Impacto en relaciones</div>
+                    <div class="list-item-description">Dificultades en comunicación con parejas</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--secondary);">🏷️</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Estigma social</div>
+                    <div class="list-item-description">Asociación con promiscuidad sexual</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">💬</div>
+              Comunicación Efectiva
+            </div>
+            <div class="card-content" style="color: white;">
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">📚</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Información basada en evidencia</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Datos precisos sobre prevalencia y pronóstico</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">🤝</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Enfoque no estigmatizante</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">VPH como infección común, no moral</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">⏰</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Tiempo adecuado</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Permitir preguntas y procesamiento</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">🎯</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Mensajes positivos</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Enfatizar opciones de prevención y tratamiento</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+          <div class="card-title">
+            <div class="icon secondary">💡</div>
+            Estrategias de Apoyo Psicosocial
+          </div>
+          <div class="card-content">
+            <div class="grid grid-3">
+              <div>
+                <h4 style="color: var(--secondary); margin-bottom: 1rem;">Para Pacientes</h4>
+                <ul class="list">
+                  <li class="list-item">
+                    <div class="list-item-icon" style="background: var(--primary);">📖</div>
+                    <div class="list-item-content">
+                      <div class="list-item-title">Materiales educativos</div>
+                      <div class="list-item-description">Folletos, videos, recursos web confiables</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div class="list-item-icon" style="background: var(--accent);">👥</div>
+                    <div class="list-item-content">
+                      <div class="list-item-title">Grupos de apoyo</div>
+                      <div class="list-item-description">Presenciales u online</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 style="color: var(--secondary); margin-bottom: 1rem;">Para Profesionales</h4>
+                <ul class="list">
+                  <li class="list-item">
+                    <div class="list-item-icon" style="background: var(--warning);">🎓</div>
+                    <div class="list-item-content">
+                      <div class="list-item-title">Capacitación continua</div>
+                      <div class="list-item-description">Habilidades comunicacionales</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div class="list-item-icon" style="background: var(--danger);">⏱️</div>
+                    <div class="list-item-content">
+                      <div class="list-item-title">Tiempo suficiente</div>
+                      <div class="list-item-description">Consultas sin prisa</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 style="color: var(--secondary); margin-bottom: 1rem;">Para Parejas</h4>
+                <ul class="list">
+                  <li class="list-item">
+                    <div class="list-item-icon" style="background: var(--success);">💏</div>
+                    <div class="list-item-content">
+                      <div class="list-item-title">Consejería conjunta</div>
+                      <div class="list-item-description">Discusión abierta sobre transmisión</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div class="list-item-icon" style="background: var(--primary);">🛡️</div>
+                    <div class="list-item-content">
+                      <div class="list-item-title">Prevención conjunta</div>
+                      <div class="list-item-description">Vacunación y métodos de barrera</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 20: Políticas de Salud Pública -->
+    <div class="slide" data-slide="20">
+      <div class="slide-header">
+        <div class="slide-number">20</div>
+        <h1 class="slide-title">Políticas de Salud Pública</h1>
+        <p class="slide-subtitle">Acciones de salud pública que podemos poner en marcha</p>
+      </div>
+      <div class="slide-content">
+        <div class="card" style="background: var(--gray-50);">
+          <div class="card-title">
+            <div class="icon primary">🧭</div>
+            En pocas palabras
+          </div>
+          <div class="card-content" style="color: var(--gray-600); font-size: 0.95rem;">
+            <ul style="list-style: disc; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <li>Claridad en normas y registros facilita que cada región ejecute el plan sin dudas.</li>
+              <li>La financiación mezclada y anticipada evita interrupciones en vacunas y pruebas.</li>
+              <li>Definir quiénes son prioridad mantiene el foco en niñas, adolescentes y personas con mayor riesgo.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card primary">
+            <div class="card-title">
+              <div class="icon">🏛️</div>
+              Marco Regulatorio
+            </div>
+            <div class="card-content" style="color: white;">
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">📋</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Licencias y registro</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Autorizar vacunas, vigilar su seguridad y medir los costos</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">📑</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Lineamientos nacionales</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Actualizar guías y alinearlas con las recomendaciones OMS/OPS</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--primary);">🔄</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Integración PAI</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Integrar las vacunas al PAI y cuidar la cadena de frío</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">💰</div>
+              Financiamiento Sostenible
+            </div>
+            <div class="card-content" style="color: white;">
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">🤝</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Alianzas estratégicas</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Aliarse con GAVI, el Fondo Rotatorio OPS y compras anticipadas</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">📊</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Modelos de costo compartido</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Mezclar fondos nacionales con seguros públicos y privados</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">📈</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Evaluación económica</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.8);">Mostrar el retorno social de invertir en prevención</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+          <div class="card-title">
+            <div class="icon secondary">🎯</div>
+            Priorización Poblacional
+          </div>
+          <div class="card-content">
+            <div class="stat-grid">
+              <div class="stat">
+                <span class="stat-number">9-14</span>
+                <div class="stat-label">Grupo objetivo primario</div>
+              </div>
+              <div class="stat">
+                <span class="stat-number">15-26</span>
+                <div class="stat-label">Campañas de recuperación</div>
+              </div>
+              <div class="stat">
+                <span class="stat-number">80%</span>
+                <div class="stat-label">Cobertura mínima recomendada</div>
+              </div>
+              <div class="stat">
+                <span class="stat-number">3</span>
+                <div class="stat-label">Dosis para inmunosuprimidos</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 21: Situación del VPH en Venezuela -->
+    <div class="slide" data-slide="21">
+      <div class="slide-header">
+        <div class="slide-number">21</div>
+        <h1 class="slide-title">VPH en Venezuela</h1>
+        <p class="slide-subtitle">Situación actual y pasos inmediatos en el país</p>
+      </div>
+      <div class="slide-content">
+        <div class="card" style="background: var(--gray-50);">
+          <div class="card-title">
+            <div class="icon primary">🇻🇪</div>
+            En pocas palabras
+          </div>
+          <div class="card-content" style="color: var(--gray-600); font-size: 0.95rem;">
+            <ul style="list-style: disc; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <li>El cáncer cervical sigue entre las primeras causas de muerte femenina en el país.</li>
+              <li>Las coberturas de vacuna y tamizaje son bajas, pero ya hay pilotos que podemos escalar.</li>
+              <li>Necesitamos priorizar estados con mayores brechas y acompañar con datos simples.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card primary">
+            <div class="card-title">
+              <div class="icon">🇻🇪</div>
+              Carga Epidemiológica 2023
+            </div>
+            <div class="card-content" style="color: white;">
+              <div class="stat-grid">
+                <div class="stat" style="background: rgba(255,255,255,0.15);">
+                  <span class="stat-number" style="color: white;">25.6</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.85);">Incidencia por 100&nbsp;000 mujeres</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.15);">
+                  <span class="stat-number" style="color: white;">12.4</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.85);">Mortalidad por 100&nbsp;000 mujeres</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.15);">
+                  <span class="stat-number" style="color: white;">2°</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.85);">Cáncer femenino más frecuente</div>
+                </div>
+              </div>
+              <div class="badge" style="background: rgba(255,255,255,0.2); color: white; margin-top: 1.5rem;">Fuente: OPS-OMS / Globocan 2023</div>
+              <p style="margin-top: 1rem; color: rgba(255,255,255,0.85); line-height: 1.6;">
+                Se estiman 3 650 casos nuevos y 1 760 muertes anuales. La mayor carga se concentra en mujeres de 35-54 años y en estados con acceso limitado a tamizaje organizado.
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <div class="icon secondary">📊</div>
+              Cobertura de Programas
+            </div>
+            <div class="card-content">
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Cobertura 1ª dosis (niñas 9-13 años)</strong></span>
+                  <span>28% · objetivo 80%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="28"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--gray-600);">
+                  Campañas escolares reanudadas en 2023 en 12 entidades federales.
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Esquema completo (2 dosis)</strong></span>
+                  <span>18% · objetivo 70%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="18"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--gray-600);">
+                  Brechas de seguimiento y registros nominales en zonas rurales.
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Tamizaje citológico trienal</strong></span>
+                  <span>45% cobertura</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="45"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--gray-600);">
+                  Mayor acceso en red urbana; caída a &lt;25% en estados amazónicos.
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-label">
+                  <span><strong>Test VPH primario</strong></span>
+                  <span>12% mujeres 30-49 años</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="12"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--gray-600);">
+                  Pilotos con autotoma en Lara, Mérida, Monagas y Distrito Capital.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-3">
+          <div class="card">
+            <div class="card-title">
+              <div class="icon primary">🗺️</div>
+              Brechas Regionales
+            </div>
+            <div class="card-content">
+              <ul class="list">
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--primary);">35%</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Zulia, Miranda y Carabobo</div>
+                    <div class="list-item-description">Concentran un tercio de los casos y deficiencias en seguimiento post-tratamiento.</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--warning);">↓</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Amazonas y Delta Amacuro</div>
+                    <div class="list-item-description">Cobertura vacunal &lt;10% y distancias &gt;8 h al punto de tamizaje más cercano.</div>
+                  </div>
+                </li>
+                <li class="list-item">
+                  <div class="list-item-icon" style="background: var(--accent);">↗</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title">Migración interna</div>
+                    <div class="list-item-description">Incremento de mujeres no aseguradas en áreas periurbanas de Aragua y Bolívar.</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="card secondary">
+            <div class="card-title">
+              <div class="icon">🧭</div>
+              Hitos Programáticos
+            </div>
+            <div class="card-content" style="color: white;">
+              <div class="chart-container">
+                <svg viewBox="0 0 520 180" width="100%" height="180">
+                  <line x1="50" y1="120" x2="470" y2="120" stroke="rgba(255,255,255,0.5)" stroke-width="3"/>
+                  <g font-family="Inter" font-size="11" text-anchor="middle">
+                    <circle cx="90" cy="120" r="9" fill="#22d3ee"/>
+                    <text x="90" y="90" fill="white" font-weight="600">2011</text>
+                    <text x="90" y="105" fill="rgba(255,255,255,0.8)">Ingreso PAI</text>
+                    <circle cx="200" cy="120" r="9" fill="#fbbf24"/>
+                    <text x="200" y="90" fill="white" font-weight="600">2016</text>
+                    <text x="200" y="105" fill="rgba(255,255,255,0.8)">Desabastecimiento</text>
+                    <circle cx="310" cy="120" r="9" fill="#a855f7"/>
+                    <text x="310" y="90" fill="white" font-weight="600">2021</text>
+                    <text x="310" y="105" fill="rgba(255,255,255,0.8)">Pilotos VPH-AR</text>
+                    <circle cx="420" cy="120" r="9" fill="#34d399"/>
+                    <text x="420" y="90" fill="white" font-weight="600">2023</text>
+                    <text x="420" y="105" fill="rgba(255,255,255,0.8)">Reimpulso nacional</text>
+                  </g>
+                  <g font-family="Inter" font-size="10" fill="rgba(255,255,255,0.8)">
+                    <text x="90" y="140">Niñas 9-13 años</text>
+                    <text x="200" y="140">Cobertura 55% → 18%</text>
+                    <text x="310" y="140">Autotoma en 4 estados</text>
+                    <text x="420" y="140">Plan 650 mil dosis</text>
+                  </g>
+                </svg>
+              </div>
+              <p style="margin-top: 1rem; color: rgba(255,255,255,0.85); line-height: 1.6;">La recuperación del programa exige asegurar cadena de frío, financiamiento mixto y sistemas nominales interoperables.</p>
+            </div>
+          </div>
+          <div class="card accent">
+            <div class="card-title">
+              <div class="icon">🎯</div>
+              Prioridades 2024-2026
+            </div>
+            <div class="card-content" style="color: white;">
+              <ul class="list">
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">1</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Escalamiento de auto-toma</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.85);">Expandir a 15 estados con énfasis en comunidades indígenas y migrantes.</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">2</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Compra anticipada de biológicos</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.85);">Utilizar Fondo Rotatorio OPS y cooperación bilateral para garantizar suministro.</div>
+                  </div>
+                </li>
+                <li class="list-item" style="background: rgba(255,255,255,0.2); border-left-color: white;">
+                  <div class="list-item-icon" style="background: white; color: var(--accent);">3</div>
+                  <div class="list-item-content">
+                    <div class="list-item-title" style="color: white;">Registro oncológico fortalecido</div>
+                    <div class="list-item-description" style="color: rgba(255,255,255,0.85);">Digitalizar notificación de lesiones CIN2+ y vincularla con vigilancia municipal.</div>
+                  </div>
+                </li>
+              </ul>
+              <div class="stat-grid" style="margin-top: 1.5rem;">
+                <div class="stat" style="background: rgba(255,255,255,0.2);">
+                  <span class="stat-number" style="color: white;">60%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.85);">Cobertura objetivo 2024</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.2);">
+                  <span class="stat-number" style="color: white;">75%</span>
+                  <div class="stat-label" style="color: rgba(255,255,255,0.85);">Objetivo esquema completo 2026</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 22: Cierre y Agradecimiento -->
+    <div class="slide" data-slide="22">
+      <div class="slide-header">
+        <div class="slide-number">22</div>
+        <h1 class="slide-title">Gracias por su Atención</h1>
+        <p class="slide-subtitle">Cuidemos la salud femenina con ciencia, respeto y cercanía</p>
+      </div>
+      <div class="slide-content">
+        <div class="closing-content">
+          <div class="reflection-card animate-fade-in">
+            <div class="reflection-quote">“Cada mujer que acompañamos hoy es una historia de vida que se renueva mañana.”</div>
+            <p class="reflection-message">Tomemos este compromiso más allá de la sala de conferencias: llevemos la vacunación, el tamizaje y la escucha activa a cada consulta, aula y comunidad que tocamos.</p>
+          </div>
+          <div class="closing-actions">
+            <span class="badge success">Comparte lo aprendido</span>
+            <span class="badge warning">Impulsa el tamizaje</span>
+            <span class="badge" style="background: #dbeafe; color: #1d4ed8;">Acompaña con empatía</span>
+          </div>
+          <p class="closing-footnote">Reflexiona hoy: ¿qué barrera puedes derribar esta semana para que otra mujer acceda a la prevención que merece?</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+      <button class="nav-btn secondary" id="prevBtn" onclick="previousSlide()" disabled>
+        ← Anterior
+      </button>
+      <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+        Siguiente →
+      </button>
+    </div>
+
+  <script>
+    let currentSlide = 1;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const presentation = document.getElementById('presentation');
+    let isZoomedIn = false;
+    let previousSlideIndex = 1;
+
+    if (presentation) {
+      presentation.addEventListener('animationend', (event) => {
+        if (event.animationName === 'canvasDriftForward' || event.animationName === 'canvasDriftBackward') {
+          presentation.classList.remove('going-forward', 'going-backward');
+        }
+      });
+    }
+
+    slides.forEach((slide) => {
+      slide.addEventListener('animationend', (event) => {
+        if (event.animationName === 'preziInForward' || event.animationName === 'preziInBackward') {
+          slide.classList.remove('transition-in', 'forward', 'backward');
+        }
+
+        if (event.animationName === 'preziOutForward' || event.animationName === 'preziOutBackward') {
+          slide.classList.remove('transition-out', 'forward', 'backward', 'active');
+          slide.scrollTop = 0;
+        }
+      });
+    });
+
+    function toggleZoom() {
+      isZoomedIn = !isZoomedIn;
+      document.body.classList.toggle('zoomed', isZoomedIn);
+    }
+    
+    // Initialize progress bars
+    function initializeProgressBars() {
+      const activeSlide = document.querySelector('.slide.active');
+      if (!activeSlide) {
+        return;
+      }
+
+      const progressBars = activeSlide.querySelectorAll('.progress-fill[data-width]');
+      const prefersReducedMotion =
+        window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      progressBars.forEach((bar) => {
+        const width = bar.getAttribute('data-width');
+        if (prefersReducedMotion) {
+          bar.style.width = width + '%';
+          return;
+        }
+
+        bar.style.width = '0%';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            bar.style.width = width + '%';
+          });
+        });
+      });
+    }
+    
+    function updateSlide(direction = 0) {
+      const activeSlide = slides[currentSlide - 1];
+      const outgoingSlide = slides[previousSlideIndex - 1];
+      const directionClass = direction > 0 ? 'forward' : direction < 0 ? 'backward' : null;
+      const prefersReducedMotion =
+        window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      slides.forEach((slide) => {
+        if (slide !== activeSlide && slide !== outgoingSlide) {
+          slide.classList.remove('active');
+        }
+        slide.classList.remove('prev', 'next', 'transition-in', 'transition-out', 'forward', 'backward');
+      });
+
+      if (directionClass && outgoingSlide && outgoingSlide !== activeSlide) {
+        outgoingSlide.classList.add('transition-out', directionClass);
+      } else if (outgoingSlide && outgoingSlide !== activeSlide) {
+        outgoingSlide.classList.remove('active');
+      }
+
+      activeSlide.classList.add('active');
+      if (directionClass) {
+        activeSlide.classList.add('transition-in', directionClass);
+      }
+
+      if (presentation && directionClass && !prefersReducedMotion) {
+        presentation.classList.remove('going-forward', 'going-backward');
+        void presentation.offsetWidth;
+        presentation.classList.add(directionClass === 'forward' ? 'going-forward' : 'going-backward');
+      }
+
+      const prevNeighbor = slides[currentSlide - 2];
+      if (prevNeighbor) {
+        prevNeighbor.classList.add('prev');
+      }
+
+      const nextNeighbor = slides[currentSlide];
+      if (nextNeighbor) {
+        nextNeighbor.classList.add('next');
+      }
+
+      document.getElementById('slideCounter').textContent = `${currentSlide} / ${totalSlides}`;
+
+      const progress = totalSlides > 1 ? ((currentSlide - 1) / (totalSlides - 1)) * 100 : 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+
+      const hue = (200 + (currentSlide - 1) * 11) % 360;
+      document.documentElement.style.setProperty('--bg-hue', hue);
+
+      document.getElementById('prevBtn').disabled = currentSlide === 1;
+      document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+
+      if (prefersReducedMotion) {
+        activeSlide.classList.remove('transition-in', 'forward', 'backward');
+        if (directionClass && outgoingSlide && outgoingSlide !== activeSlide) {
+          outgoingSlide.classList.remove('transition-out', 'forward', 'backward', 'active');
+          outgoingSlide.scrollTop = 0;
+        }
+        initializeProgressBars();
+      } else {
+        setTimeout(initializeProgressBars, 300);
+      }
+
+      previousSlideIndex = currentSlide;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        previousSlideIndex = currentSlide;
+        currentSlide++;
+        updateSlide(1);
+      }
+    }
+
+    function previousSlide() {
+      if (currentSlide > 1) {
+        previousSlideIndex = currentSlide;
+        currentSlide--;
+        updateSlide(-1);
+      }
+    }
+
+    function goToSlide(slideNumber) {
+      if (slideNumber >= 1 && slideNumber <= totalSlides && slideNumber !== currentSlide) {
+        const direction = slideNumber > currentSlide ? 1 : -1;
+        previousSlideIndex = currentSlide;
+        currentSlide = slideNumber;
+        updateSlide(direction);
+      }
+    }
+
+    document.addEventListener('click', (event) => {
+      if (event.detail === 0) {
+        return;
+      }
+      toggleZoom();
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        previousSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSlide(1);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSlide(totalSlides);
+      }
+    });
+    
+    // Initialize
+    updateSlide();
+  </script>
+</body>
+</html>

@@ -1,0 +1,3152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="repair.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sistema de Recarga Inteligente - Visa P2P</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de color Visa corporativo */
+        :root {
+            --primary-color: #1a1f71;
+            --primary-color-light: #2a3183;
+            --primary-color-dark: #141965;
+            --secondary-color: #f7b600;
+            --secondary-color-light: #ffc626;
+            --secondary-color-dark: #e0a500;
+            --accent-color: #0055c8;
+            --accent-color-light: #1e6bd8;
+            --text-color: #2a2a2a;
+            --text-secondary: #666;
+            --background-color: #f9faff;
+            --card-color: #fff;
+            --error-color: #d14124;
+            --success-color: #17a84b;
+            --success-color-light: #1cc058;
+            --light-color: #f2f4f8;
+            --border-color: #e0e4e8;
+            --visa-gradient: linear-gradient(135deg, #1a1f71 0%, #142787 100%);
+            --visa-gradient-hover: linear-gradient(135deg, #2a3183 0%, #1e32a2 100%);
+            --visa-accent-gradient: linear-gradient(135deg, #f7b600 0%, #f5a700 100%);
+            --visa-accent-gradient-hover: linear-gradient(135deg, #ffc626 0%, #ffb718 100%);
+            --box-shadow: 0 4px 15px rgba(26, 31, 113, 0.08);
+            --box-shadow-hover: 0 8px 25px rgba(26, 31, 113, 0.15);
+            --transition-fast: all 0.2s ease;
+            --transition-medium: all 0.3s ease-in-out;
+            --transition-slow: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            --warning-color: #ff9800;
+            --warning-color-light: #ffb74d;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --white: #ffffff;
+            --black: #000000;
+            --header-height: 60px;
+            --bottom-nav-height: 65px;
+            --safe-area-top: env(safe-area-inset-top);
+            --safe-area-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* Reset y estilos base mejorados */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            background: linear-gradient(180deg, #f9faff 0%, #f2f4f8 100%);
+            color: var(--text-color);
+            line-height: 1.5;
+            height: 100vh;
+            height: 100dvh;
+            position: fixed;
+            width: 100%;
+            overflow: hidden;
+            font-weight: 400;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: pan-y;
+        }
+
+        /* Contenedor principal completamente rediseñado */
+        .app-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+        }
+
+        /* Header superior mejorado */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(224, 228, 232, 0.5);
+            z-index: 1100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            padding-top: var(--safe-area-top);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-brand img {
+            height: 36px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .users-online-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, rgba(26, 31, 113, 0.05) 0%, rgba(26, 31, 113, 0.08) 100%);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--primary-color);
+            font-weight: 600;
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #17a84b 0%, #1cc058 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px rgba(23, 168, 75, 0.2);
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(23, 168, 75, 0.4);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 8px rgba(23, 168, 75, 0);
+            }
+        }
+
+        /* Contenedor principal del contenido */
+        .main-content {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            right: 0;
+            bottom: var(--bottom-nav-height);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding-top: calc(var(--safe-area-top));
+        }
+
+        /* Barra de progreso mejorada */
+        .progress-wrapper {
+            position: relative;
+            padding: 16px 20px;
+            background: var(--white);
+            border-bottom: 1px solid rgba(224, 228, 232, 0.3);
+            z-index: 10;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--gray-200) 0%, var(--gray-100) 100%);
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color) 0%, var(--secondary-color-light) 100%);
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(247, 182, 0, 0.3);
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 100px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
+            animation: shimmerEffect 2s infinite;
+        }
+        
+        @keyframes shimmerEffect {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(100px); }
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding: 0 4px;
+            position: relative;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            position: relative;
+        }
+
+        .progress-step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--gray-300);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .progress-step.active .progress-step-dot {
+            width: 14px;
+            height: 14px;
+            background: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(247, 182, 0, 0.2);
+        }
+
+        .progress-step.completed .progress-step-dot {
+            background: var(--success-color);
+            position: relative;
+        }
+
+        .progress-step.completed .progress-step-dot::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 8px;
+            font-weight: bold;
+        }
+
+        .progress-step-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .progress-step.active .progress-step-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .progress-step.completed .progress-step-label {
+            color: var(--success-color);
+        }
+
+        /* Wizard container mejorado */
+        .wizard-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        .wizard-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+        
+        .step {
+            min-width: 100%;
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+        }
+
+        .step::-webkit-scrollbar {
+            width: 0;
+            display: none;
+        }
+
+        /* Cards mejoradas */
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            padding: 24px 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(224, 228, 232, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: cardEntry 0.5s ease-out;
+        }
+
+        @keyframes cardEntry {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        /* Headers mejorados */
+        .step-header {
+            text-align: center;
+            margin-bottom: 24px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            box-shadow: 0 8px 32px rgba(26, 31, 113, 0.2);
+            animation: iconPulse 2s infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(26, 31, 113, 0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 12px 40px rgba(26, 31, 113, 0.3);
+            }
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        /* Formularios mejorados */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+            letter-spacing: -0.01em;
+            position: relative;
+            padding-left: 4px;
+        }
+
+        .form-label.required::after {
+            content: '*';
+            color: var(--error-color);
+            margin-left: 4px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--gray-50);
+            color: var(--text-color);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            font-weight: 500;
+        }
+
+        .form-input::placeholder {
+            color: var(--gray-400);
+            font-weight: 400;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary-color);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(26, 31, 113, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .form-input.error {
+            border-color: var(--error-color);
+            background: rgba(209, 65, 36, 0.02);
+        }
+
+        .form-input.success {
+            border-color: var(--success-color);
+            background: rgba(23, 168, 75, 0.02);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+
+        .form-input:focus ~ .input-icon {
+            color: var(--primary-color);
+        }
+
+        .form-error {
+            display: none;
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 6px;
+            font-weight: 500;
+            padding-left: 4px;
+            animation: errorShake 0.4s ease;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        /* Botones mejorados */
+        .btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 16px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: -0.01em;
+            box-shadow: 0 6px 20px rgba(26, 31, 113, 0.2);
+            margin-top: 16px;
+            min-height: 52px;
+            font-family: inherit;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(26, 31, 113, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 16px rgba(26, 31, 113, 0.2);
+        }
+        
+        .btn:disabled {
+            background: linear-gradient(135deg, var(--gray-400) 0%, var(--gray-500) 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--white) 0%, var(--gray-50) 100%);
+            color: var(--primary-color);
+            border: 2px solid var(--gray-200);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #15a043 100%);
+            box-shadow: 0 6px 20px rgba(23, 168, 75, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #f57c00 100%);
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--error-color) 0%, #b71c1c 100%);
+            box-shadow: 0 6px 20px rgba(209, 65, 36, 0.3);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-color-dark) 100%);
+            box-shadow: 0 6px 20px rgba(247, 182, 0, 0.3);
+        }
+
+        .btn-icon {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border-radius: 50%;
+            min-height: 48px;
+        }
+
+        /* Alertas mejoradas */
+        .alert {
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+            animation: slideInAlert 0.4s ease-out;
+            border: 1px solid;
+        }
+
+        @keyframes slideInAlert {
+            from {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            border-color: #ffd54f;
+            color: #5d4037;
+        }
+
+        .alert-warning::before {
+            background: var(--warning-color);
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-color: #ef9a9a;
+            color: #b71c1c;
+        }
+
+        .alert-danger::before {
+            background: var(--error-color);
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #64b5f6;
+            color: #0d47a1;
+        }
+
+        .alert-info::before {
+            background: var(--accent-color);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-color: #81c784;
+            color: #1b5e20;
+        }
+
+        .alert-success::before {
+            background: var(--success-color);
+        }
+
+        .alert-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+        .alert-warning .alert-icon {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .alert-content {
+            font-size: 13px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* Radar animation mejorado */
+        .radar-container {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            margin: 32px auto;
+            animation: radarFadeIn 0.8s ease-out;
+        }
+
+        @keyframes radarFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .radar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at center,
+                rgba(26, 31, 113, 0.02) 0%,
+                rgba(26, 31, 113, 0.05) 30%,
+                rgba(26, 31, 113, 0.08) 60%,
+                rgba(26, 31, 113, 0.1) 100%);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 0 40px rgba(26, 31, 113, 0.1),
+                inset 0 0 40px rgba(26, 31, 113, 0.05);
+            border: 2px solid rgba(26, 31, 113, 0.1);
+        }
+
+        .radar-ring {
+            position: absolute;
+            border: 1px solid rgba(26, 31, 113, 0.15);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: radarRing 3s ease-out infinite;
+        }
+
+        @keyframes radarRing {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+        }
+
+        .radar-ring:nth-child(1) {
+            width: 80%;
+            height: 80%;
+            animation-delay: 0s;
+        }
+
+        .radar-ring:nth-child(2) {
+            width: 60%;
+            height: 60%;
+            animation-delay: 0.5s;
+        }
+
+        .radar-ring:nth-child(3) {
+            width: 40%;
+            height: 40%;
+            animation-delay: 1s;
+        }
+        
+        .radar-sweep {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(247, 182, 0, 0.3) 40%,
+                rgba(247, 182, 0, 0.6) 70%,
+                rgba(247, 182, 0, 0.8) 100%);
+            transform-origin: left center;
+            animation: radarSweep 3s linear infinite;
+            box-shadow: 0 0 20px rgba(247, 182, 0, 0.5);
+        }
+        
+        @keyframes radarSweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .radar-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 
+                0 0 20px rgba(26, 31, 113, 0.4),
+                0 0 40px rgba(26, 31, 113, 0.2);
+            animation: radarCenterPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes radarCenterPulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow: 
+                    0 0 20px rgba(26, 31, 113, 0.4),
+                    0 0 40px rgba(26, 31, 113, 0.2);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                box-shadow: 
+                    0 0 30px rgba(26, 31, 113, 0.6),
+                    0 0 60px rgba(26, 31, 113, 0.3);
+            }
+        }
+        
+        .radar-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .radar-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(247, 182, 0, 0.6);
+            animation: radarDotBlink 2s ease-in-out infinite;
+        }
+
+        @keyframes radarDotBlink {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* Operadores cards mejorados */
+        .operators-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 4px;
+            padding-bottom: 20px;
+        }
+
+        .operators-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .operators-grid::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 10px;
+        }
+
+        .operator-card {
+            background: linear-gradient(135deg, var(--white) 0%, var(--gray-50) 100%);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid var(--gray-200);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            animation: operatorSlideIn 0.4s ease-out;
+        }
+
+        @keyframes operatorSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .operator-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(26, 31, 113, 0.05) 50%, transparent 100%);
+            transition: left 0.5s ease;
+        }
+
+        .operator-card:hover::before {
+            left: 100%;
+        }
+
+        .operator-card:hover {
+            transform: translateX(4px);
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 20px rgba(26, 31, 113, 0.1);
+        }
+        
+        .operator-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(26, 31, 113, 0.2);
+        }
+
+        .operator-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .operator-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-color);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .operator-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .operator-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .operator-stat i {
+            font-size: 10px;
+        }
+        
+        .operator-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .operator-badge.searching {
+            background: linear-gradient(135deg, rgba(26, 31, 113, 0.1) 0%, rgba(26, 31, 113, 0.15) 100%);
+            color: var(--primary-color);
+        }
+        
+        .operator-badge.available {
+            background: linear-gradient(135deg, rgba(23, 168, 75, 0.1) 0%, rgba(23, 168, 75, 0.15) 100%);
+            color: var(--success-color);
+        }
+        
+        .operator-badge.unavailable {
+            background: linear-gradient(135deg, rgba(209, 65, 36, 0.1) 0%, rgba(209, 65, 36, 0.15) 100%);
+            color: var(--error-color);
+        }
+
+        .operator-badge.selected {
+            background: linear-gradient(135deg, var(--success-color) 0%, var(--success-color-light) 100%);
+            color: white;
+            animation: badgePulse 1s ease-in-out;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .operator-card.selected {
+            background: linear-gradient(135deg, rgba(23, 168, 75, 0.05) 0%, rgba(23, 168, 75, 0.1) 100%);
+            border-color: var(--success-color);
+            animation: selectOperator 0.6s ease-out;
+        }
+
+        @keyframes selectOperator {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .operator-card.rejected {
+            opacity: 0.5;
+            transform: translateX(100%);
+            animation: rejectOperator 0.5s ease-out forwards;
+        }
+
+        @keyframes rejectOperator {
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+                height: 0;
+                padding: 0;
+                margin: 0;
+            }
+        }
+
+        /* Payment info mejorado */
+        .payment-card {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .payment-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 16px;
+        }
+
+        .payment-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--white);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-user-info {
+            flex: 1;
+        }
+
+        .payment-user-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-color);
+            margin-bottom: 2px;
+        }
+
+        .payment-user-email {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .payment-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .payment-row:last-child {
+            border-bottom: none;
+        }
+
+        .payment-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .payment-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 60%;
+            text-align: right;
+            justify-content: flex-end;
+        }
+
+        .payment-value.highlight {
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        .payment-value.success {
+            color: var(--success-color);
+        }
+
+        .copy-btn {
+            background: var(--gray-100);
+            border: none;
+            padding: 6px 8px;
+            border-radius: 8px;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .bank-logo {
+            height: 24px;
+            width: auto;
+        }
+
+        /* Timer mejorado */
+        .timer-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(26, 31, 113, 0.3);
+        }
+
+        .timer-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 2px, transparent 2px);
+            background-size: 24px 24px;
+            animation: timerRotate 60s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes timerRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .timer-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .timer-display {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            font-family: 'Inter', monospace;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .timer-label {
+            font-size: 13px;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .timer-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.4);
+            transition: width 1s linear;
+            border-radius: 0 0 16px 16px;
+        }
+
+        /* Upload zone mejorado */
+        .upload-zone {
+            border: 2px dashed var(--gray-300);
+            border-radius: 16px;
+            padding: 32px 20px;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(26, 31, 113, 0.02) 0%, rgba(26, 31, 113, 0.05) 100%);
+            transform: scale(1.01);
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--accent-color);
+            background: linear-gradient(135deg, rgba(0, 85, 200, 0.05) 0%, rgba(0, 85, 200, 0.1) 100%);
+            transform: scale(1.02);
+        }
+
+        .upload-zone.has-file {
+            border-color: var(--success-color);
+            background: linear-gradient(135deg, rgba(23, 168, 75, 0.02) 0%, rgba(23, 168, 75, 0.05) 100%);
+        }
+
+        .upload-icon-container {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(26, 31, 113, 0.2);
+            animation: uploadFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes uploadFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+        }
+
+        .upload-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 6px;
+        }
+
+        .upload-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .file-preview {
+            display: none;
+            background: linear-gradient(135deg, var(--white) 0%, var(--gray-50) 100%);
+            border: 2px solid var(--success-color);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 16px;
+            align-items: center;
+            gap: 12px;
+            animation: filePreviewIn 0.4s ease-out;
+        }
+
+        @keyframes filePreviewIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .file-preview.show {
+            display: flex;
+        }
+
+        .file-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--success-color) 0%, var(--success-color-light) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .file-remove {
+            width: 32px;
+            height: 32px;
+            background: var(--gray-100);
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-remove:hover {
+            background: var(--error-color);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        /* Validation animation mejorada */
+        .validation-container {
+            text-align: center;
+            padding: 32px 0;
+        }
+
+        .validation-animation {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .validation-circle {
+            width: 100%;
+            height: 100%;
+            border: 4px solid var(--gray-200);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .validation-circle::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary-color);
+            animation: validationSpin 1.5s linear infinite;
+        }
+
+        @keyframes validationSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .validation-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            color: var(--primary-color);
+            animation: validationIconPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes validationIconPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .validation-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .validation-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 280px;
+            margin: 0 auto 24px;
+        }
+
+        .validation-progress {
+            background: var(--gray-200);
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+
+        .validation-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            animation: validationProgressFill 5s ease-out forwards;
+        }
+
+        @keyframes validationProgressFill {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        /* Success state mejorado */
+        .success-container {
+            text-align: center;
+            padding: 32px 0;
+        }
+
+        .success-animation {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .success-circle {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--success-color) 0%, var(--success-color-light) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: successBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 40px rgba(23, 168, 75, 0.3);
+        }
+
+        @keyframes successBounce {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-circle i {
+            font-size: 56px;
+            color: white;
+            animation: successCheck 0.8s ease 0.3s both;
+        }
+
+        @keyframes successCheck {
+            from {
+                transform: scale(0) rotate(-360deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(0);
+                opacity: 1;
+            }
+        }
+
+        .success-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .success-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: successParticle 1s ease-out forwards;
+        }
+
+        @keyframes successParticle {
+            from {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            to {
+                transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .success-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .success-amount {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--success-color);
+            margin-bottom: 12px;
+            animation: successAmountPulse 1s ease-in-out;
+        }
+
+        @keyframes successAmountPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .success-message {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* Bottom navigation mejorada */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--bottom-nav-height);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: var(--safe-area-bottom);
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid rgba(224, 228, 232, 0.3);
+            z-index: 1100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            flex: 1;
+            text-decoration: none;
+            position: relative;
+            color: var(--gray-600);
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 0 0 3px 3px;
+            transition: width 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: var(--gray-50);
+            color: var(--primary-color);
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active::before {
+            width: 24px;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: translateY(-2px);
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        /* Notification toast mejorado */
+        .notification {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: white;
+            border-radius: 14px;
+            padding: 14px 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: calc(100% - 40px);
+            min-width: 280px;
+            pointer-events: none;
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .notification::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 14px 0 0 14px;
+        }
+
+        .notification.success::before {
+            background: var(--success-color);
+        }
+
+        .notification.error::before {
+            background: var(--error-color);
+        }
+
+        .notification.warning::before {
+            background: var(--warning-color);
+        }
+
+        .notification.info::before {
+            background: var(--accent-color);
+        }
+
+        .notification-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .notification.success .notification-icon {
+            color: var(--success-color);
+        }
+
+        .notification.error .notification-icon {
+            color: var(--error-color);
+        }
+
+        .notification.warning .notification-icon {
+            color: var(--warning-color);
+        }
+
+        .notification.info .notification-icon {
+            color: var(--accent-color);
+        }
+
+        .notification-message {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.4;
+            color: var(--text-color);
+        }
+
+        /* Modal overlay mejorado */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2100;
+            padding: 20px;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-dialog {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(30px) scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--warning-color) 0%, var(--warning-color-light) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .modal-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        /* Loading spinner mejorado */
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 24px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Particles background */
+        .particles-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            opacity: 0.4;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: particleFloat 20s linear infinite;
+        }
+
+        @keyframes particleFloat {
+            from {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.2;
+            }
+            90% {
+                opacity: 0.2;
+            }
+            to {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Transaction item */
+        .transaction-item {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+        }
+
+        .transaction-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-id {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .transaction-amount {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .transaction-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .transaction-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .transaction-status.completed {
+            background: rgba(23, 168, 75, 0.1);
+            color: var(--success-color);
+        }
+
+        .transaction-status.pending {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning-color);
+        }
+
+        .transaction-status.failed {
+            background: rgba(209, 65, 36, 0.1);
+            color: var(--error-color);
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .main-content {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .step {
+                padding: 32px;
+            }
+
+            .card {
+                padding: 32px;
+            }
+
+            .modal-dialog {
+                max-width: 480px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Safe area padding for notched devices */
+        @supports (padding: max(0px)) {
+            .app-header {
+                padding-top: max(16px, env(safe-area-inset-top));
+            }
+
+            .bottom-nav {
+                padding-bottom: max(8px, env(safe-area-inset-bottom));
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #1a1a1a;
+                --card-color: #2a2a2a;
+                --text-color: #e0e0e0;
+                --text-secondary: #a0a0a0;
+                --light-color: #333333;
+                --border-color: #404040;
+            }
+        }
+
+        /* Additional animations */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .scale-in {
+            animation: scaleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Utility classes */
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .mt-1 { margin-top: 8px; }
+        .mt-2 { margin-top: 16px; }
+        .mt-3 { margin-top: 24px; }
+        .mb-1 { margin-bottom: 8px; }
+        .mb-2 { margin-bottom: 16px; }
+        .mb-3 { margin-bottom: 24px; }
+        .p-1 { padding: 8px; }
+        .p-2 { padding: 16px; }
+        .p-3 { padding: 24px; }
+        .gap-1 { gap: 8px; }
+        .gap-2 { gap: 16px; }
+        .gap-3 { gap: 24px; }
+        .hidden { display: none !important; }
+        .visible { display: block !important; }
+        .flex { display: flex !important; }
+        .flex-col { flex-direction: column; }
+        .flex-row { flex-direction: row; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .fixed { position: fixed; }
+        .z-10 { z-index: 10; }
+        .z-20 { z-index: 20; }
+        .z-30 { z-index: 30; }
+        .overflow-hidden { overflow: hidden; }
+        .overflow-auto { overflow: auto; }
+        .rounded { border-radius: 8px; }
+        .rounded-lg { border-radius: 16px; }
+        .rounded-full { border-radius: 50%; }
+        .shadow { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        .shadow-lg { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); }
+        .opacity-50 { opacity: 0.5; }
+        .opacity-75 { opacity: 0.75; }
+        .transition { transition: all 0.3s ease; }
+    </style>
+</head>
+<body>
+    <!-- Particles Background -->
+    <div class="particles-bg" id="particlesBg"></div>
+
+    <!-- App Wrapper -->
+    <div class="app-wrapper">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-brand">
+                <img src="visap2p.png" alt="Visa P2P">
+            </div>
+            <div class="header-actions">
+                <div class="users-online-badge">
+                    <div class="pulse-dot"></div>
+                    <span id="usersOnlineCount">0 conectados</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Progress Bar -->
+            <div class="progress-wrapper">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-steps">
+                    <div class="progress-step active" data-step="1">
+                        <div class="progress-step-dot"></div>
+                        <div class="progress-step-label">Inicio</div>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="progress-step-dot"></div>
+                        <div class="progress-step-label">Búsqueda</div>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="progress-step-dot"></div>
+                        <div class="progress-step-label">Operador</div>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="progress-step-dot"></div>
+                        <div class="progress-step-label">Pago</div>
+                    </div>
+                    <div class="progress-step" data-step="5">
+                        <div class="progress-step-dot"></div>
+                        <div class="progress-step-label">Comprobante</div>
+                    </div>
+                    <div class="progress-step" data-step="6">
+                        <div class="progress-step-dot"></div>
+                        <div class="progress-step-label">Validación</div>
+                    </div>
+                    <div class="progress-step" data-step="7">
+                        <div class="progress-step-dot"></div>
+                        <div class="progress-step-label">Completado</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wizard Container -->
+            <div class="wizard-container">
+                <div class="wizard-content" id="wizardContent">
+                    <!-- Step 1: Registration -->
+                    <div class="step" id="step1">
+                        <div class="step-header">
+                            <div class="step-icon">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <h1 class="step-title">Sistema de Recarga</h1>
+                            <p class="step-description">Ingresa tus datos para iniciar el proceso de recarga rápida y segura</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="form-group">
+                                <label class="form-label required" for="name">Nombre Completo</label>
+                                <input type="text" class="form-input" id="name" placeholder="Ej: Juan Pérez" autocomplete="name">
+                                <div class="form-error" id="nameError">Por favor, ingresa tu nombre completo</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required" for="idNumber">Cédula de Identidad</label>
+                                <input type="text" class="form-input" id="idNumber" placeholder="Ej: V-12345678" autocomplete="off">
+                                <div class="form-error" id="idError">Por favor, ingresa una cédula válida</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required" for="email">Correo Electrónico</label>
+                                <input type="email" class="form-input" id="email" placeholder="Ej: correo@ejemplo.com" autocomplete="email">
+                                <div class="form-error" id="emailError">Por favor, ingresa un correo válido</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required" for="phone">Número de Teléfono</label>
+                                <input type="tel" class="form-input" id="phone" placeholder="Ej: 0412-1234567" autocomplete="tel">
+                                <div class="form-error" id="phoneError">Por favor, ingresa un teléfono válido</div>
+                            </div>
+
+                            <button class="btn btn-accent" id="startBtn">
+                                <i class="fas fa-arrow-right"></i>
+                                Iniciar Proceso de Recarga
+                            </button>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-history"></i>
+                                Historial Reciente
+                            </div>
+                            <div id="transactionHistory"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Search -->
+                    <div class="step" id="step2">
+                        <div class="step-header">
+                            <div class="step-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h1 class="step-title">Búsqueda de Operadores</h1>
+                            <p class="step-description">Iniciando búsqueda inteligente de operadores disponibles en tu zona</p>
+                        </div>
+
+                        <div class="card text-center">
+                            <button class="btn" id="searchBtn">
+                                <i class="fas fa-radar"></i>
+                                Buscar Operadores Disponibles
+                            </button>
+
+                            <div id="searchAnimation" class="hidden">
+                                <div class="radar-container">
+                                    <div class="radar">
+                                        <div class="radar-ring"></div>
+                                        <div class="radar-ring"></div>
+                                        <div class="radar-ring"></div>
+                                        <div class="radar-sweep"></div>
+                                        <div class="radar-center"></div>
+                                        <div class="radar-dots"></div>
+                                    </div>
+                                </div>
+                                <h3>Analizando red de operadores...</h3>
+                                <p>Buscando los mejores operadores disponibles para tu transacción</p>
+                                <div class="spinner"></div>
+                            </div>
+
+                            <div id="searchResult" class="hidden">
+                                <p id="searchResultText"></p>
+                                <button class="btn btn-secondary" id="retryBtn">
+                                    <i class="fas fa-redo"></i>
+                                    Intentar de nuevo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Operator Selection -->
+                    <div class="step" id="step3">
+                        <div class="step-header">
+                            <div class="step-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h1 class="step-title">Selección de Operador</h1>
+                            <p class="step-description">Evaluando operadores para encontrar el mejor para tu transacción</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-user-check"></i>
+                                Operadores Encontrados
+                            </div>
+                            <div class="operators-grid" id="operatorsGrid"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Payment -->
+                    <div class="step" id="step4">
+                        <div class="step-header">
+                            <div class="step-icon">
+                                <i class="fas fa-money-check-alt"></i>
+                            </div>
+                            <h1 class="step-title">Realiza tu Pago</h1>
+                            <p class="step-description">Completa el pago móvil con los datos proporcionados</p>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <span class="alert-icon">⚠️</span>
+                            <span class="alert-content">
+                                <strong>IMPORTANTE:</strong> Solo aceptamos pagos desde cuentas a tu nombre. Pagos de terceros serán rechazados sin reembolso.
+                            </span>
+                        </div>
+
+                        <div class="timer-card">
+                            <div class="timer-content">
+                                <div class="timer-display" id="timerDisplay">15:00</div>
+                                <div class="timer-label">Tiempo restante para completar el pago</div>
+                            </div>
+                            <div class="timer-progress-bar" id="timerProgress"></div>
+                        </div>
+
+                        <div class="payment-card">
+                            <div class="payment-header">
+                                <img src="foto6.jpg" alt="Ana Garcia" class="payment-avatar">
+                                <div class="payment-user-info">
+                                    <div class="payment-user-name">Ana Garcia Abasali</div>
+                                    <div class="payment-user-email">ana.garciaabasali@gmail.com</div>
+                                </div>
+                            </div>
+
+                            <div class="payment-details">
+                                <div class="payment-row">
+                                    <div class="payment-label">Banco</div>
+                                    <div class="payment-value">
+                                        <img src="https://files.socialgest.net/mybio/5f529398b36f8_1599247256.png" class="bank-logo" alt="Banco">
+                                        Banco Mercantil
+                                        <button class="copy-btn" onclick="copyText('Banco Mercantil')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="payment-row">
+                                    <div class="payment-label">Teléfono</div>
+                                    <div class="payment-value">
+                                        0414-4272486
+                                        <button class="copy-btn" onclick="copyText('04144272486')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="payment-row">
+                                    <div class="payment-label">Titular</div>
+                                    <div class="payment-value">
+                                        Ana Garcia Abasali
+                                        <button class="copy-btn" onclick="copyText('Ana Garcia Abasali')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="payment-row">
+                                    <div class="payment-label">Cédula</div>
+                                    <div class="payment-value">
+                                        V-20.639.785
+                                        <button class="copy-btn" onclick="copyText('20639785')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="payment-row">
+                                    <div class="payment-label">Monto a enviar</div>
+                                    <div class="payment-value highlight" id="amountBs">Bs. 0,00</div>
+                                </div>
+
+                                <div class="payment-row">
+                                    <div class="payment-label">Recibirás</div>
+                                    <div class="payment-value success" id="amountUsd">0,00 USD</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-success" id="confirmPaymentBtn">
+                            <i class="fas fa-check"></i>
+                            Ya realicé el pago móvil
+                        </button>
+
+                        <button class="btn btn-secondary" id="cancelPaymentBtn">
+                            <i class="fas fa-times"></i>
+                            Cancelar operación
+                        </button>
+                    </div>
+
+                    <!-- Step 5: Upload Receipt -->
+                    <div class="step" id="step5">
+                        <div class="step-header">
+                            <div class="step-icon">
+                                <i class="fas fa-file-upload"></i>
+                            </div>
+                            <h1 class="step-title">Subir Comprobante</h1>
+                            <p class="step-description">Adjunta el comprobante de tu pago móvil para verificación</p>
+                        </div>
+
+                        <div class="alert alert-danger">
+                            <span class="alert-icon">⚠️</span>
+                            <span class="alert-content">
+                                <strong>MUY IMPORTANTE:</strong> Sin el comprobante NO se liberarán los fondos. Asegúrate de que sea legible.
+                            </span>
+                        </div>
+
+                        <div class="card">
+                            <div class="upload-zone" id="uploadZone">
+                                <div class="upload-icon-container">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-title">Selecciona o arrastra tu archivo</div>
+                                <div class="upload-subtitle">JPG, PNG o PDF • Máximo 5MB</div>
+                            </div>
+                            <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf">
+
+                            <div class="file-preview" id="filePreview">
+                                <div class="file-icon">
+                                    <i class="fas fa-file-image"></i>
+                                </div>
+                                <div class="file-info">
+                                    <div class="file-name" id="fileName"></div>
+                                    <div class="file-size" id="fileSize"></div>
+                                </div>
+                                <button class="file-remove" id="fileRemove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+
+                            <button class="btn btn-success" id="uploadBtn" disabled>
+                                <i class="fas fa-paper-plane"></i>
+                                Enviar comprobante para validación
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Validation -->
+                    <div class="step" id="step6">
+                        <div class="step-header">
+                            <div class="step-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h1 class="step-title">Validación en Proceso</h1>
+                            <p class="step-description">Tu comprobante está siendo verificado por el operador</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="validation-container">
+                                <div class="validation-animation">
+                                    <div class="validation-circle"></div>
+                                    <div class="validation-icon">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                </div>
+
+                                <div class="validation-title">Verificando información...</div>
+                                <div class="validation-message">
+                                    El operador está confirmando los detalles de tu pago.
+                                    Este proceso generalmente toma menos de 2 minutos.
+                                </div>
+
+                                <div class="validation-progress">
+                                    <div class="validation-progress-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 7: Success -->
+                    <div class="step" id="step7">
+                        <div class="step-header">
+                            <div class="step-icon" style="background: linear-gradient(135deg, var(--success-color) 0%, var(--success-color-light) 100%);">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <h1 class="step-title">¡Recarga Exitosa!</h1>
+                            <p class="step-description">Los fondos han sido acreditados en tu billetera</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="success-container">
+                                <div class="success-animation">
+                                    <div class="success-circle">
+                                        <i class="fas fa-check"></i>
+                                        <div class="success-particles" id="successParticles"></div>
+                                    </div>
+                                </div>
+
+                                <div class="success-title">¡Transacción Completada!</div>
+                                <div class="success-amount" id="successAmount">+0.00 USD</div>
+                                <div class="success-message">
+                                    Los fondos están disponibles en tu billetera.
+                                    Puedes utilizarlos de inmediato.
+                                </div>
+
+                                <button class="btn btn-success" onclick="window.location.reload()">
+                                    <i class="fas fa-redo"></i>
+                                    Nueva Transacción
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="homevisa.html" class="nav-item active">
+                <div class="nav-icon"><i class="fas fa-home"></i></div>
+                <div class="nav-label">Inicio</div>
+            </a>
+            <a href="https://wa.me/+17373018059" target="_blank" class="nav-item">
+                <div class="nav-icon"><i class="fab fa-whatsapp"></i></div>
+                <div class="nav-label">Soporte</div>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification" id="notification">
+        <div class="notification-icon"></div>
+        <div class="notification-message"></div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-dialog">
+            <div class="modal-icon">
+                <i class="fas fa-exclamation"></i>
+            </div>
+            <div class="modal-title">Confirmación Importante</div>
+            <div class="modal-message">
+                Declaro que este comprobante es real, no es falso y que realicé el pago desde mi cuenta personal.
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="modalCancel">Cancelar</button>
+                <button class="btn btn-success" id="modalConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentStep = 1;
+        let timerInterval;
+        let timeLeft = 900;
+        let selectedFile = null;
+        let validationTimeout;
+        let searchAttempt = 0;
+
+        // Operators data
+        const operators = [
+            { id: 1, name: "Carlos Rodríguez", rating: 4.8, transactions: 1247, responseTime: 5 },
+            { id: 2, name: "María González", rating: 4.9, transactions: 2156, responseTime: 3 },
+            { id: 3, name: "Luis Fernández", rating: 4.7, transactions: 987, responseTime: 7 },
+            { id: 4, name: "José López", rating: 4.6, transactions: 765, responseTime: 8 },
+            { id: 5, name: "Pedro Sánchez", rating: 4.5, transactions: 543, responseTime: 6 },
+            { id: 6, name: "Lucía Ramírez", rating: 4.8, transactions: 890, responseTime: 4 },
+            { id: 7, name: "Jorge Morales", rating: 4.7, transactions: 654, responseTime: 5 },
+            { id: 8, name: "Valentina Castro", rating: 4.9, transactions: 1123, responseTime: 3 },
+            { id: 9, name: "Miguel Herrera", rating: 4.6, transactions: 432, responseTime: 7 },
+            { id: 10, name: "Isabella Rojas", rating: 4.8, transactions: 789, responseTime: 4 },
+            { id: 11, name: "Sebastián Mendoza", rating: 4.5, transactions: 321, responseTime: 8 },
+            { id: 12, name: "Gabriela Ortiz", rating: 4.7, transactions: 567, responseTime: 5 },
+            { id: 13, name: "Diego Ruiz", rating: 4.6, transactions: 234, responseTime: 6 },
+            { id: 14, name: "Laura Vega", rating: 4.8, transactions: 901, responseTime: 4 },
+            { id: 15, name: "Fernando Soto", rating: 4.5, transactions: 123, responseTime: 9 },
+            { id: 16, name: "Paula Navarro", rating: 4.9, transactions: 1456, responseTime: 2 },
+            { id: 17, name: "Ricardo Pineda", rating: 4.7, transactions: 678, responseTime: 5 },
+            { id: 18, name: "Ángela Cabrera", rating: 4.6, transactions: 345, responseTime: 7 },
+            { id: 19, name: "Esteban Silva", rating: 4.8, transactions: 890, responseTime: 3 },
+            { id: 20, name: "Ana García", rating: 4.9, transactions: 1876, responseTime: 2 }
+        ];
+
+        const SELECTED_OPERATOR_ID = 20;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            createParticles();
+            updateOnlineUsers();
+            loadUserData();
+            checkBlockStatus();
+        });
+
+        function initializeApp() {
+            // Initialize components
+            setInterval(updateOnlineUsers, 45000);
+            
+            // Prevent zoom on mobile
+            document.addEventListener('gesturestart', e => e.preventDefault());
+            document.addEventListener('touchmove', e => {
+                if (e.touches.length > 1) e.preventDefault();
+            }, { passive: false });
+
+            // Load transaction history
+            loadTransactionHistory();
+        }
+
+        function setupEventListeners() {
+            // Step 1 - Registration
+            document.getElementById('startBtn').addEventListener('click', handleStartProcess);
+            document.getElementById('name').addEventListener('input', validateField);
+            document.getElementById('idNumber').addEventListener('input', validateField);
+            document.getElementById('email').addEventListener('input', validateField);
+            document.getElementById('phone').addEventListener('input', validateField);
+
+            // Step 2 - Search
+            document.getElementById('searchBtn').addEventListener('click', handleSearch);
+            document.getElementById('retryBtn').addEventListener('click', handleSearch);
+
+            // Step 4 - Payment
+            document.getElementById('confirmPaymentBtn').addEventListener('click', handlePaymentConfirm);
+            document.getElementById('cancelPaymentBtn').addEventListener('click', handlePaymentCancel);
+
+            // Step 5 - Upload
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            
+            uploadZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            setupDragAndDrop();
+            
+            document.getElementById('fileRemove').addEventListener('click', removeFile);
+            document.getElementById('uploadBtn').addEventListener('click', handleUpload);
+
+            // Modal
+            document.getElementById('modalCancel').addEventListener('click', closeModal);
+            document.getElementById('modalConfirm').addEventListener('click', confirmUpload);
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particlesBg');
+            const particleCount = window.innerWidth < 768 ? 15 : 25;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (20 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function updateOnlineUsers() {
+            const min = 98;
+            const max = 142;
+            const count = Math.floor(Math.random() * (max - min + 1)) + min;
+            document.getElementById('usersOnlineCount').textContent = `${count} conectados`;
+        }
+
+        function loadUserData() {
+            const userData = JSON.parse(localStorage.getItem('remeexUserData') || '{}');
+            
+            if (userData.fullName) document.getElementById('name').value = userData.fullName;
+            if (userData.documentNumber) document.getElementById('idNumber').value = userData.documentNumber;
+            if (userData.email) document.getElementById('email').value = userData.email;
+            if (userData.phoneNumber) document.getElementById('phone').value = userData.phoneNumber;
+
+            // Load payment amounts
+            const amountUsd = parseFloat(localStorage.getItem('remeexPendingAmountUsd') || '0');
+            const rateData = JSON.parse(localStorage.getItem('remeexExchangeRate') || '{}');
+            const rate = rateData.USD_TO_BS || 50;
+            const amountBs = amountUsd * rate;
+
+            document.getElementById('amountBs').textContent = `Bs. ${amountBs.toFixed(2).replace('.', ',')}`;
+            document.getElementById('amountUsd').textContent = `${amountUsd.toFixed(2)} USD`;
+            document.getElementById('successAmount').textContent = `+${amountUsd.toFixed(2)} USD`;
+        }
+
+        function loadTransactionHistory() {
+            const container = document.getElementById('transactionHistory');
+            const txData = JSON.parse(localStorage.getItem('remeexTransactions') || '{}');
+            const transactions = (txData.transactions || []).slice(-3).reverse();
+
+            if (transactions.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: var(--text-secondary); padding: 20px;">No hay transacciones recientes</p>';
+            } else {
+                transactions.forEach(tx => {
+                    const item = document.createElement('div');
+                    item.className = 'transaction-item';
+                    const statusClass = tx.status === 'completed' ? 'completed' : tx.status === 'pending' ? 'pending' : 'failed';
+                    const statusText = tx.status === 'completed' ? 'Completado' : tx.status === 'pending' ? 'Pendiente' : 'Fallido';
+                    
+                    item.innerHTML = `
+                        <div class="transaction-info">
+                            <div class="transaction-id">#${tx.reference || tx.id || 'N/A'}</div>
+                            <div class="transaction-amount">${tx.amount ? tx.amount.toFixed(2) : '0.00'} ${tx.currency || 'USD'}</div>
+                            <div class="transaction-date">${tx.date || ''}</div>
+                        </div>
+                        <div class="transaction-status ${statusClass}">${statusText}</div>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+        }
+
+        function checkBlockStatus() {
+            const blockedUntil = parseInt(localStorage.getItem('manualRechargeBlockedUntil') || '0', 10);
+            if (Date.now() < blockedUntil) {
+                const minutes = Math.ceil((blockedUntil - Date.now()) / 60000);
+                showNotification(`Recarga bloqueada por ${minutes} minutos`, 'error');
+                document.getElementById('startBtn').disabled = true;
+            }
+        }
+
+        function validateField(e) {
+            const field = e.target;
+            const errorElement = document.getElementById(field.id + 'Error');
+            let isValid = false;
+
+            switch(field.id) {
+                case 'name':
+                    isValid = field.value.trim().length >= 3;
+                    break;
+                case 'idNumber':
+                    isValid = /^[VEJ]-?\d{6,8}$/i.test(field.value.trim());
+                    break;
+                case 'email':
+                    isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value);
+                    break;
+                case 'phone':
+                    isValid = /^(0412|0414|0416|0424|0426)-?\d{7}$/.test(field.value);
+                    break;
+            }
+
+            if (isValid) {
+                field.classList.remove('error');
+                field.classList.add('success');
+                errorElement.classList.remove('show');
+            } else if (field.value) {
+                field.classList.add('error');
+                field.classList.remove('success');
+                errorElement.classList.add('show');
+            }
+
+            return isValid;
+        }
+
+        function handleStartProcess() {
+            const fields = ['name', 'idNumber', 'email', 'phone'];
+            let allValid = true;
+
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const event = { target: field };
+                if (!validateField(event)) {
+                    allValid = false;
+                }
+            });
+
+            if (allValid) {
+                // Save user data
+                const userData = {
+                    fullName: document.getElementById('name').value,
+                    documentNumber: document.getElementById('idNumber').value,
+                    email: document.getElementById('email').value,
+                    phoneNumber: document.getElementById('phone').value
+                };
+                localStorage.setItem('remeexUserData', JSON.stringify(userData));
+
+                showNotification('Datos verificados correctamente', 'success');
+                setTimeout(() => goToStep(2), 1500);
+            } else {
+                showNotification('Por favor completa todos los campos correctamente', 'error');
+            }
+        }
+
+        function handleSearch() {
+            searchAttempt++;
+            const searchBtn = document.getElementById('searchBtn');
+            const searchAnimation = document.getElementById('searchAnimation');
+            const searchResult = document.getElementById('searchResult');
+
+            searchBtn.classList.add('hidden');
+            searchResult.classList.add('hidden');
+            searchAnimation.classList.remove('hidden');
+
+            // Create radar dots
+            createRadarDots();
+
+            const duration = searchAttempt === 1 ? 18000 : 10000;
+
+            setTimeout(() => {
+                searchAnimation.classList.add('hidden');
+                if (searchAttempt === 1) {
+                    document.getElementById('searchResultText').textContent = 'No se encontraron operadores disponibles. ¿Deseas buscar nuevamente?';
+                    searchResult.classList.remove('hidden');
+                } else {
+                    showNotification('¡Operadores encontrados!', 'success');
+                    setTimeout(() => {
+                        goToStep(3);
+                        showOperators();
+                    }, 1000);
+                }
+            }, duration);
+        }
+
+        function createRadarDots() {
+            const dotsContainer = document.querySelector('.radar-dots');
+            dotsContainer.innerHTML = '';
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const dot = document.createElement('div');
+                    dot.className = 'radar-dot';
+                    dot.style.left = (20 + Math.random() * 60) + '%';
+                    dot.style.top = (20 + Math.random() * 60) + '%';
+                    dot.style.animationDelay = Math.random() * 2 + 's';
+                    dotsContainer.appendChild(dot);
+                }, i * 800);
+            }
+        }
+
+        function showOperators() {
+            const grid = document.getElementById('operatorsGrid');
+            grid.innerHTML = '';
+
+            // Shuffle operators but ensure selected is last
+            const shuffled = operators.filter(op => op.id !== SELECTED_OPERATOR_ID).sort(() => Math.random() - 0.5);
+            const selectedOp = operators.find(op => op.id === SELECTED_OPERATOR_ID);
+            const orderedOps = [...shuffled.slice(0, 10), selectedOp];
+
+            orderedOps.forEach((operator, index) => {
+                setTimeout(() => {
+                    const card = createOperatorCard(operator);
+                    grid.appendChild(card);
+
+                    setTimeout(() => {
+                        evaluateOperator(card, operator.id === SELECTED_OPERATOR_ID);
+                    }, 1500);
+                }, index * 800);
+            });
+        }
+
+        function createOperatorCard(operator) {
+            const card = document.createElement('div');
+            card.className = 'operator-card';
+            card.id = `operator-${operator.id}`;
+            
+            const initials = operator.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            card.innerHTML = `
+                <div class="operator-avatar">${initials}</div>
+                <div class="operator-info">
+                    <div class="operator-name">${operator.name}</div>
+                    <div class="operator-stats">
+                        <div class="operator-stat">
+                            <i class="fas fa-star" style="color: var(--secondary-color);"></i>
+                            ${operator.rating}
+                        </div>
+                        <div class="operator-stat">
+                            <i class="fas fa-exchange-alt"></i>
+                            ${operator.transactions}
+                        </div>
+                        <div class="operator-stat">
+                            <i class="fas fa-clock"></i>
+                            ${operator.responseTime}min
+                        </div>
+                    </div>
+                </div>
+                <div class="operator-badge searching">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Evaluando
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function evaluateOperator(card, isSelected) {
+            const badge = card.querySelector('.operator-badge');
+            
+            if (isSelected) {
+                badge.className = 'operator-badge selected';
+                badge.innerHTML = '<i class="fas fa-check"></i> Seleccionado';
+                card.classList.add('selected');
+                
+                showNotification('¡Operador ideal encontrado!', 'success');
+                
+                setTimeout(() => {
+                    goToStep(4);
+                    startPaymentTimer();
+                }, 2000);
+            } else {
+                badge.className = 'operator-badge unavailable';
+                badge.innerHTML = '<i class="fas fa-times"></i> No disponible';
+                card.classList.add('rejected');
+            }
+        }
+
+        function startPaymentTimer() {
+            const display = document.getElementById('timerDisplay');
+            const progress = document.getElementById('timerProgress');
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                progress.style.width = ((900 - timeLeft) / 900 * 100) + '%';
+                
+                if (timeLeft <= 60 && timeLeft > 0) {
+                    display.style.color = '#ff6b6b';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            localStorage.setItem('manualRechargeBlockedUntil', Date.now() + 60 * 60 * 1000);
+            showNotification('Tiempo agotado. Intenta nuevamente más tarde.', 'error');
+            setTimeout(() => window.location.reload(), 3000);
+        }
+
+        function handlePaymentConfirm() {
+            clearInterval(timerInterval);
+            showNotification('Pago registrado. Ahora sube el comprobante.', 'success');
+            setTimeout(() => goToStep(5), 1500);
+        }
+
+        function handlePaymentCancel() {
+            if (confirm('¿Estás seguro de cancelar la operación?')) {
+                clearInterval(timerInterval);
+                localStorage.setItem('manualRechargeBlockedUntil', Date.now() + 30 * 60 * 1000);
+                showNotification('Operación cancelada', 'warning');
+                setTimeout(() => window.location.reload(), 2000);
+            }
+        }
+
+        function setupDragAndDrop() {
+            const zone = document.getElementById('uploadZone');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                zone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                zone.addEventListener(eventName, () => zone.classList.add('dragover'), false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                zone.addEventListener(eventName, () => zone.classList.remove('dragover'), false);
+            });
+            
+            zone.addEventListener('drop', handleDrop, false);
+        }
+
+        function handleDrop(e) {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        }
+
+        function handleFile(file) {
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification('El archivo no debe superar 5MB', 'error');
+                return;
+            }
+            
+            if (!file.type.match(/image.*/) && file.type !== 'application/pdf') {
+                showNotification('Solo se aceptan imágenes o PDF', 'error');
+                return;
+            }
+            
+            selectedFile = file;
+            
+            document.getElementById('uploadZone').classList.add('has-file');
+            document.getElementById('filePreview').classList.add('show');
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('uploadBtn').disabled = false;
+            
+            showNotification('Archivo cargado correctamente', 'success');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function removeFile() {
+            selectedFile = null;
+            document.getElementById('uploadZone').classList.remove('has-file');
+            document.getElementById('filePreview').classList.remove('show');
+            document.getElementById('uploadBtn').disabled = true;
+            document.getElementById('fileInput').value = '';
+            showNotification('Archivo eliminado', 'info');
+        }
+
+        function handleUpload() {
+            if (!selectedFile) return;
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+        }
+
+        function confirmUpload() {
+            closeModal();
+            showNotification('Comprobante enviado para validación', 'success');
+            
+            setTimeout(() => {
+                goToStep(6);
+                startValidation();
+            }, 1500);
+        }
+
+        function startValidation() {
+            validationTimeout = setTimeout(() => {
+                showNotification('¡Pago verificado exitosamente!', 'success');
+                goToStep(7);
+                createSuccessAnimation();
+                saveTransaction();
+            }, 8000);
+        }
+
+        function createSuccessAnimation() {
+            const container = document.getElementById('successParticles');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'success-particle';
+                particle.style.setProperty('--x', (Math.random() - 0.5) * 300 + 'px');
+                particle.style.setProperty('--y', (Math.random() - 0.5) * 300 + 'px');
+                particle.style.left = '50%';
+                particle.style.top = '50%';
+                particle.style.animationDelay = Math.random() * 0.5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function saveTransaction() {
+            const txData = JSON.parse(localStorage.getItem('remeexTransactions') || '{}');
+            const transactions = txData.transactions || [];
+            
+            const newTx = {
+                id: Date.now(),
+                reference: 'TRX-' + Date.now(),
+                amount: parseFloat(localStorage.getItem('remeexPendingAmountUsd') || '0'),
+                currency: 'USD',
+                status: 'completed',
+                date: new Date().toLocaleString('es-ES'),
+                type: 'recharge'
+            };
+            
+            transactions.push(newTx);
+            txData.transactions = transactions;
+            localStorage.setItem('remeexTransactions', JSON.stringify(txData));
+            
+            // Update balance
+            const balanceData = JSON.parse(localStorage.getItem('remeexBalance') || '{}');
+            const currentUsd = parseFloat(balanceData.usd || 0);
+            const addedUsd = parseFloat(localStorage.getItem('remeexPendingAmountUsd') || '0');
+            balanceData.usd = currentUsd + addedUsd;
+            localStorage.setItem('remeexBalance', JSON.stringify(balanceData));
+            
+            // Clear pending amount
+            localStorage.removeItem('remeexPendingAmountUsd');
+        }
+
+        function goToStep(step) {
+            currentStep = step;
+            
+            // Update progress bar
+            const progress = ((step - 1) / 6) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Update progress steps
+            document.querySelectorAll('.progress-step').forEach((el, index) => {
+                if (index + 1 < step) {
+                    el.classList.add('completed');
+                    el.classList.remove('active');
+                } else if (index + 1 === step) {
+                    el.classList.add('active');
+                    el.classList.remove('completed');
+                } else {
+                    el.classList.remove('active', 'completed');
+                }
+            });
+            
+            // Slide to step
+            const wizardContent = document.getElementById('wizardContent');
+            wizardContent.style.transform = `translateX(-${(step - 1) * 100}%)`;
+            
+            // Scroll to top
+            document.querySelector('.step:nth-child(' + step + ')').scrollTop = 0;
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Copiado: ' + text, 'success');
+            }).catch(() => {
+                showNotification('Error al copiar', 'error');
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const iconEl = notification.querySelector('.notification-icon');
+            const messageEl = notification.querySelector('.notification-message');
+            
+            // Set icon
+            const icons = {
+                success: '<i class="fas fa-check-circle"></i>',
+                error: '<i class="fas fa-exclamation-circle"></i>',
+                warning: '<i class="fas fa-exclamation-triangle"></i>',
+                info: '<i class="fas fa-info-circle"></i>'
+            };
+            
+            iconEl.innerHTML = icons[type] || icons.info;
+            messageEl.textContent = message;
+            
+            // Set class and show
+            notification.className = 'notification ' + type + ' show';
+            
+            // Auto hide
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // Prevent back navigation
+        window.addEventListener('popstate', function(e) {
+            if (currentStep > 1) {
+                e.preventDefault();
+                history.pushState(null, null, window.location.href);
+            }
+        });
+
+        // Push initial state
+        history.pushState(null, null, window.location.href);
+    </script>
+</body>
+</html>

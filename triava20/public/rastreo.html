@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rastrear Pedido | LatinPhone</title>
+    
+    <!-- Meta tags SEO -->
+    <meta name="description" content="Rastrear tu pedido de LatinPhone y conocer el estado de tu envío en tiempo real.">
+    <meta name="keywords" content="rastreo, seguimiento, pedido, envío, LatinPhone">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar (igual que en latinphonestorehome.html) -->
+    
+    <!-- Contenido principal -->
+    <div class="page-header" style="background-image: url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80');">
+        <div class="container">
+            <h1>Rastrear Pedido</h1>
+            <p>Conoce el estado de tu envío en tiempo real</p>
+        </div>
+    </div>
+    
+    <div class="tracking-container">
+        <div class="tracking-form-container">
+            <h2>Rastrea tu Pedido</h2>
+            <p>Ingresa el número de seguimiento de tu pedido para conocer su estado actual.</p>
+            
+            <form class="tracking-form">
+                <div class="form-group">
+                    <input type="text" id="tracking-number" placeholder="Ingresa tu número de pedido o seguimiento" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Rastrear Pedido</button>
+            </form>
+        </div>
+        
+        <div class="tracking-result">
+            <div class="tracking-header">
+                <h3>Información de Rastreo</h3>
+                <p>Número de seguimiento: <strong class="tracking-number">LP-2025-1234567</strong></p>
+            </div>
+            
+            <div class="order-details">
+                <div class="order-detail-item">
+                    <h4>Fecha de Pedido</h4>
+                    <p>20 de Marzo, 2025</p>
+                </div>
+                <div class="order-detail-item">
+                    <h4>Estado Actual</h4>
+                    <p class="status-badge">En Tránsito</p>
+                </div>
+                <div class="order-detail-item">
+                    <h4>Servicio de Envío</h4>
+                    <p>Premium Express (2 días)</p>
+                </div>
+                <div class="order-detail-item">
+                    <h4>Entrega Estimada</h4>
+                    <p>22 de Marzo, 2025</p>
+                </div>
+            </div>
+            
+            <div class="tracking-timeline">
+                <div class="timeline">
+                    <div class="timeline-step completed">
+                        <div class="timeline-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Pedido Confirmado</h4>
+                            <span>20 de Marzo, 2025 - 10:30 AM</span>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step completed">
+                        <div class="timeline-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>En Preparación</h4>
+                            <span>20 de Marzo, 2025 - 14:45 PM</span>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step completed">
+                        <div class="timeline-icon">
+                            <i class="fas fa-warehouse"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Enviado</h4>
+                            <span>21 de Marzo, 2025 - 09:15 AM</span>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step">
+                        <div class="timeline-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>En Tránsito</h4>
+                            <span>21 de Marzo, 2025 - 11:30 AM</span>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step">
+                        <div class="timeline-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Entregado</h4>
+                            <span>Pendiente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tracking-actions">
+                <a href="soporte-contacto.html" class="btn btn-outline">¿Necesitas ayuda?</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer (igual que en latinphonestorehome.html) -->
+    
+    <!-- WhatsApp Widget (igual que en latinphonestorehome.html) -->
+    
+    <script src="script.js"></script>
+</body>
+</html>

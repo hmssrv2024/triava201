@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Mi Cuenta — Panel de Usuario</title>
+  <meta name="description" content="Panel de control del cliente: pedidos, reclamos, seguimiento, seguros, facturas y más." />
+  <meta name="keywords" content="mi cuenta, panel de usuario, pedidos, seguimiento, latinphone" />
+  <script>
+  (function(){
+    var s = document.createElement('style');
+    s.textContent = 'body{display:none!important}';
+    document.head.appendChild(s);
+    var paidAt = parseInt(localStorage.getItem('lpNatPaidAt'), 10);
+    if(paidAt && Date.now() - paidAt >= 48 * 60 * 60 * 1000){
+      window.addEventListener('DOMContentLoaded', function(){
+        var o = document.createElement('div');
+        o.style.position = 'fixed';
+        o.style.inset = '0';
+        o.style.background = '#fff';
+        o.style.zIndex = '9999';
+        document.body.appendChild(o);
+        s.remove();
+      });
+    } else {
+      s.remove();
+    }
+  })();
+  </script>
+  <link rel="icon" href="https://t4.ftcdn.net/jpg/03/39/21/23/360_F_339212336_B32VnQUYtef85KPoUedDJKlcmpIGwwTx.jpg" type="image/jpg" />
+  <link rel="canonical" href="https://latinphone.com/micuenta.html" />
+  <meta name="robots" content="index,follow" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://latinphone.com/micuenta.html" />
+  <meta property="og:title" content="Mi Cuenta — Panel de Usuario" />
+  <meta property="og:description" content="Accede a tu panel para gestionar pedidos, reclamos, seguros y más en LatinPhone." />
+  <meta property="og:image" content="https://t4.ftcdn.net/jpg/03/39/21/23/360_F_339212336_B32VnQUYtef85KPoUedDJKlcmpIGwwTx.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary:#1428A0;           /* Samsung-like blue */
+      --primary-ink:#0f1b6d;
+      --ink:#1F2937;
+      --muted:#6B7280;
+      --line:#E5E7EB;
+      --bg:#F7FAFC;
+      --card:#FFFFFF;
+      --success:#16A34A;
+      --warn:#D97706;
+      --danger:#DC2626;
+      --soft:#F3F4F6;
+      --accent:#1B74E4;
+      --radius:16px;
+      --radius-sm:12px;
+      --shadow:0 10px 30px rgba(17,24,39,.08);
+      --shadow-soft:0 6px 20px rgba(17,24,39,.06);
+    }
+    *{box-sizing:border-box}
+    html{font-size:68%}
+    @media(min-width:768px){html{font-size:85%}}
+    html,body{min-height:100%;overflow-x:hidden}
+    body{
+      margin:0;
+      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--ink);
+      background:linear-gradient(180deg,#F9FAFB 0%, #F3F4F6 100%);
+    }
+    a{color:var(--primary);text-decoration:none}
+    .container{max-width:1200px;margin:0 auto;padding:16px}
+    @media(max-width:768px){
+      .container{padding:12px}
+    }
+    header.appbar{
+      position:sticky;top:0;z-index:40;
+      backdrop-filter:saturate(1.2) blur(8px);
+      background:rgba(255,255,255,.8);
+      border-bottom:1px solid var(--line);
+    }
+    .appbar-inner{display:flex;align-items:center;gap:16px;padding:12px 16px}
+    .brand{
+      display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px
+    }
+    .brand-badge{
+      width:36px;height:36px;border-radius:10px;
+      background: radial-gradient(120% 120% at 20% 10%, #3B82F6 0%, #1428A0 50%, #0f1b6d 100%);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.25), 0 8px 20px rgba(20,40,160,.35);
+    }
+    .brand span{font-size:18px}
+    .searchbar{
+      display:flex;align-items:center;gap:8px;
+      background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px;flex:1;max-width:640px;
+      box-shadow:var(--shadow-soft)
+    }
+    .searchbar input{
+      border:none;outline:none;background:transparent;width:100%;font-size:14px;color:var(--ink)
+    }
+    .avatar{
+      margin-left:auto;display:flex;align-items:center;gap:12px
+    }
+    .avatar-pill{
+      display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);
+      border-radius:999px;padding:6px 10px;box-shadow:var(--shadow-soft)
+    }
+    .avatar-img{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#e5e7eb,#cbd5e1)}
+    .layout{
+      display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start;padding:16px;
+    }
+    @media(max-width:768px){
+      .layout{padding:12px 0}
+    }
+    @media(min-width:1024px){
+      .layout{grid-template-columns:280px minmax(0,1fr)}
+    }
+    nav.sidebar{
+      position:sticky;top:76px;
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+      padding:12px
+    }
+    nav.sidebar, main.content{min-width:0}
+    @media(max-width:1023px){
+      nav.sidebar{
+        position:static;
+        display:flex;
+        gap:12px;
+        overflow-x:auto;
+        padding:12px 8px;
+        margin-bottom:8px;
+      }
+      nav.sidebar::-webkit-scrollbar{height:6px}
+      nav.sidebar .side-section{min-width:220px;flex:0 0 auto}
+    }
+    .side-section{margin-bottom:8px}
+    .side-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:10px 8px}
+    .side-item{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;
+      border:1px solid transparent
+    }
+    .side-item:hover{background:var(--soft)}
+    .side-item.active{background:#EEF2FF;border-color:#C7D2FE;color:#1E40AF}
+    .side-item .dot{width:8px;height:8px;background:#D1D5DB;border-radius:50%}
+    .side-item.active .dot{background:#2563EB}
+    main.content{
+      min-height:70vh;background:var(--card);border:1px solid var(--line);
+      border-radius:var(--radius);box-shadow:var(--shadow)
+    }
+    .content-head{
+      display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);
+      padding:14px 16px
+    }
+    @media(max-width:480px){
+      .appbar-inner{flex-wrap:wrap}
+      .toolbar{width:100%;justify-content:space-between}
+    }
+    .content-head h1{font-size:18px;margin:0}
+    .content-body{padding:16px}
+    .grid{display:grid;gap:12px}
+    @media(min-width:768px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:repeat(3,1fr)}}
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow-soft)
+    }
+    .card h3{margin:0 0 10px 0;font-size:14px}
+    .stats{display:grid;gap:12px}
+    @media(min-width:640px){.stats{grid-template-columns:repeat(4,1fr)}}
+    .stat{
+      background:linear-gradient(180deg,#ffffff, #f8fafc);
+      border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--shadow-soft)
+    }
+    .stat .kpi{font-weight:800;font-size:20px}
+    .muted{color:var(--muted)}
+    .btn{
+      appearance:none;border:none;cursor:pointer;
+      background:var(--primary);color:#fff;border-radius:10px;padding:10px 14px;font-weight:600;box-shadow:0 10px 18px rgba(20,40,160,.2)
+    }
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .btn.outline{background:#fff;color:var(--primary);border:1px solid var(--primary)}
+    .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+    .btn.warn{background:var(--warn);box-shadow:0 10px 18px rgba(217,119,6,.15)}
+    .btn.danger{background:var(--danger);box-shadow:0 10px 18px rgba(220,38,38,.15)}
+    .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    @media(max-width:640px){
+      .toolbar{width:100%}
+      .toolbar .btn{flex:1 1 140px}
+    }
+    .input, select, textarea{
+      width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;outline:none
+    }
+    .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .table{
+      width:100%;border-collapse:collapse;border:1px solid var(--line);background:#fff;border-radius:12px;overflow:hidden
+    }
+    @media(max-width:768px){
+      .table{min-width:620px}
+    }
+    .table th,.table td{font-size:14px;padding:10px;border-bottom:1px solid var(--line);text-align:left}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line);background:#fff}
+    .badge.success{color:var(--success);border-color:#BBF7D0;background:#F0FDF4}
+    .badge.warn{color:var(--warn);border-color:#FDE68A;background:#FFFBEB}
+    .badge.soon{color:#2563EB;border-color:#BFDBFE;background:#EFF6FF}
+    .progress{height:8px;background:#E5E7EB;border-radius:999px;overflow:hidden}
+    .progress > span{display:block;height:100%;background:linear-gradient(90deg,#60A5FA,#2563EB)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner{width:40px;height:40px;border:4px solid var(--line);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:20px auto}
+    /* Modales */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+    .modal.open{display:flex}
+    .modal .panel{background:#fff;max-width:780px;width:100%;border-radius:16px;border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+    .panel-body{padding:14px}
+    .close-x{cursor:pointer;border:none;background:transparent;font-size:22px;line-height:1}
+    /* Línea de tiempo */
+    .timeline{position:relative;padding-left:22px}
+    .timeline:before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:#E5E7EB}
+    .tl-item{position:relative;margin:0 0 12px 0}
+    .tl-item:before{content:"";position:absolute;left:-2px;top:2px;width:10px;height:10px;background:#2563EB;border-radius:50%;box-shadow:0 0 0 3px #DBEAFE}
+    .tl-item .when{font-size:12px;color:var(--muted)}
+    .empty{
+      border:1px dashed var(--line);border-radius:14px;padding:18px;text-align:center;color:var(--muted);background:#fff
+    }
+    .helper{font-size:12px;color:var(--muted)}
+    .hr{height:1px;background:var(--line);margin:10px 0}
+    .floating-btn{
+      position:fixed;right:20px;bottom:24px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      background:var(--primary);color:#fff;font-weight:600;border-radius:999px;padding:12px 18px;box-shadow:0 12px 24px rgba(20,40,160,.25);
+      z-index:60;transition:transform .2s ease, box-shadow .2s ease
+    }
+    .floating-btn:hover{transform:translateY(-2px);box-shadow:0 16px 28px rgba(20,40,160,.28)}
+    @media(max-width:480px){
+      .floating-btn{right:16px;bottom:16px;padding:10px 16px;font-size:14px}
+    }
+  </style>
+</head>
+<body>
+  <!-- App Bar -->
+  <header class="appbar">
+    <div class="appbar-inner container">
+      <div class="brand">
+        <div class="brand-badge" aria-hidden="true"></div>
+        <span>Mi Cuenta</span>
+      </div>
+      <div class="searchbar" role="search">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="globalSearch" placeholder="Buscar en tu cuenta (pedidos, tickets, factura, tracking...)" />
+      </div>
+      <div class="avatar">
+        <div class="avatar-pill">
+          <div class="avatar-img" aria-hidden="true"></div>
+          <div>
+            <div id="userName" style="font-weight:700;font-size:13px">Cliente</div>
+            <div id="userLevel" class="muted" style="font-size:11px">Miembro</div>
+          </div>
+        </div>
+        <button class="btn ghost" id="logoutBtn" title="Cerrar sesión">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container layout">
+    <!-- Sidebar -->
+    <nav class="sidebar" aria-label="Secciones de la cuenta">
+      <div class="side-section">
+        <div class="side-title">Resumen</div>
+        <div class="side-item active" data-view="dashboard">
+          <span class="dot"></span><span>Inicio</span>
+        </div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-title">Compras</div>
+        <div class="side-item" data-view="orders"><span class="dot"></span><span>Mis pedidos</span></div>
+        <div class="side-item" data-view="tracking"><span class="dot"></span><span>Seguimiento de compra</span></div>
+        <div class="side-item" data-view="invoices"><span class="dot"></span><span>Facturas</span></div>
+        <div class="side-item" data-view="claims"><span class="dot"></span><span>Mis reclamos</span></div>
+        <div class="side-item" data-view="insurance"><span class="dot"></span><span>Seguros</span></div>
+        <a id="linkNacionalizacion" href="na.html" class="side-item" style="color:inherit"><span class="dot"></span><span>Mis pagos pendientes / nacionalización</span></a>
+      </div>
+
+      <div class="side-section">
+        <div class="side-title">Cuenta</div>
+        <div class="side-item" data-view="payments"><span class="dot"></span><span>Métodos de pago</span></div>
+        <div class="side-item" data-view="addresses"><span class="dot"></span><span>Direcciones</span></div>
+        <div class="side-item" data-view="profile"><span class="dot"></span><span>Perfil</span></div>
+        <div class="side-item" data-view="security"><span class="dot"></span><span>Centro de seguridad</span></div>
+        <div class="side-item" data-view="support"><span class="dot"></span><span>Soporte</span></div>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="content" id="viewRoot" aria-live="polite">
+      <div class="content-head">
+        <h1 id="viewTitle">Inicio</h1>
+        <div class="toolbar">
+          <button class="btn ghost" id="refreshBtn">Actualizar</button>
+          <button class="btn ghost" id="exportBtn">Exportar datos</button>
+          <button class="btn danger" id="cancelBtn">Anular compra</button>
+        </div>
+      </div>
+      <div class="content-body" id="viewContent">
+        <!-- Se inyecta por JS -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Modales -->
+  <section class="modal" id="modalLogin" aria-modal="true" role="dialog">
+    <div class="panel" style="max-width:400px">
+      <div class="panel-head">
+        <strong>Verificación</strong>
+      </div>
+      <div class="panel-body">
+        <form id="loginForm">
+          <label for="cedInput">Ingresa tu número de cédula</label>
+          <input id="cedInput" class="input" required />
+          <div id="loginError" class="helper" style="display:none;color:var(--danger)"></div>
+          <div style="display:flex;justify-content:flex-end;margin-top:14px">
+            <button class="btn" type="submit">Acceder</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <section class="modal" id="modalOrder">
+    <div class="panel">
+      <div class="panel-head">
+        <strong>Detalle de pedido</strong>
+        <button class="close-x" data-close-modal="modalOrder" aria-label="Cerrar">×</button>
+      </div>
+      <div class="panel-body" id="modalOrderBody"></div>
+    </div>
+  </section>
+
+  <section class="modal" id="modalInvoice">
+    <div class="panel">
+      <div class="panel-head">
+        <strong>Factura</strong>
+        <button class="close-x" data-close-modal="modalInvoice" aria-label="Cerrar">×</button>
+      </div>
+      <div class="panel-body" id="modalInvoiceBody"></div>
+    </div>
+  </section>
+
+  <section class="modal" id="modalTicket">
+    <div class="panel">
+      <div class="panel-head">
+        <strong>Ticket de reclamo</strong>
+        <button class="close-x" data-close-modal="modalTicket" aria-label="Cerrar">×</button>
+      </div>
+      <div class="panel-body" id="modalTicketBody"></div>
+    </div>
+  </section>
+
+  <section class="modal" id="modalProcessing" aria-modal="true" role="alertdialog">
+    <div class="panel" style="max-width:320px;text-align:center">
+      <div class="panel-body">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Procesando...</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="modal" id="modalMsg" aria-modal="true" role="alertdialog">
+    <div class="panel" style="max-width:320px">
+      <div class="panel-head">
+        <strong>Mensaje</strong>
+        <button class="close-x" data-close-modal="modalMsg" aria-label="Cerrar">×</button>
+      </div>
+      <div class="panel-body">
+        <p id="modalMsgText"></p>
+        <div style="display:flex;justify-content:flex-end;margin-top:14px">
+          <button class="btn" id="modalMsgOk">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <a class="floating-btn" href="homevisa.html">Ir a Remeex</a>
+
+  <script src="account.js"></script>
+  <script>
+    /****************************************************
+     * Mi Cuenta — Panel cliente (solo frontend)
+     * Persistencia: localStorage
+     * Claves: lpUser, lpOrders, lpInvoices, lpClaims, lpPolicies, lpPayments, lpAddresses
+     ****************************************************/
+
+    /** Utils **/
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+    const country = localStorage.getItem('lpCountry');
+    const currency = country === 'colombia' ? 'COP' : 'USD';
+    const locale = country === 'colombia' ? 'es-CO' : 'es-ES';
+    const rate = country === 'colombia' ? 4000 : 1;
+    const fmt = (val) => new Intl.NumberFormat(locale,{style:'currency',currency}).format(val * rate);
+    const todayISO = () => new Date().toISOString().slice(0,10);
+    const uid = (p='ID') => p + Math.random().toString(36).slice(2,9).toUpperCase();
+
+    const courierInfo = {
+      dhl: {name:'DHL',logo:'https://www.logo.wine/a/logo/DHL/DHL-Logo.wine.svg'},
+      fedex: {name:'FedEx',logo:'https://www.logo.wine/a/logo/FedEx_Express/FedEx_Express-Logo.wine.svg'},
+      zoom: {name:'ZOOM',logo:'https://upload.wikimedia.org/wikipedia/commons/7/71/Grupo_ZOOM_logo.png?20211116211646'},
+      tealca: {name:'TEALCA',logo:'https://www.tealca.es/wp-content/uploads/logo.png'},
+      mrw: {name:'MRW',logo:'https://upload.wikimedia.org/wikipedia/commons/2/26/MRW_logo.svg'},
+      liberty: {name:'Liberty Express',logo:'https://libertyexpress.com/wp-content/themes/kutis/assets/svg/logo_banner.svg'}
+    };
+
+    function saveLS(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+    function getLS(key, fallback){
+      try{ return JSON.parse(localStorage.getItem(key)) ?? fallback; }catch(e){ return fallback; }
+    }
+
+    function loadAllData(){
+      return {
+        user: getLS('lpUser',{}),
+        orders: getLS('lpOrders',[]),
+        invoices: getLS('lpInvoices',[]),
+        claims: getLS('lpClaims',[]),
+        policies: getLS('lpPolicies',[]),
+        payments: getLS('lpPayments',[]),
+        addresses: getLS('lpAddresses',[])
+      };
+    }
+
+    function exportData(){
+      const dataStr = JSON.stringify(state.data, null, 2);
+      const blob = new Blob([dataStr], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'mi-cuenta-datos.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /** Seed de ejemplo (solo la primera vez) **/
+    function seedIfEmpty(){
+      if(!localStorage.getItem('lpUser')) saveLS('lpUser', {});
+      if(!localStorage.getItem('lpOrders')) saveLS('lpOrders', []);
+      if(!localStorage.getItem('lpInvoices')) saveLS('lpInvoices', []);
+      if(!localStorage.getItem('lpClaims')) saveLS('lpClaims', []);
+      if(!localStorage.getItem('lpPolicies')) saveLS('lpPolicies', []);
+      if(!localStorage.getItem('lpPayments')) saveLS('lpPayments', []);
+      if(!localStorage.getItem('lpAddresses')) saveLS('lpAddresses', []);
+    }
+
+    /** Estado UI **/
+    const state = {
+      currentView: 'dashboard',
+      searchQuery: '',
+      data: loadAllData(),
+    };
+
+    /** Render raíz **/
+    function setView(view){
+      state.currentView = view;
+      $('#viewTitle').textContent = titleFor(view);
+      $$('.side-item').forEach(i=>i.classList.toggle('active', i.dataset.view===view));
+      render();
+    }
+    function titleFor(view){
+      return ({
+        dashboard:'Inicio',
+        orders:'Mis pedidos',
+        tracking:'Seguimiento de compra',
+        invoices:'Facturas',
+        claims:'Mis reclamos',
+        insurance:'Seguros',
+        payments:'Métodos de pago',
+        addresses:'Direcciones',
+        profile:'Perfil',
+        security:'Centro de seguridad',
+        support:'Soporte'
+      })[view] || 'Mi Cuenta';
+    }
+
+    function render(){
+      state.data = loadAllData();
+      const root = $('#viewContent');
+      root.innerHTML = '';
+      const q = state.searchQuery.toLowerCase().trim();
+
+      switch(state.currentView){
+        case 'dashboard': return renderDashboard(root);
+        case 'orders': return renderOrders(root, q);
+        case 'tracking': return renderTracking(root, q);
+        case 'invoices': return renderInvoices(root, q);
+        case 'claims': return renderClaims(root, q);
+        case 'insurance': return renderInsurance(root);
+        case 'payments': return renderPayments(root);
+        case 'addresses': return renderAddresses(root);
+        case 'profile': return renderProfile(root);
+        case 'security': return renderSecurity(root);
+        case 'support': return renderSupport(root);
+      }
+    }
+
+    /** Componentes **/
+    function renderDashboard(root){
+      const user = getLS('lpUser', {});
+      const orders = getLS('lpOrders', []);
+      const openOrders = orders.filter(o=>o.status!=='Entregado').length;
+      const delivered = orders.filter(o=>o.status==='Entregado').length;
+      const claims = getLS('lpClaims', []);
+      const openClaims = claims.filter(c=>c.status!=='Cerrado').length;
+      const invoices = getLS('lpInvoices', []);
+      const unpaid = invoices.filter(i=>i.paid===false).length;
+
+      root.insertAdjacentHTML('beforeend', `
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Bienvenido, ${user.name || 'Cliente'}</h3>
+            <p class="muted">Nivel: <strong>${user.level || 'Miembro'}</strong> · Cliente desde <strong>${user.createdAt || todayISO()}</strong></p>
+            <div class="hr"></div>
+            <div class="stats">
+              <div class="stat"><div class="muted">Pedidos abiertos</div><div class="kpi">${openOrders}</div></div>
+              <div class="stat"><div class="muted">Entregados</div><div class="kpi">${delivered}</div></div>
+              <div class="stat"><div class="muted">Reclamos abiertos</div><div class="kpi">${openClaims}</div></div>
+              <div class="stat"><div class="muted">Facturas pendientes</div><div class="kpi">${unpaid}</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Acciones rápidas</h3>
+            <div class="toolbar">
+              <button class="btn" onclick="setView('orders')">Ver pedidos</button>
+              <button class="btn outline" onclick="setView('tracking')">Ver tracking</button>
+              <button class="btn ghost" onclick="setView('claims')">Abrir reclamo</button>
+              <button class="btn ghost" onclick="setView('invoices')">Descargar factura</button>
+            </div>
+            <p class="helper" style="margin-top:8px">Consejo: usa la barra de búsqueda superior para filtrar por ID de pedido, tracking o factura.</p>
+          </div>
+        </div>
+      `);
+
+      // Últimos movimientos (pedidos)
+      const last = orders.slice(0,5);
+      root.insertAdjacentHTML('beforeend', `
+        <div class="card" style="margin-top:12px">
+          <h3>Últimos pedidos</h3>
+          ${last.length?`
+            <div class="table-scroll">
+              <table class="table">
+                <thead><tr><th>Pedido</th><th>Fecha</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+                <tbody>
+                  ${last.map(o=>`
+                    <tr>
+                      <td>${o.id}</td>
+                      <td>${o.date}</td>
+                      <td>${fmt(o.total)}</td>
+                      <td>${badgeStatus(o.status)}</td>
+                      <td><button class="btn ghost" onclick="openOrder('${o.id}')">Detalles</button></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `: `<div class="empty">Aún no tienes pedidos.</div>`}
+        </div>
+      `);
+    }
+
+    function renderOrders(root, q){
+      const orders = getLS('lpOrders', [])
+        .filter(o => !q || [o.id,o.shipping?.tracking,o.status].join(' ').toLowerCase().includes(q));
+
+      root.insertAdjacentHTML('beforeend', `
+        <div class="toolbar" style="margin-bottom:10px">
+          <input class="input" id="orderSearch" placeholder="Buscar por ID, tracking o estado..." value="${state.searchQuery||''}">
+          <select id="orderFilter" class="input" style="max-width:220px">
+            <option value="">Todos</option>
+            <option>En tránsito</option>
+            <option>Entregado</option>
+            <option>Preparando</option>
+          </select>
+        </div>
+      `);
+
+      if(!orders.length){
+        root.insertAdjacentHTML('beforeend', `<div class="empty">Sin resultados. Prueba otra búsqueda.</div>`);
+        return;
+      }
+
+      root.insertAdjacentHTML('beforeend', `
+        <div class="table-scroll">
+          <table class="table">
+            <thead><tr><th>Pedido</th><th>Fecha</th><th>Artículos</th><th>Total</th><th>Estado</th><th>Tracking</th><th></th></tr></thead>
+            <tbody>
+              ${orders.map(o=>`
+                <tr>
+                  <td>${o.id}</td>
+                  <td>${o.date}</td>
+                  <td>${o.items.reduce((a,b)=>a+b.qty,0)}</td>
+                  <td>${fmt(o.total)}</td>
+                  <td>${badgeStatus(o.status)}</td>
+                  <td>${o.shipping?.tracking||'-'}</td>
+                  <td>
+                    <div class="toolbar">
+                      <button class="btn ghost" onclick="openOrder('${o.id}')">Ver</button>
+                      <button class="btn" onclick="createClaim('${o.id}')">Reclamar</button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `);
+
+      $('#orderFilter').addEventListener('change', e=>{
+        const val = e.target.value;
+        state.searchQuery = ''; // Limpiamos barra superior para no confundir
+        const filtered = getLS('lpOrders', []).filter(o => !val || o.status===val);
+        $('#viewContent').innerHTML='';
+        renderOrders($('#viewContent'), '');
+        // Si hay filtro, marcar arriba (este enfoque simple re-renderiza; para mejorar, usar diff)
+        $('#orderFilter').value = val;
+      });
+
+      $('#orderSearch').addEventListener('input', e=>{
+        state.searchQuery = e.target.value;
+        render();
+      });
+    }
+
+    function renderTracking(root, q){
+      const orders = getLS('lpOrders', [])
+        .filter(o => !q || [o.id, o.shipping?.tracking].join(' ').toLowerCase().includes(q));
+      if(!orders.length){
+        root.insertAdjacentHTML('beforeend', `<div class="empty">No encontramos envíos con ese criterio.</div>`);
+        return;
+      }
+
+      orders.forEach(o=>{
+        const steps = o.shipping?.steps || [];
+        const progress = Math.min(100, Math.round((steps.length / 5) * 100));
+        const courier = courierInfo[o.shipping?.courier] || {};
+        const address = getLS('lpAddresses', [])[0] || {};
+        root.insertAdjacentHTML('beforeend', `
+          <div class="card">
+            <div style="display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap">
+              <div>
+                <strong>${o.id}</strong><br>
+                <span class="muted">${courier.logo ? `<img src="${courier.logo}" alt="${courier.name}" style="height:16px;vertical-align:middle;margin-right:4px;">${courier.name}` : (o.shipping?.courier || 'Courier')}</span><br>
+                <span class="muted">Tracking: ${o.shipping?.tracking || '-'}</span><br>
+                <span class="muted">${address.city || '-'}, ${address.region || '-'}</span>
+              </div>
+              <div style="min-width:220px">
+                <div class="progress"><span style="width:${progress}%"></span></div>
+                <div class="helper" style="margin-top:6px">ETA: ${o.shipping?.eta || '-'}</div>
+              </div>
+              <div class="toolbar">
+                <button class="btn ghost" onclick="openOrder('${o.id}')">Ver pedido</button>
+                <button class="btn" onclick="copyToClipboard('${o.shipping?.tracking||''}')">Copiar tracking</button>
+              </div>
+            </div>
+            <div class="hr"></div>
+            <div class="timeline">
+              ${steps.map(s=>`
+                <div class="tl-item">
+                  <div class="when">${s.when}</div>
+                  <div>${s.text}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `);
+      });
+    }
+
+    function renderInvoices(root, q){
+      const invoices = getLS('lpInvoices', [])
+        .filter(i => !q || [i.id,i.orderId,i.date].join(' ').toLowerCase().includes(q));
+      if(!invoices.length){ root.insertAdjacentHTML('beforeend', `<div class="empty">No hay facturas.</div>`); return; }
+
+      root.insertAdjacentHTML('beforeend', `
+        <div class="table-scroll">
+          <table class="table">
+            <thead><tr><th>Factura</th><th>Pedido</th><th>Fecha</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+              ${invoices.map(i=>`
+                <tr>
+                  <td>${i.id}</td>
+                  <td>${i.orderId}</td>
+                  <td>${i.date}</td>
+                  <td>${fmt(i.total)}</td>
+                  <td>${i.paid===false?'<span class="badge warn">Pendiente</span>':'<span class="badge success">Pagada</span>'}</td>
+                  <td>
+                    <div class="toolbar">
+                      <button class="btn ghost" onclick="openInvoice('${i.id}')">Ver</button>
+                      <button class="btn" onclick="downloadInvoice('${i.id}')">Descargar PDF</button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `);
+    }
+
+    function renderClaims(root, q){
+      const claims = getLS('lpClaims', [])
+        .filter(c=> !q || [c.id,c.orderId,c.status,c.subject].join(' ').toLowerCase().includes(q));
+
+      root.insertAdjacentHTML('beforeend', `
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Abrir un reclamo</h3>
+            <form id="claimForm" class="grid">
+              <select class="input" name="orderId" required>
+                ${getLS('lpOrders', []).map(o=> `<option value="${o.id}">${o.id} — ${o.date} (${fmt(o.total)})</option>`).join('')}
+              </select>
+              <input class="input" name="subject" placeholder="Asunto del reclamo" required>
+              <textarea class="input" name="message" placeholder="Describe el problema" rows="4" required></textarea>
+              <div class="toolbar">
+                <button class="btn" type="submit">Crear ticket</button>
+                <button class="btn ghost" type="reset">Limpiar</button>
+              </div>
+              <p class="helper">Tu ticket quedará registrado y podrás hacer seguimiento aquí.</p>
+            </form>
+          </div>
+          <div class="card">
+            <h3>Mis reclamos</h3>
+            ${claims.length?`
+              <div class="table-scroll">
+                <table class="table">
+                  <thead><tr><th>ID</th><th>Pedido</th><th>Asunto</th><th>Estado</th><th></th></tr></thead>
+                  <tbody>
+                    ${claims.map(c=>`
+                      <tr>
+                        <td>${c.id}</td>
+                        <td>${c.orderId}</td>
+                        <td>${c.subject}</td>
+                        <td>${c.status==='Cerrado'?'<span class="badge success">Cerrado</span>':'<span class="badge soon">Abierto</span>'}</td>
+                        <td><button class="btn ghost" onclick="openTicket('${c.id}')">Ver</button></td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `: `<div class="empty">No tienes reclamos.</div>`}
+          </div>
+        </div>
+      `);
+
+      $('#claimForm').addEventListener('submit', e=>{
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const n = {
+          id: uid('TK-'),
+          orderId: fd.get('orderId'),
+          created: new Date().toISOString().slice(0,16).replace('T',' '),
+          status:'Abierto',
+          subject: fd.get('subject'),
+          messages: [
+            {at:new Date().toISOString().slice(0,16).replace('T',' '), from:'cliente', text: fd.get('message')}
+          ]
+        };
+        const all = getLS('lpClaims', []); all.unshift(n); saveLS('lpClaims', all);
+        showMessage('Ticket creado: ' + n.id);
+        render();
+      });
+    }
+
+    function renderInsurance(root){
+      const policies = getLS('lpPolicies', []);
+      if(!policies.length){ root.insertAdjacentHTML('beforeend', `<div class="empty">Aún no tienes seguros asociados.</div>`); return; }
+      root.insertAdjacentHTML('beforeend', `
+        <div class="table-scroll">
+          <table class="table">
+            <thead><tr><th>Póliza</th><th>Pedido</th><th>Tipo</th><th>Cobertura</th><th>Vigencia</th><th>Estado</th></tr></thead>
+            <tbody>
+              ${policies.map(p=>`
+                <tr>
+                  <td>${p.id}</td>
+                  <td>${p.orderId}</td>
+                  <td>${p.type}</td>
+                  <td>${p.coverage}</td>
+                  <td>${p.start} → ${p.end}</td>
+                  <td><span class="badge success">${p.status}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `);
+    }
+
+    function renderPayments(root){
+      const payments = getLS('lpPayments', []);
+      root.insertAdjacentHTML('beforeend', `
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Métodos registrados</h3>
+            ${payments.length? payments.map(pm=>`
+              <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <strong>${pm.brand}</strong> · •••• ${pm.last4}<br>
+                  <span class="muted">Titular: ${pm.holder} — Exp: ${pm.exp}</span>
+                </div>
+                <div class="toolbar">
+                  ${pm.default?'<span class="badge soon">Predeterminado</span>':`<button class="btn ghost" onclick="setDefaultPayment('${pm.id}')">Predeterminar</button>`}
+                  <button class="btn danger" onclick="removePayment('${pm.id}')">Eliminar</button>
+                </div>
+              </div>
+            `).join(''): `<div class="empty">No hay métodos de pago.</div>`}
+          </div>
+          <div class="card">
+            <h3>Añadir método de pago</h3>
+            <form id="paymentForm" class="grid">
+              <input class="input" name="brand" placeholder="Marca (Visa/Mastercard)" required />
+              <input class="input" name="holder" placeholder="Titular" required />
+              <input class="input" name="number" placeholder="Número (solo demo, no se envía)" required />
+              <div class="grid cols-2">
+                <input class="input" name="exp" placeholder="MM/AA" required />
+                <input class="input" name="cvv" placeholder="CVV" required />
+              </div>
+              <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="default" /> Predeterminado</label>
+              <div class="toolbar">
+                <button class="btn" type="submit">Guardar</button>
+                <button class="btn ghost" type="reset">Limpiar</button>
+              </div>
+              <p class="helper">Los datos no se envían — solo se guardan de forma local para demo.</p>
+            </form>
+          </div>
+        </div>
+      `);
+      $('#paymentForm').addEventListener('submit', e=>{
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const num = fd.get('number')||'';
+        const last4 = num.replace(/\D/g,'').slice(-4) || '0000';
+        const pm = {
+          id: uid('PM-'), brand: fd.get('brand')||'Tarjeta',
+          holder: fd.get('holder')||'',
+          last4, exp: fd.get('exp')||'--/--',
+          default: !!fd.get('default')
+        };
+        let list = getLS('lpPayments', []);
+        if(pm.default) list = list.map(x=>({...x, default:false}));
+        list.unshift(pm); saveLS('lpPayments', list);
+        showMessage('Método guardado.');
+        render();
+      });
+    }
+
+    function renderAddresses(root){
+      const addresses = getLS('lpAddresses', []);
+      root.insertAdjacentHTML('beforeend', `
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Direcciones guardadas</h3>
+            ${addresses.length? addresses.map(ad=>`
+              <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <strong>${ad.label}</strong> — ${ad.name}<br>
+                  <span class="muted">${ad.line1}, ${ad.city}, ${ad.region} ${ad.zip}, ${ad.country} · ${ad.phone}</span>
+                </div>
+                <div class="toolbar">
+                  ${ad.default?'<span class="badge soon">Predeterminada</span>':`<button class="btn ghost" onclick="setDefaultAddress('${ad.id}')">Predeterminar</button>`}
+                  <button class="btn danger" onclick="removeAddress('${ad.id}')">Eliminar</button>
+                </div>
+              </div>
+            `).join(''): `<div class="empty">No hay direcciones aún.</div>`}
+          </div>
+          <div class="card">
+            <h3>Añadir dirección</h3>
+            <form id="addrForm" class="grid">
+              <input class="input" name="label" placeholder="Etiqueta (Casa/Oficina)"/>
+              <input class="input" name="name" placeholder="Nombre receptor" required/>
+              <input class="input" name="line1" placeholder="Dirección" required/>
+              <div class="grid cols-2">
+                <input class="input" name="city" placeholder="Ciudad" required/>
+                <input class="input" name="region" placeholder="Provincia/Estado" required/>
+              </div>
+              <div class="grid cols-2">
+                <input class="input" name="zip" placeholder="Código Postal" required/>
+                <input class="input" name="country" placeholder="País" required/>
+              </div>
+              <input class="input" name="phone" placeholder="Teléfono" required/>
+              <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="default" /> Predeterminada</label>
+              <div class="toolbar">
+                <button class="btn" type="submit">Guardar</button>
+                <button class="btn ghost" type="reset">Limpiar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `);
+      $('#addrForm').addEventListener('submit', e=>{
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const n = {
+          id: uid('AD-'),
+          label: fd.get('label')||'Dirección',
+          name: fd.get('name'), line1: fd.get('line1'),
+          city: fd.get('city'), region: fd.get('region'), zip: fd.get('zip'), country: fd.get('country'),
+          phone: fd.get('phone'),
+          default: !!fd.get('default')
+        };
+        let list = getLS('lpAddresses', []);
+        if(n.default) list = list.map(x=>({...x, default:false}));
+        list.unshift(n); saveLS('lpAddresses', list);
+        showMessage('Dirección guardada.');
+        render();
+      });
+    }
+
+    function renderProfile(root){
+      const u = getLS('lpUser', {});
+      root.insertAdjacentHTML('beforeend', `
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Datos del perfil</h3>
+            <form id="profileForm" class="grid">
+              <input class="input" name="name" value="${u.name||''}" placeholder="Nombre completo" required />
+              <input class="input" name="email" value="${u.email||''}" placeholder="Email" required />
+              <input class="input" name="phone" value="${u.phone||''}" placeholder="Teléfono" required />
+              <input class="input" name="doc" value="${u.doc||''}" placeholder="Documento de identidad" />
+              <div class="toolbar">
+                <button class="btn" type="submit">Guardar</button>
+                <button class="btn ghost" type="reset">Restablecer</button>
+              </div>
+              <p class="helper">Tu información se guarda localmente para demo.</p>
+            </form>
+          </div>
+          <div class="card">
+            <h3>Preferencias</h3>
+            <label class="helper" style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input type="checkbox" id="prefNews" /> Recibir novedades y ofertas</label>
+            <label class="helper" style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input type="checkbox" id="prefSms" /> Notificaciones por SMS</label>
+            <div class="toolbar">
+              <button class="btn" onclick="savePrefs()">Guardar preferencias</button>
+            </div>
+          </div>
+        </div>
+      `);
+      $('#profileForm').addEventListener('submit', e=>{
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const n = {
+          ...getLS('lpUser', {}),
+          name: fd.get('name'), email: fd.get('email'), phone: fd.get('phone'), doc: fd.get('doc')
+        };
+        saveLS('lpUser', n);
+        $('#userName').textContent = n.name || 'Cliente';
+        showMessage('Perfil actualizado.');
+      });
+    }
+
+    function renderSecurity(root){
+      root.insertAdjacentHTML('beforeend', `
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Contraseña</h3>
+            <form id="pwdForm" class="grid">
+              <input class="input" type="password" name="old" placeholder="Contraseña actual" required />
+              <input class="input" type="password" name="new" placeholder="Nueva contraseña" required />
+              <input class="input" type="password" name="new2" placeholder="Repetir nueva contraseña" required />
+              <div class="toolbar">
+                <button class="btn" type="submit">Actualizar</button>
+              </div>
+              <p class="helper">Demo local — no se envía a servidor.</p>
+            </form>
+          </div>
+          <div class="card">
+            <h3>Sesiones y dispositivos</h3>
+            <div>Último acceso: <strong>${new Date().toLocaleString()}</strong></div>
+            <div class="hr"></div>
+            <button class="btn warn" onclick="showMessage('Se cerrarán las demás sesiones (demo).')">Cerrar sesiones en otros dispositivos</button>
+          </div>
+        </div>
+      `);
+      $('#pwdForm').addEventListener('submit', e=>{
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        if(fd.get('new')!==fd.get('new2')) return showMessage('Las contraseñas no coinciden.');
+        showMessage('Contraseña actualizada (demo).');
+        e.target.reset();
+      });
+    }
+
+    function renderSupport(root){
+      root.insertAdjacentHTML('beforeend', `
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Centro de ayuda</h3>
+            <p class="muted">Encuentra respuestas sobre pedidos, envíos, devoluciones y más.</p>
+            <div class="hr"></div>
+            <div class="toolbar">
+              <button class="btn" onclick="setView('claims')">Abrir un reclamo</button>
+              <button class="btn ghost" onclick="window.open('mailto:soporte@latinphone.store','_blank')">Escribir a soporte</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Atajos</h3>
+            <ul>
+              <li><a href="#" onclick="setView('orders')">Ver historial de pedidos</a></li>
+              <li><a href="#" onclick="setView('invoices')">Descargar facturas</a></li>
+              <li><a href="#" onclick="setView('tracking')">Revisar seguimiento</a></li>
+            </ul>
+          </div>
+        </div>
+      `);
+    }
+
+    /** Helpers UI **/
+    function badgeStatus(s){
+      if(!s) return '<span class="badge">-</span>';
+      const map = {
+        'En tránsito':'soon', 'Entregado':'success', 'Preparando':'warn'
+      };
+      const cls = map[s] || '';
+      return `<span class="badge ${cls}">${s}</span>`;
+    }
+
+    function copyToClipboard(text){
+      if(!text) return;
+      navigator.clipboard.writeText(text).then(()=> showMessage('Copiado: ' + text));
+    }
+
+    /** Acciones (Pedidos, Facturas, Tickets, etc.) **/
+    function openOrder(id){
+      const o = getLS('lpOrders', []).find(x=>x.id===id);
+      if(!o) return;
+      const courier = courierInfo[o.shipping?.courier] || {};
+      const address = getLS('lpAddresses', [])[0] || {};
+      const el = $('#modalOrderBody');
+      el.innerHTML = `
+        <div style="display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap">
+          <div><strong>Pedido ${o.id}</strong><br><span class="muted">${o.date}</span></div>
+          <div>${badgeStatus(o.status)}</div>
+        </div>
+        <div class="hr"></div>
+        <h4>Artículos</h4>
+        <div class="table-scroll">
+          <table class="table">
+            <thead><tr><th>Producto</th><th>Color</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead>
+            <tbody>
+              ${o.items.map(it=>`
+                <tr>
+                  <td>${it.name} <span class="muted">(${it.sku})</span></td>
+                  <td>${it.color || '-'}</td>
+                  <td>${it.qty}</td>
+                  <td>${fmt(it.price)}</td>
+                  <td>${fmt(it.price*it.qty)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="hr"></div>
+        <h4>Envío</h4>
+        <div class="muted">Courier: ${courier.logo ? `<img src="${courier.logo}" alt="${courier.name}" style="height:20px;vertical-align:middle;margin-right:4px;">${courier.name}` : (o.shipping?.courier || '-')}</div>
+        <div class="muted">Estado: ${address.region || '-'}</div>
+        <div class="muted">Ciudad: ${address.city || '-'}</div>
+        <div class="muted">Tracking: ${o.shipping?.tracking || '-'}</div>
+        <div class="muted">ETA: ${o.shipping?.eta || '-'}</div>
+        <div class="timeline" style="margin-top:10px">
+          ${(o.shipping?.steps||[]).map(s=>`
+            <div class="tl-item">
+              <div class="when">${s.when}</div>
+              <div>${s.text}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="hr"></div>
+        <div style="display:flex;justify-content:flex-end;gap:10px">
+          <button class="btn ghost" onclick="createClaim('${o.id}')">Abrir reclamo</button>
+          <button class="btn" onclick="openInvoiceByOrder('${o.id}')">Ver factura</button>
+        </div>
+      `;
+      openModal('modalOrder');
+    }
+
+    function openInvoice(id){
+      const inv = getLS('lpInvoices', []).find(i=>i.id===id);
+      if(!inv) return;
+      const order = getLS('lpOrders', []).find(o=>o.id===inv.orderId);
+      const el = $('#modalInvoiceBody');
+      el.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Factura ${inv.id}</strong><br><span class="muted">${inv.date}</span></div>
+          <div>${inv.paid===false?'<span class="badge warn">Pendiente</span>':'<span class="badge success">Pagada</span>'}</div>
+        </div>
+        <div class="hr"></div>
+        <div class="grid cols-2">
+          <div>
+            <h4>Vendido a</h4>
+            <div>${(getLS('lpUser',{}).name)||'Cliente'}</div>
+            <div class="muted">${(getLS('lpUser',{}).email)||''}</div>
+          </div>
+          <div>
+            <h4>Referencia</h4>
+            <div>Pedido: <strong>${inv.orderId}</strong></div>
+            <div>Total: <strong>${fmt(inv.total)}</strong></div>
+          </div>
+        </div>
+        <div class="hr"></div>
+        <h4>Detalle</h4>
+        <div class="table-scroll">
+          <table class="table">
+            <thead><tr><th>Concepto</th><th>Importe</th></tr></thead>
+            <tbody>
+              ${order? order.items.map(it=>`<tr><td>${it.name}</td><td>${fmt(it.price*it.qty)}</td></tr>`).join('') : ''}
+              <tr><td><strong>Total</strong></td><td><strong>${fmt(inv.total)}</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="hr"></div>
+        <div style="display:flex;justify-content:flex-end;gap:10px">
+          <button class="btn ghost" onclick="downloadInvoice('${inv.id}')">Descargar PDF</button>
+        </div>
+      `;
+      openModal('modalInvoice');
+    }
+
+    function openInvoiceByOrder(orderId){
+      const inv = getLS('lpInvoices', []).find(i=>i.orderId===orderId);
+      if(inv) openInvoice(inv.id);
+      else showMessage('No se encontró factura para este pedido.');
+    }
+
+    function downloadInvoice(id){
+      // Genera un pseudo-PDF como texto (demo)
+      const inv = getLS('lpInvoices', []).find(x=>x.id===id);
+      if(!inv) return;
+      const blob = new Blob([`Factura ${inv.id}\nPedido: ${inv.orderId}\nFecha: ${inv.date}\nTotal: ${inv.total}`], {type:'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${inv.id}.txt`; // TXT simulando descarga
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+
+    function createClaim(orderId){
+      setView('claims');
+      // Pre-rellena el formulario
+      setTimeout(()=>{
+        const sel = $('#claimForm select[name="orderId"]');
+        if(sel && orderId) sel.value = orderId;
+      }, 0);
+    }
+
+    function openTicket(id){
+      const tk = getLS('lpClaims', []).find(t=>t.id===id);
+      if(!tk) return;
+      const el = $('#modalTicketBody');
+      el.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>${tk.id}</strong> · <span class="muted">Pedido ${tk.orderId}</span></div>
+          <div>${tk.status==='Cerrado'?'<span class="badge success">Cerrado</span>':'<span class="badge soon">Abierto</span>'}</div>
+        </div>
+        <div class="hr"></div>
+        <h4>${tk.subject}</h4>
+        <div class="hr"></div>
+        <div id="thread">
+          ${tk.messages.map(m=>`
+            <div class="card">
+              <div class="muted" style="font-size:12px">${m.at} — ${m.from==='cliente'?'Tú':'Soporte'}</div>
+              <div>${m.text}</div>
+            </div>
+          `).join('')}
+        </div>
+        ${tk.status!=='Cerrado'?`
+        <div class="hr"></div>
+        <form id="replyForm" class="grid">
+          <textarea class="input" name="msg" placeholder="Escribe un mensaje..." rows="3" required></textarea>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn ghost" type="button" onclick="closeTicket('${tk.id}')">Marcar como resuelto</button>
+            <button class="btn" type="submit">Enviar</button>
+          </div>
+        </form>`:''}
+      `;
+      if(tk.status!=='Cerrado'){
+        $('#replyForm').addEventListener('submit', e=>{
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          tk.messages.push({at:new Date().toISOString().slice(0,16).replace('T',' '), from:'cliente', text:fd.get('msg')});
+          const all = getLS('lpClaims', []).map(c=>c.id===tk.id? tk : c);
+          saveLS('lpClaims', all);
+          openTicket(tk.id); // re-render modal
+        });
+      }
+      openModal('modalTicket');
+    }
+
+    function closeTicket(id){
+      const all = getLS('lpClaims', []).map(c=> c.id===id? {...c, status:'Cerrado'} : c);
+      saveLS('lpClaims', all);
+      showMessage('Ticket marcado como resuelto.');
+      openTicket(id);
+    }
+
+    /** Mutaciones simples **/
+    function setDefaultPayment(id){
+      const list = getLS('lpPayments', []).map(x=>({...x, default: x.id===id}));
+      saveLS('lpPayments', list); render();
+    }
+    function removePayment(id){
+      let list = getLS('lpPayments', []).filter(x=>x.id!==id);
+      saveLS('lpPayments', list); render();
+    }
+    function setDefaultAddress(id){
+      const list = getLS('lpAddresses', []).map(x=>({...x, default: x.id===id}));
+      saveLS('lpAddresses', list); render();
+    }
+    function removeAddress(id){
+      let list = getLS('lpAddresses', []).filter(x=>x.id!==id);
+      saveLS('lpAddresses', list); render();
+    }
+    function savePrefs(){
+      showMessage('Preferencias guardadas (demo).');
+    }
+
+    function cancelPurchase(){
+      if(confirm('¿Deseas anular la compra y devolver los fondos a tu tarjeta de crédito?')){
+        if(confirm('Confirma que los fondos sean regresados a la tarjeta X3009 VISA.')){
+          openModal('modalProcessing');
+          setTimeout(()=>{
+            closeModal('modalProcessing');
+            showMessage('El dinero estará de regreso en la tarjeta X3009 VISA en los próximos 5 días. Por favor abstente de realizar cualquier operación o pago. Toda tu información ha sido eliminada.', ()=>{
+              localStorage.clear();
+              window.location.href = './latinphonestorehome.html';
+            });
+          },3000);
+        }
+      }
+    }
+
+    /** Modales **/
+    function openModal(id){ const m = document.getElementById(id); if(m) m.classList.add('open'); }
+    function closeModal(id){ const m = document.getElementById(id); if(m) m.classList.remove('open'); }
+    function showMessage(text, onClose){
+      $('#modalMsgText').textContent = text;
+      openModal('modalMsg');
+      const ok = $('#modalMsgOk');
+      const handler = () => {
+        closeModal('modalMsg');
+        ok.removeEventListener('click', handler);
+        if(onClose) onClose();
+      };
+      ok.addEventListener('click', handler);
+    }
+    $$('.modal').forEach(m=>{
+      m.addEventListener('click',e=>{ if(e.target===m && m.id!=='modalLogin') m.classList.remove('open'); });
+    });
+    $$('[data-close-modal]').forEach(btn=>{
+      btn.addEventListener('click', e=> closeModal(e.currentTarget.getAttribute('data-close-modal')));
+    });
+
+    /** Eventos globales **/
+    function attachGlobalEvents(){
+      $$('.side-item').forEach(item=>{
+        item.addEventListener('click', ()=> setView(item.dataset.view));
+      });
+      $('#globalSearch').addEventListener('input', e=>{
+        state.searchQuery = e.target.value;
+        render();
+      });
+      $('#refreshBtn').addEventListener('click', ()=> render());
+      $('#exportBtn').addEventListener('click', exportData);
+      $('#cancelBtn').addEventListener('click', cancelPurchase);
+      $('#logoutBtn').addEventListener('click', ()=> {
+        showMessage('Sesión cerrada (demo).', ()=>{
+        // Limpieza mínima manteniendo datos: simular logout redirigiendo
+        window.location.href = './latinphonestorehome.html';
+        });
+      });
+    }
+
+    /** Init **/
+    function hasUserInfo(){
+      const u = getLS('lpUser',{});
+      return u.name && u.doc && u.phone;
+    }
+    function init(){
+      if(!hasUserInfo()){
+        window.location.href = './informacion.html';
+        return;
+      }
+      seedIfEmpty();
+      const natLink = document.getElementById('linkNacionalizacion');
+      const pendingNat = localStorage.getItem('lpPendingNationalization');
+      const natDone = localStorage.getItem('lpNationalizationDone');
+      if(!pendingNat || natDone === 'true'){ natLink.style.display='none'; }
+      const u = getLS('lpUser',{});
+      $('#userName').textContent = u.name || 'Cliente';
+      $('#userLevel').textContent = u.level || 'Miembro';
+      attachGlobalEvents();
+      render();
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const u = getLS('lpUser',{});
+      if(!u.doc){
+        window.location.href = './informacion.html';
+        return;
+      }
+      if(localStorage.getItem('lpAccountBypass') === 'true'){
+        localStorage.removeItem('lpAccountBypass');
+        init();
+        return;
+      }
+      const form = document.getElementById('loginForm');
+      const input = document.getElementById('cedInput');
+      const error = document.getElementById('loginError');
+      openModal('modalLogin');
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        if(input.value === u.doc){
+          closeModal('modalLogin');
+          init();
+        }else{
+          error.textContent = 'Número de cédula incorrecto';
+          error.style.display = 'block';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <script src="global-data.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mi Cuenta - Panel de Control | REMEEX VISA</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --secondary: #00579f;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --danger: #ff4d4d;
+      --warning: #ffad33;
+      --info: #0095ff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      --transition-fast: all 0.2s ease;
+      --transition-base: all 0.3s ease;
+      --transition-slow: all 0.5s ease;
+      --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+      --success-gradient: linear-gradient(135deg, #00c057 0%, #00a346 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--neutral-200);
+      color: var(--neutral-900);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .header {
+      background: var(--neutral-100);
+      padding: 1.5rem 0;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-full);
+      background: var(--card-gradient);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .header-text h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .header-text p {
+      color: var(--neutral-600);
+      font-size: 0.9rem;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      background: rgba(0, 211, 77, 0.1);
+      color: var(--success);
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
+    .status-badge.warning {
+      background: rgba(255, 173, 51, 0.1);
+      color: var(--warning);
+    }
+
+    .status-badge.danger {
+      background: rgba(255, 77, 77, 0.1);
+      color: var(--danger);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.5;
+        transform: scale(1.1);
+      }
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-base);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--neutral-300);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .card-title i {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition-base);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: var(--neutral-200);
+      color: var(--neutral-700);
+    }
+
+    .btn-secondary:hover {
+      background: var(--neutral-300);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #e60000;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #00b844;
+    }
+
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+    }
+
+    .btn-small {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 500;
+      color: var(--neutral-700);
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--neutral-400);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      transition: var(--transition-base);
+      background: var(--neutral-100);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.15);
+    }
+
+    .form-select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .info-label {
+      font-size: 0.75rem;
+      color: var(--neutral-600);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .info-value {
+      font-size: 0.9rem;
+      color: var(--neutral-900);
+      font-weight: 500;
+    }
+
+    .balance-display {
+      background: var(--card-gradient);
+      color: white;
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      margin-bottom: 1.5rem;
+    }
+
+    .balance-main {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .balance-secondary {
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--neutral-400);
+      transition: 0.3s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--success);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(24px);
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--neutral-300);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-info {
+      flex: 1;
+    }
+
+    .setting-title {
+      font-weight: 500;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .setting-description {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    .limit-slider {
+      width: 100%;
+      margin: 1rem 0;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--neutral-300);
+      outline: none;
+      transition: var(--transition-base);
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 8px rgba(26, 31, 113, 0.1);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      border: none;
+    }
+
+    .limit-display {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .limit-value {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .bank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .bank-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--neutral-200);
+      border-radius: var(--radius-md);
+      transition: var(--transition-base);
+    }
+
+    .bank-item:hover {
+      background: var(--neutral-300);
+    }
+
+    .bank-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: var(--neutral-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .bank-info {
+      flex: 1;
+    }
+
+    .bank-name {
+      font-weight: 500;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .bank-account {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      font-family: monospace;
+    }
+
+    .bank-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .authorized-user {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--neutral-200);
+      border-radius: var(--radius-md);
+      margin-bottom: 0.75rem;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .profile-photo-container {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 1rem;
+    }
+
+    #profile-photo {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-full);
+      object-fit: cover;
+      background: var(--neutral-300);
+      display: block;
+    }
+
+    .profile-photo-edit {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .user-name {
+      font-weight: 500;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .user-details {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    .user-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .user-status.active {
+      background: rgba(0, 211, 77, 0.1);
+      color: var(--success);
+    }
+
+    .user-status.pending {
+      background: rgba(255, 173, 51, 0.1);
+      color: var(--warning);
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .alert-success {
+      background: rgba(0, 211, 77, 0.1);
+      border-left: 4px solid var(--success);
+      color: var(--success);
+    }
+
+    .alert-warning {
+      background: rgba(255, 173, 51, 0.1);
+      border-left: 4px solid var(--warning);
+      color: var(--warning);
+    }
+
+    .alert-danger {
+      background: rgba(255, 77, 77, 0.1);
+      border-left: 4px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .alert-info {
+      background: rgba(0, 149, 255, 0.1);
+      border-left: 4px solid var(--info);
+      color: var(--info);
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .alert-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .alert-message {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: scaleIn 0.3s ease;
+    }
+
+    .modal-header {
+      padding: 1.5rem 1.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-200);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .modal-close:hover {
+      background: var(--neutral-300);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 0 1.5rem 1.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--neutral-100);
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-full);
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .stat-icon.primary {
+      background: var(--primary);
+    }
+
+    .stat-icon.success {
+      background: var(--success);
+    }
+
+    .stat-icon.warning {
+      background: var(--warning);
+    }
+
+    .stat-icon.info {
+      background: var(--info);
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      color: var(--neutral-600);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .modal {
+        width: 95%;
+        margin: 1rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <div class="header-title">
+        <div class="header-icon">
+          <i class="fas fa-user-cog"></i>
+        </div>
+        <div class="header-text">
+          <h1>Mi Cuenta</h1>
+          <p>Panel de control y configuración avanzada</p>
+        </div>
+      </div>
+      <div class="status-badge" id="account-status">
+        <div class="pulse-dot"></div>
+        <span>Cuenta Activa</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon primary">
+          <i class="fas fa-wallet"></i>
+        </div>
+        <div class="stat-value" id="total-balance">$2,847.50</div>
+        <div class="stat-label">Saldo Total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon success">
+          <i class="fas fa-arrow-down"></i>
+        </div>
+        <div class="stat-value" id="total-deposits">$12,500</div>
+        <div class="stat-label">Total Depositado</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon warning">
+          <i class="fas fa-arrow-up"></i>
+        </div>
+        <div class="stat-value" id="total-withdrawals">$9,652</div>
+        <div class="stat-label">Total Retirado</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon info">
+          <i class="fas fa-exchange-alt"></i>
+        </div>
+        <div class="stat-value" id="total-transactions">47</div>
+        <div class="stat-label">Transacciones</div>
+      </div>
+    </div>
+
+    <!-- Account Alerts -->
+    <div class="alert alert-warning" id="verification-alert" style="display: none;">
+      <i class="fas fa-exclamation-triangle"></i>
+      <div class="alert-content">
+        <div class="alert-title">Verificación Pendiente</div>
+        <div class="alert-message">Complete la verificación de su identidad para acceder a todas las funcionalidades.</div>
+      </div>
+    </div>
+    <button class="btn btn-danger btn-small" id="repair-btn" style="display:none; margin:0.5rem 0;">Reparar</button>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+      <!-- Personal Information -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-user"></i>
+            Información Personal
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-secondary btn-icon" id="edit-personal-info">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="profile-photo-container">
+          <img id="profile-photo" src="" alt="Foto de perfil">
+          <label for="profile-photo-input" class="profile-photo-edit"><i class="fas fa-camera"></i></label>
+          <input type="file" id="profile-photo-input" accept="image/*" style="display:none">
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Nombre Completo</div>
+            <div class="info-value" id="user-full-name">Juan Carlos Pérez García</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Cédula de Identidad</div>
+            <div class="info-value" id="user-id">V-12.345.678</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Correo Electrónico</div>
+            <div class="info-value" id="user-email">juan.perez@email.com</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Teléfono</div>
+            <div class="info-value" id="user-phone">+58 412-1234567</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Fecha de Registro</div>
+            <div class="info-value" id="registration-date">15 de Marzo, 2024</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Estado de Verificación</div>
+            <div class="info-value">
+              <span class="user-status active" id="verification-status">
+                <i class="fas fa-check-circle"></i>
+                Verificado
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Balance -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-chart-line"></i>
+            Saldos por Moneda
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-secondary btn-icon" id="refresh-balance">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="balance-display">
+          <div class="balance-main" id="usd-balance">$2,847.50</div>
+          <div class="balance-secondary">Dólares Americanos</div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Bolívares</div>
+            <div class="info-value" id="bs-balance">Bs 380,124.75</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Euros</div>
+            <div class="info-value" id="eur-balance">€2,676.65</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Settings -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-shield-alt"></i>
+            Configuración de Seguridad
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-title">Retiros Habilitados</div>
+            <div class="setting-description">Permite realizar retiros desde la cuenta</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="withdrawals-enabled" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-title">Cuenta Congelada</div>
+            <div class="setting-description">Bloquea todas las operaciones de la cuenta</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="account-frozen">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-title">Autenticación de Dos Factores</div>
+            <div class="setting-description">Seguridad adicional para inicios de sesión</div>
+          </div>
+          <button class="btn btn-primary btn-small" id="setup-2fa">
+            Configurar
+          </button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-title">Notificaciones de Transacciones</div>
+            <div class="setting-description">Recibir alertas por email y SMS</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="transaction-notifications" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Transaction Limits -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-sliders-h"></i>
+            Límites de Transacciones
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Límite Diario de Retiros</label>
+          <div class="limit-slider">
+            <input type="range" class="slider" id="withdrawal-limit" min="100" max="10000" value="5000" step="100">
+            <div class="limit-display">
+              <span>$100</span>
+              <span class="limit-value" id="withdrawal-limit-value">$5,000</span>
+              <span>$10,000</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Límite Diario de Depósitos</label>
+          <div class="limit-slider">
+            <input type="range" class="slider" id="deposit-limit" min="100" max="15000" value="8000" step="100">
+            <div class="limit-display">
+              <span>$100</span>
+              <span class="limit-value" id="deposit-limit-value">$8,000</span>
+              <span>$15,000</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Límite Mensual de Transferencias</label>
+          <div class="limit-slider">
+            <input type="range" class="slider" id="transfer-limit" min="1000" max="50000" value="25000" step="500">
+            <div class="limit-display">
+              <span>$1,000</span>
+              <span class="limit-value" id="transfer-limit-value">$25,000</span>
+              <span>$50,000</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle"></i>
+          <div class="alert-content">
+            <div class="alert-message">Los límites se reinician cada 24 horas a las 00:00 UTC. Para aumentar límites, contacte soporte.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bank Accounts -->
+      <div class="card full-width">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-university"></i>
+            Cuentas Bancarias Registradas
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary" id="add-bank-account">
+              <i class="fas fa-plus"></i>
+              Agregar Cuenta
+            </button>
+          </div>
+        </div>
+
+        <div class="bank-list" id="bank-accounts-list">
+          <div class="bank-item">
+            <div class="bank-logo">
+              <i class="fas fa-university"></i>
+            </div>
+            <div class="bank-info">
+              <div class="bank-name">Banco de Venezuela</div>
+              <div class="bank-account">Cuenta Corriente: ****-****-**-0123456789</div>
+            </div>
+            <div class="bank-actions">
+              <button class="btn btn-secondary btn-small">
+                <i class="fas fa-edit"></i>
+                Editar
+              </button>
+              <button class="btn btn-danger btn-small">
+                <i class="fas fa-trash"></i>
+                Eliminar
+              </button>
+            </div>
+          </div>
+
+          <div class="bank-item">
+            <div class="bank-logo">
+              <i class="fas fa-university"></i>
+            </div>
+            <div class="bank-info">
+              <div class="bank-name">Banesco</div>
+              <div class="bank-account">Cuenta Ahorro: ****-****-**-9876543210</div>
+            </div>
+            <div class="bank-actions">
+              <button class="btn btn-secondary btn-small">
+                <i class="fas fa-edit"></i>
+                Editar
+              </button>
+              <button class="btn btn-danger btn-small">
+                <i class="fas fa-trash"></i>
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Authorized Users -->
+      <div class="card full-width">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-users"></i>
+            Usuarios Autorizados para Retiros
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary" id="add-authorized-user">
+              <i class="fas fa-user-plus"></i>
+              Agregar Usuario
+            </button>
+          </div>
+        </div>
+
+        <div id="authorized-users-list">
+          <div class="authorized-user">
+            <div class="user-avatar">MP</div>
+            <div class="user-info">
+              <div class="user-name">María Pérez</div>
+              <div class="user-details">C.I: V-23.456.789 • Límite: $2,000/día</div>
+            </div>
+            <div class="user-status active">
+              <i class="fas fa-check-circle"></i>
+              Activo
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-secondary btn-small">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-danger btn-small">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="authorized-user">
+            <div class="user-avatar">CG</div>
+            <div class="user-info">
+              <div class="user-name">Carlos García</div>
+              <div class="user-details">C.I: V-34.567.890 • Límite: $1,500/día</div>
+            </div>
+            <div class="user-status pending">
+              <i class="fas fa-clock"></i>
+              Pendiente
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-secondary btn-small">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-danger btn-small">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div class="alert-content">
+            <div class="alert-title">Importante</div>
+            <div class="alert-message">Los usuarios autorizados pueden realizar retiros a nombre del titular. Asegúrese de autorizar solo personas de confianza.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-cog"></i>
+            Preferencias de Cuenta
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Moneda Principal</label>
+          <select class="form-control form-select" id="primary-currency">
+            <option value="USD">Dólares Americanos (USD)</option>
+            <option value="VES">Bolívares (VES)</option>
+            <option value="EUR">Euros (EUR)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Idioma de la Interfaz</label>
+          <select class="form-control form-select" id="interface-language">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Zona Horaria</label>
+          <select class="form-control form-select" id="timezone">
+            <option value="America/Caracas">Venezuela (VET)</option>
+            <option value="America/New_York">Nueva York (EST)</option>
+            <option value="Europe/Madrid">Madrid (CET)</option>
+            <option value="America/Sao_Paulo">São Paulo (BRT)</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-title">Modo Oscuro</div>
+            <div class="setting-description">Cambiar el tema de la interfaz</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="dark-mode">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Account Actions -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-tools"></i>
+            Acciones de Cuenta
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <button class="btn btn-secondary" id="export-data">
+            <i class="fas fa-download"></i>
+            Exportar Datos de Cuenta
+          </button>
+
+          <button class="btn btn-secondary" id="change-password">
+            <i class="fas fa-key"></i>
+            Cambiar Contraseña
+          </button>
+
+          <button class="btn btn-warning" id="freeze-account">
+            <i class="fas fa-snowflake"></i>
+            Congelar Cuenta Temporalmente
+          </button>
+
+          <button class="btn btn-danger" id="close-account">
+            <i class="fas fa-times-circle"></i>
+            Cerrar Cuenta Permanentemente
+          </button>
+        </div>
+
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle"></i>
+          <div class="alert-content">
+            <div class="alert-message">Para realizar cambios críticos en su cuenta, se requiere verificación adicional por motivos de seguridad.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Bank Account Modal -->
+  <div class="modal-overlay" id="add-bank-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Agregar Cuenta Bancaria</h3>
+        <button class="modal-close" id="close-bank-modal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Banco</label>
+          <select class="form-control form-select" id="bank-select">
+            <option value="">Seleccione un banco</option>
+            <option value="banesco">Banesco</option>
+            <option value="venezuela">Banco de Venezuela</option>
+            <option value="mercantil">Mercantil</option>
+            <option value="provincial">BBVA Provincial</option>
+            <option value="bancaribe">Bancaribe</option>
+            <option value="bod">Banco Occidental de Descuento</option>
+            <option value="exterior">Banco Exterior</option>
+            <option value="activo">Banco Activo</option>
+            <option value="plaza">Banco Plaza</option>
+            <option value="tesoro">Banco del Tesoro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tipo de Cuenta</label>
+          <select class="form-control form-select" id="account-type">
+            <option value="">Seleccione el tipo</option>
+            <option value="corriente">Cuenta Corriente</option>
+            <option value="ahorro">Cuenta de Ahorro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Número de Cuenta</label>
+          <input type="text" class="form-control" id="account-number" placeholder="Ej: 0102-0000-00-0000000000">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Titular de la Cuenta</label>
+          <input type="text" class="form-control" id="account-holder" placeholder="Nombre del titular">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Cédula del Titular</label>
+          <input type="text" class="form-control" id="holder-id" placeholder="V-12345678">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-bank">Cancelar</button>
+        <button class="btn btn-primary" id="save-bank">Guardar Cuenta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Authorized User Modal -->
+  <div class="modal-overlay" id="add-user-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Agregar Usuario Autorizado</h3>
+        <button class="modal-close" id="close-user-modal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nombre Completo</label>
+          <input type="text" class="form-control" id="user-full-name-input" placeholder="Nombre y apellido">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Cédula de Identidad</label>
+          <input type="text" class="form-control" id="user-id-input" placeholder="V-12345678">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Teléfono</label>
+          <input type="text" class="form-control" id="user-phone-input" placeholder="+58 412-1234567">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Límite Diario de Retiros</label>
+          <div class="limit-slider">
+            <input type="range" class="slider" id="user-limit" min="100" max="5000" value="1000" step="100">
+            <div class="limit-display">
+              <span>$100</span>
+              <span class="limit-value" id="user-limit-value">$1,000</span>
+              <span>$5,000</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Parentesco o Relación</label>
+          <select class="form-control form-select" id="user-relationship">
+            <option value="">Seleccione</option>
+            <option value="esposo">Esposo/a</option>
+            <option value="hijo">Hijo/a</option>
+            <option value="padre">Padre/Madre</option>
+            <option value="hermano">Hermano/a</option>
+            <option value="familiar">Otro Familiar</option>
+            <option value="representante">Representante Legal</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div class="alert-content">
+            <div class="alert-message">Esta persona podrá realizar retiros desde su cuenta hasta el límite establecido. Verifique cuidadosamente los datos.</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-user">Cancelar</button>
+        <button class="btn btn-primary" id="save-user">Autorizar Usuario</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Variables globales
+    let currentUser = {
+      name: '',
+      id: '',
+      email: '',
+      phone: '',
+      photo: '',
+      balance: {
+        usd: 0,
+        bs: 0,
+        eur: 0
+      },
+      withdrawalsEnabled: true,
+      accountFrozen: false,
+      limits: {
+        withdrawal: 5000,
+        deposit: 8000,
+        transfer: 25000
+      }
+    };
+
+    function loadDataFromStorage() {
+      const userData = GlobalData.get('remeexUserData') || {};
+      currentUser.name = userData.fullName || userData.name || '';
+      currentUser.id = userData.idNumber || '';
+      currentUser.email = userData.email || '';
+      currentUser.phone = userData.phoneNumber || '';
+      currentUser.photo = localStorage.getItem('remeexProfilePhoto') || '';
+
+      const balanceData = GlobalData.get('remeexBalance') || {};
+      currentUser.balance.usd = balanceData.usd || 0;
+      currentUser.balance.bs = balanceData.bs || 0;
+      currentUser.balance.eur = balanceData.eur || 0;
+
+      currentUser.withdrawalsEnabled = localStorage.getItem('remeexWithdrawalsEnabled') !== 'false';
+      currentUser.accountFrozen = localStorage.getItem('remeexFrozen') === 'true';
+
+      currentUser.limits.withdrawal = parseInt(localStorage.getItem('remeexWithdrawalLimit') || currentUser.limits.withdrawal, 10);
+      currentUser.limits.deposit = parseInt(localStorage.getItem('remeexDepositLimit') || currentUser.limits.deposit, 10);
+      currentUser.limits.transfer = parseInt(localStorage.getItem('remeexTransferLimit') || currentUser.limits.transfer, 10);
+    }
+
+    // Inicialización
+  document.addEventListener('DOMContentLoaded', function() {
+    loadDataFromStorage();
+    initializeSliders();
+    setupEventListeners();
+    updateUI();
+    updateRepairButton();
+  });
+
+  window.addEventListener('storage', function() {
+    loadDataFromStorage();
+    updateUI();
+  });
+
+    function initializeSliders() {
+      // Configurar sliders de límites
+      const withdrawalSlider = document.getElementById('withdrawal-limit');
+      const depositSlider = document.getElementById('deposit-limit');
+      const transferSlider = document.getElementById('transfer-limit');
+      const userLimitSlider = document.getElementById('user-limit');
+
+      if (withdrawalSlider) {
+        withdrawalSlider.addEventListener('input', function() {
+          document.getElementById('withdrawal-limit-value').textContent = `$${parseInt(this.value).toLocaleString()}`;
+          currentUser.limits.withdrawal = parseInt(this.value);
+        });
+      }
+
+      if (depositSlider) {
+        depositSlider.addEventListener('input', function() {
+          document.getElementById('deposit-limit-value').textContent = `$${parseInt(this.value).toLocaleString()}`;
+          currentUser.limits.deposit = parseInt(this.value);
+        });
+      }
+
+      if (transferSlider) {
+        transferSlider.addEventListener('input', function() {
+          document.getElementById('transfer-limit-value').textContent = `$${parseInt(this.value).toLocaleString()}`;
+          currentUser.limits.transfer = parseInt(this.value);
+        });
+      }
+
+      if (userLimitSlider) {
+        userLimitSlider.addEventListener('input', function() {
+          document.getElementById('user-limit-value').textContent = `$${parseInt(this.value).toLocaleString()}`;
+        });
+      }
+    }
+
+    function setupEventListeners() {
+      // Toggle switches
+      document.getElementById('withdrawals-enabled')?.addEventListener('change', function() {
+        currentUser.withdrawalsEnabled = this.checked;
+        updateAccountStatus();
+        showNotification(this.checked ? 'Retiros habilitados' : 'Retiros deshabilitados', 'success');
+      });
+
+      document.getElementById('account-frozen')?.addEventListener('change', function() {
+        currentUser.accountFrozen = this.checked;
+        updateAccountStatus();
+        showNotification(this.checked ? 'Cuenta congelada' : 'Cuenta desbloqueada', this.checked ? 'warning' : 'success');
+      });
+
+      // Modales
+      document.getElementById('add-bank-account')?.addEventListener('click', () => {
+        document.getElementById('add-bank-modal').style.display = 'flex';
+      });
+
+      document.getElementById('add-authorized-user')?.addEventListener('click', () => {
+        document.getElementById('add-user-modal').style.display = 'flex';
+      });
+
+      const photoInput = document.getElementById('profile-photo-input');
+      photoInput?.addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentUser.photo = e.target.result;
+          localStorage.setItem('remeexProfilePhoto', currentUser.photo);
+          updateUI();
+          showNotification('Foto de perfil actualizada', 'success');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // Cerrar modales
+      document.querySelectorAll('.modal-close, #cancel-bank, #cancel-user').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.style.display = 'none';
+          });
+        });
+      });
+
+      // Guardar cuenta bancaria
+      document.getElementById('save-bank')?.addEventListener('click', saveBankAccount);
+
+      // Guardar usuario autorizado
+      document.getElementById('save-user')?.addEventListener('click', saveAuthorizedUser);
+
+      // Acciones de cuenta
+      document.getElementById('export-data')?.addEventListener('click', () => {
+        showNotification('Exportando datos de cuenta...', 'info');
+        setTimeout(() => {
+          showNotification('Datos exportados exitosamente', 'success');
+        }, 2000);
+      });
+
+      document.getElementById('change-password')?.addEventListener('click', () => {
+        showNotification('Función disponible próximamente', 'info');
+      });
+
+      document.getElementById('freeze-account')?.addEventListener('click', () => {
+        if (confirm('¿Está seguro de que desea congelar temporalmente su cuenta?')) {
+          document.getElementById('account-frozen').checked = true;
+          currentUser.accountFrozen = true;
+          updateAccountStatus();
+          showNotification('Cuenta congelada temporalmente', 'warning');
+        }
+      });
+
+      document.getElementById('close-account')?.addEventListener('click', () => {
+        if (confirm('¿Está seguro de que desea cerrar permanentemente su cuenta? Esta acción no se puede deshacer.')) {
+          showNotification('Para cerrar su cuenta, contacte a soporte', 'warning');
+        }
+      });
+
+      document.getElementById('repair-btn')?.addEventListener('click', () => {
+        // Redirigir a la página de recarga para completar la validación
+        window.location.href = '';
+      });
+    }
+
+    function updateUI() {
+      // Actualizar información personal
+      document.getElementById('user-full-name').textContent = currentUser.name;
+      document.getElementById('user-id').textContent = currentUser.id;
+      document.getElementById('user-email').textContent = currentUser.email;
+      document.getElementById('user-phone').textContent = currentUser.phone;
+
+      const photoEl = document.getElementById('profile-photo');
+      if (photoEl) {
+        if (currentUser.photo) {
+          photoEl.src = currentUser.photo;
+        } else {
+          photoEl.removeAttribute('src');
+        }
+      }
+
+      // Actualizar saldos
+      document.getElementById('usd-balance').textContent = `$${currentUser.balance.usd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      document.getElementById('bs-balance').textContent = `Bs ${currentUser.balance.bs.toLocaleString('es-VE', { minimumFractionDigits: 2 })}`;
+      document.getElementById('eur-balance').textContent = `€${currentUser.balance.eur.toLocaleString('de-DE', { minimumFractionDigits: 2 })}`;
+
+      // Actualizar estadísticas
+      document.getElementById('total-balance').textContent = `$${currentUser.balance.usd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+      // Actualizar estado de toggles
+      document.getElementById('withdrawals-enabled').checked = currentUser.withdrawalsEnabled;
+      document.getElementById('account-frozen').checked = currentUser.accountFrozen;
+
+      // Actualizar límites
+      document.getElementById('withdrawal-limit').value = currentUser.limits.withdrawal;
+      document.getElementById('deposit-limit').value = currentUser.limits.deposit;
+      document.getElementById('transfer-limit').value = currentUser.limits.transfer;
+
+      document.getElementById('withdrawal-limit-value').textContent = `$${currentUser.limits.withdrawal.toLocaleString()}`;
+      document.getElementById('deposit-limit-value').textContent = `$${currentUser.limits.deposit.toLocaleString()}`;
+      document.getElementById('transfer-limit-value').textContent = `$${currentUser.limits.transfer.toLocaleString()}`;
+
+      updateAccountStatus();
+      updateRepairButton();
+    }
+
+    function updateRepairButton() {
+      const repairBtn = document.getElementById('repair-btn');
+      if (!repairBtn) return;
+      const status = localStorage.getItem('remeexVerificationStatus');
+      if (status === 'bank_validation' || status === 'payment_validation') {
+        repairBtn.style.display = 'inline-block';
+      } else {
+        repairBtn.style.display = 'none';
+      }
+    }
+
+    function updateAccountStatus() {
+      const statusBadge = document.getElementById('account-status');
+      
+      if (currentUser.accountFrozen) {
+        statusBadge.className = 'status-badge danger';
+        statusBadge.innerHTML = '<div class="pulse-dot"></div><span>Cuenta Congelada</span>';
+      } else if (!currentUser.withdrawalsEnabled) {
+        statusBadge.className = 'status-badge warning';
+        statusBadge.innerHTML = '<div class="pulse-dot"></div><span>Retiros Deshabilitados</span>';
+      } else {
+        statusBadge.className = 'status-badge';
+        statusBadge.innerHTML = '<div class="pulse-dot"></div><span>Cuenta Activa</span>';
+      }
+    }
+
+    function saveBankAccount() {
+      const bank = document.getElementById('bank-select').value;
+      const accountType = document.getElementById('account-type').value;
+      const accountNumber = document.getElementById('account-number').value;
+      const accountHolder = document.getElementById('account-holder').value;
+      const holderId = document.getElementById('holder-id').value;
+
+      if (!bank || !accountType || !accountNumber || !accountHolder || !holderId) {
+        showNotification('Por favor complete todos los campos', 'error');
+        return;
+      }
+
+      // Simular guardado
+      showNotification('Cuenta bancaria agregada exitosamente', 'success');
+      document.getElementById('add-bank-modal').style.display = 'none';
+      
+      // Limpiar formulario
+      document.getElementById('bank-select').value = '';
+      document.getElementById('account-type').value = '';
+      document.getElementById('account-number').value = '';
+      document.getElementById('account-holder').value = '';
+      document.getElementById('holder-id').value = '';
+    }
+
+    function saveAuthorizedUser() {
+      const name = document.getElementById('user-full-name-input').value;
+      const id = document.getElementById('user-id-input').value;
+      const phone = document.getElementById('user-phone-input').value;
+      const limit = document.getElementById('user-limit').value;
+      const relationship = document.getElementById('user-relationship').value;
+
+      if (!name || !id || !phone || !relationship) {
+        showNotification('Por favor complete todos los campos', 'error');
+        return;
+      }
+
+      // Simular guardado
+      showNotification('Usuario autorizado agregado exitosamente', 'success');
+      document.getElementById('add-user-modal').style.display = 'none';
+      
+      // Limpiar formulario
+      document.getElementById('user-full-name-input').value = '';
+      document.getElementById('user-id-input').value = '';
+      document.getElementById('user-phone-input').value = '';
+      document.getElementById('user-limit').value = '1000';
+      document.getElementById('user-limit-value').textContent = '$1,000';
+      document.getElementById('user-relationship').value = '';
+    }
+
+    function showNotification(message, type = 'info') {
+      // Crear elemento de notificación
+      const notification = document.createElement('div');
+      notification.className = `alert alert-${type}`;
+      notification.style.position = 'fixed';
+      notification.style.top = '20px';
+      notification.style.right = '20px';
+      notification.style.zIndex = '9999';
+      notification.style.minWidth = '300px';
+      notification.style.animation = 'slideInRight 0.3s ease';
+      
+      notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        <div class="alert-content">
+          <div class="alert-message">${message}</div>
+        </div>
+      `;
+
+      document.body.appendChild(notification);
+
+      // Remover después de 3 segundos
+      setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+    }
+
+    // CSS adicional para animaciones
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+<div id="bottom-nav-container"></div>
+<script src="bottom-nav.js"></script>
+</body>
+</html>
+  <script src="preload.js"></script>

@@ -1,0 +1,30 @@
+<div class="validation-amount-panel" id="validation-amount-panel">
+  <div class="form-group validation-amount-settings">
+    <label class="form-label">Monto de validación</label>
+    <div class="validation-amount-info">
+      <p><strong>Reducir 5 USD</strong> → comisión del <strong>0,5&nbsp;%</strong> en la primera transacción.</p>
+      <p><strong>Reducir 10 USD</strong> → comisión del <strong>1&nbsp;%</strong>, uso único por <strong>4&nbsp;h</strong>.</p>
+    </div>
+    <div class="validation-amount-options">
+      <label class="validation-amount-option">
+        <input type="radio" name="validation-amount" value="5">
+        <div class="validation-amount-option-content">
+          <span class="validation-amount-option-title">Reducir 5 USD</span>
+          <span class="validation-amount-option-description">Aplica una comisión del 0,5&nbsp;% en la primera transacción.</span>
+        </div>
+      </label>
+      <label class="validation-amount-option" data-force-disabled="true">
+        <input type="radio" name="validation-amount" value="10" disabled data-force-disabled="true">
+        <div class="validation-amount-option-content">
+          <span class="validation-amount-option-title">Reducir 10 USD</span>
+          <span class="validation-amount-option-description">Aplica una comisión del 1&nbsp;% y solo se puede usar por 4&nbsp;h.</span>
+          <span class="validation-amount-option-note">Temporalmente no disponible</span>
+        </div>
+      </label>
+    </div>
+    <p class="validation-amount-disclaimer">Solo puede usarse una vez y se revertirá si no activas tu cuenta en las próximas horas.</p>
+    <div class="validation-amount-actions">
+      <button class="btn btn-primary" id="validation-amount-confirm-btn">Confirmar</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,3577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="repair.js"></script>
+    <script>
+        (function(){
+            const existing = JSON.parse(localStorage.getItem('accountBlock') || 'null');
+            if(!existing || existing.type !== 'submitted'){
+                localStorage.setItem('accountBlock', JSON.stringify({
+                    type: 'visit',
+                    start: Date.now(),
+                    duration: 60 * 60 * 1000
+                }));
+            }
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>Centro de Reclamos y Soporte - REMEEX VISA</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23003087'%3E%3Cpath d='M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12zm4.64-4.36c-.39.39-.39 1.02 0 1.41L9.59 12l-2.95 2.95c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l2.95 2.95c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L14.41 12l2.95-2.95c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0L12 10.59 9.05 7.64c-.39-.39-1.02-.39-1.41 0z'/%3E%3C/svg%3E">
+    <meta name="description" content="Centro de Reclamos y Soporte Técnico 24/7 - REMEEX VISA. Resolvemos tu problema de manera profesional y eficiente."/>
+    <meta name="keywords" content="reclamos, soporte, visa, remeex, ayuda, fintech, venezuela">
+    <meta name="theme-color" content="#003087">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="reclamo-header.css">
+    
+    <style>
+        :root {
+            /* Professional Color Palette */
+            --primary: #003087;
+            --primary-dark: #001f5c;
+            --primary-light: #1a4ba0;
+            --primary-ultra-light: #f7f8fc;
+            --secondary: #0066cc;
+            --accent: #ff6b35;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+            --info: #0ea5e9;
+            
+            /* Neutral Palette */
+            --neutral-50: #fafbfc;
+            --neutral-100: #ffffff;
+            --neutral-200: #f8fafc;
+            --neutral-300: #e2e8f0;
+            --neutral-400: #cbd5e1;
+            --neutral-500: #64748b;
+            --neutral-600: #475569;
+            --neutral-700: #334155;
+            --neutral-800: #1e293b;
+            --neutral-900: #0f172a;
+
+            /* Professional Shadows */
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            /* Professional Border Radius */
+            --radius-xs: 2px;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            --radius-full: 9999px;
+            
+            /* Professional Transitions */
+            --transition-all: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s ease-out;
+            --transition-base: all 0.2s ease-out;
+            --transition-slow: all 0.3s ease-out;
+            
+            /* Layout */
+            --header-height: 64px;
+            --nav-height: 64px;
+            --trust-bar-height: 0px;
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--neutral-50);
+            color: var(--neutral-900);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        img, video {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            html {
+                font-size: 80%;
+            }
+        }
+
+        /* Professional SVG Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+            fill: currentColor;
+            transition: var(--transition-all);
+        }
+
+        .icon-sm { width: 16px; height: 16px; }
+        .icon-md { width: 20px; height: 20px; }
+        .icon-lg { width: 24px; height: 24px; }
+        .icon-xl { width: 32px; height: 32px; }
+
+        /* Trust Bar */
+        .trust-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+            color: white;
+            height: var(--trust-bar-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .trust-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Header */
+        .header-container {
+            position: fixed;
+            top: var(--trust-bar-height);
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid var(--neutral-300);
+            box-shadow: var(--shadow-sm);
+            z-index: 1000;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 800;
+            box-shadow: var(--shadow-md);
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            color: var(--neutral-600);
+            font-weight: 500;
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 0;
+            flex: 1;
+            text-align: center;
+        }
+
+        .welcome-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .greeting {
+            font-size: 0.85rem;
+            color: var(--neutral-600);
+            font-weight: 500;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .claim-status-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            font-size: 0.7rem;
+            color: var(--warning);
+            font-weight: 600;
+            background: rgba(234, 88, 12, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(234, 88, 12, 0.2);
+        }
+
+        .status-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--warning);
+            animation: pulse 2s infinite;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Balance Card */
+        .balance-card-compact {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            min-width: 0;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .balance-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.125rem;
+        }
+
+        .balance-equivalent {
+            font-size: 0.7rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 500;
+        }
+
+        .security-icon {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .header-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-md);
+            border: 2px solid white;
+        }
+
+        /* Main Container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding-top: calc(var(--header-height) + var(--trust-bar-height));
+            padding-bottom: calc(var(--nav-height) * 2);
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Wizard Container */
+        .wizard-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            background: var(--neutral-50);
+        }
+
+        /* Phase Container */
+        .phase-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background: var(--neutral-50);
+            overflow-y: auto;
+        }
+
+        .phase-container.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .phase-container.prev {
+            transform: translateX(-100%);
+        }
+
+        /* Progress Header */
+        .progress-header {
+            background: var(--neutral-100);
+            padding: 1rem;
+            border-bottom: 1px solid var(--neutral-300);
+            flex-shrink: 0;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .progress-bar-container {
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--neutral-300);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-full);
+            transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .progress-step-text {
+            color: var(--neutral-700);
+        }
+
+        .progress-percentage {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Section Header */
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--neutral-600);
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        /* Alert Components */
+        .alert-banner {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.05), rgba(220, 38, 38, 0.02));
+            border: 1px solid rgba(220, 38, 38, 0.15);
+            border-left: 4px solid var(--danger);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .alert-icon {
+            color: var(--danger);
+        }
+
+        .alert-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--danger);
+        }
+
+        .alert-message {
+            font-size: 0.9rem;
+            color: var(--neutral-700);
+            line-height: 1.6;
+        }
+
+        .security-notice {
+            background: linear-gradient(135deg, rgba(0, 48, 135, 0.05), rgba(0, 48, 135, 0.02));
+            border: 1px solid rgba(0, 48, 135, 0.15);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .security-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .security-icon {
+            color: var(--primary);
+        }
+
+        .security-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .security-message {
+            font-size: 0.9rem;
+            color: var(--neutral-700);
+            line-height: 1.6;
+        }
+
+        .security-list {
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .security-list li {
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--neutral-600);
+        }
+
+        /* Category Grid */
+        .category-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .category-card {
+            background: var(--neutral-100);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: var(--transition-all);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: var(--neutral-200);
+        }
+
+        .category-card.urgent {
+            border-color: var(--danger);
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.03), var(--neutral-100));
+        }
+
+        .category-card.urgent:hover {
+            border-color: var(--danger);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+        }
+
+        .category-card.new {
+            border-color: var(--success);
+            background: linear-gradient(135deg, rgba(22, 163, 74, 0.03), var(--neutral-100));
+            position: relative;
+        }
+
+        .category-card.new::after {
+            content: 'NUEVO';
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: var(--success);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .category-card.new:hover {
+            border-color: var(--success);
+            box-shadow: 0 8px 25px rgba(22, 163, 74, 0.15);
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: var(--transition-all);
+        }
+
+        .category-card.urgent .category-icon {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+        }
+
+        .category-card.new .category-icon {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success);
+        }
+
+        .category-card:not(.urgent):not(.new) .category-icon {
+            background: rgba(0, 48, 135, 0.1);
+            color: var(--primary);
+        }
+
+        .category-card:hover .category-icon {
+            transform: scale(1.05);
+        }
+
+        .category-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .category-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+            margin-bottom: 0.375rem;
+            line-height: 1.3;
+        }
+
+        .category-description {
+            font-size: 0.8rem;
+            color: var(--neutral-600);
+            line-height: 1.4;
+        }
+
+        .category-arrow {
+            color: var(--neutral-400);
+            transition: var(--transition-all);
+        }
+
+        .category-card:hover .category-arrow {
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        /* Services Container */
+        .services-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .service-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .service-group-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            padding-left: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .service-group-title::before {
+            content: '';
+            width: 3px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: var(--radius-full);
+        }
+
+        .service-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .service-item {
+            background: var(--neutral-100);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition-all);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .service-item:hover {
+            border-color: var(--primary);
+            background: var(--neutral-200);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .service-item.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(0, 48, 135, 0.05), rgba(0, 48, 135, 0.02));
+            box-shadow: var(--shadow-md);
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            background: rgba(0, 48, 135, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+            transition: var(--transition-all);
+        }
+
+        .service-item:hover .service-icon,
+        .service-item.selected .service-icon {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .service-name {
+            flex: 1;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--neutral-900);
+            line-height: 1.3;
+        }
+
+        .service-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neutral-400);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-all);
+            position: relative;
+        }
+
+        .service-item.selected .service-check {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .service-item.selected .service-check::after {
+            content: '✓';
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        /* Incident Form */
+        .incident-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--neutral-700);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-label .icon {
+            color: var(--primary);
+        }
+
+        .required {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.875rem;
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-lg);
+            font-size: 0.9rem;
+            font-family: inherit;
+            font-weight: 400;
+            transition: var(--transition-all);
+            background: var(--neutral-100);
+            color: var(--neutral-900);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.1);
+            background: white;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .datetime-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .amount-input-group {
+            position: relative;
+        }
+
+        .currency-prefix {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .amount-input-group .form-input {
+            padding-left: 2.5rem;
+        }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: var(--neutral-500);
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+
+        /* Evidence Upload */
+        .evidence-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--neutral-400);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: var(--transition-all);
+            cursor: pointer;
+            background: var(--neutral-100);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--neutral-200);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(0, 48, 135, 0.05);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            color: var(--neutral-400);
+            margin-bottom: 1rem;
+            transition: var(--transition-all);
+        }
+
+        .upload-area:hover .upload-icon {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .upload-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtitle {
+            font-size: 0.85rem;
+            color: var(--neutral-600);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .uploaded-files {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .file-item {
+            background: var(--neutral-100);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            background: rgba(0, 48, 135, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--neutral-900);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-size {
+            font-size: 0.75rem;
+            color: var(--neutral-600);
+        }
+
+        .file-remove {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: var(--transition-all);
+            border-radius: var(--radius-md);
+        }
+
+        .file-remove:hover {
+            background: rgba(220, 38, 38, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Review Container */
+        .review-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .review-section {
+            background: var(--neutral-100);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-300);
+        }
+
+        .review-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--neutral-300);
+        }
+
+        .review-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            font-size: 0.85rem;
+            padding: 0.5rem 0;
+        }
+
+        .review-label {
+            color: var(--neutral-600);
+            min-width: 120px;
+            font-weight: 500;
+        }
+
+        .review-value {
+            flex: 1;
+            color: var(--neutral-900);
+            font-weight: 600;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, var(--warning), #fb923c);
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .warning-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .warning-icon {
+            font-size: 1.5rem;
+        }
+
+        .warning-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .warning-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .warning-list {
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .warning-list li {
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .consent-box {
+            background: var(--neutral-100);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+            cursor: pointer;
+            transition: var(--transition-all);
+        }
+
+        .consent-box:hover {
+            border-color: var(--primary);
+            background: var(--neutral-200);
+        }
+
+        .consent-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neutral-400);
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-all);
+            margin-top: 3px;
+        }
+
+        .consent-box.checked .consent-checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .consent-box.checked .consent-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .consent-text {
+            font-size: 0.85rem;
+            color: var(--neutral-700);
+            line-height: 1.6;
+        }
+
+        /* Result Container */
+        .result-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem 1rem;
+            min-height: 500px;
+        }
+
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .result-icon.warning {
+            background: rgba(234, 88, 12, 0.1);
+            color: var(--warning);
+            border: 3px solid rgba(234, 88, 12, 0.2);
+        }
+
+        .result-icon.success {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success);
+            border: 3px solid rgba(22, 163, 74, 0.2);
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .result-message {
+            font-size: 1rem;
+            color: var(--neutral-600);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            max-width: 360px;
+        }
+
+        .ticket-info {
+            background: var(--neutral-100);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .ticket-number {
+            font-size: 0.8rem;
+            color: var(--neutral-600);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .ticket-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .ticket-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(234, 88, 12, 0.1);
+            color: var(--warning);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(234, 88, 12, 0.2);
+        }
+
+        .next-steps {
+            background: var(--neutral-100);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            text-align: left;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-300);
+        }
+
+        .next-steps-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .next-steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .next-step-item {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--neutral-700);
+            line-height: 1.5;
+        }
+
+        .next-step-icon {
+            color: var(--success);
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Contact Options */
+        .contact-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .contact-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--neutral-100);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-lg);
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition-all);
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        .contact-btn:hover {
+            border-color: var(--primary);
+            background: var(--neutral-200);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* WhatsApp Section */
+        .whatsapp-section {
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .whatsapp-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .whatsapp-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .whatsapp-message {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+
+        /* Help Section */
+        .help-section {
+            background: var(--neutral-100);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--neutral-300);
+        }
+
+        .help-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .help-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .help-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .help-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-md);
+            background: rgba(0, 48, 135, 0.05);
+            transition: var(--transition-all);
+        }
+
+        .help-link:hover {
+            background: rgba(0, 48, 135, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Wizard Navigation */
+        .wizard-nav {
+            position: fixed;
+            bottom: var(--nav-height);
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            z-index: 900;
+            border-top: 1px solid var(--neutral-300);
+            height: var(--nav-height);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .footer-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            z-index: 850;
+            border-top: 1px solid var(--neutral-300);
+            height: var(--nav-height);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .btn {
+            flex: 1;
+            height: 44px;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-all);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--neutral-100);
+            border: 1px solid var(--neutral-400);
+            color: var(--neutral-700);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--neutral-200);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-icon-only {
+            flex: 0 0 44px;
+        }
+
+        /* Loading State */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 300px;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            z-index: 2000;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: white;
+        }
+
+        .notification-error { background: var(--danger); }
+        .notification-warning { background: var(--warning); }
+        .notification-success { background: var(--success); }
+        .notification-info { background: var(--info); }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            :root {
+                --header-height: 56px;
+                --trust-bar-height: 0px;
+                --nav-height: 56px;
+            }
+
+            .header-container {
+                padding: 0 0.75rem;
+            }
+
+            .content-area {
+                padding: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.3rem;
+            }
+
+            .datetime-group {
+                grid-template-columns: 1fr;
+            }
+
+            .review-item {
+                flex-direction: column;
+                align-items: start;
+                gap: 0.25rem;
+            }
+
+            .review-value {
+                text-align: left;
+            }
+
+            .contact-options {
+                grid-template-columns: 1fr;
+            }
+
+            .help-links {
+                grid-template-columns: 1fr;
+            }
+
+            .trust-content {
+                font-size: 0.75rem;
+                gap: 1rem;
+            }
+
+            .brand-name {
+                font-size: 1rem;
+            }
+
+            .balance-amount {
+                font-size: 1rem;
+            }
+
+            .category-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .service-icon {
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .claim-status-badge {
+                font-size: 0.65rem;
+            }
+
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+
+            .upload-icon {
+                font-size: 2rem;
+            }
+
+            .result-icon {
+                width: 64px;
+                height: 64px;
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .btn {
+                font-size: 0.85rem;
+                height: 40px;
+            }
+
+            .logo {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+
+            .header-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .trust-bar,
+            .header-container,
+            .wizard-nav {
+                display: none !important;
+            }
+
+            .main-container {
+                padding-top: 0;
+                padding-bottom: 0;
+            }
+
+            body {
+                background: white;
+            }
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary: #000080;
+                --neutral-300: #666666;
+                --neutral-600: #333333;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Transactions list */
+        .transactions-section {
+            background: var(--neutral-100);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            margin: 1rem;
+            padding: 1rem;
+        }
+        .transactions-section h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: var(--neutral-700);
+        }
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--neutral-300);
+            font-size: 0.875rem;
+        }
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- SVG Icons Definitions -->
+    <svg style="display: none;">
+        <defs>
+            <!-- Shield Icon -->
+            <symbol id="shield" viewBox="0 0 24 24">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+            </symbol>
+            
+            <!-- Clock Icon -->
+            <symbol id="clock" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12,6 12,12 16,14"/>
+            </symbol>
+            
+            <!-- Users Icon -->
+            <symbol id="users" viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </symbol>
+            
+            <!-- Warning Icon -->
+            <symbol id="warning" viewBox="0 0 24 24">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </symbol>
+            
+            <!-- Info Icon -->
+            <symbol id="info" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </symbol>
+            
+            <!-- Fraud Icon -->
+            <symbol id="fraud" viewBox="0 0 24 24">
+                <path d="M9.75 9a2.25 2.25 0 1 1 3 2.122 2.25 2.25 0 0 0-1.5 2.122v1.006a.75.75 0 0 0 1.5 0v-1.006c0-.318.2-.602.5-.708A3.75 3.75 0 1 0 8.25 9a.75.75 0 1 0 1.5 0zM12 16.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5z"/>
+            </symbol>
+            
+            <!-- User X Icon -->
+            <symbol id="user-x" viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <line x1="18" y1="8" x2="23" y2="13"/>
+                <line x1="23" y1="8" x2="18" y2="13"/>
+            </symbol>
+            
+            <!-- Ban Icon -->
+            <symbol id="ban" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m4.9 4.9 14.2 14.2"/>
+            </symbol>
+            
+            <!-- Door Open Icon -->
+            <symbol id="door-open" viewBox="0 0 24 24">
+                <path d="M13 4.5V21H3V4.5L8 3l5 1.5z"/>
+                <path d="M8 8.5h.01"/>
+                <path d="M16 21v-3a2 2 0 0 0-2-2v-5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2v3"/>
+            </symbol>
+            
+            <!-- Credit Card Icon -->
+            <symbol id="credit-card" viewBox="0 0 24 24">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+            </symbol>
+            
+            <!-- Exchange Icon -->
+            <symbol id="exchange" viewBox="0 0 24 24">
+                <polyline points="16 3 21 3 21 8"/>
+                <line x1="4" y1="20" x2="21" y2="3"/>
+                <polyline points="21 16 21 21 16 21"/>
+                <line x1="15" y1="15" x2="21" y2="21"/>
+                <line x1="4" y1="4" x2="9" y2="9"/>
+            </symbol>
+            
+            <!-- Store Icon -->
+            <symbol id="store" viewBox="0 0 24 24">
+                <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/>
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/>
+                <path d="M2 7h20"/>
+                <path d="M22 7v3a2 2 0 0 1-2 2v0a2 2 0 0 1-2-2V7a2 2 0 0 1-2-2v0a2 2 0 0 1-2 2v3a2 2 0 0 1-2 2v0a2 2 0 0 1-2-2V7a2 2 0 0 1-2-2v0a2 2 0 0 1-2 2v3a2 2 0 0 1-2 2v0a2 2 0 0 1-2-2V7"/>
+            </symbol>
+            
+            <!-- Settings Icon -->
+            <symbol id="settings" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </symbol>
+            
+            <!-- Question Circle Icon -->
+            <symbol id="question-circle" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </symbol>
+            
+            <!-- Calendar Icon -->
+            <symbol id="calendar" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+            </symbol>
+            
+            <!-- Dollar Sign Icon -->
+            <symbol id="dollar-sign" viewBox="0 0 24 24">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </symbol>
+            
+            <!-- File Text Icon -->
+            <symbol id="file-text" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10,9 9,9 8,9"/>
+            </symbol>
+            
+            <!-- Hash Icon -->
+            <symbol id="hash" viewBox="0 0 24 24">
+                <line x1="4" y1="9" x2="20" y2="9"/>
+                <line x1="4" y1="15" x2="20" y2="15"/>
+                <line x1="10" y1="3" x2="8" y2="21"/>
+                <line x1="16" y1="3" x2="14" y2="21"/>
+            </symbol>
+            
+            <!-- User Icon -->
+            <symbol id="user" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </symbol>
+            
+            <!-- Alert Circle Icon -->
+            <symbol id="alert-circle" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </symbol>
+            
+            <!-- Repeat Icon -->
+            <symbol id="repeat" viewBox="0 0 24 24">
+                <polyline points="17 1 21 5 17 9"/>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                <polyline points="7 23 3 19 7 15"/>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+            </symbol>
+            
+            <!-- Cloud Upload Icon -->
+            <symbol id="cloud-upload" viewBox="0 0 24 24">
+                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
+                <path d="m12 12-3 3h2v3h2v-3h2l-3-3z"/>
+            </symbol>
+            
+            <!-- File Icon -->
+            <symbol id="file" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+            </symbol>
+            
+            <!-- X Icon -->
+            <symbol id="x" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </symbol>
+            
+            <!-- Clipboard List Icon -->
+            <symbol id="clipboard-list" viewBox="0 0 24 24">
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                <path d="M12 11h4"/>
+                <path d="M12 16h4"/>
+                <path d="M8 11h.01"/>
+                <path d="M8 16h.01"/>
+            </symbol>
+            
+            <!-- Message Circle Icon -->
+            <symbol id="message-circle" viewBox="0 0 24 24">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </symbol>
+            
+            <!-- Check Icon -->
+            <symbol id="check" viewBox="0 0 24 24">
+                <polyline points="20,6 9,17 4,12"/>
+            </symbol>
+            
+            <!-- Mail Icon -->
+            <symbol id="mail" viewBox="0 0 24 24">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+            </symbol>
+            
+            <!-- Phone Icon -->
+            <symbol id="phone" viewBox="0 0 24 24">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </symbol>
+            
+            <!-- Arrow Left Icon -->
+            <symbol id="arrow-left" viewBox="0 0 24 24">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12,19 5,12 12,5"/>
+            </symbol>
+            
+            <!-- Arrow Right Icon -->
+            <symbol id="arrow-right" viewBox="0 0 24 24">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12,5 19,12 12,19"/>
+            </symbol>
+            
+            <!-- Home Icon -->
+            <symbol id="home" viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9,22 9,12 15,12 15,22"/>
+            </symbol>
+            
+            <!-- ChevronRight Icon -->
+            <symbol id="chevron-right" viewBox="0 0 24 24">
+                <polyline points="9,18 15,12 9,6"/>
+            </symbol>
+        </defs>
+    </svg>
+
+    <div class="header-container">
+      <div class="header-content">
+        <div class="header-info">
+          <div class="welcome-text">
+            <span class="greeting">Hola</span>
+            <span class="user-name" id="user-name">Usuario</span>
+            <div class="header-avatar" id="header-avatar"></div>
+          </div>
+          <div id="users-online-count" class="users-online">98 usuarios conectados</div>
+        </div>
+        <div class="balance-card-compact">
+          <div class="balance-main">
+            <div class="balance-amount">
+              <span id="balance-value">Bs 0,00</span>
+              <button id="currency-toggle" class="currency-toggle-btn">USD</button>
+            </div>
+            <div id="balance-equivalent-display" class="balance-equivalent">≈ $0.00 | ≈ €0.00</div>
+          </div>
+          <div class="mode-toggle">
+            <button id="toggle-mode-btn" class="toggle-mode-btn">
+              <i class="fas fa-layer-group"></i>
+              <span id="mode-toggle-text">Clásico</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+      <section class="transactions-section" id="transactions-container"></section>
+      <div class="wizard-container">
+        <!-- Barra de progreso -->
+        <div class="progress-container-wizard" id="progressContainer">
+          <div class="progress-bar-wizard">
+            <div class="progress-fill-wizard" id="progressFill"></div>
+          </div>
+          <div class="progress-text-wizard">
+            <span>Reclamo en progreso</span>
+            <span class="progress-percentage-wizard" id="progressPercentage">0%</span>
+          </div>
+        </div>
+
+        <!-- Phase 1: Category Selection -->
+            <div class="phase-container active" id="phase-1">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 16.66%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Paso 1 de 6: Categoría del problema</span>
+                        <span class="progress-percentage">17%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="category-container">
+                        <div class="section-header">
+                            <h1 class="section-title">¿Cómo podemos ayudarte?</h1>
+                            <p class="section-subtitle">Selecciona la categoría que mejor describe tu situación. Nuestro equipo especializado resolverá tu caso de manera profesional y eficiente.</p>
+                        </div>
+
+                        <div class="alert-banner">
+                            <div class="alert-header">
+                                <svg class="icon alert-icon"><use href="#warning"/></svg>
+                                <div class="alert-title">Atención Inmediata Requerida</div>
+                            </div>
+                            <p class="alert-message">
+                                Si has sido víctima de fraude, detectas actividad sospechosa o tienes problemas urgentes, 
+                                selecciona la categoría correspondiente. Tu cuenta será bloqueada temporalmente por seguridad 
+                                mientras investigamos (máximo 5 días hábiles).
+                            </p>
+                        </div>
+
+                        <div class="security-notice">
+                            <div class="security-header">
+                                <svg class="icon security-icon"><use href="#shield"/></svg>
+                                <div class="security-title">Compromiso de Seguridad</div>
+                            </div>
+                            <div class="security-message">
+                                Tu seguridad es nuestra prioridad. Durante la investigación:
+                                <ul class="security-list">
+                                    <li>Tu cuenta estará protegida con bloqueo temporal</li>
+                                    <li>Revisaremos todas las transacciones recientes</li>
+                                    <li>Te mantendremos informado cada 24 horas</li>
+                                    <li>Resolveremos tu caso en máximo 5 días hábiles</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="whatsapp-section">
+                            <div class="whatsapp-icon">
+                                <svg class="icon icon-xl" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.484 3.687"/>
+                                </svg>
+                            </div>
+                            <div class="whatsapp-title">Prioridad Inmediata</div>
+                            <div class="whatsapp-message">
+                                Al finalizar tu reclamo, se enviará automáticamente a nuestro WhatsApp 
+                                +1-737-301-8059 para atención prioritaria y seguimiento en tiempo real.
+                            </div>
+                        </div>
+
+                        <div class="category-grid">
+                            <div class="category-card urgent" onclick="selectCategory('fraud')">
+                                <div class="category-icon">
+                                    <svg class="icon icon-lg"><use href="#fraud"/></svg>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">Fraude o Estafa</div>
+                                    <div class="category-description">Transacciones no autorizadas, phishing, robos o estafas detectadas</div>
+                                </div>
+                                <div class="category-arrow">
+                                    <svg class="icon"><use href="#chevron-right"/></svg>
+                                </div>
+                            </div>
+
+                            <div class="category-card urgent" onclick="selectCategory('account_issues')">
+                                <div class="category-icon">
+                                    <svg class="icon icon-lg"><use href="#user-x"/></svg>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">Conflictos con Ejecutivos</div>
+                                    <div class="category-description">Problemas con operadores, ejecutivos de cuenta o mal servicio</div>
+                                </div>
+                                <div class="category-arrow">
+                                    <svg class="icon"><use href="#chevron-right"/></svg>
+                                </div>
+                            </div>
+
+                            <div class="category-card new" onclick="selectCategory('validation_refusal')">
+                                <div class="category-icon">
+                                    <svg class="icon icon-lg"><use href="#ban"/></svg>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">Negativa a Validación</div>
+                                    <div class="category-description">Usuario se niega a continuar proceso de validación bancaria</div>
+                                </div>
+                                <div class="category-arrow">
+                                    <svg class="icon"><use href="#chevron-right"/></svg>
+                                </div>
+                            </div>
+
+                            <div class="category-card new" onclick="selectCategory('account_closure')">
+                                <div class="category-icon">
+                                    <svg class="icon icon-lg"><use href="#door-open"/></svg>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">Cierre de Cuenta</div>
+                                    <div class="category-description">Desistir sin primera recarga o cerrar cuenta definitivamente</div>
+                                </div>
+                                <div class="category-arrow">
+                                    <svg class="icon"><use href="#chevron-right"/></svg>
+                                </div>
+                            </div>
+
+                            <div class="category-card" onclick="selectCategory('transaction')">
+                                <div class="category-icon">
+                                    <svg class="icon icon-lg"><use href="#exchange"/></svg>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">Problema con Transacción</div>
+                                    <div class="category-description">Errores en pagos, recargas, retiros o transferencias</div>
+                                </div>
+                                <div class="category-arrow">
+                                    <svg class="icon"><use href="#chevron-right"/></svg>
+                                </div>
+                            </div>
+
+                            <div class="category-card" onclick="selectCategory('p2p')">
+                                <div class="category-icon">
+                                    <svg class="icon icon-lg"><use href="#users"/></svg>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">Operación P2P</div>
+                                    <div class="category-description">Problemas con operadores, disputas o intercambios P2P</div>
+                                </div>
+                                <div class="category-arrow">
+                                    <svg class="icon"><use href="#chevron-right"/></svg>
+                                </div>
+                            </div>
+
+                            <div class="category-card" onclick="selectCategory('card')">
+                                <div class="category-icon">
+                                    <svg class="icon icon-lg"><use href="#credit-card"/></svg>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">Tarjetas Virtuales</div>
+                                    <div class="category-description">Problemas con tarjetas virtuales, cargos o límites</div>
+                                </div>
+                                <div class="category-arrow">
+                                    <svg class="icon"><use href="#chevron-right"/></svg>
+                                </div>
+                            </div>
+
+                            <div class="category-card" onclick="selectCategory('service')">
+                                <div class="category-icon">
+                                    <svg class="icon icon-lg"><use href="#store"/></svg>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">Servicios y Alianzas</div>
+                                    <div class="category-description">Problemas con servicios asociados y comercios afiliados</div>
+                                </div>
+                                <div class="category-arrow">
+                                    <svg class="icon"><use href="#chevron-right"/></svg>
+                                </div>
+                            </div>
+
+                            <div class="category-card" onclick="selectCategory('account')">
+                                <div class="category-icon">
+                                    <svg class="icon icon-lg"><use href="#settings"/></svg>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">Cuenta y Acceso</div>
+                                    <div class="category-description">Problemas de acceso, configuración o verificación</div>
+                                </div>
+                                <div class="category-arrow">
+                                    <svg class="icon"><use href="#chevron-right"/></svg>
+                                </div>
+                            </div>
+
+                            <div class="category-card" onclick="selectCategory('other')">
+                                <div class="category-icon">
+                                    <svg class="icon icon-lg"><use href="#question-circle"/></svg>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">Otro Problema</div>
+                                    <div class="category-description">Mi problema no está en las opciones anteriores</div>
+                                </div>
+                                <div class="category-arrow">
+                                    <svg class="icon"><use href="#chevron-right"/></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="help-section">
+                            <div class="help-header">
+                                <svg class="icon"><use href="#question-circle"/></svg>
+                                <div class="help-title">¿Necesitas ayuda adicional?</div>
+                            </div>
+                            <div class="help-links">
+                                <a href="fororemeex.html" class="help-link">
+                                    <svg class="icon icon-sm"><use href="#message-circle"/></svg>
+                                    <span>Foro de Usuarios</span>
+                                </a>
+                                <a href="opiniones.html" class="help-link">
+                                    <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    <span>Opiniones</span>
+                                </a>
+                                <a href="mailto:info@remeexvisa.com" class="help-link">
+                                    <svg class="icon icon-sm"><use href="#mail"/></svg>
+                                    <span>Email Soporte</span>
+                                </a>
+                                <a href="https://wa.me/17373018059" class="help-link" target="_blank">
+                                    <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.484 3.687"/>
+                                    </svg>
+                                    <span>WhatsApp</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: Service Selection -->
+            <div class="phase-container" id="phase-2">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 33.33%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Paso 2 de 6: Servicio afectado</span>
+                        <span class="progress-percentage">33%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="services-container">
+                        <div class="section-header">
+                            <h1 class="section-title">¿Qué servicio está afectado?</h1>
+                            <p class="section-subtitle">Selecciona el servicio específico donde ocurrió el problema para dirigir tu caso al especialista correcto</p>
+                        </div>
+
+                        <div id="services-list">
+                            <!-- Services will be dynamically loaded based on category -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3: Incident Details -->
+            <div class="phase-container" id="phase-3">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Paso 3 de 6: Detalles del incidente</span>
+                        <span class="progress-percentage">50%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="section-header">
+                        <h1 class="section-title">Cuéntanos lo sucedido</h1>
+                        <p class="section-subtitle">Proporciona todos los detalles posibles. Mientras más información nos brindes, más rápido podremos resolver tu caso.</p>
+                    </div>
+
+                    <div class="security-notice">
+                        <div class="security-header">
+                            <svg class="icon security-icon"><use href="#info"/></svg>
+                            <div class="security-title">Información Importante</div>
+                        </div>
+                        <div class="security-message">
+                            Todos los datos que proporciones están protegidos bajo estrictos protocolos de seguridad y privacidad. 
+                            Esta información será utilizada exclusivamente para la investigación de tu caso.
+                        </div>
+                    </div>
+
+                    <form class="incident-form" id="incident-form">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon"><use href="#calendar"/></svg>
+                                Fecha y hora del incidente <span class="required">*</span>
+                            </label>
+                            <div class="datetime-group">
+                                <input type="date" class="form-input" id="incident-date" required>
+                                <input type="time" class="form-input" id="incident-time" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon"><use href="#dollar-sign"/></svg>
+                                Monto involucrado <span class="required">*</span>
+                            </label>
+                            <div class="amount-input-group">
+                                <span class="currency-prefix">$</span>
+                                <input type="number" class="form-input" id="amount" placeholder="0.00" step="0.01" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon"><use href="#file-text"/></svg>
+                                Descripción detallada <span class="required">*</span>
+                            </label>
+                            <textarea class="form-textarea" id="description" placeholder="Describe detalladamente lo que sucedió. Incluye: qué intentabas hacer, qué error apareció, pasos previos realizados, y cualquier detalle que consideres relevante..." maxlength="1000" required></textarea>
+                            <div class="char-counter">
+                                <span id="char-count">0</span> / 1000 caracteres
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon"><use href="#hash"/></svg>
+                                Número de referencia (si aplica)
+                            </label>
+                            <input type="text" class="form-input" id="reference" placeholder="Ej: TXN-123456789, REF-98765, Order #12345">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon"><use href="#user"/></svg>
+                                Persona involucrada (si aplica)
+                            </label>
+                            <input type="text" class="form-input" id="person-involved" placeholder="Nombre del ejecutivo, operador P2P, o persona relacionada">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon"><use href="#alert-circle"/></svg>
+                                Impacto del problema <span class="required">*</span>
+                            </label>
+                            <select class="form-select" id="impact" required>
+                                <option value="">Selecciona el impacto en tu situación</option>
+                                <option value="critical">Crítico - No puedo acceder a mis fondos/cuenta bloqueada</option>
+                                <option value="high">Alto - Afecta gravemente mis operaciones diarias</option>
+                                <option value="medium">Medio - Puedo operar con limitaciones menores</option>
+                                <option value="low">Bajo - Es una molestia que no afecta operaciones</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon"><use href="#repeat"/></svg>
+                                ¿Has intentado solucionarlo antes?
+                            </label>
+                            <select class="form-select" id="previous-attempts">
+                                <option value="">Selecciona si has intentado resolverlo</option>
+                                <option value="no">No, es la primera vez que reporto este problema</option>
+                                <option value="self">Sí, intenté solucionarlo por mi cuenta</option>
+                                <option value="support">Sí, contacté soporte anteriormente</option>
+                                <option value="multiple">Sí, he contactado múltiples veces</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Phase 4: Evidence Upload -->
+            <div class="phase-container" id="phase-4">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 66.66%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Paso 4 de 6: Evidencias (Opcional)</span>
+                        <span class="progress-percentage">67%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="evidence-container">
+                        <div class="section-header">
+                            <h1 class="section-title">Adjunta evidencias</h1>
+                            <p class="section-subtitle">Las evidencias aceleran la resolución de tu caso. Puedes continuar sin archivos si no tienes evidencias disponibles.</p>
+                        </div>
+
+                        <div class="security-notice">
+                            <div class="security-header">
+                                <svg class="icon security-icon"><use href="#shield"/></svg>
+                                <div class="security-title">Evidencias Recomendadas</div>
+                            </div>
+                            <div class="security-message">
+                                <strong>Tipos de evidencias útiles:</strong>
+                                <ul class="security-list">
+                                    <li>Capturas de pantalla del error o problema</li>
+                                    <li>Comprobantes de pago o transferencias</li>
+                                    <li>Emails de confirmación o notificaciones</li>
+                                    <li>Conversaciones con operadores o soporte</li>
+                                    <li>Documentos relacionados con el incidente</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                            <div class="upload-icon">
+                                <svg class="icon icon-xl"><use href="#cloud-upload"/></svg>
+                            </div>
+                            <div class="upload-title">Arrastra archivos aquí o haz clic para seleccionar</div>
+                            <div class="upload-subtitle">Formatos: PNG, JPG, JPEG, PDF, DOC, DOCX | Tamaño máximo: 10MB por archivo</div>
+                            <input type="file" class="file-input" id="file-input" multiple accept="image/*,.pdf,.doc,.docx">
+                        </div>
+
+                        <div class="uploaded-files" id="uploaded-files">
+                            <!-- Files will be shown here -->
+                        </div>
+
+                        <div class="help-section">
+                            <div class="help-header">
+                                <svg class="icon"><use href="#info"/></svg>
+                                <div class="help-title">Consejos para mejores evidencias</div>
+                            </div>
+                            <div class="help-links">
+                                <div class="help-link">
+                                    <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>Capturas claras y legibles</span>
+                                </div>
+                                <div class="help-link">
+                                    <svg class="icon icon-sm"><use href="#file"/></svg>
+                                    <span>Documentos en buena calidad</span>
+                                </div>
+                                <div class="help-link">
+                                    <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M7 4a3 3 0 016 0v4a3 3 0 01-6 0V4zM5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-1.5v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z"/>
+                                    </svg>
+                                    <span>Nombra archivos descriptivamente</span>
+                                </div>
+                                <div class="help-link">
+                                    <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/>
+                                    </svg>
+                                    <span>Comprime si son muy grandes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 5: Review & Confirm -->
+            <div class="phase-container" id="phase-5">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 83.33%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Paso 5 de 6: Revisar y confirmar</span>
+                        <span class="progress-percentage">83%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="review-container">
+                        <div class="section-header">
+                            <h1 class="section-title">Revisa tu reclamo</h1>
+                            <p class="section-subtitle">Verifica que toda la información sea correcta antes de enviar. Una vez enviado, se procesará inmediatamente.</p>
+                        </div>
+
+                        <div class="warning-box">
+                            <div class="warning-header">
+                                <svg class="icon warning-icon"><use href="#shield"/></svg>
+                                <div class="warning-title">Medidas de Seguridad Automáticas</div>
+                            </div>
+                            <div class="warning-content">
+                                <strong>Al confirmar este reclamo, se tomarán las siguientes acciones de seguridad:</strong>
+                                <ul class="warning-list">
+                                    <li><strong>Bloqueo temporal preventivo</strong> de tu cuenta por máximo 5 días hábiles</li>
+                                    <li><strong>Revisión completa</strong> de todas las transacciones de los últimos 30 días</li>
+                                    <li><strong>Notificación inmediata</strong> por email con el número de caso</li>
+                                    <li><strong>Envío automático</strong> a WhatsApp +1-737-301-8059 para seguimiento prioritario</li>
+                                    <li><strong>Asignación de especialista</strong> según el tipo de problema reportado</li>
+                                    <li><strong>Actualizaciones cada 24 horas</strong> sobre el progreso de la investigación</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="review-section">
+                            <div class="review-section-header">
+                                <svg class="icon"><use href="#clipboard-list"/></svg>
+                                <span>Resumen del Reclamo</span>
+                            </div>
+                            <div class="review-content">
+                                <div class="review-item">
+                                    <span class="review-label">Categoría:</span>
+                                    <span class="review-value" id="review-category">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Servicio:</span>
+                                    <span class="review-value" id="review-service">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Fecha/Hora:</span>
+                                    <span class="review-value" id="review-date">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Monto:</span>
+                                    <span class="review-value" id="review-amount">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Impacto:</span>
+                                    <span class="review-value" id="review-impact">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Persona involucrada:</span>
+                                    <span class="review-value" id="review-person">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Intentos previos:</span>
+                                    <span class="review-value" id="review-attempts">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Archivos adjuntos:</span>
+                                    <span class="review-value" id="review-files">0 archivos</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="review-section">
+                            <div class="review-section-header">
+                                <svg class="icon"><use href="#message-circle"/></svg>
+                                <span>Descripción del Problema</span>
+                            </div>
+                            <div class="review-content">
+                                <div class="review-item" style="flex-direction: column; align-items: start;">
+                                    <span class="review-label" style="margin-bottom: 0.5rem;">Descripción detallada:</span>
+                                    <div class="review-value" id="review-description" style="text-align: left; background: var(--neutral-200); padding: 1rem; border-radius: var(--radius-md); font-size: 0.8rem; line-height: 1.5;">-</div>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Referencia:</span>
+                                    <span class="review-value" id="review-reference">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="whatsapp-section">
+                            <div class="whatsapp-icon">
+                                <svg class="icon icon-xl" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.484 3.687"/>
+                                </svg>
+                            </div>
+                            <div class="whatsapp-title">Seguimiento Automático</div>
+                            <div class="whatsapp-message">
+                                Tu reclamo será enviado automáticamente a nuestro WhatsApp especializado para 
+                                <strong>atención inmediata y seguimiento en tiempo real</strong>. 
+                                Recibirás actualizaciones instantáneas sobre el progreso de tu caso.
+                            </div>
+                        </div>
+
+                        <div class="consent-box" id="consent-box" onclick="toggleConsent()">
+                            <div class="consent-checkbox"></div>
+                            <div class="consent-text">
+                                <strong>Acepto y confirmo:</strong><br>
+                                • Entiendo que mi cuenta será <strong>bloqueada temporalmente</strong> por seguridad (máximo 5 días).<br>
+                                • Confirmo que toda la información proporcionada es <strong>verdadera y completa</strong>.<br>
+                                • Autorizo el <strong>envío automático via WhatsApp</strong> para seguimiento prioritario.<br>
+                                • Comprendo que proporcionar información falsa puede resultar en <strong>suspensión permanente</strong>.<br>
+                                • Acepto los <strong>protocolos de seguridad e investigación</strong> necesarios para resolver mi caso.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 6: Result -->
+            <div class="phase-container" id="phase-6">
+                <div class="progress-header">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-step-text">Reclamo Registrado y Procesado</span>
+                        <span class="progress-percentage">100%</span>
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div class="result-container">
+                        <div class="result-icon warning">
+                            <svg class="icon icon-xl"><use href="#shield"/></svg>
+                        </div>
+                        
+                        <h1 class="result-title">Reclamo Registrado Exitosamente</h1>
+                        <p class="result-message">
+                            Tu reclamo ha sido registrado y procesado correctamente. Por tu seguridad, 
+                            hemos aplicado un <strong>bloqueo temporal a tu cuenta</strong> mientras nuestro 
+                            equipo especializado investiga tu caso. <strong>Tiempo máximo: 5 días hábiles.</strong>
+                        </p>
+
+                        <div class="ticket-info">
+                            <div class="ticket-number">Número de Caso Asignado</div>
+                            <div class="ticket-value" id="ticket-number">RCL-2025-0847</div>
+                            <div class="ticket-status">
+                                <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+                                </svg>
+                                En Investigación Activa
+                            </div>
+                        </div>
+
+                        <div class="whatsapp-section" style="margin-bottom: 1.5rem;">
+                            <div class="whatsapp-icon">
+                                <svg class="icon icon-xl" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.484 3.687"/>
+                                </svg>
+                            </div>
+                            <div class="whatsapp-title">Enviado a WhatsApp Prioritario</div>
+                            <div class="whatsapp-message">
+                                Tu caso ha sido enviado automáticamente a nuestro equipo especializado via 
+                                <strong>WhatsApp +1-737-301-8059</strong> para atención inmediata. 
+                                Recibirás actualizaciones cada 24 horas.
+                            </div>
+                        </div>
+
+                        <div class="next-steps">
+                            <div class="next-steps-title">Próximos Pasos Automatizados</div>
+                            <div class="next-steps-list">
+                                <div class="next-step-item">
+                                    <svg class="icon icon-sm next-step-icon"><use href="#mail"/></svg>
+                                    <span><strong>Email de confirmación</strong> enviado a tu bandeja en los próximos 5 minutos</span>
+                                </div>
+                                <div class="next-step-item">
+                                    <svg class="icon icon-sm next-step-icon"><use href="#user"/></svg>
+                                    <span><strong>Especialista asignado</strong> según tu tipo de problema dentro de 2 horas</span>
+                                </div>
+                                <div class="next-step-item">
+                                    <svg class="icon icon-sm next-step-icon" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+                                    </svg>
+                                    <span><strong>Investigación iniciada</strong> con revisión completa de tu cuenta en 24 horas</span>
+                                </div>
+                                <div class="next-step-item">
+                                    <svg class="icon icon-sm next-step-icon"><use href="#clock"/></svg>
+                                    <span><strong>Actualizaciones diarias</strong> via email y WhatsApp sobre el progreso</span>
+                                </div>
+                                <div class="next-step-item">
+                                    <svg class="icon icon-sm next-step-icon" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+                                    </svg>
+                                    <span><strong>Cuenta desbloqueada</strong> automáticamente al resolver el caso (máx. 5 días)</span>
+                                </div>
+                                <div class="next-step-item">
+                                    <svg class="icon icon-sm next-step-icon"><use href="#phone"/></svg>
+                                    <span><strong>Contacto adicional</strong> si necesitas información adicional urgente</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contact-options">
+                            <a href="https://wa.me/17373018059" class="contact-btn" target="_blank">
+                                <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.484 3.687"/>
+                                </svg>
+                                <span>WhatsApp Directo</span>
+                            </a>
+                            <a href="mailto:info@remeexvisa.com?subject=Caso%20RCL-2025-0847" class="contact-btn">
+                                <svg class="icon"><use href="#mail"/></svg>
+                                <span>Email Soporte</span>
+                            </a>
+                            <a href="fororemeex.html" class="contact-btn">
+                                <svg class="icon"><use href="#message-circle"/></svg>
+                                <span>Foro Usuarios</span>
+                            </a>
+                            <a href="opiniones.html" class="contact-btn">
+                                <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span>Opiniones</span>
+                            </a>
+                        </div>
+
+                        <button class="btn btn-primary" style="margin-top: 2rem; width: 100%; max-width: 400px;" onclick="goToHome()">
+                            <svg class="icon"><use href="#home"/></svg>
+                            <span>Volver al Panel Principal</span>
+                        </button>
+
+                        <div class="help-section" style="margin-top: 2rem;">
+                            <div class="help-header">
+                                <svg class="icon"><use href="#info"/></svg>
+                                <div class="help-title">Información Importante</div>
+                            </div>
+                            <div class="security-message" style="font-size: 0.8rem; text-align: center;">
+                                <strong>Guarda este número de caso:</strong> RCL-2025-0847<br>
+                                Lo necesitarás para cualquier consulta sobre tu reclamo.<br>
+                                <em>Tu privacidad y seguridad están protegidas bajo nuestros protocolos de máxima seguridad.</em>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Wizard Navigation -->
+    <div class="wizard-nav">
+        <button class="btn btn-secondary btn-icon-only" id="btn-back" onclick="goBack()" disabled>
+            <svg class="icon"><use href="#arrow-left"/></svg>
+        </button>
+        <button class="btn btn-primary" id="btn-next" onclick="goNext()" disabled>
+            <span>Continuar</span>
+            <svg class="icon"><use href="#arrow-right"/></svg>
+        </button>
+    </div>
+
+    <div class="footer-nav">
+        <button class="btn btn-secondary" onclick="window.location.href='homevisa.html'">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </button>
+        <button class="btn btn-secondary" onclick="window.open('https://wa.me/17373018059','_blank')">
+            <i class="fas fa-headset"></i>
+            <span>Ayuda</span>
+        </button>
+    </div>
+
+    <script>
+        // Professional State Management
+        let currentPhase = 1;
+        let claimData = {
+            category: '',
+            service: '',
+            date: '',
+            time: '',
+            amount: '',
+            description: '',
+            reference: '',
+            personInvolved: '',
+            impact: '',
+            previousAttempts: '',
+            files: [],
+            consent: false
+        };
+
+        // Professional Services Configuration
+        const servicesByCategory = {
+            fraud: {
+                title: 'Tipos de Fraude y Estafas',
+                services: [
+                    { id: 'unauthorized_charge', name: 'Cargo no autorizado en mi cuenta', icon: 'alert-circle' },
+                    { id: 'phishing', name: 'Phishing / Sitio web falso', icon: 'fraud' },
+                    { id: 'account_hacked', name: 'Mi cuenta fue comprometida/hackeada', icon: 'shield' },
+                    { id: 'identity_theft', name: 'Robo de identidad o suplantación', icon: 'user' },
+                    { id: 'scam_operator', name: 'Operador fraudulento en P2P', icon: 'users' },
+                    { id: 'fake_support', name: 'Soporte técnico falso', icon: 'phone' },
+                    { id: 'social_engineering', name: 'Ingeniería social / Manipulación', icon: 'warning' }
+                ]
+            },
+            account_issues: {
+                title: 'Conflictos con Personal y Ejecutivos',
+                services: [
+                    { id: 'rude_executive', name: 'Ejecutivo de cuenta grosero o unprofessional', icon: 'user-x' },
+                    { id: 'bad_service', name: 'Mal servicio al cliente', icon: 'phone' },
+                    { id: 'operator_conflict', name: 'Conflicto con operador P2P', icon: 'users' },
+                    { id: 'misinformation', name: 'Información incorrecta proporcionada', icon: 'alert-circle' },
+                    { id: 'ignored_requests', name: 'Solicitudes ignoradas o no atendidas', icon: 'x' },
+                    { id: 'discrimination', name: 'Trato discriminatorio o preferencial', icon: 'warning' },
+                    { id: 'unauthorized_actions', name: 'Acciones realizadas sin mi autorización', icon: 'ban' }
+                ]
+            },
+            validation_refusal: {
+                title: 'Negativa a Procesos de Validación',
+                services: [
+                    { id: 'bank_validation_refusal', name: 'Me niego a validar mi cuenta bancaria', icon: 'credit-card' },
+                    { id: 'document_refusal', name: 'No quiero enviar más documentos', icon: 'file' },
+                    { id: 'phone_verification_refusal', name: 'Rechazo verificación telefónica', icon: 'phone' },
+                    { id: 'video_call_refusal', name: 'No acepto videollamada de verificación', icon: 'x' },
+                    { id: 'identity_verification_refusal', name: 'Rechazo verificación de identidad adicional', icon: 'user' },
+                    { id: 'address_proof_refusal', name: 'No proporcionaré comprobante de domicilio', icon: 'home' },
+                    { id: 'income_proof_refusal', name: 'Rechazo mostrar comprobantes de ingresos', icon: 'dollar-sign' }
+                ]
+            },
+            account_closure: {
+                title: 'Cierre y Cancelación de Cuenta',
+                services: [
+                    { id: 'no_first_recharge', name: 'Desisto de hacer mi primera recarga', icon: 'credit-card' },
+                    { id: 'close_account_no_use', name: 'Quiero cerrar cuenta sin usar servicios', icon: 'door-open' },
+                    { id: 'dissatisfied_service', name: 'Insatisfecho con el servicio, cancelar', icon: 'x' },
+                    { id: 'found_alternative', name: 'Encontré alternativa mejor, cerrar cuenta', icon: 'exchange' },
+                    { id: 'too_complicated', name: 'Proceso muy complicado, desistir', icon: 'warning' },
+                    { id: 'security_concerns', name: 'Preocupaciones de seguridad, cancelar', icon: 'shield' },
+                    { id: 'immediate_closure', name: 'Cierre inmediato por cualquier razón', icon: 'x' }
+                ]
+            },
+            transaction: {
+                title: 'Problemas con Transacciones',
+                services: [
+                    { id: 'credit_card', name: 'Error en recarga con tarjeta de crédito', icon: 'credit-card' },
+                    { id: 'bank_transfer', name: 'Problema con transferencia bancaria', icon: 'exchange' },
+                    { id: 'mobile_payment', name: 'Error en pago móvil', icon: 'phone' },
+                    { id: 'withdrawal', name: 'Problema con retiro de fondos', icon: 'dollar-sign' },
+                    { id: 'international', name: 'Error en transferencia internacional', icon: 'exchange' },
+                    { id: 'pending_transaction', name: 'Transacción pendiente por mucho tiempo', icon: 'clock' },
+                    { id: 'wrong_amount', name: 'Monto incorrecto en transacción', icon: 'dollar-sign' },
+                    { id: 'double_charge', name: 'Cargo duplicado', icon: 'alert-circle' }
+                ]
+            },
+            p2p: {
+                title: 'Operaciones Persona a Persona (P2P)',
+                services: [
+                    { id: 'p2p_buy', name: 'Problema en compra P2P', icon: 'users' },
+                    { id: 'p2p_sell', name: 'Error en venta P2P', icon: 'dollar-sign' },
+                    { id: 'p2p_dispute', name: 'Disputa con operador P2P', icon: 'warning' },
+                    { id: 'p2p_timeout', name: 'Tiempo de operación excedido', icon: 'clock' },
+                    { id: 'p2p_wrong_amount', name: 'Monto incorrecto en P2P', icon: 'dollar-sign' },
+                    { id: 'p2p_payment_not_received', name: 'No recibí el pago del operador', icon: 'x' },
+                    { id: 'p2p_operator_disappeared', name: 'Operador desapareció/no responde', icon: 'alert-circle' }
+                ]
+            },
+            card: {
+                title: 'Tarjetas Virtuales y Físicas',
+                services: [
+                    { id: 'virtual_card_creation', name: 'Error al crear tarjeta virtual', icon: 'credit-card' },
+                    { id: 'virtual_card_charge', name: 'Cargo inesperado en tarjeta virtual', icon: 'alert-circle' },
+                    { id: 'virtual_card_blocked', name: 'Tarjeta virtual bloqueada sin razón', icon: 'ban' },
+                    { id: 'virtual_card_limit', name: 'Problemas con límites de tarjeta', icon: 'warning' },
+                    { id: 'card_not_working', name: 'Tarjeta no funciona en comercios', icon: 'x' },
+                    { id: 'card_declined', name: 'Tarjeta rechazada constantemente', icon: 'ban' },
+                    { id: 'card_security', name: 'Problemas de seguridad con tarjeta', icon: 'shield' }
+                ]
+            },
+            service: {
+                title: 'Servicios y Comercios Asociados',
+                services: [
+                    { id: 'latinphone', name: 'Latinphone - Recargas telefónicas', icon: 'phone' },
+                    { id: 'yummy', name: 'Yummy - Delivery de comida', icon: 'store' },
+                    { id: 'yummyrides', name: 'YummyRides - Transporte', icon: 'exchange' },
+                    { id: 'daka', name: 'Daka - Electrodomésticos', icon: 'store' },
+                    { id: 'multimax', name: 'Multimaxstore - Compras', icon: 'store' },
+                    { id: 'bera', name: 'Bera Motors - Motocicletas', icon: 'exchange' },
+                    { id: 'beco', name: 'Tiendas Beco', icon: 'store' },
+                    { id: 'zinli', name: 'Zinli - Servicios financieros', icon: 'dollar-sign' },
+                    { id: 'farmatodo', name: 'Farmatodo - Farmacia', icon: 'store' },
+                    { id: 'cashea', name: 'Cashea - Préstamos', icon: 'dollar-sign' },
+                    { id: 'clx', name: 'CLX Samsung - Tecnología', icon: 'phone' },
+                    { id: 'other_merchant', name: 'Otro comercio asociado', icon: 'store' }
+                ]
+            },
+            account: {
+                title: 'Cuenta y Configuración',
+                services: [
+                    { id: 'usa_account', name: 'Problema con cuenta USA', icon: 'user' },
+                    { id: 'zelle', name: 'Error con cuenta Zelle', icon: 'dollar-sign' },
+                    { id: 'login', name: 'No puedo acceder a mi cuenta', icon: 'user' },
+                    { id: 'verification', name: 'Problemas con verificación de identidad', icon: 'check' },
+                    { id: 'limits', name: 'Problemas con límites de cuenta', icon: 'warning' },
+                    { id: 'password_reset', name: 'No puedo restablecer contraseña', icon: 'shield' },
+                    { id: 'profile_update', name: 'Error al actualizar perfil', icon: 'settings' },
+                    { id: 'notification_settings', name: 'Problemas con notificaciones', icon: 'warning' }
+                ]
+            },
+            other: {
+                title: 'Otros Problemas y Consultas',
+                services: [
+                    { id: 'app_error', name: 'Error en la aplicación móvil', icon: 'phone' },
+                    { id: 'website_error', name: 'Error en el sitio web', icon: 'warning' },
+                    { id: 'fees', name: 'Comisiones incorrectas o inesperadas', icon: 'dollar-sign' },
+                    { id: 'customer_service', name: 'Problema general con atención al cliente', icon: 'phone' },
+                    { id: 'feature_request', name: 'Solicitud de nueva funcionalidad', icon: 'info' },
+                    { id: 'feedback', name: 'Sugerencia o comentario general', icon: 'message-circle' },
+                    { id: 'other', name: 'Mi problema no está listado', icon: 'question-circle' }
+                ]
+            }
+        };
+
+        // Professional category names for review
+        const categoryNames = {
+            fraud: 'Fraude o Estafa',
+            account_issues: 'Conflictos con Ejecutivos',
+            validation_refusal: 'Negativa a Validación',
+            account_closure: 'Cierre de Cuenta',
+            transaction: 'Problema con Transacción',
+            p2p: 'Operación P2P',
+            card: 'Tarjetas Virtuales',
+            service: 'Servicios y Alianzas',
+            account: 'Cuenta y Acceso',
+            other: 'Otro Problema'
+        };
+
+        // Professional impact names
+        const impactNames = {
+            critical: 'Crítico - Sin acceso a fondos',
+            high: 'Alto - Operaciones afectadas',
+            medium: 'Medio - Limitaciones menores',
+            low: 'Bajo - Molestia menor'
+        };
+
+        // Professional previous attempts names
+        const previousAttemptsNames = {
+            no: 'Primera vez reportando',
+            self: 'Intenté solucionarlo yo mismo',
+            support: 'Contacté soporte antes',
+            multiple: 'He contactado múltiples veces'
+        };
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserInfo();
+            setupEventListeners();
+            updateNavigation();
+            initializeAnimations();
+        });
+
+        // Initialize professional animations
+        function initializeAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.category-card, .form-group, .service-item').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // Professional user info update
+        function updateUserInfo() {
+            const userData = JSON.parse(localStorage.getItem('remeexUserData') || '{}');
+            const balanceData = JSON.parse(localStorage.getItem('remeexBalance') || '{}');
+            const txData = JSON.parse(localStorage.getItem('remeexTransactions') || '{}');
+
+            const name = userData.fullName || userData.name || 'Usuario';
+            const shortName = name.split(' ').filter(Boolean).slice(0, 2).join(' ');
+            const userNameEl = document.getElementById('user-name');
+            if (userNameEl) userNameEl.textContent = shortName;
+
+            const avatarEl = document.getElementById('header-avatar');
+            const savedPhoto = localStorage.getItem('remeexProfilePhoto');
+            if (avatarEl) {
+                if (savedPhoto) {
+                    avatarEl.style.backgroundImage = `url(${savedPhoto})`;
+                    avatarEl.textContent = '';
+                } else {
+                    avatarEl.style.backgroundImage = '';
+                    const initials = shortName.split(' ').map(n => n[0]).join('').toUpperCase();
+                    avatarEl.textContent = initials;
+                }
+            }
+
+            const usd = parseFloat(balanceData.usd) || 0;
+            const bs = parseFloat(balanceData.bs) || 0;
+            const eur = parseFloat(balanceData.eur) || 0;
+            let currentCurrency = 'usd';
+
+            function formatCurrency(amount, currency) {
+                const opts = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+                if (currency === 'bs') return `Bs ${amount.toLocaleString('es-VE', opts)}`;
+                if (currency === 'eur') return `€${amount.toLocaleString('de-DE', opts)}`;
+                return `$${amount.toLocaleString('en-US', opts)}`;
+            }
+
+            function renderBalance() {
+                const valEl = document.getElementById('balance-value');
+                const eqEl = document.getElementById('balance-equivalent-display');
+                const toggleBtn = document.getElementById('currency-toggle');
+                if (currentCurrency === 'usd') {
+                    if (valEl) valEl.textContent = formatCurrency(usd, 'usd');
+                    if (eqEl) eqEl.textContent = `≈ Bs ${bs.toLocaleString('es-VE', {minimumFractionDigits:2})} | ≈ €${eur.toLocaleString('de-DE', {minimumFractionDigits:2})}`;
+                    if (toggleBtn) toggleBtn.textContent = 'USD';
+                } else if (currentCurrency === 'bs') {
+                    if (valEl) valEl.textContent = formatCurrency(bs, 'bs');
+                    if (eqEl) eqEl.textContent = `≈ $${usd.toLocaleString('en-US', {minimumFractionDigits:2})} | ≈ €${eur.toLocaleString('de-DE', {minimumFractionDigits:2})}`;
+                    if (toggleBtn) toggleBtn.textContent = 'Bs';
+                } else {
+                    if (valEl) valEl.textContent = formatCurrency(eur, 'eur');
+                    if (eqEl) eqEl.textContent = `≈ $${usd.toLocaleString('en-US', {minimumFractionDigits:2})} | ≈ Bs ${bs.toLocaleString('es-VE', {minimumFractionDigits:2})}`;
+                    if (toggleBtn) toggleBtn.textContent = 'EUR';
+                }
+            }
+
+            const transactions = Array.isArray(txData.transactions) ? txData.transactions : [];
+
+            function renderTransactions() {
+                const container = document.getElementById('transactions-container');
+                if (!container) return;
+                if (transactions.length === 0) {
+                    container.style.display = 'none';
+                    return;
+                }
+                container.style.display = 'block';
+                container.innerHTML = '<h3>Transacciones recientes</h3>';
+                const list = document.createElement('div');
+                transactions.slice(0,5).forEach(tx => {
+                    const item = document.createElement('div');
+                    item.className = 'transaction-item';
+                    const desc = tx.description || tx.type || '';
+                    let amount = tx.amount || 0;
+                    let currency = 'usd';
+                    if (currentCurrency === 'bs' && typeof tx.amountBs === 'number') {
+                        amount = tx.amountBs;
+                        currency = 'bs';
+                    } else if (currentCurrency === 'eur' && typeof tx.amountEur === 'number') {
+                        amount = tx.amountEur;
+                        currency = 'eur';
+                    }
+                    item.innerHTML = `<span>${tx.date || ''}</span><span>${desc}</span><span>${formatCurrency(amount, currency)}</span>`;
+                    list.appendChild(item);
+                });
+                container.appendChild(list);
+            }
+
+            const toggleBtn = document.getElementById('currency-toggle');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    currentCurrency = currentCurrency === 'usd' ? 'bs' : currentCurrency === 'bs' ? 'eur' : 'usd';
+                    renderBalance();
+                    renderTransactions();
+                });
+            }
+
+            renderBalance();
+            renderTransactions();
+        }
+
+        // Professional event listeners setup
+        function setupEventListeners() {
+            const description = document.getElementById('description');
+            if (description) {
+                description.addEventListener('input', function() {
+                    const count = this.value.length;
+                    document.getElementById('char-count').textContent = count;
+                    claimData.description = this.value;
+                    updateNavigation();
+                });
+            }
+
+            const fileInput = document.getElementById('file-input');
+            if (fileInput) {
+                fileInput.addEventListener('change', handleFileUpload);
+            }
+
+            const uploadArea = document.getElementById('upload-area');
+            if (uploadArea) {
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    handleFileUpload({ target: { files: e.dataTransfer.files } });
+                });
+            }
+
+            document.querySelectorAll('.form-input, .form-select').forEach(input => {
+                input.addEventListener('change', updateFormData);
+                input.addEventListener('blur', validateField);
+            });
+
+            document.addEventListener('keydown', handleKeyboardNavigation);
+        }
+
+        // Professional keyboard navigation
+        function handleKeyboardNavigation(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                if (!document.getElementById('btn-next').disabled) {
+                    goNext();
+                }
+            }
+            if (e.key === 'Escape') {
+                if (currentPhase > 1 && currentPhase < 6) {
+                    if (confirm('¿Estás seguro de que deseas cancelar el reclamo?')) {
+                        goToHome();
+                    }
+                }
+            }
+        }
+
+        // Professional field validation
+        function validateField(e) {
+            const field = e.target;
+            const value = field.value.trim();
+            
+            field.classList.remove('error', 'success');
+            
+            switch(field.id) {
+                case 'amount':
+                    if (value && (isNaN(value) || parseFloat(value) <= 0)) {
+                        showFieldError(field, 'Ingresa un monto válido mayor a 0');
+                    } else if (value) {
+                        showFieldSuccess(field);
+                    }
+                    break;
+                case 'incident-date':
+                    if (value && new Date(value) > new Date()) {
+                        showFieldError(field, 'La fecha no puede ser futura');
+                    } else if (value) {
+                        showFieldSuccess(field);
+                    }
+                    break;
+                case 'description':
+                    if (value && value.length < 20) {
+                        showFieldError(field, 'Proporciona más detalles (mínimo 20 caracteres)');
+                    } else if (value && value.length >= 20) {
+                        showFieldSuccess(field);
+                    }
+                    break;
+            }
+        }
+
+        function showFieldError(field, message) {
+            field.style.borderColor = 'var(--danger)';
+            field.style.boxShadow = '0 0 0 3px rgba(220, 38, 38, 0.1)';
+        }
+
+        function showFieldSuccess(field) {
+            field.style.borderColor = 'var(--success)';
+            field.style.boxShadow = '0 0 0 3px rgba(22, 163, 74, 0.1)';
+        }
+
+        // Professional form data update
+        function updateFormData() {
+            if (currentPhase === 3) {
+                claimData.date = document.getElementById('incident-date').value;
+                claimData.time = document.getElementById('incident-time').value;
+                claimData.amount = document.getElementById('amount').value;
+                claimData.reference = document.getElementById('reference').value;
+                claimData.personInvolved = document.getElementById('person-involved').value;
+                claimData.impact = document.getElementById('impact').value;
+                claimData.previousAttempts = document.getElementById('previous-attempts').value;
+                updateNavigation();
+            }
+        }
+
+        // Professional category selection
+        function selectCategory(category) {
+            claimData.category = category;
+            
+            const selectedCard = event.currentTarget;
+            selectedCard.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                selectedCard.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    selectedCard.style.transform = 'scale(1)';
+                    loadServices(category);
+                    goNext();
+                }, 150);
+            }, 150);
+        }
+
+        // Professional service loading
+        function loadServices(category) {
+            const servicesList = document.getElementById('services-list');
+            const services = servicesByCategory[category];
+            
+            if (!services || !servicesList) return;
+            
+            let html = `
+                <div class="service-group">
+                    <div class="service-group-title">${services.title}</div>
+                    <div class="service-list">
+            `;
+            
+            services.services.forEach((service, index) => {
+                html += `
+                    <div class="service-item" onclick="selectService('${service.id}')" data-service="${service.id}">
+                        <div class="service-icon">
+                            <svg class="icon"><use href="#${service.icon}"/></svg>
+                        </div>
+                        <div class="service-name">${service.name}</div>
+                        <div class="service-check"></div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            servicesList.innerHTML = html;
+        }
+
+        // Professional service selection
+        function selectService(service) {
+            document.querySelectorAll('.service-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            const selectedItem = document.querySelector(`[data-service="${service}"]`);
+            if (selectedItem) {
+                selectedItem.classList.add('selected');
+                claimData.service = service;
+                updateNavigation();
+            }
+        }
+
+        // Professional file upload
+        function handleFileUpload(event) {
+            const files = Array.from(event.target.files);
+            const uploadedFiles = document.getElementById('uploaded-files');
+            const maxFileSize = 10 * 1024 * 1024;
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            
+            files.forEach(file => {
+                if (file.size > maxFileSize) {
+                    showNotification('Error: El archivo ' + file.name + ' excede el límite de 10MB', 'error');
+                    return;
+                }
+                
+                if (!allowedTypes.includes(file.type)) {
+                    showNotification('Error: Tipo de archivo no permitido: ' + file.name, 'error');
+                    return;
+                }
+                
+                if (claimData.files.some(f => f.name === file.name && f.size === file.size)) {
+                    showNotification('Advertencia: El archivo ' + file.name + ' ya está adjunto', 'warning');
+                    return;
+                }
+                
+                claimData.files.push(file);
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-icon">
+                        <svg class="icon"><use href="#${getFileIcon(file.type)}"/></svg>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)} • ${getFileTypeLabel(file.type)}</div>
+                    </div>
+                    <button class="file-remove" onclick="removeFile('${file.name}')" title="Eliminar archivo">
+                        <svg class="icon icon-sm"><use href="#x"/></svg>
+                    </button>
+                `;
+                uploadedFiles.appendChild(fileItem);
+                
+                showNotification('Archivo adjuntado: ' + file.name, 'success');
+            });
+            
+            updateNavigation();
+            event.target.value = '';
+        }
+
+        function getFileIcon(type) {
+            if (type.includes('pdf')) return 'file';
+            if (type.includes('image')) return 'file';
+            if (type.includes('word') || type.includes('document')) return 'file-text';
+            return 'file';
+        }
+
+        function getFileTypeLabel(type) {
+            if (type.includes('pdf')) return 'PDF';
+            if (type.includes('image')) return 'Imagen';
+            if (type.includes('word') || type.includes('document')) return 'Documento';
+            return 'Archivo';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function removeFile(fileName) {
+            const fileIndex = claimData.files.findIndex(f => f.name === fileName);
+            if (fileIndex > -1) {
+                claimData.files.splice(fileIndex, 1);
+                
+                const fileItems = document.querySelectorAll('.file-item');
+                fileItems.forEach(item => {
+                    if (item.querySelector('.file-name').textContent === fileName) {
+                        item.style.animation = 'fadeInUp 0.3s ease-out reverse';
+                        setTimeout(() => {
+                            item.remove();
+                        }, 300);
+                    }
+                });
+                
+                showNotification('Archivo eliminado: ' + fileName, 'info');
+                updateNavigation();
+            }
+        }
+
+        // Professional notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'fadeInDown 0.3s ease-out reverse';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Professional consent toggle
+        function toggleConsent() {
+            const consentBox = document.getElementById('consent-box');
+            consentBox.classList.toggle('checked');
+            claimData.consent = consentBox.classList.contains('checked');
+            updateNavigation();
+        }
+
+        // Professional navigation
+        function goNext() {
+            if (currentPhase === 5 && claimData.consent) {
+                submitClaim();
+                return;
+            }
+            
+            if (currentPhase < 6) {
+                switchToPhase(currentPhase + 1);
+                
+                if (currentPhase === 5) {
+                    updateReviewData();
+                }
+            }
+        }
+
+        function goBack() {
+            if (currentPhase > 1) {
+                switchToPhase(currentPhase - 1);
+            }
+        }
+
+        // Professional phase switching
+        function switchToPhase(newPhase) {
+            const currentPhaseEl = document.getElementById(`phase-${currentPhase}`);
+            const newPhaseEl = document.getElementById(`phase-${newPhase}`);
+            
+            if (currentPhaseEl) {
+                currentPhaseEl.classList.remove('active');
+                if (newPhase > currentPhase) {
+                    currentPhaseEl.classList.add('prev');
+                }
+            }
+            
+            if (newPhaseEl) {
+                setTimeout(() => {
+                    newPhaseEl.classList.add('active');
+                    newPhaseEl.classList.remove('prev');
+                }, 100);
+            }
+            
+            currentPhase = newPhase;
+            updateNavigation();
+            updateProgressBar();
+            
+            if (newPhaseEl) {
+                newPhaseEl.scrollTop = 0;
+            }
+        }
+
+        // Professional progress bar update
+        function updateProgressBar() {
+            const progressPercentage = (currentPhase / 6) * 100;
+            const progressFill = document.querySelector(`#phase-${currentPhase} .progress-fill`);
+            if (progressFill) {
+                progressFill.style.width = `${progressPercentage}%`;
+            }
+            const globalFill = document.getElementById('progressFill');
+            const globalPercentage = document.getElementById('progressPercentage');
+            if (globalFill) {
+                globalFill.style.width = `${progressPercentage}%`;
+            }
+            if (globalPercentage) {
+                globalPercentage.textContent = `${Math.round(progressPercentage)}%`;
+            }
+        }
+
+        // Professional navigation state management
+        function updateNavigation() {
+            const backBtn = document.getElementById('btn-back');
+            const nextBtn = document.getElementById('btn-next');
+            
+            backBtn.disabled = currentPhase === 1 || currentPhase === 6;
+            
+            let canProceed = false;
+            
+            switch(currentPhase) {
+                case 1:
+                    canProceed = false;
+                    break;
+                case 2:
+                    canProceed = claimData.service !== '';
+                    break;
+                case 3:
+                    canProceed = claimData.date && claimData.time && claimData.amount && 
+                                claimData.description && claimData.impact;
+                    break;
+                case 4:
+                    canProceed = true;
+                    break;
+                case 5:
+                    canProceed = claimData.consent;
+                    nextBtn.innerHTML = canProceed ? 
+                        '<svg class="icon"><use href="#check"/></svg><span>Enviar Reclamo</span>' : 
+                        '<span>Debes aceptar los términos</span>';
+                    if (canProceed) {
+                        nextBtn.classList.remove('btn-primary');
+                        nextBtn.classList.add('btn-danger');
+                    } else {
+                        nextBtn.classList.remove('btn-danger');
+                        nextBtn.classList.add('btn-primary');
+                    }
+                    break;
+                case 6:
+                    canProceed = false;
+                    break;
+                default:
+                    canProceed = true;
+            }
+            
+            nextBtn.disabled = !canProceed;
+            
+            if (currentPhase === 6) {
+                document.querySelector('.wizard-nav').style.display = 'none';
+            } else {
+                document.querySelector('.wizard-nav').style.display = 'flex';
+            }
+        }
+
+        // Professional review data update
+        function updateReviewData() {
+            let serviceName = '';
+            for (let cat in servicesByCategory) {
+                const service = servicesByCategory[cat].services.find(s => s.id === claimData.service);
+                if (service) {
+                    serviceName = service.name;
+                    break;
+                }
+            }
+            
+            document.getElementById('review-category').textContent = categoryNames[claimData.category] || '-';
+            document.getElementById('review-service').textContent = serviceName || '-';
+            document.getElementById('review-date').textContent = claimData.date ? 
+                new Date(claimData.date + 'T' + claimData.time).toLocaleString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) : '-';
+            document.getElementById('review-amount').textContent = claimData.amount ? 
+                `$${parseFloat(claimData.amount).toLocaleString('es-ES', { minimumFractionDigits: 2 })}` : '-';
+            document.getElementById('review-impact').textContent = impactNames[claimData.impact] || '-';
+            document.getElementById('review-person').textContent = claimData.personInvolved || 'No especificado';
+            document.getElementById('review-attempts').textContent = previousAttemptsNames[claimData.previousAttempts] || 'No especificado';
+            document.getElementById('review-files').textContent = `${claimData.files.length} archivo${claimData.files.length !== 1 ? 's' : ''}`;
+            document.getElementById('review-description').textContent = claimData.description || '-';
+            document.getElementById('review-reference').textContent = claimData.reference || 'No proporcionado';
+        }
+
+        // Professional claim submission
+        function submitClaim() {
+            const nextBtn = document.getElementById('btn-next');
+            nextBtn.innerHTML = '<div class="spinner"></div><span>Procesando y enviando...</span>';
+            nextBtn.disabled = true;
+            
+            showNotification('Enviando reclamo al sistema...', 'info');
+            
+            setTimeout(() => {
+                showNotification('Validando información...', 'info');
+                
+                setTimeout(() => {
+                    showNotification('Aplicando medidas de seguridad...', 'info');
+                    
+                    setTimeout(() => {
+                        showNotification('Enviando a WhatsApp prioritario...', 'info');
+                        
+                        setTimeout(() => {
+                            const ticketNumber = 'RCL-' + new Date().getFullYear() + '-' + 
+                                               Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+                            document.getElementById('ticket-number').textContent = ticketNumber;
+                            
+                            const whatsappMessage = createWhatsAppMessage(ticketNumber);
+                            
+                              const claims = JSON.parse(localStorage.getItem('claims') || '[]');
+                              claims.push({
+                                  ...claimData,
+                                  ticketNumber,
+                                  timestamp: new Date().toISOString(),
+                                  status: 'investigating',
+                                  whatsappSent: true
+                              });
+                              localStorage.setItem('claims', JSON.stringify(claims));
+                              const unlockCode = Math.floor(100000 + Math.random() * 900000).toString();
+                              localStorage.setItem('accountBlock', JSON.stringify({
+                                  type: 'submitted',
+                                  ticketNumber,
+                                  unlockCode,
+                                  start: Date.now(),
+                                  duration: 72 * 60 * 60 * 1000,
+                                  claim: claimData
+                              }));
+
+                              setTimeout(() => {
+                                  window.open(`https://wa.me/17373018059?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+                                  showNotification('Reclamo enviado exitosamente', 'success');
+                              }, 1000);
+                            
+                            switchToPhase(6);
+                        }, 1500);
+                    }, 1500);
+                }, 1500);
+            }, 2000);
+        }
+
+        // Professional WhatsApp message creation
+        function createWhatsAppMessage(ticketNumber) {
+            let serviceName = '';
+            for (let cat in servicesByCategory) {
+                const service = servicesByCategory[cat].services.find(s => s.id === claimData.service);
+                if (service) {
+                    serviceName = service.name;
+                    break;
+                }
+            }
+
+            const message = `*RECLAMO PRIORITARIO - REMEEX VISA*
+
+*Número de Caso:* ${ticketNumber}
+*Categoría:* ${categoryNames[claimData.category]}
+*Servicio:* ${serviceName}
+*Fecha del Incidente:* ${new Date(claimData.date + 'T' + claimData.time).toLocaleString('es-ES')}
+*Monto Involucrado:* $${parseFloat(claimData.amount).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+*Impacto:* ${impactNames[claimData.impact]}
+
+*Descripción:*
+${claimData.description}
+
+${claimData.reference ? `*Referencia:* ${claimData.reference}` : ''}
+${claimData.personInvolved ? `*Persona Involucrada:* ${claimData.personInvolved}` : ''}
+*Archivos Adjuntos:* ${claimData.files.length}
+
+*Fecha de Reporte:* ${new Date().toLocaleString('es-ES')}
+
+*NOTA:* Cuenta bloqueada temporalmente por seguridad. Requiere atención inmediata dentro de 5 días hábiles.`;
+
+            return message;
+        }
+
+        // Professional navigation home
+        function goToHome() {
+            document.body.style.animation = 'fadeInUp 0.5s ease-out reverse';
+            setTimeout(() => {
+                window.location.href = 'homevisa.html';
+            }, 500);
+        }
+
+        // Professional error handling
+        window.addEventListener('error', function(e) {
+            console.error('Error in claims system:', e.error);
+            showNotification('Se produjo un error inesperado. Por favor, recarga la página.', 'error');
+        });
+
+        window.addEventListener('beforeunload', function(e) {
+            if (currentPhase > 1 && currentPhase < 6) {
+                e.preventDefault();
+                e.returnValue = 'Tienes un reclamo en proceso que se perderá. ¿Estás seguro de que deseas salir?';
+            }
+        });
+
+        // Professional page initialization
+        setTimeout(() => {
+            document.body.style.animation = 'fadeInDown 0.6s ease-out';
+        }, 100);
+    </script>
+</body>
+</html>

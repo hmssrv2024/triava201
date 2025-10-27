@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remeex Visa | Panel de Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== Variables y Configuración Base ===== */
+        :root {
+            /* Colores de marca Visa y Remeex */
+            --primary: #1A1F71; /* Azul Visa */
+            --primary-light: #4B8CCB; /* Azul claro para variaciones */
+            --primary-dark: #15184e; /* Azul oscuro */
+            --secondary: #F7B600; /* Dorado Visa */
+            --accent: #00B2A9; /* Verde para confirmaciones */
+            --danger: #FF5F00; /* Rojo Visa para alertas */
+            
+            /* Colores neutros para UI */
+            --background: #f0f9ff;
+            --white: #FFFFFF;
+            --greyLight-1: #E4EBF5;
+            --greyLight-2: #c8d0e7;
+            --greyLight-3: #bec8e4;
+            --greyDark: #9baacf;
+            --textPrimary: #0F172A;
+            --textSecondary: #64748B;
+            
+            /* Esquema para efectos neumórficos */
+            --shadow-light: 0.3rem 0.3rem 0.6rem var(--greyLight-2), 
+                           -0.2rem -0.2rem 0.5rem var(--white);
+            --shadow-dark: inset 0.2rem 0.2rem 0.5rem var(--greyLight-2), 
+                          inset -0.2rem -0.2rem 0.5rem var(--white);
+            --shadow-inner: inset 0.2rem 0.2rem 0.5rem rgba(0, 0, 0, 0.05), 
+                          inset -0.2rem -0.2rem 0.5rem rgba(255, 255, 255, 0.5);
+            --shadow-active: inset 0.2rem 0.2rem 0.3rem var(--greyLight-2), 
+                           inset -0.2rem -0.2rem 0.3rem var(--white);
+            
+            /* Dimensiones y espaciado */
+            --border-radius-xl: 28px;
+            --border-radius-lg: 24px;
+            --border-radius: 16px;
+            --border-radius-sm: 12px;
+            
+            /* Transiciones */
+            --transition-main: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        /* Reset y estilos base */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            background-color: var(--background);
+            color: var(--textPrimary);
+            overflow-x: hidden;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--greyLight-1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--greyDark);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+
+        /* ===== Diseño de la estructura principal ===== */
+        .dashboard {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ===== Barra lateral ===== */
+        .sidebar {
+            width: 280px;
+            height: 100%;
+            background: var(--greyLight-1);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition-main);
+            z-index: 20;
+            position: relative;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-logo {
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            padding: 1rem 0;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--textPrimary);
+            font-weight: 500;
+            transition: var(--transition-main);
+            text-decoration: none;
+            position: relative;
+            margin: 0.3rem 1rem;
+            border-radius: var(--border-radius-sm);
+        }
+
+        .nav-link:hover {
+            background: var(--greyLight-2);
+        }
+
+        .nav-link.active {
+            background: var(--white);
+            color: var(--primary);
+            box-shadow: var(--shadow-light);
+        }
+
+        .nav-link i {
+            font-size: 1.3rem;
+            margin-right: 1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--textSecondary);
+            padding: 0.6rem 1.5rem;
+            margin-top: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* ===== Contenido principal ===== */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            overflow-y: auto;
+            position: relative;
+            height: 100%;
+        }
+
+        /* ===== Barra superior ===== */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-bar {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 3rem;
+            border: none;
+            border-radius: var(--border-radius);
+            background: var(--greyLight-1);
+            box-shadow: var(--shadow-inner);
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--textPrimary);
+            transition: var(--transition-main);
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: var(--shadow-light);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--textSecondary);
+            font-size: 1rem;
+        }
+
+        .notification-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--greyLight-1);
+            box-shadow: var(--shadow-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-main);
+        }
+
+        .notification-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .notification-btn:active {
+            box-shadow: var(--shadow-active);
+            transform: translateY(0);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition-main);
+        }
+
+        .user-profile:hover {
+            background: var(--greyLight-1);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--greyLight-1);
+            box-shadow: var(--shadow-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--textSecondary);
+        }
+
+        /* ===== Dashboard Cards Grid ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            padding: 1.5rem;
+            position: relative;
+            transition: var(--transition-main);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--textSecondary);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--greyLight-1);
+            box-shadow: var(--shadow-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--textSecondary);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .card-trend-up {
+            color: var(--accent);
+        }
+
+        .card-trend-down {
+            color: var(--danger);
+        }
+
+        /* Balance Card estilo premium */
+        .balance-card {
+            grid-column: span 3;
+            background: linear-gradient(150deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.1;
+        }
+
+        .balance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .balance-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .balance-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .balance-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .balance-amount::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        .balance-usd {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+        }
+
+        .balance-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Sección de transacciones recientes */
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .view-all {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition-main);
+        }
+
+        .view-all:hover {
+            color: var(--primary-light);
+        }
+
+        .transactions-card {
+            grid-column: span 2;
+            height: min-content;
+        }
+
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--greyLight-1);
+            border-radius: var(--border-radius);
+            transition: var(--transition-main);
+        }
+
+        .transaction-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-light);
+        }
+
+        .transaction-icon i {
+            font-size: 1.2rem;
+        }
+
+        .transaction-icon-incoming {
+            color: var(--accent);
+        }
+
+        .transaction-icon-outgoing {
+            color: var(--danger);
+        }
+
+        .transaction-details {
+            flex: 1;
+        }
+
+        .transaction-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: var(--textPrimary);
+        }
+
+        .transaction-date {
+            font-size: 0.8rem;
+            color: var(--textSecondary);
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-align: right;
+        }
+
+        .amount-incoming {
+            color: var(--accent);
+        }
+
+        .amount-outgoing {
+            color: var(--danger);
+        }
+
+        /* Sección de servicios rápidos */
+        .services-card {
+            grid-column: span 1;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .service-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: var(--greyLight-1);
+            border-radius: var(--border-radius);
+            transition: var(--transition-main);
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .service-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .service-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .service-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--textPrimary);
+        }
+
+        /* Sección de estadísticas */
+        .stats-card {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .stats-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--greyLight-2);
+        }
+
+        .stats-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 500;
+            color: var(--textSecondary);
+            cursor: pointer;
+            transition: var(--transition-main);
+        }
+
+        .stats-tab.active {
+            color: var(--primary);
+            box-shadow: inset 0 -2px 0 var(--primary);
+        }
+
+        .stats-content {
+            padding: 1.5rem;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+
+        /* ===== Botones neuromorfo-realistas ===== */
+        button.btn {
+            all: unset;
+            position: relative;
+            cursor: pointer;
+            border-radius: 999vw;
+            background-color: transparent;
+            transition: transform 0.3s ease;
+            overflow: visible;
+        }
+
+        button.btn:hover {
+            transform: translateY(-2px);
+        }
+
+        button.btn:active {
+            transform: translateY(1px);
+        }
+
+        .button-outer {
+            position: relative;
+            z-index: 1;
+            border-radius: inherit;
+            transition: box-shadow 300ms ease;
+            will-change: box-shadow;
+            box-shadow: 0 0.05em 0.05em -0.01em rgba(0, 0, 0, 0.3), 
+                        0 0.01em 0.01em -0.01em rgba(0, 0, 0, 0.2),
+                        0.15em 0.3em 0.1em -0.01em rgba(0, 0, 0, 0.15);
+        }
+
+        button.btn:hover .button-outer {
+            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.3), 
+                        0 0 0 0 rgba(0, 0, 0, 0.2),
+                        0 0 0 0 rgba(0, 0, 0, 0.15);
+        }
+
+        .button-inner {
+            position: relative;
+            z-index: 1;
+            border-radius: inherit;
+            padding: 0.7em 1.5em;
+            transition: box-shadow 300ms ease, clip-path 250ms ease,
+                      background-image 250ms ease, transform 250ms ease;
+            will-change: box-shadow, clip-path, background-image, transform;
+            overflow: hidden;
+            clip-path: inset(0 0 0 0 round 999vw);
+        }
+
+        /* Botón primario estilo Visa */
+        .btn-primary .button-inner {
+            background-image: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.95),
+                    rgba(230, 240, 255, 0.85));
+            box-shadow:
+                0 0 0 0 inset rgba(0, 0, 0, 0.1),
+                -0.05em -0.05em 0.05em 0 inset rgba(0, 0, 0, 0.15),
+                0 0 0 0 inset rgba(0, 0, 0, 0.1),
+                0 0 0.05em 0.2em inset rgba(255, 255, 255, 0.2),
+                0.025em 0.05em 0.1em 0 inset rgba(255, 255, 255, 0.6),
+                0.12em 0.12em 0.12em inset rgba(255, 255, 255, 0.2),
+                -0.075em -0.25em 0.25em 0.1em inset rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary .button-inner {
+            background-image: linear-gradient(135deg,
+                    rgba(230, 230, 230, 0.8),
+                    rgba(180, 180, 180, 0.7));
+            box-shadow:
+                0 0 0 0 inset rgba(0, 0, 0, 0.1),
+                -0.05em -0.05em 0.05em 0 inset rgba(0, 0, 0, 0.15),
+                0 0 0 0 inset rgba(0, 0, 0, 0.1),
+                0 0 0.05em 0.2em inset rgba(255, 255, 255, 0.25),
+                0.025em 0.05em 0.1em 0 inset rgba(255, 255, 255, 0.7),
+                0.12em 0.12em 0.12em inset rgba(255, 255, 255, 0.25),
+                -0.075em -0.25em 0.25em 0.1em inset rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-outline .button-inner {
+            background-image: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.9),
+                    rgba(240, 249, 255, 0.85));
+            box-shadow:
+                0 0 0 0 inset rgba(0, 0, 0, 0.1),
+                -0.05em -0.05em 0.05em 0 inset rgba(0, 0, 0, 0.15),
+                0 0 0 0 inset rgba(0, 0, 0, 0.1),
+                0 0 0.05em 0.2em inset rgba(255, 255, 255, 0.25),
+                0.025em 0.05em 0.1em 0 inset rgba(255, 255, 255, 0.7),
+                0.12em 0.12em 0.12em inset rgba(255, 255, 255, 0.25),
+                -0.075em -0.25em 0.25em 0.1em inset rgba(0, 0, 0, 0.15);
+        }
+
+        button.btn:hover .button-inner {
+            clip-path: inset(clamp(1px, 0.0625em, 2px) clamp(1px, 0.0625em, 2px) clamp(1px, 0.0625em, 2px) clamp(1px, 0.0625em, 2px) round 999vw);
+            box-shadow:
+                0.1em 0.15em 0.05em 0 inset rgba(0, 0, 0, 0.3),
+                -0.025em -0.03em 0.05em 0.025em inset rgba(0, 0, 0, 0.2),
+                0.25em 0.25em 0.2em 0 inset rgba(0, 0, 0, 0.15),
+                0 0 0.05em 0.5em inset rgba(255, 255, 255, 0.15),
+                0 0 0 0 inset rgba(255, 255, 255, 0.7),
+                0.12em 0.12em 0.12em inset rgba(255, 255, 255, 0.25),
+                -0.075em -0.12em 0.2em 0.1em inset rgba(0, 0, 0, 0.15);
+        }
+
+        button.btn .button-inner span {
+            position: relative;
+            z-index: 4;
+            font-family: "Inter", sans-serif;
+            letter-spacing: -0.01em;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary .button-inner span {
+            color: var(--primary);
+        }
+
+        .btn-secondary .button-inner span {
+            color: var(--textPrimary);
+        }
+
+        .btn-outline .button-inner span {
+            background-image: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        button.btn:hover .button-inner span {
+            transform: scale(0.975);
+        }
+
+        button.btn:active .button-inner {
+            transform: scale(0.975);
+        }
+
+        /* Botones de acción de balance */
+        .balance-action-btn {
+            border-radius: 999vw;
+            padding: 0.8em 1.5em;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(5px);
+            transition: var(--transition-main);
+        }
+
+        .balance-action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .balance-action-btn:active {
+            transform: translateY(1px);
+        }
+
+        .balance-action-btn i {
+            font-size: 1rem;
+        }
+
+        /* Botón primario para la tarjeta de balance */
+        .balance-primary-btn {
+            background: var(--secondary);
+            color: var(--primary-dark);
+        }
+
+        .balance-primary-btn:hover {
+            background: #ffc72c;
+        }
+
+        /* Botones flotantes para acciones rápidas */
+        .floating-action-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition-main);
+            z-index: 100;
+        }
+
+        .floating-action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .floating-action-btn i {
+            font-size: 1.5rem;
+        }
+
+        /* ===== Efectos visuales y animaciones ===== */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(26, 31, 113, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(26, 31, 113, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(26, 31, 113, 0);
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.2;
+            }
+            60% {
+                opacity: 0.3;
+            }
+            100% {
+                left: 100%;
+                opacity: 0;
+            }
+        }
+
+        .balance-amount {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-amount::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            animation: shine 3s infinite;
+        }
+
+        /* ===== Media Queries para Responsividad ===== */
+        @media screen and (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .balance-card {
+                grid-column: span 2;
+            }
+            
+            .transactions-card {
+                grid-column: span 2;
+            }
+            
+            .services-card {
+                grid-column: span 2;
+            }
+            
+            .stats-card {
+                grid-column: span 2;
+            }
+        }
+
+        @media screen and (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                transform: translateX(0);
+            }
+            
+            .sidebar-header {
+                padding: 1rem;
+            }
+            
+            .sidebar-logo {
+                height: 30px;
+            }
+            
+            .nav-link span,
+            .nav-section-title {
+                display: none;
+            }
+            
+            .nav-link {
+                justify-content: center;
+                padding: 0.8rem;
+            }
+            
+            .nav-link i {
+                margin: 0;
+            }
+            
+            .sidebar-footer {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .search-bar {
+                width: 200px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .balance-card,
+            .transactions-card,
+            .services-card,
+            .stats-card {
+                grid-column: span 1;
+            }
+            
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .topbar-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-bar {
+                width: 100%;
+                order: 3;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .balance-amount {
+                font-size: 2.3rem;
+            }
+            
+            .balance-buttons {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .balance-action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .card-value {
+                font-size: 1.8rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Barra lateral -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi9HdCjKf6DQyzmo5VfUzJxzBFIkZlb9HrHjzhbx7dIAu8-sLUws-w4KWA3466xaCYSFKq90xVoDpiS86lo8kYNHXp7tngSGThx7srnpTREPluNMSsIHuOnCVXmibDpevOdy8IIoYRVJACa_TZfZb80-tEqasC4LoRO4aItqTZXwaAHo8FWfwL2Hb3ijtgC/s320/1000280079.png" alt="Remeex Logo" class="sidebar-logo">
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-th-large"></i>
+                    <span>Panel Principal</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Transferencias</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Tarjetas</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-history"></i>
+                    <span>Historial</span>
+                </a>
+                
+                <div class="nav-section-title">Servicios</div>
+                
+                <a href="#" class="nav-link">
+                    <i class="fas fa-store"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Recargas</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-gift"></i>
+                    <span>Tarjetas Regalo</span>
+                </a>
+                
+                <div class="nav-section-title">Cuenta</div>
+                
+                <a href="#" class="nav-link">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Perfil</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Ayuda</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="btn btn-outline">
+                    <div class="button-outer">
+                        <div class="button-inner">
+                            <span>Cerrar Sesión</span>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="main-content">
+            <!-- Barra superior -->
+            <div class="topbar">
+                <h1 class="page-title">Panel de Control</h1>
+                <div class="topbar-actions">
+                    <div class="search-bar">
+                        <input type="text" class="search-input" placeholder="Buscar transacciones, servicios...">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    <div class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <div class="notification-badge">3</div>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar">
+                            <img src="https://randomuser.me/api/portraits/men/76.jpg" alt="User Avatar">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">Carlos Rodríguez</div>
+                            <div class="user-role">Premium</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta de saldo -->
+            <div class="balance-card">
+                <div class="balance-header">
+                    <div class="balance-title">Saldo Disponible</div>
+                    <div class="balance-actions">
+                        <button class="balance-action-btn">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Actualizar</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="balance-amount">15.245,50 Bs</div>
+                <div class="balance-usd">≈ 220,42 USD</div>
+                <div class="balance-buttons">
+                    <button class="balance-action-btn balance-primary-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Agregar Fondos</span>
+                    </button>
+                    <button class="balance-action-btn">
+                        <i class="fas fa-university"></i>
+                        <span>Retirar a Banco</span>
+                    </button>
+                    <button class="balance-action-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Enviar Dinero</span>
+                    </button>
+                    <button class="balance-action-btn">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Intercambiar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid de tarjetas -->
+            <div class="dashboard-grid">
+                <!-- Tarjeta de ingresos -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Ingresos Mensuales</div>
+                        <div class="card-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">$850.00</div>
+                    <div class="card-subtitle">
+                        <i class="fas fa-arrow-up card-trend-up"></i>
+                        <span>12% desde el mes pasado</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de gastos -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Gastos Mensuales</div>
+                        <div class="card-icon">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">$320.75</div>
+                    <div class="card-subtitle">
+                        <i class="fas fa-arrow-down card-trend-down"></i>
+                        <span>5% desde el mes pasado</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de ahorros -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Ahorro Total</div>
+                        <div class="card-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">$1,250.00</div>
+                    <div class="card-subtitle">
+                        <i class="fas fa-arrow-up card-trend-up"></i>
+                        <span>8% desde el mes pasado</span>
+                    </div>
+                </div>
+
+                <!-- Transacciones recientes -->
+                <div class="card transactions-card">
+                    <div class="card-header">
+                        <div class="card-title">Transacciones Recientes</div>
+                        <a href="#" class="view-all">Ver Todas</a>
+                    </div>
+                    <div class="transactions-list">
+                        <div class="transaction-item">
+                            <div class="transaction-icon transaction-icon-incoming">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Transferencia recibida</div>
+                                <div class="transaction-date">Hoy, 10:30 AM</div>
+                            </div>
+                            <div class="transaction-amount amount-incoming">+$150.00</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon transaction-icon-outgoing">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Pago de servicio</div>
+                                <div class="transaction-date">Ayer, 3:45 PM</div>
+                            </div>
+                            <div class="transaction-amount amount-outgoing">-$45.50</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon transaction-icon-incoming">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Depósito Bancario</div>
+                                <div class="transaction-date">22 Abr, 9:20 AM</div>
+                            </div>
+                            <div class="transaction-amount amount-incoming">+$500.00</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon transaction-icon-outgoing">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Retiro a Banco</div>
+                                <div class="transaction-date">20 Abr, 2:15 PM</div>
+                            </div>
+                            <div class="transaction-amount amount-outgoing">-$200.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Servicios Rápidos -->
+                <div class="card services-card">
+                    <div class="card-header">
+                        <div class="card-title">Servicios Rápidos</div>
+                    </div>
+                    <div class="services-grid">
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="service-name">Recargas</div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-file-invoice"></i>
+                            </div>
+                            <div class="service-name">Facturas</div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <div class="service-name">Tarjetas Regalo</div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="service-name">Mi Tarjeta</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas y Gráficos -->
+                <div class="card stats-card">
+                    <div class="stats-tabs">
+                        <div class="stats-tab active">Semanal</div>
+                        <div class="stats-tab">Mensual</div>
+                        <div class="stats-tab">Anual</div>
+                    </div>
+                    <div class="stats-content">
+                        <div class="chart-container">
+                            <!-- Aquí iría el gráfico real (usamos un placeholder) -->
+                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#9baacf; font-size:0.9rem;">
+                                Gráfica de flujo financiero
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones realistas destacados -->
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button class="btn btn-primary">
+                    <div class="button-outer">
+                        <div class="button-inner">
+                            <span>Generar reporte</span>
+                        </div>
+                    </div>
+                </button>
+                <button class="btn btn-secondary">
+                    <div class="button-outer">
+                        <div class="button-inner">
+                            <span>Exportar datos</span>
+                        </div>
+                    </div>
+                </button>
+                <button class="btn btn-outline">
+                    <div class="button-outer">
+                        <div class="button-inner">
+                            <span>Ver detalles</span>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de acción flotante -->
+    <div class="floating-action-btn">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Funcionalidad para los tabs de estadísticas
+            const statsTabs = document.querySelectorAll('.stats-tab');
+            statsTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remover clase active de todos los tabs
+                    statsTabs.forEach(t => t.classList.remove('active'));
+                    // Agregar clase active al tab clickeado
+                    this.classList.add('active');
+                });
+            });
+
+            // Efecto especial para los botones super realistas
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                const buttonInner = button.querySelector('.button-inner');
+
+                // Efecto de seguimiento de mouse para simular relieve
+                button.addEventListener('mousemove', function(e) {
+                    if (!buttonInner) return;
+                    
+                    const rect = button.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    
+                    // Efecto de brillo que sigue al puntero
+                    buttonInner.style.background = `
+                        radial-gradient(circle at ${x}% ${y}%, 
+                        rgba(255,255,255,0.8) 0%, 
+                        rgba(240,240,240,0.8) 10%, 
+                        rgba(230,230,230,0.5) 20%, 
+                        rgba(250,250,250,0.0) 60%)
+                    `;
+                });
+
+                // Restaurar el gradiente original al salir
+                button.addEventListener('mouseleave', function() {
+                    if (button.classList.contains('btn-primary')) {
+                        buttonInner.style.backgroundImage = 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(230, 240, 255, 0.85))';
+                    } else if (button.classList.contains('btn-secondary')) {
+                        buttonInner.style.backgroundImage = 'linear-gradient(135deg, rgba(230, 230, 230, 0.8), rgba(180, 180, 180, 0.7))';
+                    } else if (button.classList.contains('btn-outline')) {
+                        buttonInner.style.backgroundImage = 'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 249, 255, 0.85))';
+                    }
+                });
+
+                // Efecto de presión al hacer clic
+                button.addEventListener('mousedown', function() {
+                    buttonInner.style.transform = 'scale(0.98)';
+                    buttonInner.style.boxShadow = `
+                        0.12em 0.18em 0.06em 0 inset rgba(5, 5, 5, 0.75),
+                        -0.035em -0.04em 0.06em 0.03em inset rgba(5, 5, 5, 0.5),
+                        0.3em 0.3em 0.25em 0 inset rgba(5, 5, 5, 0.5),
+                        0 0 0.05em 0.5em inset rgba(255, 255, 255, 0.15),
+                        0 0 0 0 inset rgba(255, 255, 255, 1),
+                        0.15em 0.15em 0.15em inset rgba(255, 255, 255, 0.25),
+                        -0.09em -0.15em 0.25em 0.12em inset rgba(5, 5, 5, 0.25)
+                    `;
+                });
+
+                // Restaurar después del clic
+                button.addEventListener('mouseup', function() {
+                    buttonInner.style.transform = '';
+                    buttonInner.style.boxShadow = '';
+                });
+            });
+
+            // Animación de la tarjeta de saldo
+            const balanceAmount = document.querySelector('.balance-amount');
+            setInterval(() => {
+                balanceAmount.classList.add('animate-flash');
+                setTimeout(() => {
+                    balanceAmount.classList.remove('animate-flash');
+                }, 3000);
+            }, 8000);
+
+            // Simulación de actualización de transacciones
+            const transactionsList = document.querySelector('.transactions-list');
+            const transactionItems = document.querySelectorAll('.transaction-item');
+            
+            // Función para agregar nueva transacción
+            function addNewTransaction() {
+                // Clonar una transacción existente
+                const newTransaction = transactionItems[0].cloneNode(true);
+                
+                // Cambiar sus datos
+                newTransaction.querySelector('.transaction-title').textContent = 'Nueva transferencia';
+                newTransaction.querySelector('.transaction-date').textContent = 'Ahora mismo';
+                newTransaction.querySelector('.transaction-amount').textContent = '+$75.25';
+                
+                // Añadir efecto de entrada
+                newTransaction.style.opacity = '0';
+                newTransaction.style.transform = 'translateX(-20px)';
+                
+                // Agregar al principio de la lista
+                transactionsList.prepend(newTransaction);
+                
+                // Aplicar animación
+                setTimeout(() => {
+                    newTransaction.style.opacity = '1';
+                    newTransaction.style.transform = 'translateX(0)';
+                }, 100);
+                
+                // Eliminar la última transacción si hay más de 4
+                if (transactionsList.children.length > 4) {
+                    transactionsList.removeChild(transactionsList.lastElementChild);
+                }
+            }
+
+            // Simulación de notificaciones
+            const notificationBtn = document.querySelector('.notification-btn');
+            const notificationBadge = document.querySelector('.notification-badge');
+            
+            notificationBtn.addEventListener('click', function() {
+                alert('Tienes 3 notificaciones nuevas');
+                notificationBadge.textContent = '0';
+                notificationBadge.style.display = 'none';
+            });
+
+            // Botón flotante
+            const floatingBtn = document.querySelector('.floating-action-btn');
+            
+            floatingBtn.addEventListener('click', function() {
+                // Simulación de apertura de menú de acciones rápidas
+                alert('Menú de acciones rápidas');
+            });
+        });
+    </script>
+</body>
+</html>

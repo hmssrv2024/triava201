@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es" class="is-loading">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Firma Digital - Remeex Visa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-gradient-start: #0f172a;
+      --bg-gradient-end: #1e293b;
+      --surface: rgba(15, 23, 42, 0.85);
+      --surface-strong: rgba(15, 23, 42, 0.95);
+      --stroke: rgba(148, 163, 184, 0.35);
+      --text-primary: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-strong: #0ea5e9;
+      --danger: #f87171;
+      --success: #34d399;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(14, 165, 233, 0.08));
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      width: min(960px, 100%);
+      padding: clamp(2rem, 5vw, 3.5rem);
+    }
+
+    .hero-card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: clamp(2rem, 5vw, 3rem);
+      box-shadow: 0 25px 60px rgba(8, 47, 73, 0.45);
+      display: grid;
+      gap: clamp(1.5rem, 3vw, 2rem);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .hero-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 700;
+    }
+
+    .hero-description {
+      margin: 0;
+      max-width: 56ch;
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .action-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.5rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: #0f172a;
+      box-shadow: 0 12px 35px rgba(14, 165, 233, 0.45);
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(14, 165, 233, 0.6);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-primary);
+      border-color: rgba(148, 163, 184, 0.35);
+    }
+
+    .btn-ghost:hover,
+    .btn-ghost:focus {
+      border-color: rgba(56, 189, 248, 0.6);
+      color: var(--accent);
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-radius: 18px;
+      background: rgba(14, 165, 233, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: var(--accent);
+      font-weight: 500;
+      width: fit-content;
+    }
+
+    .status-bar span {
+      color: var(--text-primary);
+      font-weight: 400;
+      margin-left: 0.35rem;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 1.5rem;
+      background: rgba(8, 15, 33, 0.75);
+      backdrop-filter: blur(14px);
+      z-index: 30;
+    }
+
+    .modal-card {
+      width: min(640px, 100%);
+      background: var(--surface-strong);
+      border-radius: 24px;
+      padding: clamp(1.75rem, 4vw, 2.5rem);
+      box-shadow: 0 30px 70px rgba(8, 47, 73, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      display: grid;
+      gap: 1.5rem;
+      max-height: calc(100vh - 3rem);
+      overflow-y: auto;
+      color: var(--text-primary);
+    }
+
+    .modal-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.65rem;
+      font-weight: 700;
+    }
+
+    .modal-subtitle {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      color: var(--text-primary);
+      border-radius: 999px;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .close-btn:hover,
+    .close-btn:focus {
+      background: rgba(56, 189, 248, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .signature-layout {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .signature-guidance {
+      display: grid;
+      gap: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .signature-guidance h3 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 1.2rem;
+    }
+
+    .signature-pad {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 18px;
+      border: 1px solid var(--stroke);
+      padding: 1.25rem;
+      position: relative;
+      display: grid;
+      gap: 1rem;
+    }
+
+    canvas {
+      width: 100%;
+      height: clamp(220px, 40vw, 280px);
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px dashed rgba(148, 163, 184, 0.25);
+      touch-action: none;
+    }
+
+    .signature-guidelines {
+      position: absolute;
+      inset: 1.75rem 1.25rem 1.75rem 1.25rem;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2.75rem;
+    }
+
+    .signature-line {
+      height: 1px;
+      background: rgba(148, 163, 184, 0.25);
+    }
+
+    .signature-hint {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .signature-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .control-group {
+      display: inline-flex;
+      gap: 0.75rem;
+    }
+
+    .btn-ghost[disabled],
+    .btn-primary[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .signature-status {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .analysis-card {
+      width: min(520px, 100%);
+      text-align: center;
+      display: grid;
+      gap: 1.5rem;
+      padding: clamp(2rem, 5vw, 2.75rem);
+    }
+
+    .analysis-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .analysis-detail {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .analysis-progress {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.2);
+      overflow: hidden;
+    }
+
+    .analysis-progress-bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      transition: width 0.2s ease;
+    }
+
+    .analysis-percentage {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .analysis-result {
+      display: grid;
+      gap: 1rem;
+      text-align: left;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      background: rgba(8, 47, 73, 0.35);
+      border-radius: 18px;
+      padding: 1.25rem 1.5rem;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+    }
+
+    .analysis-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 1.5rem;
+      }
+
+      .hero-card {
+        border-radius: 18px;
+      }
+
+      .modal-card {
+        border-radius: 20px;
+      }
+
+      .signature-controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .control-group {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .analysis-card {
+        padding: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <article class="hero-card">
+      <div class="hero-meta">
+        <span class="hero-kicker">Verificación biométrica</span>
+        <h1>Subsanación de firma digital</h1>
+        <p class="hero-description">
+          Refuerza la seguridad de tu cuenta Remeex Visa registrando nuevamente tu firma. Utilizamos un análisis biométrico
+          avanzado con la misma identidad visual de Home Visa para garantizar una experiencia consistente y confiable.
+        </p>
+      </div>
+      <div class="status-bar">
+        <strong>Estado:</strong> <span id="statusLabel">Esperando registro de firma</span>
+      </div>
+      <div class="action-group">
+        <button class="btn btn-primary" id="openSignature">
+          <span>✍️</span>
+          Registrar firma
+        </button>
+        <button class="btn btn-ghost" id="openAnalysis">
+          <span>🔍</span>
+          Seguimiento de análisis
+        </button>
+      </div>
+    </article>
+  </main>
+
+  <section class="modal-overlay hidden" id="signatureModal" role="dialog" aria-modal="true" aria-labelledby="signatureTitle">
+    <div class="modal-card signature-layout">
+      <button class="close-btn" id="closeSignature" type="button" aria-label="Cerrar">×</button>
+      <header class="modal-header">
+        <h2 class="modal-title" id="signatureTitle">Subsanar Firma</h2>
+        <p class="modal-subtitle">Dibuja tu firma para verificar tu identidad</p>
+      </header>
+
+      <div class="signature-guidance">
+        <h3>Tu firma no coincidió</h3>
+        <p>Regístrala de nuevo para intentar validar tu identidad. Coloca el móvil en posición horizontal, apóyate en una superficie firme y dibuja dentro del recuadro.</p>
+        <p>Asegúrate de replicar la firma de tu cédula de identidad.</p>
+      </div>
+
+      <div class="signature-pad">
+        <canvas id="signaturePad" aria-label="Área para firmar"></canvas>
+        <div class="signature-guidelines" aria-hidden="true">
+          <div class="signature-line"></div>
+          <div class="signature-line"></div>
+          <div class="signature-line"></div>
+        </div>
+        <div class="signature-hint">Puedes usar tu dedo o un stylus. Usa las herramientas si necesitas corregir el trazo.</div>
+      </div>
+
+      <div class="signature-controls">
+        <div class="control-group">
+          <button id="undoSignature" type="button" class="btn btn-ghost" disabled>Deshacer</button>
+          <button id="redoSignature" type="button" class="btn btn-ghost" disabled>Rehacer</button>
+          <button id="clearSignature" type="button" class="btn btn-ghost" disabled>Limpiar</button>
+        </div>
+        <div class="signature-status" id="signatureStatus">Traza tu firma con un movimiento fluido y sin interrupciones.</div>
+        <button id="submitSignature" type="button" class="btn btn-primary" disabled>Enviar firma</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="modal-overlay hidden" id="analysisModal" role="alertdialog" aria-modal="true" aria-live="assertive">
+    <div class="modal-card analysis-card">
+      <button class="close-btn" id="closeAnalysis" type="button" aria-label="Cerrar">×</button>
+      <h3 class="analysis-title" id="analysisHeading">Analizando firma enviada...</h3>
+      <p class="analysis-detail" id="analysisDetail">Iniciando verificación biométrica y comparación de trazos.</p>
+      <div class="analysis-progress" id="analysisProgress">
+        <div class="analysis-progress-bar" id="analysisProgressBar"></div>
+      </div>
+      <div class="analysis-percentage" id="analysisPercentage">0%</div>
+      <div class="analysis-result hidden" id="analysisResult">
+        <p><strong style="color: var(--accent);">Resultado:</strong> Nuestra plataforma detectó discrepancias que impiden validar la coincidencia con tu documento.</p>
+        <p>Si la coincidencia no se confirma, completa métodos alternativos de verificación y contacta a soporte.</p>
+        <div class="analysis-actions">
+          <button class="btn btn-ghost" type="button" id="retryIdUpload">Recargar cédula</button>
+          <button class="btn btn-primary" type="button" id="contactSupport">Ir a soporte</button>
+        </div>
+      </div>
+      <button class="btn btn-primary hidden" id="analysisCloseBtn" type="button">Entendido</button>
+    </div>
+  </section>
+
+  <script>
+    const signatureModal = document.getElementById('signatureModal');
+    const analysisModal = document.getElementById('analysisModal');
+    const openSignatureBtn = document.getElementById('openSignature');
+    const openAnalysisBtn = document.getElementById('openAnalysis');
+    const closeSignatureBtn = document.getElementById('closeSignature');
+    const closeAnalysisBtn = document.getElementById('closeAnalysis');
+    const submitSignatureBtn = document.getElementById('submitSignature');
+    const undoBtn = document.getElementById('undoSignature');
+    const redoBtn = document.getElementById('redoSignature');
+    const clearBtn = document.getElementById('clearSignature');
+    const signatureStatus = document.getElementById('signatureStatus');
+    const statusLabel = document.getElementById('statusLabel');
+    const analysisProgressBar = document.getElementById('analysisProgressBar');
+    const analysisPercentage = document.getElementById('analysisPercentage');
+    const analysisResult = document.getElementById('analysisResult');
+    const analysisHeading = document.getElementById('analysisHeading');
+    const analysisDetail = document.getElementById('analysisDetail');
+    const analysisCloseBtn = document.getElementById('analysisCloseBtn');
+
+    function updateBodyScroll() {
+      const hasOpenModal = !signatureModal.classList.contains('hidden') || !analysisModal.classList.contains('hidden');
+      document.body.style.overflow = hasOpenModal ? 'hidden' : '';
+    }
+
+    function openModal(modal) {
+      modal.classList.remove('hidden');
+      updateBodyScroll();
+    }
+
+    function closeModal(modal) {
+      modal.classList.add('hidden');
+      updateBodyScroll();
+    }
+
+    openSignatureBtn.addEventListener('click', () => openModal(signatureModal));
+    openAnalysisBtn.addEventListener('click', () => openModal(analysisModal));
+    closeSignatureBtn.addEventListener('click', () => closeModal(signatureModal));
+    closeAnalysisBtn.addEventListener('click', () => closeModal(analysisModal));
+
+    analysisCloseBtn.addEventListener('click', () => closeModal(analysisModal));
+
+    const canvas = document.getElementById('signaturePad');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let strokes = [];
+    let redoStack = [];
+    let pixelRatio = window.devicePixelRatio || 1;
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      pixelRatio = window.devicePixelRatio || 1;
+      canvas.width = rect.width * pixelRatio;
+      canvas.height = rect.height * pixelRatio;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 2.5 * pixelRatio;
+      ctx.strokeStyle = '#e2e8f0';
+      redrawFromStrokes();
+    }
+
+    function getCanvasPoint(event) {
+      const rect = canvas.getBoundingClientRect();
+      const point = event.touches ? event.touches[0] : event;
+      const x = (point.clientX - rect.left) * pixelRatio;
+      const y = (point.clientY - rect.top) * pixelRatio;
+      return { x, y };
+    }
+
+    function startDrawing(event) {
+      event.preventDefault();
+      drawing = true;
+      ctx.beginPath();
+      const { x, y } = getCanvasPoint(event);
+      ctx.moveTo(x, y);
+      signatureStatus.textContent = 'Firma en progreso...';
+    }
+
+    function draw(event) {
+      if (!drawing) return;
+      event.preventDefault();
+      const { x, y } = getCanvasPoint(event);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    function endDrawing(event) {
+      if (!drawing) return;
+      event.preventDefault();
+      drawing = false;
+      ctx.closePath();
+      if (canvasHasInk()) {
+        saveState();
+        signatureStatus.textContent = 'Firma registrada, puedes enviarla o corregirla.';
+        submitSignatureBtn.disabled = false;
+        clearBtn.disabled = false;
+        undoBtn.disabled = strokes.length === 0;
+      }
+    }
+
+    function canvasHasInk() {
+      const pixelBuffer = new Uint32Array(
+        ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+      );
+      return pixelBuffer.some(color => color !== 0);
+    }
+
+    function saveState() {
+      redoStack = [];
+      redoBtn.disabled = true;
+      strokes.push(canvas.toDataURL());
+      undoBtn.disabled = strokes.length === 0;
+      clearBtn.disabled = false;
+    }
+
+    function redrawFromStrokes() {
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+      if (strokes.length === 0) {
+        submitSignatureBtn.disabled = true;
+        undoBtn.disabled = true;
+        clearBtn.disabled = true;
+        redoBtn.disabled = redoStack.length === 0;
+        signatureStatus.textContent = 'Traza tu firma con un movimiento fluido y sin interrupciones.';
+        return;
+      }
+      const image = new Image();
+      image.onload = () => {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+      };
+      image.src = strokes[strokes.length - 1];
+      submitSignatureBtn.disabled = false;
+      clearBtn.disabled = false;
+      undoBtn.disabled = strokes.length === 0;
+      redoBtn.disabled = redoStack.length === 0;
+    }
+
+    function undoSignature() {
+      if (strokes.length === 0) return;
+      redoStack.push(strokes.pop());
+      redoBtn.disabled = redoStack.length === 0;
+      redrawFromStrokes();
+    }
+
+    function redoSignature() {
+      if (redoStack.length === 0) return;
+      strokes.push(redoStack.pop());
+      redrawFromStrokes();
+      undoBtn.disabled = strokes.length === 0;
+      submitSignatureBtn.disabled = strokes.length === 0;
+      redoBtn.disabled = redoStack.length === 0;
+    }
+
+    function clearSignature() {
+      strokes = [];
+      redoStack = [];
+      redoBtn.disabled = true;
+      redrawFromStrokes();
+    }
+
+    canvas.addEventListener('pointerdown', startDrawing);
+    canvas.addEventListener('pointermove', draw);
+    canvas.addEventListener('pointerup', endDrawing);
+    canvas.addEventListener('pointerleave', endDrawing);
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', endDrawing, { passive: false });
+
+    undoBtn.addEventListener('click', () => {
+      undoSignature();
+      undoBtn.disabled = strokes.length === 0;
+      submitSignatureBtn.disabled = strokes.length === 0;
+      clearBtn.disabled = strokes.length === 0;
+    });
+
+    redoBtn.addEventListener('click', () => {
+      redoSignature();
+      redoBtn.disabled = redoStack.length === 0;
+    });
+
+    clearBtn.addEventListener('click', () => {
+      clearSignature();
+      signatureStatus.textContent = 'Traza tu firma con un movimiento fluido y sin interrupciones.';
+    });
+
+    window.addEventListener('resize', () => {
+      const savedImage = strokes.length ? strokes[strokes.length - 1] : null;
+      resizeCanvas();
+      if (savedImage) {
+        const image = new Image();
+        image.onload = () => ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        image.src = savedImage;
+      }
+    });
+
+    let analysisTimer = null;
+
+    function simulateAnalysis() {
+      clearTimeout(analysisTimer);
+      analysisProgressBar.style.width = '0%';
+      analysisPercentage.textContent = '0%';
+      analysisResult.classList.add('hidden');
+      analysisHeading.textContent = 'Analizando firma enviada...';
+      analysisDetail.textContent = 'Iniciando verificación biométrica y comparación de trazos.';
+      analysisCloseBtn.classList.add('hidden');
+      let progress = 0;
+
+      const step = () => {
+        progress += Math.random() * 12 + 6;
+        if (progress >= 100) {
+          progress = 100;
+        }
+        analysisProgressBar.style.width = progress + '%';
+        analysisPercentage.textContent = Math.round(progress) + '%';
+        if (progress < 100) {
+          analysisTimer = setTimeout(step, 450);
+        } else {
+          analysisHeading.textContent = 'No pudimos validar tu firma';
+          analysisDetail.textContent = 'Compara el trazo con tu cédula o prueba un método alternativo de verificación.';
+          analysisResult.classList.remove('hidden');
+          analysisCloseBtn.classList.remove('hidden');
+        }
+      };
+
+      step();
+    }
+
+    submitSignatureBtn.addEventListener('click', () => {
+      statusLabel.textContent = 'Firma enviada para verificación';
+      closeModal(signatureModal);
+      openModal(analysisModal);
+      simulateAnalysis();
+    });
+
+    document.getElementById('retryIdUpload').addEventListener('click', () => {
+      analysisDetail.textContent = 'Por favor, vuelve a cargar tu documento para continuar.';
+    });
+
+    document.getElementById('contactSupport').addEventListener('click', () => {
+      analysisDetail.textContent = 'Un agente de soporte te ayudará a completar la validación.';
+    });
+
+    resizeCanvas();
+  </script>
+</body>
+</html>

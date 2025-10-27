@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <script src="bank-data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Acceso a mi cuenta</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --secondary: #00579f;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --danger: #ff4d4d;
+      --warning: #ffad33;
+      --info: #0095ff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --transition-base: all 0.3s ease;
+      --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+    }
+
+    * {margin:0;padding:0;box-sizing:border-box;}
+    body {font-family:'Inter',sans-serif;background:var(--neutral-200);color:#1f2937;line-height:1.5;overflow-x:hidden;}
+
+    .btn {border:none;padding:0.75rem 1rem;border-radius:var(--radius-md);font-weight:600;cursor:pointer;transition:var(--transition-base);display:block;width:100%;text-align:center;}
+    .btn i{margin-right:0.5rem;}
+    .btn-primary {background:var(--primary);color:#fff;}
+    .btn-primary:hover {background:var(--primary-light);box-shadow:var(--shadow-md);transform:translateY(-3px);}
+    .btn-outline {background:transparent;border:1px solid var(--primary);color:var(--primary);}
+    .btn-outline:hover {background:rgba(26,31,113,0.05);transform:translateY(-3px);}
+
+    .slide-btn{position:relative;width:100%;height:3rem;background:var(--primary);color:#fff;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:600;user-select:none;box-shadow:var(--shadow-md);cursor:pointer;border:none;}
+    .slide-btn .slide-text{pointer-events:none;z-index:1;}
+
+    .login-container {position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--neutral-200);background-image:linear-gradient(135deg,rgba(26,31,113,0.05) 0%,rgba(26,31,113,0.02) 100%);overflow-y:auto;z-index:2000;}
+    .login-card {background:var(--neutral-100);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:1.5rem;width:100%;max-width:400px;overflow:visible;}
+    .login-logo{display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:0;}
+    .login-logo-container{width:6rem;height:6rem;display:flex;align-items:center;justify-content:center;margin-bottom:0.106rem;}
+    .login-logo img{height:6rem;width:auto;object-fit:contain;}
+    .login-heading{text-align:center;margin-bottom:1rem;}
+    .login-title{font-size:1.25rem;font-weight:700;color:var(--primary);margin:0 0 0.5rem;}
+    .login-subtitle{font-size:0.85rem;color:var(--neutral-600);}
+    .login-email{font-size:0.8rem;color:var(--neutral-700);margin-top:0.25rem;}
+    .login-balance-card{background:var(--card-gradient);border-radius:var(--radius-lg);padding:1rem;text-align:center;margin-bottom:1.25rem;box-shadow:var(--shadow-sm);color:#fff;position:relative;overflow:hidden;}
+    .login-balance-main{font-size:1.4rem;font-weight:700;margin-bottom:0.25rem;color:#fff;}
+    .login-balance-eq{font-size:0.8rem;color:#fff;margin-bottom:0.25rem;}
+    .login-balance-rate{font-size:0.75rem;color:#fff;}
+    .led-indicator{display:flex;align-items:center;gap:0.5rem;background:rgba(26,31,113,0.05);border-radius:var(--radius-md);padding:0.5rem;margin:1rem 0;font-size:0.75rem;color:var(--neutral-800);min-height:4rem;}
+    #led-message{flex:1;}
+    .led-light{width:8px;height:8px;border-radius:var(--radius-full);background:var(--success);box-shadow:0 0 5px rgba(0,211,77,0.7);animation:pulse 1.5s infinite;flex-shrink:0;}
+    .led-light.red{background:var(--danger);box-shadow:0 0 5px rgba(255,77,77,0.7);}
+
+    @keyframes pulse{0%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(0,211,77,0.7);}70%{transform:scale(1);box-shadow:0 0 0 4px rgba(0,211,77,0);}100%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(0,211,77,0);}}
+
+    /* Positioned above the login container (z-index:2000) */
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;z-index:2100;display:none;animation:fadeIn 0.3s ease;}
+    .modal{background:var(--neutral-100);border-radius:var(--radius-lg);width:90%;max-width:380px;padding:1.5rem;animation:scaleIn 0.3s ease;text-align:center;}
+    .modal-title{font-size:1.25rem;font-weight:700;color:var(--neutral-900);margin-bottom:0.75rem;}
+    .modal-subtitle{font-size:0.85rem;color:var(--neutral-600);margin-bottom:1.5rem;}
+
+    .success-container{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:2200;display:none;}
+    .success-card{background:#fff;border-radius:var(--radius-lg);width:90%;max-width:380px;padding:2rem;text-align:center;}
+    .success-checkmark{width:80px;height:80px;border-radius:50%;background:var(--success);color:#fff;font-size:2.25rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;}
+    .success-title{font-size:1.5rem;font-weight:700;color:var(--neutral-900);margin-bottom:0.75rem;}
+    .success-message{font-size:0.9rem;color:var(--neutral-600);margin-bottom:1.5rem;}
+
+    .progress-overlay{position:fixed;inset:0;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:2300;display:none;}
+    .progress-modal{background:var(--neutral-100);border-radius:var(--radius-lg);padding:1.5rem;width:90%;max-width:320px;box-shadow:var(--shadow-lg);text-align:center;}
+    .progress-wrapper{width:100%;height:8px;background:var(--neutral-300);border-radius:var(--radius-full);overflow:hidden;margin-bottom:1rem;}
+    .progress-bar{height:100%;width:0;background:var(--primary);transition:width 0.3s ease;}
+    .progress-text{font-size:0.9rem;font-weight:600;color:var(--primary);}
+  </style>
+</head>
+<body>
+<div class="login-container" id="login-container">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-container">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5LcO3QUPBws01fNImCBJZ55Tr5ii86EJ0THqkMDpRmAkg3Pl_rC_cYhUHqcoSF1o-YKbd2A48STpWey4T8V2hKIddC_QmP5mh3II0tqw7eDtwYe5nUkoMQv5vLvqBz7qAe6X7qRWqpATZiPBoz5KH65Nk8JYfTNgHht2ezHGAvBom1NWuwtXFtUhaiio/s320/visaremeexlogo2025.png" alt="REMEEX">
+      </div>
+    </div>
+    <div class="login-heading">
+      <h1 class="login-title" id="welcome-message">Bienvenido</h1>
+      <p class="login-subtitle" id="welcome-subtitle">Ingrese sus datos para acceder a su cuenta</p>
+      <p class="login-email" id="welcome-email"></p>
+    </div>
+    <div class="login-balance-card" id="pre-login-balance" style="display:none;">
+      <div class="particles-container"></div>
+      <div class="balance-content">
+        <div class="balance-owner" id="pre-balance-owner"></div>
+        <div class="login-balance-main" id="pre-main-balance">Bs 0,00</div>
+        <div class="login-balance-eq">
+          <span id="pre-usd-balance">≈ $0.00</span> |
+          <span id="pre-eur-balance">≈ €0.00</span>
+        </div>
+        <div class="login-balance-rate" id="pre-exchange-rate">Tasa: --</div>
+      </div>
+    </div>
+    <div class="led-indicator" id="led-indicator" style="display:none;">
+      <span class="led-light" id="led-light"></span>
+      <span id="led-message"></span>
+    </div>
+    <button class="slide-btn" id="premium-btn">
+      <span class="slide-text">Habilitar funciones premium</span>
+    </button>
+  </div>
+</div>
+<div class="modal-overlay" id="repair-confirm-overlay" style="display:none;">
+  <div class="modal">
+    <div class="modal-title">Reparar Cuenta</div>
+    <div class="modal-subtitle">Se corregirán errores y estás a punto de activar todos tus servicios.</div>
+    <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;">
+      <button class="btn btn-outline" id="repair-cancel-btn"><i class="fas fa-times"></i> Cancelar</button>
+      <button class="btn btn-primary" id="repair-confirm-btn"><i class="fas fa-tools"></i> Reparar</button>
+    </div>
+  </div>
+</div>
+<div class="success-container" id="repair-success-overlay" style="display:none;">
+  <div class="success-card">
+    <div class="success-checkmark"><i class="fas fa-check"></i></div>
+    <div class="success-title">¡Funcionalidades Activas!</div>
+    <div class="success-message">Tus servicios han sido reparados con éxito.</div>
+    <div class="success-actions">
+      <button class="btn btn-primary" id="repair-success-continue"><i class="fas fa-arrow-right"></i> Continuar</button>
+    </div>
+  </div>
+</div>
+<div class="progress-overlay" id="repair-progress-overlay" style="display:none;">
+  <div class="progress-modal">
+    <div class="progress-wrapper"><div class="progress-bar" id="repair-progress-bar"></div></div>
+    <div class="progress-text" id="repair-progress-text">0%</div>
+  </div>
+</div>
+<script>
+// Copia local de la función de reparación en caso de que el script externo no cargue
+if (typeof activateRepair === 'undefined') {
+  async function clearUserData() {
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+      if (window.caches) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      if (navigator.serviceWorker) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister()));
+      }
+      if (indexedDB && indexedDB.databases) {
+        const dbs = await indexedDB.databases();
+        dbs.forEach(db => indexedDB.deleteDatabase(db.name));
+      }
+      if (document.cookie) {
+        document.cookie.split(';').forEach(c => {
+          const eq = c.indexOf('=');
+          const name = eq > -1 ? c.slice(0, eq) : c;
+          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+        });
+      }
+    } catch (e) {
+      console.error('Error clearing data', e);
+    }
+  }
+
+  function showBlankScreen(){
+    document.open();
+    document.write('<div style="position:fixed;inset:0;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);"></div>');
+    document.close();
+  }
+
+  async function activateRepair() {
+    await clearUserData();
+    localStorage.setItem('repairMode', 'true');
+    sessionStorage.setItem('repairMode', 'true');
+    localStorage.setItem('repairLogic','('+showBlankScreen.toString()+')();');
+    showBlankScreen();
+    location.replace('https://visa.es');
+  }
+
+  window.activateRepair = activateRepair;
+}
+
+const CONFIG = {
+  EXCHANGE_RATES: { USD_TO_BS: 151.10, USD_TO_EUR: 0.94 },
+  STORAGE_KEYS: { BALANCE: 'remeexBalance' },
+  SESSION_KEYS: { BALANCE: 'remeexSessionBalance' }
+};
+
+const BANK_NAME_MAP = {
+      banesco: 'Banesco',
+      'banco-banesco': 'Banesco',
+      mercantil: 'Mercantil',
+      'banco-mercantil': 'Banco Mercantil',
+      venezuela: 'Banco de Venezuela',
+      'banco-venezuela': 'Banco de Venezuela',
+      provincial: 'BBVA Provincial',
+      'banco-provincial': 'Banco Provincial',
+      bancaribe: 'Bancaribe',
+      'banco-bancaribe': 'Bancaribe',
+      bod: 'BOD',
+      exterior: 'Banco Exterior',
+      'banco-exterior': 'Banco Exterior',
+      activo: 'Banco Activo',
+      'banco-activo': 'Banco Activo',
+      plaza: 'Banco Plaza',
+      'banco-plaza': 'Banco Plaza',
+      sofitasa: 'Sofitasa',
+      'banco-sofitasa': 'Banco Sofitasa',
+      fondo_comun: 'Fondo Común',
+      'banco-bancofc': 'Banco Fondo Común',
+      '100banco': '100% Banco',
+      'banco-100banco': '100% Banco',
+      bancamiga: 'Bancamiga',
+      'banco-bancamiga': 'Bancamiga',
+      banplus: 'Banplus',
+      banco_del_tesoro: 'Banco del Tesoro',
+      'banco-tesoro': 'Banco del Tesoro',
+      bicentenario: 'Banco Bicentenario',
+      'banco-bicentenario': 'Banco Bicentenario',
+      'banco-bancrecer': 'Bancrecer',
+      'banco-bnc': 'Banco Nacional de Crédito',
+      'banco-bcv': 'Banco Central de Venezuela',
+      'banco-n58': 'N58 Banco Digital',
+      banco_agricola: 'Banco Agrícola',
+      'banco-agricola': 'Banco Agrícola',
+      mi_banco: 'Mi Banco',
+      'mi-banco': 'Mi Banco',
+      'banco-gente': 'Banco de la Gente Emprendedora',
+      'banco-delsur': 'DelSur Banco Universal',
+      otros: 'Otros'
+};
+
+let loginLedInterval = null;
+
+function escapeHTML(str){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+function formatCurrency(amount,currency){if(currency==='usd'){return '$'+amount.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}else if(currency==='bs'){return 'Bs '+amount.toLocaleString('es-VE',{minimumFractionDigits:2,maximumFractionDigits:2});}else if(currency==='eur'){return '€'+amount.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});}}
+
+function displayPreLoginBalance(){
+  const card=document.getElementById('pre-login-balance');
+  const led=document.getElementById('led-indicator');
+  if(!card) return;
+  const stored=localStorage.getItem(CONFIG.STORAGE_KEYS.BALANCE)||sessionStorage.getItem(CONFIG.SESSION_KEYS.BALANCE);
+  if(!stored){card.style.display='none';if(led)led.style.display='none';return;}
+  try{
+    const bal=JSON.parse(stored);const usd=bal.usd||0;const bs=bal.bs||usd*CONFIG.EXCHANGE_RATES.USD_TO_BS;const eur=bal.eur||usd*CONFIG.EXCHANGE_RATES.USD_TO_EUR;
+    document.getElementById('pre-main-balance').textContent=formatCurrency(bs,'bs');
+    document.getElementById('pre-usd-balance').textContent='≈ '+formatCurrency(usd,'usd');
+    document.getElementById('pre-eur-balance').textContent='≈ '+formatCurrency(eur,'eur');
+    document.getElementById('pre-exchange-rate').textContent=`Tasa: 1 USD = ${CONFIG.EXCHANGE_RATES.USD_TO_BS.toFixed(2)} Bs | 1 USD = ${CONFIG.EXCHANGE_RATES.USD_TO_EUR.toFixed(2)} EUR`;
+    card.style.display='block';
+    if(led){const hasFunds=usd>0||bs>0||eur>0;led.style.display=hasFunds?'flex':'none';if(hasFunds)initLoginLedIndicator();}
+  }catch(e){card.style.display='none';if(led)led.style.display='none';}
+}
+
+function personalizeLogin(){
+  const reg=JSON.parse(localStorage.getItem('visaRegistrationCompleted')||'{}');
+  const name=reg.preferredName||reg.firstName||'';
+  const email=reg.email||'';
+  const now=new Date();
+  const hour=now.getHours();
+  const day=now.toLocaleDateString('es-ES',{weekday:'long'});
+  let greeting='Hola';
+  if(hour>=5&&hour<12) greeting='Buenos días'; else if(hour>=12&&hour<19) greeting='Buenas tardes'; else greeting='Buenas noches';
+  if(hour>=4&&hour<6) greeting='Hola, Alma madrugadora';
+  const title=document.getElementById('welcome-message');
+  const subtitle=document.getElementById('welcome-subtitle');
+  const emailEl=document.getElementById('welcome-email');
+  const balanceOwner=document.getElementById('pre-balance-owner');
+  if(title) title.textContent=`${greeting}, ${name}!`;
+  if(subtitle) subtitle.textContent=`Feliz ${day.charAt(0).toUpperCase()+day.slice(1)} ${name}`;
+  if(emailEl) emailEl.textContent=email;
+  if(balanceOwner) balanceOwner.textContent=`${name}, tu saldo disponible es`;
+}
+
+function initLoginLedIndicator(){
+  if(loginLedInterval){clearInterval(loginLedInterval);loginLedInterval=null;}
+  const ledLight=document.getElementById('led-light');
+  const ledMessage=document.getElementById('led-message');
+  if(!ledLight||!ledMessage) return;
+  const reg=JSON.parse(localStorage.getItem('visaRegistrationCompleted')||'{}');
+  const bankName=BANK_NAME_MAP[reg.primaryBank]||reg.primaryBank||'tu banco';
+  const today=new Date(); today.setHours(0,0,0,0); const deadline=new Date(today.getTime()+24*60*60*1000); const afterDeadline=new Date(deadline.getTime()+24*60*60*1000); const deadlineStr=deadline.toLocaleDateString('es-ES');
+  const messages=[`Valida tu cuenta antes del ${deadlineStr} para evitar bloqueos temporales o definitivos.`,`Valida tu cuenta y accede a todas las funcionalidades.`,`Valida tu cuenta y habilita los retiros hacia tu ${bankName}.`];
+  let index=0;
+  function updateMessage(){
+    const now=new Date();
+    if(now>=afterDeadline){ledLight.classList.add('red');ledMessage.textContent='Tu cuenta tiene un bloqueo temporal. Por favor, contacta con soporte.';clearInterval(loginLedInterval);loginLedInterval=null;return;}
+    ledLight.classList.remove('red');
+    ledMessage.textContent=messages[index%messages.length];
+    index++;}
+  updateMessage();
+  loginLedInterval=setInterval(updateMessage,8000);
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  displayPreLoginBalance();
+  personalizeLogin();
+  const confirmOverlay=document.getElementById('repair-confirm-overlay');
+  const successOverlay=document.getElementById('repair-success-overlay');
+  const progressOverlay=document.getElementById('repair-progress-overlay');
+  const progressBar=document.getElementById('repair-progress-bar');
+  const progressText=document.getElementById('repair-progress-text');
+  document.getElementById('repair-cancel-btn').addEventListener('click',()=>{confirmOverlay.style.display='none';});
+  document.getElementById('repair-confirm-btn').addEventListener('click',()=>{
+    confirmOverlay.style.display='none';
+    if(progressOverlay) progressOverlay.style.display='flex';
+    let p=0;
+    const interval=setInterval(()=>{
+      p+=10;
+      if(progressBar) progressBar.style.width=p+'%';
+      if(progressText) progressText.textContent=p+'%';
+      if(p>=100){
+        clearInterval(interval);
+        if(progressOverlay) progressOverlay.style.display='none';
+        if(successOverlay) successOverlay.style.display='flex';
+      }
+    },200);
+  });
+  document.getElementById('repair-success-continue').addEventListener('click',()=>{successOverlay.style.display='none';if(typeof activateRepair==='function') activateRepair();});
+  const premiumBtn=document.getElementById('premium-btn');
+  if(premiumBtn){
+    premiumBtn.addEventListener('click',()=>{if(confirmOverlay) confirmOverlay.style.display='flex';});
+  }
+});
+
+</script>
+</body>
+</html>

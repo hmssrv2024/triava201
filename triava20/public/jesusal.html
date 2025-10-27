@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación P2P - Recarga Certificada VISA REMEEX</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 {
+            color: #dc3545; /* Rojo para destacar la Verificación */
+            text-align: center;
+            margin-bottom: 5px;
+            border-bottom: 3px solid #dc3545;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 20px;
+        }
+
+        .explanation {
+            background-color: #ffe6e6; /* Fondo rojo claro para explicación crítica */
+            border: 1px solid #ffcccc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: justify;
+            font-size: 0.9em;
+        }
+
+        .explanation strong {
+            color: #dc3545;
+        }
+
+        .user-info {
+            background-color: #e9f7ef;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .transaction-detail {
+            margin-bottom: 15px;
+        }
+
+        .transaction-detail label {
+            font-weight: bold;
+            display: block;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 0.95em;
+        }
+
+        .transaction-detail span {
+            display: block;
+            background-color: #f7f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            color: #333;
+            font-size: 1.1em;
+            border: 1px solid #e1e4e8;
+            word-wrap: break-word;
+        }
+
+        .monto {
+            font-size: 2.2em;
+            color: #007bff;
+            font-weight: 700;
+            margin: 25px 0;
+            padding: 15px;
+            border: 3px solid #007bff;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .monto small {
+            font-size: 0.5em;
+            display: block;
+            color: #66b3ff;
+            font-weight: normal;
+        }
+
+        /* Sección de verificación */
+        .verification-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .verification-box input[type="text"] {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .verification-box button {
+            background-color: #28a745; /* Verde para la acción de confirmar */
+            color: white;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .verification-box button:hover {
+            background-color: #1e7e34;
+        }
+
+        .note {
+            font-size: 0.8em;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>VERIFICACIÓN DE RECARGA P2P</h2>
+        
+        <div class="user-info">
+            Usuario Solicitante: JESUS ALEXANDER Zarramera
+        </div>
+
+        <div class="explanation">
+            **ATENCIÓN:** Esta operación corresponde a una recarga P2P (Persona a Persona) para un operador certificado de **VISA REMEEX**. Por favor, verifique cuidadosamente los datos antes de proceder a realizar el Pago Móvil o transferencia en su plataforma bancaria.
+        </div>
+
+        <div class="monto">
+            11.208,00 Bs
+            <small>Monto EXACTO a pagar (Incluyendo los dos decimales: ,00)</small>
+        </div>
+
+        <h3>Datos Bancarios del Operador Certificado (Receptor)</h3>
+        
+        <div class="transaction-detail">
+            <label>Beneficiario:</label>
+            <span>Susana Gimenez</span>
+        </div>
+        
+        <div class="transaction-detail">
+            <label>Cédula/Rif (Receptor):</label>
+            <span>V-20.639.785</span>
+        </div>
+        
+        <div class="transaction-detail">
+            <label>Banco Receptor:</label>
+            <span>Bancamiga</span>
+        </div>
+
+        <div class="transaction-detail">
+            <label>Teléfono (Pago Móvil):</label>
+            <span>0414-4272486</span>
+        </div>
+
+        <div class="transaction-detail">
+            <label>Concepto/Motivo (¡Debe ser Exacto!):</label>
+            <span>Activacion de Cuenta</span>
+        </div>
+        
+        <div class="verification-box">
+            <h3>Paso Final: Verificación del Pago</h3>
+            <p>Una vez realizado el Pago Móvil/Transferencia, introduzca el número de referencia (o "ID Transacción") proporcionado por su banco para la validación automática:</p>
+            <input type="text" placeholder="Ingrese aquí el N° de Referencia de 10 a 14 dígitos" required>
+            <button onclick="alert('El sistema está validando la Referencia. Si su pago fue exacto y correcto, la cuenta de JESUS ALEXANDER Zarramera será acreditada en pocos minutos.');">Verificar Pago y Acreditar Saldo</button>
+        </div>
+        
+        <p class="note">La acreditación puede tardar entre 5 y 15 minutos. Si la referencia no es validada, el pago será rechazado. Solo se aceptarán pagos con el monto y motivo EXACTOS.</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tabla de Tipos de Cambio Actualizada</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0f172a;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(148, 163, 184, 0.2);
+      --table-header: #334155;
+      --accent: #38bdf8;
+      --accent-strong: #0ea5e9;
+      --text-primary: #e2e8f0;
+      --text-secondary: #cbd5f5;
+      --success: #22c55e;
+      --warning: #f97316;
+      --error: #ef4444;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(160deg, #020617 0%, #0f172a 60%, #1e293b 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      padding: 2.5rem 1rem 4rem;
+    }
+
+    main {
+      width: min(1100px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    h1 {
+      font-size: clamp(2.1rem, 2.2vw + 1.5rem, 3rem);
+      margin: 0;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: clamp(1rem, 1vw + 0.9rem, 1.25rem);
+      max-width: 62ch;
+    }
+
+    .rates-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 25px 45px rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.01em;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .highlight-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .highlight-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-strong);
+    }
+
+    .scenario-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .scenario-item {
+      border-radius: 16px;
+      border: 1px dashed rgba(56, 189, 248, 0.4);
+      padding: 0.9rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .scenario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+    }
+
+    .scenario-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+    }
+
+    .scenario-value {
+      font-family: 'JetBrains Mono', 'Fira Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 1rem;
+      color: var(--accent-strong);
+    }
+
+    .scenario-description {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 25px 45px rgba(15, 23, 42, 0.28);
+    }
+
+    thead {
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    th, td {
+      padding: 0.9rem 1rem;
+      text-align: right;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    th {
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: rgba(226, 232, 240, 0.85);
+    }
+
+    th:first-child, td:first-child {
+      text-align: left;
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(148, 163, 184, 0.08);
+    }
+
+    .status {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      align-items: center;
+    }
+
+    .status span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .status strong {
+      color: var(--text-primary);
+    }
+
+    button {
+      all: unset;
+      padding: 0.7rem 1.2rem;
+      border-radius: 999px;
+      border: 1px solid rgba(14, 165, 233, 0.5);
+      color: var(--text-primary);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: linear-gradient(120deg, rgba(14, 165, 233, 0.4), rgba(56, 189, 248, 0.2));
+      width: fit-content;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 20px 35px rgba(14, 165, 233, 0.25);
+    }
+
+    .error {
+      color: var(--error);
+      font-weight: 600;
+    }
+
+    @media (max-width: 720px) {
+      th, td {
+        padding: 0.75rem 0.6rem;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Tabla dinámica de cambio</h1>
+      <p class="subtitle">
+        Cotizaciones oficiales y de mercado para USD, EUR y bolívares (BCV, USDT y Euro Digital) con equivalencias
+        automáticas para montos frecuentes. La información se actualiza en tiempo real desde las fuentes usadas por
+        <code>tasadecambio.html</code>.
+      </p>
+      <div class="status" id="status-bar">
+        <span>Actualizando tipos de cambio…</span>
+      </div>
+      <button id="refresh-btn" type="button">Actualizar datos ahora</button>
+    </header>
+
+    <section class="rates-grid" id="rates-grid">
+      <article class="card">
+        <h2>Relación USD ↔ EUR</h2>
+        <p>
+          <span class="highlight-label">1 USD equivale a</span><br />
+          <span class="highlight-value" id="usd-eur">-</span> EUR
+        </p>
+        <p>
+          <span class="highlight-label">1 EUR equivale a</span><br />
+          <span class="highlight-value" id="eur-usd">-</span> USD
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>Tasa oficial BCV</h2>
+        <p>
+          <span class="highlight-label">USD → VES (BCV)</span><br />
+          <span class="highlight-value" id="usd-ves-bcv">-</span>
+        </p>
+        <p>
+          <span class="highlight-label">EUR → VES (BCV)</span><br />
+          <span class="highlight-value" id="eur-ves-bcv">-</span>
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>Mercado digital</h2>
+        <ul class="scenario-list" id="scenario-list">
+          <!-- Los escenarios se insertan dinámicamente -->
+        </ul>
+      </article>
+    </section>
+
+    <section>
+      <h2 style="margin: 0 0 1rem; font-size: 1.6rem;">Equivalencias automáticas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Base USD</th>
+            <th>Equivalente EUR</th>
+            <th>VES BCV</th>
+            <th>VES USDT</th>
+            <th>VES Euro Digital</th>
+            <th>VES Promedio Digital</th>
+          </tr>
+        </thead>
+        <tbody id="conversion-body">
+          <!-- Las filas se insertan dinámicamente -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const AMOUNTS_USD = [515, 1015, 1515, 2015, 25, 30, 35, 40, 45];
+    const USDT_PREMIUM = 0.035; // 3.5 % de prima frente a la tasa oficial
+    const EURO_DIGITAL_PREMIUM = 0.055; // 5.5 % de prima por manejo del Euro Digital
+
+    const statusBar = document.getElementById('status-bar');
+    const usdEurEl = document.getElementById('usd-eur');
+    const eurUsdEl = document.getElementById('eur-usd');
+    const usdVesBcvEl = document.getElementById('usd-ves-bcv');
+    const eurVesBcvEl = document.getElementById('eur-ves-bcv');
+    const scenarioList = document.getElementById('scenario-list');
+    const conversionBody = document.getElementById('conversion-body');
+    const refreshButton = document.getElementById('refresh-btn');
+
+    function formatNumber(value, options = {}) {
+      const config = {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        ...options,
+      };
+      return new Intl.NumberFormat('es-VE', config).format(value);
+    }
+
+    function setStatus(message, type = 'info') {
+      statusBar.innerHTML = '';
+      const bubble = document.createElement('span');
+      bubble.textContent = message;
+      if (type === 'error') {
+        bubble.classList.add('error');
+      }
+      statusBar.appendChild(bubble);
+    }
+
+    function describeScenarios(rates) {
+      const descriptions = {
+        usdt: 'Tasa usada en comercios y pasarelas que liquidan en USDT. Incluye una prima de mercado del 3,5 % sobre el valor BCV para cubrir liquidez y comisiones.',
+        euroDigital: 'Conversión a bolívares de operaciones con Euro Digital. Se aplica una prima de 5,5 % frente al BCV por costos de conversión adicionales.',
+        promedio: 'Promedio aritmético entre las tasas USDT y Euro Digital, útil como referencia cuando se combinan ambos métodos de pago.',
+      };
+
+      return [
+        {
+          key: 'usdt',
+          title: 'Escenario USDT',
+          value: `${formatNumber(rates.usdToVes.usdt)} VES por USD`,
+          description: descriptions.usdt,
+        },
+        {
+          key: 'euroDigital',
+          title: 'Escenario Euro Digital',
+          value: `${formatNumber(rates.eurToVes.euroDigital)} VES por EUR`,
+          description: descriptions.euroDigital,
+        },
+        {
+          key: 'promedio',
+          title: 'Dólar promedio digital',
+          value: `${formatNumber(rates.usdToVes.promedioDigital)} VES por USD`,
+          description: descriptions.promedio,
+        },
+      ];
+    }
+
+    function renderScenarios(rates) {
+      scenarioList.innerHTML = '';
+      const scenarios = describeScenarios(rates);
+      scenarios.forEach((scenario) => {
+        const item = document.createElement('li');
+        item.className = 'scenario-item';
+
+        const header = document.createElement('div');
+        header.className = 'scenario-header';
+
+        const title = document.createElement('span');
+        title.className = 'scenario-title';
+        title.textContent = scenario.title;
+
+        const value = document.createElement('span');
+        value.className = 'scenario-value';
+        value.textContent = scenario.value;
+
+        header.appendChild(title);
+        header.appendChild(value);
+
+        const description = document.createElement('p');
+        description.className = 'scenario-description';
+        description.textContent = scenario.description;
+
+        item.appendChild(header);
+        item.appendChild(description);
+        scenarioList.appendChild(item);
+      });
+    }
+
+    function renderConversions(rates) {
+      conversionBody.innerHTML = '';
+
+      AMOUNTS_USD.forEach((amount) => {
+        const row = document.createElement('tr');
+
+        const usdCell = document.createElement('td');
+        usdCell.textContent = `${formatNumber(amount, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USD`;
+
+        const eurAmount = amount * rates.usdToEur;
+        const eurCell = document.createElement('td');
+        eurCell.textContent = `${formatNumber(eurAmount)} EUR`;
+
+        const vesBcv = amount * rates.usdToVes.bcv;
+        const vesUsdt = amount * rates.usdToVes.usdt;
+        const vesEuroDigital = eurAmount * rates.eurToVes.euroDigital;
+        const vesPromedio = (vesUsdt + vesEuroDigital) / 2;
+
+        const bcvCell = document.createElement('td');
+        bcvCell.textContent = `${formatNumber(vesBcv)} VES`;
+
+        const usdtCell = document.createElement('td');
+        usdtCell.textContent = `${formatNumber(vesUsdt)} VES`;
+
+        const euroDigitalCell = document.createElement('td');
+        euroDigitalCell.textContent = `${formatNumber(vesEuroDigital)} VES`;
+
+        const promedioCell = document.createElement('td');
+        promedioCell.textContent = `${formatNumber(vesPromedio)} VES`;
+
+        row.appendChild(usdCell);
+        row.appendChild(eurCell);
+        row.appendChild(bcvCell);
+        row.appendChild(usdtCell);
+        row.appendChild(euroDigitalCell);
+        row.appendChild(promedioCell);
+
+        conversionBody.appendChild(row);
+      });
+    }
+
+    function buildRates(usdData, eurTicker) {
+      const usdToVesBcv = usdData?.rates?.VES;
+      const usdToEurApi = usdData?.rates?.EUR;
+      const eurToUsdTicker = parseFloat(eurTicker?.price ?? 'NaN');
+
+      if (!usdToVesBcv) {
+        throw new Error('No se encontró la tasa VES en la respuesta del BCV.');
+      }
+
+      const usdToEur = Number.isFinite(usdToEurApi)
+        ? usdToEurApi
+        : (Number.isFinite(eurToUsdTicker) ? 1 / eurToUsdTicker : NaN);
+
+      const eurToUsd = Number.isFinite(eurToUsdTicker)
+        ? eurToUsdTicker
+        : (Number.isFinite(usdToEur) ? 1 / usdToEur : NaN);
+
+      if (!Number.isFinite(usdToEur) || !Number.isFinite(eurToUsd)) {
+        throw new Error('No fue posible calcular la relación USD ↔ EUR con las fuentes disponibles.');
+      }
+
+      const usdToVesUsdt = usdToVesBcv * (1 + USDT_PREMIUM);
+      const usdToVesEuroDigital = usdToVesBcv * (1 + EURO_DIGITAL_PREMIUM);
+      const usdToVesPromedio = (usdToVesUsdt + usdToVesEuroDigital) / 2;
+
+      const eurToVesBcv = eurToUsd * usdToVesBcv;
+      const eurToVesUsdt = eurToUsd * usdToVesUsdt;
+      const eurToVesEuroDigital = eurToUsd * usdToVesEuroDigital;
+      const eurToVesPromedio = (eurToVesUsdt + eurToVesEuroDigital) / 2;
+
+      return {
+        usdToEur,
+        eurToUsd,
+        usdToVes: {
+          bcv: usdToVesBcv,
+          usdt: usdToVesUsdt,
+          euroDigital: usdToVesEuroDigital,
+          promedioDigital: usdToVesPromedio,
+        },
+        eurToVes: {
+          bcv: eurToVesBcv,
+          usdt: eurToVesUsdt,
+          euroDigital: eurToVesEuroDigital,
+          promedioDigital: eurToVesPromedio,
+        },
+      };
+    }
+
+    async function fetchRates() {
+      setStatus('Sincronizando con servicios oficiales…');
+      try {
+        const [usdRes, eurRes] = await Promise.all([
+          fetch('https://open.er-api.com/v6/latest/USD'),
+          fetch('https://api.binance.com/api/v3/ticker/price?symbol=EURUSDT'),
+        ]);
+
+        const usdData = await usdRes.json();
+        const eurTicker = await eurRes.json();
+
+        if (usdData?.result === 'error') {
+          throw new Error(usdData['error-type'] || 'Respuesta inválida del servicio de tasas base.');
+        }
+
+        const rates = buildRates(usdData, eurTicker);
+
+        usdEurEl.textContent = formatNumber(rates.usdToEur, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+        eurUsdEl.textContent = formatNumber(rates.eurToUsd, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+        usdVesBcvEl.textContent = formatNumber(rates.usdToVes.bcv);
+        eurVesBcvEl.textContent = formatNumber(rates.eurToVes.bcv);
+
+        renderScenarios(rates);
+        renderConversions(rates);
+
+        const lastUpdated = new Date().toLocaleString('es-VE', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+
+        setStatus(`Datos actualizados correctamente (${lastUpdated}).`);
+      } catch (error) {
+        console.error(error);
+        setStatus(`No se pudo actualizar: ${error.message}`, 'error');
+      }
+    }
+
+    refreshButton.addEventListener('click', () => {
+      fetchRates();
+    });
+
+    fetchRates();
+  </script>
+</body>
+</html>

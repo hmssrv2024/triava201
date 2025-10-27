@@ -1,0 +1,14 @@
+{
+  "packageId": "com.remeexvisa.app",
+  "name": "Remeex Visa",
+  "launcherName": "Remeex Visa",
+  "host": "visa.remeexvisa.com",
+  "startUrl": "visa.remeexvisa.com",
+  "scope": "visa.remeexvisa.com",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#002654",
+  "backgroundColor": "#ffffff",
+  "enableNotifications": false,
+  "splashScreenFadeOutDuration": 300
+}

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mi Código QR - REMEEX Visa Banking</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    (function() {
+      var ref = document.referrer
+        ? document.referrer.split('/').pop().split(/[?#]/)[0].replace(/\.html$/, '')
+        : '';
+      if (ref !== 'recarga') {
+        window.location.replace('homevisa.html');
+      }
+    })();
+  </script>
+  
+  <!-- Biblioteca para generar el código QR -->
+  <!-- Biblioteca para generar el código QR (copiada localmente para evitar problemas de red) -->
+  <script src="qrcode.min.js"></script>
+
+  <style>
+    /* Estilos básicos inspirados en tu página homevisa.html */
+    :root {
+      --primary: #1a1f71;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-600: #6e7891;
+      --neutral-900: #1a1f37;
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --radius-lg: 16px;
+      --transition-base: all 0.3s ease;
+    }
+    
+    body {
+      font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+      background: var(--neutral-200);
+      color: var(--neutral-900);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .header-logo {
+      width: 80px;
+      margin-bottom: 1rem;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0 0 0.5rem;
+    }
+    
+    #user-greeting {
+      font-size: 1rem;
+      color: var(--neutral-600);
+      margin-bottom: 1.5rem;
+    }
+    
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 1.5rem;
+      padding: 1rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid #eee;
+    }
+    
+    .btn {
+      display: inline-block;
+      width: 100%;
+      height: 44px;
+      padding: 0 1.5rem;
+      box-sizing: border-box;
+      border-radius: var(--radius-lg);
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition-base);
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      line-height: 44px;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .whatsapp-btn {
+      margin-top: 0.75rem;
+      background: #25D366;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    #error-message {
+        color: #ff4d4d;
+        font-weight: 500;
+    }
+
+    /* Sección de historial */
+    #transactions {
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+
+    #transactions h2 {
+      font-size: 1.1rem;
+      color: var(--primary);
+      margin: 0 0 0.75rem;
+    }
+
+    .transaction-list {
+      max-height: 200px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .transaction-item {
+      background: var(--neutral-200);
+      border-radius: var(--radius-lg);
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
+    .transaction-title {
+      font-weight: 600;
+    }
+
+    .transaction-date {
+      font-size: 0.7rem;
+      color: var(--neutral-600);
+    }
+
+    .transaction-amount {
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnBzNdjl6bNp-nIdaiHVENczJhwlJNA7ocsyiOObMmzbu8at0dY5yGcZ9cLxLF39qI6gwNfqBxlkTDC0txVULEwQVwGkeEzN0Jq9MRTRagA48mh18UqTlR4WhsXOLAEZugUyhqJHB19xJgnkpe-S5VOWFgzpKFwctv3XP9XhH41vNTvq0ZS-nik58Qhr-O/s320/remeex.png" alt="REMEEX Logo" class="header-logo">
+    <h1>Tu Código QR Personal</h1>
+    <p id="user-greeting">Comparte para recibir transferencias.</p>
+    
+    <!-- El código QR se generará aquí -->
+    <div id="qrcode"></div>
+
+    <p id="error-message" style="display: none;">No se encontraron datos de usuario. Por favor, inicia sesión en tu cuenta primero.</p>
+
+    <div id="transactions">
+      <h2>Transacciones Recientes</h2>
+      <div id="transaction-list" class="transaction-list"></div>
+    </div>
+
+    <a href="homevisa.html" class="btn">Volver a mi cuenta</a>
+    <a href="#" id="whatsapp-share" class="btn whatsapp-btn"><span style="display:inline-flex;align-items:center;gap:0.5rem;"><i class="fab fa-whatsapp"></i>Compartir con Soporte</span></a>
+  </div>
+
+  <script>
+    let qrDataString = '';
+    document.addEventListener('DOMContentLoaded', function() {
+      const qrCodeContainer = document.getElementById('qrcode');
+      const errorMessage = document.getElementById('error-message');
+      const userGreeting = document.getElementById('user-greeting');
+      const txList = document.getElementById('transaction-list');
+      let lastTxHash = '';
+
+      function formatCurrency(amount, currency) {
+        if (currency === 'bs') {
+          return 'Bs ' + amount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function loadTransactions() {
+        try {
+          const data = JSON.parse(localStorage.getItem('remeexTransactions') || '{}');
+          return Array.isArray(data.transactions) ? data.transactions : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function renderTransactions() {
+        const txs = loadTransactions().slice().reverse();
+        const hash = JSON.stringify(txs);
+        if (hash === lastTxHash) return;
+        lastTxHash = hash;
+        txList.innerHTML = '';
+        if (txs.length === 0) {
+          const p = document.createElement('p');
+          p.textContent = 'No hay transacciones recientes';
+          txList.appendChild(p);
+          return;
+        }
+        txs.forEach(tx => {
+          const item = document.createElement('div');
+          item.className = 'transaction-item';
+
+          const info = document.createElement('div');
+          const title = document.createElement('div');
+          title.className = 'transaction-title';
+          title.textContent = tx.description || tx.type || 'Transacción';
+          const date = document.createElement('div');
+          date.className = 'transaction-date';
+          date.textContent = tx.date || '';
+          info.appendChild(title);
+          info.appendChild(date);
+
+          const amount = document.createElement('div');
+          amount.className = 'transaction-amount';
+          const sign = tx.type === 'withdraw' ? '-' : '+';
+          amount.textContent = sign + formatCurrency(Number(tx.amount || 0), 'usd');
+
+          item.appendChild(info);
+          item.appendChild(amount);
+          txList.appendChild(item);
+        });
+      }
+
+      try {
+        // 1. Recopilar datos del localStorage
+        const registrationData = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+        const balanceData = JSON.parse(localStorage.getItem('remeexBalance') || '{}');
+        const bankingData = JSON.parse(localStorage.getItem('remeexVerificationBanking') || '{}');
+        const verificationStatus = localStorage.getItem('remeexVerificationStatus') || 'unverified';
+        
+        // Comprobar si existen los datos esenciales
+        if (!registrationData.email) {
+          throw new Error("No se encontraron datos de registro.");
+        }
+
+        // 2. Construir el objeto de datos para el QR (excluyendo datos sensibles)
+        const userDataForQR = {
+          remitente: {
+            nombreCompleto: registrationData.fullName || `${registrationData.firstName || ''} ${registrationData.lastName || ''}`.trim(),
+            email: registrationData.email,
+            documento: registrationData.documentNumber,
+            telefono: registrationData.phoneNumberFull || registrationData.phoneNumber,
+          },
+          cuenta: {
+            bancoPrincipal: registrationData.primaryBank,
+            numeroDeCuenta: bankingData.accountNumber,
+            estadoVerificacion: verificationStatus,
+          },
+          saldoActual: {
+            usd: balanceData.usd || 0,
+            bs: balanceData.bs || 0,
+            eur: balanceData.eur || 0,
+          },
+          idUsuarioRemeex: `REMEEX-${btoa(registrationData.email).substring(0, 12)}` // Crear un ID de usuario simple
+        };
+        
+        // Actualizar saludo
+        userGreeting.textContent = `Hola, ${userDataForQR.remitente.nombreCompleto}. Este es tu código.`;
+
+        // 3. Convertir el objeto a una cadena JSON
+        qrDataString = JSON.stringify(userDataForQR, null, 2); // El '2' formatea el JSON para que sea legible
+
+        // Limpiar el contenedor antes de generar un nuevo QR
+        qrCodeContainer.innerHTML = '';
+
+        // 4. Generar el código QR
+        new QRCode(qrCodeContainer, {
+          text: qrDataString,
+          width: 256,
+          height: 256,
+          colorDark: "#1a1f37",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+
+        renderTransactions();
+
+        window.addEventListener('storage', function(e) {
+          if (e.key === 'remeexTransactions') {
+            renderTransactions();
+          }
+        });
+
+        setInterval(renderTransactions, 5000);
+
+        const shareBtn = document.getElementById('whatsapp-share');
+        if (shareBtn) {
+          shareBtn.addEventListener('click', function(ev) {
+            ev.preventDefault();
+            const msg = encodeURIComponent('Hola, comparto mi código QR:\n' + qrDataString);
+            window.open('https://wa.me/+17373018059?text=' + msg, '_blank');
+          });
+        }
+
+      } catch (error) {
+        console.error("Error al generar el código QR:", error);
+        // Mostrar mensaje de error al usuario si faltan datos
+        qrCodeContainer.style.display = 'none';
+        errorMessage.style.display = 'block';
+        userGreeting.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>

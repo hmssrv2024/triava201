@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="js/exchange-rate.js"></script>
+    <script>
+        (function () {
+            const referrerPart = document.referrer
+                ? document.referrer.split('/').pop().split(/[?#]/)[0].replace(/\.html$/, '')
+                : '';
+            const fromProcessing = sessionStorage.getItem('fromProcessingRetiro') === 'true';
+            if (referrerPart !== 'procesamiento-retiro' && !fromProcessing) {
+                window.location.replace('transferencia.html');
+            } else {
+                sessionStorage.removeItem('fromProcessingRetiro');
+                localStorage.setItem('firstWithdrawalDone','true');
+            }
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat P2P - REMEEX</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" href="visabluapple.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Paleta de colores original mantenida */
+            --primary: #1a1f71;
+            --primary-dark: #0c1045;
+            --primary-light: #3244b6;
+            --secondary: #00579f;
+            --accent: #f7b600;
+            --success: #00d34d;
+            --danger: #ff4d4d;
+            --warning: #ffad33;
+            --info: #0095ff;
+            --neutral-100: #ffffff;
+            --neutral-200: #f5f7fa;
+            --neutral-300: #eaecf0;
+            --neutral-400: #d0d5dd;
+            --neutral-500: #9da4b4;
+            --neutral-600: #6e7891;
+            --neutral-700: #4f5d75;
+            --neutral-800: #293249;
+            --neutral-900: #1a1f37;
+
+            /* Variables optimizadas para mobile */
+            --header-height: 60px;
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --trader-info-height: 70px;
+            --action-bar-height: 80px;
+            
+            /* Efectos */
+            --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+            --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1);
+            --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--neutral-100);
+            color: var(--neutral-900);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER SIMPLIFICADO */
+        .header {
+            position: fixed;
+            top: 0;
+            top: var(--safe-area-top);
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: var(--neutral-100);
+            border-bottom: 1px solid var(--neutral-300);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            border-radius: 50%;
+            color: var(--neutral-700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: var(--neutral-200);
+        }
+
+        .header-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+
+        .header-subtitle {
+            font-size: 0.75rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .timer-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .timer-badge.warning { background: var(--warning); }
+        .timer-badge.danger { 
+            background: var(--danger); 
+            animation: timerPulse 1s infinite;
+        }
+
+        /* TRADER INFO COMPACTO */
+        .trader-info {
+            position: fixed;
+            top: calc(var(--header-height) + var(--safe-area-top));
+            left: 0;
+            right: 0;
+            height: var(--trader-info-height);
+            background: var(--neutral-100);
+            border-bottom: 1px solid var(--neutral-300);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            gap: 0.75rem;
+            z-index: 999;
+        }
+
+        .trader-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .trader-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            background: var(--success);
+            border: 2px solid white;
+            border-radius: 50%;
+            animation: onlinePulse 2s infinite;
+        }
+
+        .trader-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .trader-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--neutral-900);
+            margin-bottom: 0.125rem;
+        }
+
+        .trader-status {
+            font-size: 0.75rem;
+            color: var(--neutral-600);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--accent);
+        }
+
+        /* CHAT CONTAINER */
+        .chat-container {
+            position: fixed;
+            top: calc(var(--header-height) + var(--trader-info-height) + var(--safe-area-top));
+            left: 0;
+            right: 0;
+            bottom: calc(var(--action-bar-height) + var(--safe-area-bottom));
+            background: var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .chat-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+        }
+
+        .chat-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            color: var(--neutral-600);
+        }
+
+        .chat-loading.hidden {
+            display: none;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--neutral-300);
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* ACTION BUTTONS */
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            bottom: var(--safe-area-bottom);
+            left: 0;
+            right: 0;
+            height: var(--action-bar-height);
+            background: var(--neutral-100);
+            border-top: 1px solid var(--neutral-300);
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            gap: 0.5rem;
+            z-index: 998;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-btn {
+            flex: 1;
+            height: 48px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .action-btn.confirm {
+            background: var(--success);
+            color: white;
+        }
+
+        .action-btn.dispute {
+            background: var(--danger);
+            color: white;
+        }
+        .action-btn.cancel {
+            background: var(--warning);
+            color: white;
+            flex-direction: column;
+            text-align: center;
+        }
+
+
+        .action-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .action-btn:not(:disabled):active {
+            transform: translateY(0);
+        }
+
+        .action-btn.hidden {
+            display: none;
+        }
+
+        /* VALIDATION OVERLAY */
+        .validation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .validation-overlay.show {
+            display: flex;
+        }
+
+        .validation-modal {
+            background: white;
+            border-radius: var(--radius-lg);
+            max-width: 400px;
+            width: 100%;
+            padding: 2rem;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .validation-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--warning), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .validation-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--neutral-900);
+        }
+
+        .validation-message {
+            color: var(--neutral-600);
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .validation-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .validation-btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .validation-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .validation-btn.secondary {
+            background: var(--neutral-200);
+            color: var(--neutral-700);
+        }
+
+        .validation-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* MODAL GENÉRICO */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius-lg);
+            max-width: 400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .modal-icon.success {
+            background: rgba(0, 211, 77, 0.1);
+            color: var(--success);
+        }
+
+        .modal-icon.warning {
+            background: rgba(251, 188, 4, 0.1);
+            color: var(--warning);
+        }
+
+        .modal-icon.danger {
+            background: rgba(255, 77, 77, 0.1);
+            color: var(--danger);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--neutral-900);
+        }
+
+        .modal-subtitle {
+            color: var(--neutral-600);
+            line-height: 1.4;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.875rem;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: var(--neutral-200);
+            color: var(--neutral-700);
+        }
+
+        .modal-btn.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* TOAST NOTIFICATIONS */
+        .toast-container {
+            position: fixed;
+            top: calc(var(--header-height) + var(--safe-area-top) + 1rem);
+            right: 1rem;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem;
+            min-width: 250px;
+            max-width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideInRight 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.warning { border-left: 4px solid var(--warning); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.info { border-left: 4px solid var(--info); }
+
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+
+        .toast.success .toast-icon { color: var(--success); }
+        .toast.warning .toast-icon { color: var(--warning); }
+        .toast.error .toast-icon { color: var(--danger); }
+        .toast.info .toast-icon { color: var(--info); }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.8rem;
+            color: var(--neutral-600);
+        }
+
+        /* ANIMACIONES */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes onlinePulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            html { font-size: 90%; }
+            :root {
+                --header-height: 55px;
+                --trader-info-height: 65px;
+                --action-bar-height: 75px;
+            }
+            
+            .header {
+                padding: 0 0.75rem;
+            }
+            
+            .trader-info {
+                padding: 0 0.75rem;
+            }
+            
+            .action-bar {
+                padding: 0.75rem;
+            }
+            
+             .action-btn {
+                 height: 44px;
+                 font-size: 0.75rem;
+             }
+        }
+
+        @media (max-width: 375px) {
+            .header-title {
+                font-size: 0.9rem;
+            }
+            
+            .timer-badge {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.625rem;
+            }
+        }
+
+        /* UTILITIES */
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header simplificado -->
+    <div class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div>
+                <div class="header-title">Chat P2P #R2847</div>
+                <div class="header-subtitle">
+                    <span class="status-dot"></span>
+                    <span>En proceso</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="timer-badge" id="timer-badge">
+            <i class="fas fa-clock"></i>
+            <span id="timer-display">14:45</span>
+        </div>
+    </div>
+
+    <!-- Trader info compacto -->
+    <div class="trader-info">
+        <div class="trader-avatar">
+            <img src="usuarios/Juan Tomas Perez.jpg" alt="Juan Tomas Perez">
+            <div class="online-indicator"></div>
+        </div>
+        <div class="trader-details">
+            <div class="trader-name" id="trader-name"></div>
+            <div class="trader-status">
+                <div class="rating">
+                    <span id="rating-stars">★★★★☆</span>
+                    <span id="rating-value">4.5</span>
+                </div>
+                <span id="transactions">400 operaciones</span>
+                <span id="verified-since">Verificado desde 2023</span>
+                <span>En línea</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat container -->
+    <div class="chat-container">
+        <div class="chat-loading" id="chat-loading">
+            <div class="spinner"></div>
+            <span>Conectando...</span>
+        </div>
+        <iframe 
+            id="chat-iframe"
+            class="chat-iframe"
+            src="https://tawk.to/chat/68a44855d541a4192285c373/1j30rl42b"
+            frameborder="0"
+            scrolling="auto"
+            allow="microphone; camera"
+            title="Chat con Juan Tomas">
+        </iframe>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="action-bar" id="action-bar">
+        <button class="action-btn confirm" id="confirm-btn" onclick="confirmPayment()" disabled>
+            <i class="fas fa-check-circle"></i>
+            <span>Confirmar Recepción</span>
+        </button>
+        <button class="action-btn cancel" id="exit-btn" onclick="window.location.href='homevisa.html'">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Salir</span>
+        </button>
+        <button class="action-btn dispute" id="dispute-btn" onclick="openDispute()" disabled>
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Abrir Disputa</span>
+        </button>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Validation Overlay -->
+    <div class="validation-overlay" id="validation-overlay">
+        <div class="validation-modal">
+            <div class="validation-icon">
+                <i class="fas fa-id-card"></i>
+            </div>
+            <h2 class="validation-title">Verificación Requerida</h2>
+            <p class="validation-message">
+                Para realizar retiros debes validar tu documento de identidad. Esto nos ayuda a proteger tus fondos y cumplir con las regulaciones. Una vez que lo hagas podrás volver a intentar retirar los fondos.
+            </p>
+            <div class="validation-actions">
+                <button class="validation-btn primary" onclick="validateNow()">
+                    <i class="fas fa-upload"></i>
+                    Validar Ahora
+                </button>
+                <button class="validation-btn secondary" onclick="validateLater()">
+                    <i class="fas fa-clock"></i>
+                    Validar Más Tarde
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Confirmation Modal -->
+    <div class="modal-overlay" id="confirm-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-icon success">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h2 class="modal-title">¿Confirmar recepción?</h2>
+                <p class="modal-subtitle">
+                    Al confirmar, los fondos serán liberados al vendedor. 
+                    Asegúrate de haber recibido el pago completo.
+                </p>
+            </div>
+            <div class="modal-body">
+                <div style="background: var(--neutral-200); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: var(--neutral-600); font-size: 0.85rem;">Monto esperado:</span>
+                        <span style="font-weight: 600;">Bs 1,500.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--neutral-600); font-size: 0.85rem;">Método:</span>
+                        <span style="font-weight: 600;">Pago Móvil</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn secondary" onclick="closeModal('confirm-modal')">
+                        Cancelar
+                    </button>
+                    <button class="modal-btn primary" onclick="executeConfirmPayment()">
+                        Sí, recibí el pago
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exit Chat Modal -->
+    <div class="modal-overlay" id="exit-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-icon danger">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <h2 class="modal-title">¿Deseas salir del chat?</h2>
+                <p class="modal-subtitle">Se cancelará la operación.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeModal('exit-modal')">Cancelar</button>
+                <button class="modal-btn danger" onclick="executeExit()">Salir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dispute Modal -->
+    <div class="modal-overlay" id="dispute-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-icon warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 class="modal-title">Abrir Disputa</h2>
+                <p class="modal-subtitle">
+                    ¿Tienes algún problema con esta transacción? 
+                    Nuestro equipo de soporte te ayudará a resolverlo.
+                </p>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem;">
+                        Motivo de la disputa
+                    </label>
+                    <select style="width: 100%; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); font-size: 0.9rem;">
+                        <option>No he recibido el pago</option>
+                        <option>El monto es incorrecto</option>
+                        <option>Problema con los datos bancarios</option>
+                        <option>El vendedor no responde</option>
+                        <option>Otro problema</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem;">
+                        Descripción del problema
+                    </label>
+                    <textarea 
+                        style="width: 100%; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); font-size: 0.9rem; min-height: 80px; resize: vertical;"
+                        placeholder="Explica brevemente el problema..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn secondary" onclick="closeModal('dispute-modal')">
+                        Cancelar
+                    </button>
+                    <button class="modal-btn primary" onclick="submitDispute()">
+                        Enviar Disputa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let timeRemaining = 885; // 14:45 en segundos
+        let timerInterval;
+        let chatObserver;
+        let validationTriggered = false;
+
+        // Datos de la aplicación
+        const transferData = JSON.parse(sessionStorage.getItem('remeexTransferData') || '{}');
+        const userData = JSON.parse(localStorage.getItem('visaUserData') || '{}');
+
+        // Inicialización optimizada
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Chat P2P optimizado iniciado');
+
+            initializeChat();
+            startTimer();
+            setupChatMonitoring();
+
+            const traderNameEl = document.getElementById('trader-name');
+            if (traderNameEl) {
+                const amount = parseFloat(transferData.amount || '0');
+                traderNameEl.textContent = `Juan te transferirá Bs ${amount.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            }
+
+            setTimeout(() => {
+                showToast('success', 'Chat activo', 'Conectado con soporte REMEEX');
+            }, 3000);
+
+            setTimeout(autoCancelDueVerification, 5 * 60 * 1000);
+        });
+
+        function initializeChat() {
+            const chatIframe = document.getElementById('chat-iframe');
+            const chatLoading = document.getElementById('chat-loading');
+
+            // Ocultar loading cuando cargue el iframe
+            chatIframe.addEventListener('load', function() {
+                setTimeout(() => {
+                    chatLoading.classList.add('hidden');
+                }, 1500);
+            });
+
+            // Manejar errores
+            chatIframe.addEventListener('error', function() {
+                chatLoading.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="color: var(--warning); font-size: 2rem;"></i>
+                    <span>Error al cargar el chat</span>
+                `;
+            });
+        }
+
+        function setupChatMonitoring() {
+            // Configurar monitoreo del chat para detectar "debes verificar la cuenta"
+            const chatIframe = document.getElementById('chat-iframe');
+            
+            // Observer para cambios en el DOM del iframe
+            try {
+                chatIframe.addEventListener('load', function() {
+                    try {
+                        const iframeDocument = chatIframe.contentDocument || chatIframe.contentWindow.document;
+                        
+                        // Crear observer para monitorear cambios de texto
+                        const observer = new MutationObserver(function(mutations) {
+                            mutations.forEach(function(mutation) {
+                                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                                    checkForValidationTrigger(iframeDocument);
+                                }
+                            });
+                        });
+
+                        // Observar cambios en el body del iframe
+                        if (iframeDocument.body) {
+                            observer.observe(iframeDocument.body, {
+                                childList: true,
+                                subtree: true,
+                                characterData: true
+                            });
+                        }
+
+                        // Verificación inicial
+                        setTimeout(() => checkForValidationTrigger(iframeDocument), 2000);
+                        
+                    } catch (e) {
+                        // Si no podemos acceder al iframe por CORS, usar postMessage
+                        console.log('Using postMessage for chat monitoring');
+                        window.addEventListener('message', handleChatMessage);
+                    }
+                });
+            } catch (e) {
+                console.log('Chat monitoring setup error:', e);
+            }
+
+            // Alternativa: verificación periódica mediante simulación
+            setInterval(() => {
+                // Simulación: verificar después de 30 segundos si no se ha disparado
+                if (!validationTriggered && timeRemaining < 850) {
+                    // Simular trigger para demo
+                    // triggerValidationOverlay();
+                }
+            }, 5000);
+        }
+
+        function handleChatMessage(event) {
+            // Manejar mensajes del iframe de tawk.to
+            if (event.origin === 'https://tawk.to' && event.data) {
+                const message = event.data.toString().toLowerCase();
+                if (message.includes('debes verificar la cuenta') || 
+                    message.includes('verificar documento') ||
+                    message.includes('validar identidad')) {
+                    triggerValidationOverlay();
+                }
+            }
+        }
+
+        function checkForValidationTrigger(iframeDocument) {
+            if (validationTriggered) return;
+            
+            try {
+                const textContent = iframeDocument.body.textContent || iframeDocument.body.innerText || '';
+                const lowerText = textContent.toLowerCase();
+                
+                if (lowerText.includes('debes verificar la cuenta') ||
+                    lowerText.includes('verificar documento') ||
+                    lowerText.includes('validar identidad')) {
+                    triggerValidationOverlay();
+                }
+            } catch (e) {
+                console.log('Error checking validation trigger:', e);
+            }
+        }
+
+        function triggerValidationOverlay() {
+            if (validationTriggered) return;
+            
+            validationTriggered = true;
+            console.log('🔒 Validation trigger activated');
+            
+            // Ocultar botones de acción
+            hideActionButtons();
+            
+            // Mostrar overlay de validación después de un breve delay
+            setTimeout(() => {
+                document.getElementById('validation-overlay').classList.add('show');
+                showToast('warning', 'Verificación requerida', 'Debes validar tu identidad para continuar');
+            }, 500);
+        }
+
+        function validateNow() {
+            console.log('✅ Redirecting to validation - Now');
+            window.location.href = 'homevisa.html';
+        }
+
+        function validateLater() {
+            console.log('⏰ Redirecting to validation - Later');
+            window.location.href = 'homevisa.html';
+        }
+
+        function hideActionButtons() {
+            const confirmBtn = document.getElementById('confirm-btn');
+            const disputeBtn = document.getElementById('dispute-btn');
+            
+            if (confirmBtn) confirmBtn.classList.add('hidden');
+            if (disputeBtn) disputeBtn.classList.add('hidden');
+        }
+        function showCancelButton() {
+            const actionBar = document.getElementById('action-bar');
+            if (actionBar && !document.getElementById('cancel-btn')) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'action-btn cancel';
+                cancelBtn.id = 'cancel-btn';
+                cancelBtn.innerHTML = `
+                    <i class="fas fa-times-circle"></i>
+                    <span>Operación cancelada por Juan Tomas porque tu cuenta no está verificada</span>
+                    <span>Ir a verificar</span>
+                `;
+                cancelBtn.addEventListener('click', () => window.location.href = 'homevisa.html');
+                actionBar.appendChild(cancelBtn);
+            }
+        }
+
+        function autoCancelDueVerification() {
+            hideActionButtons();
+            showCancelButton();
+            if (!validationTriggered) {
+                triggerValidationOverlay();
+            } else {
+                const overlay = document.getElementById('validation-overlay');
+                if (overlay) overlay.classList.add('show');
+            }
+        }
+
+        // Timer functions
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const timerDisplay = document.getElementById('timer-display');
+            const timerBadge = document.getElementById('timer-badge');
+            
+            if (timerDisplay) timerDisplay.textContent = display;
+            
+            if (timerBadge) {
+                timerBadge.classList.remove('warning', 'danger');
+                if (timeRemaining <= 180) {
+                    timerBadge.classList.add('danger');
+                } else if (timeRemaining <= 300) {
+                    timerBadge.classList.add('warning');
+                }
+            }
+        }
+
+        function handleTimeout() {
+            showToast('error', 'Tiempo agotado', 'La operación ha sido cancelada');
+            setTimeout(() => window.location.href = 'homevisa.html', 3000);
+        }
+
+        // Action functions
+        function confirmPayment() {
+            if (validationTriggered) return;
+            document.getElementById('confirm-modal').classList.add('show');
+        }
+
+        function executeConfirmPayment() {
+            closeModal('confirm-modal');
+            showToast('success', 'Pago confirmado', 'Operación completada exitosamente');
+            setTimeout(() => window.location.href = 'homevisa.html', 2000);
+        }
+
+        function openDispute() {
+            if (validationTriggered) return;
+            document.getElementById('dispute-modal').classList.add('show');
+        }
+
+        function submitDispute() {
+            closeModal('dispute-modal');
+            showToast('warning', 'Disputa enviada', 'Un moderador revisará tu caso');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('show');
+        }
+
+        // Toast system
+        function showToast(type, title, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'check-circle',
+                warning: 'exclamation-triangle',
+                error: 'times-circle',
+                info: 'info-circle'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas fa-${icons[type]}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Navigation
+        function goBack() {
+            document.getElementById('exit-modal').classList.add('show');
+        }
+
+        function executeExit() {
+            window.location.href = 'homevisa.html';
+        }
+
+        // Responsive height adjustment
+        function updateVH() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        window.addEventListener('resize', updateVH);
+        window.addEventListener('orientationchange', updateVH);
+        updateVH();
+        console.log('✅ Chat P2P optimizado completamente inicializado');
+    </script>
+</body>
+</html>

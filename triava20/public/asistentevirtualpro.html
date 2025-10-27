@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Asistente Virtual Profesional | Curso Online</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #2d3748;
+      background-color: #f7fafc;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Encabezado */
+    header {
+      background-color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a365d;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+
+    nav ul li {
+      margin-left: 32px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #4a5568;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: #2b6cb0;
+    }
+
+    .auth-buttons a {
+      margin-left: 16px;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .login {
+      color: #2d3748;
+      border: 1px solid #cbd5e0;
+    }
+
+    .register {
+      background-color: #3182ce;
+      color: white;
+    }
+
+    .register:hover {
+      background-color: #2b6cb0;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 140px 0 80px;
+      background: linear-gradient(135deg, #e6f2ff 0%, #f0f9ff 100%);
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #1a365d;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #4a5568;
+      max-width: 700px;
+      margin: 0 auto 32px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background-color: #2c5282;
+      color: white;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    .cta-button:hover {
+      background-color: #2a4365;
+    }
+
+    /* Curso Info */
+    .course-section {
+      padding: 80px 0;
+      background-color: #ffffff;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      color: #1a365d;
+      text-align: center;
+      margin-bottom: 40px;
+      font-weight: 600;
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+
+    .card {
+      background-color: #f8fafc;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      color: #2d3748;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    /* Inscripción */
+    .enroll-section {
+      padding: 80px 0;
+      background-color: #ffffff;
+    }
+
+    .enroll-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .enroll-text {
+      flex: 1 1 380px;
+    }
+
+    .enroll-text h2 {
+      font-size: 2rem;
+      color: #1a365d;
+      margin-bottom: 16px;
+    }
+
+    .enroll-text p {
+      color: #4a5568;
+      margin-bottom: 16px;
+      font-size: 1rem;
+    }
+
+    .price-highlight {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      background-color: #ebf8ff;
+      color: #2c5282;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .enroll-benefits {
+      list-style: none;
+      padding-left: 0;
+      margin: 20px 0 0;
+    }
+
+    .enroll-benefits li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: #2d3748;
+    }
+
+    .enroll-benefits li span {
+      font-size: 1.1rem;
+    }
+
+    .paypal-wrapper {
+      flex: 1 1 320px;
+      background: linear-gradient(135deg, #ebf4ff 0%, #f7fafc 100%);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 10px 25px rgba(49, 130, 206, 0.15);
+    }
+
+    .paypal-wrapper h3 {
+      font-size: 1.4rem;
+      color: #1a365d;
+      margin-bottom: 8px;
+    }
+
+    .paypal-wrapper p {
+      color: #4a5568;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    .paypal-button-container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .paypal-status {
+      margin-top: 16px;
+      font-size: 0.9rem;
+      color: #2d3748;
+      min-height: 20px;
+    }
+
+    .paypal-status.error {
+      color: #c53030;
+    }
+
+    .paypal-fallback-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border-radius: 8px;
+      background-color: #ffc439;
+      color: #1a365d;
+      font-weight: 600;
+      text-decoration: none;
+      transition: filter 0.2s ease-in-out;
+    }
+
+    .paypal-fallback-link:hover {
+      filter: brightness(0.95);
+    }
+
+    .guarantee-note {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #2c5282;
+      background-color: #e6fffa;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(44, 82, 130, 0.1);
+    }
+
+    /* Beneficios */
+    .benefits {
+      padding: 80px 0;
+      background-color: #ebf4ff;
+    }
+
+    .benefits-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .benefit-item {
+      flex: 1 1 300px;
+      max-width: 350px;
+      text-align: center;
+    }
+
+    .benefit-item h3 {
+      font-size: 1.2rem;
+      margin: 16px 0 8px;
+      color: #1a365d;
+    }
+
+    .benefit-item p {
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    /* Testimonios */
+    .testimonials {
+      padding: 80px 0;
+      background-color: #ffffff;
+    }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .testimonial {
+      background-color: #f8fafc;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #3182ce;
+    }
+
+    .testimonial p {
+      font-style: italic;
+      color: #2d3748;
+      margin-bottom: 12px;
+    }
+
+    .client {
+      font-weight: 600;
+      color: #1a365d;
+    }
+
+    /* CTA Final */
+    .final-cta {
+      padding: 100px 0;
+      text-align: center;
+      background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%);
+      color: white;
+    }
+
+    .final-cta h2 {
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+    }
+
+    .final-cta p {
+      max-width: 700px;
+      margin: 0 auto 32px;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .final-cta a {
+      background-color: white;
+      color: #1a365d;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .final-cta a:hover {
+      background-color: #f7fafc;
+    }
+
+    /* Botón flotante de WhatsApp */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 50%;
+      background-color: #25d366;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 16px rgba(37, 211, 102, 0.35);
+      cursor: pointer;
+      z-index: 2500;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .whatsapp-float:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 10px 20px rgba(37, 211, 102, 0.4);
+      background-color: #1ebe5d;
+    }
+
+    .whatsapp-float svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    /* Formulario de Registro/Login (Modal) */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal {
+      background-color: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 450px;
+      padding: 32px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      color: #1a365d;
+      font-weight: 600;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #718096;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #2d3748;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #3182ce;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background-color: #2c5282;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #2a4365;
+    }
+
+    .switch-form {
+      text-align: center;
+      margin-top: 16px;
+      color: #4a5568;
+    }
+
+    .switch-link {
+      color: #3182ce;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #1a365d;
+      color: white;
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    .footer-links {
+      margin: 16px 0;
+    }
+
+    .footer-links a {
+      color: #cbd5e0;
+      margin: 0 12px;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      color: white;
+    }
+
+    .copyright {
+      color: #a0aec0;
+      font-size: 0.9rem;
+      margin-top: 16px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      nav ul {
+        margin: 16px 0;
+        justify-content: center;
+      }
+
+      nav ul li {
+        margin: 0 12px;
+      }
+
+      .auth-buttons {
+        margin-top: 12px;
+      }
+
+      .auth-buttons a {
+        margin: 0 8px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero p,
+      .final-cta p {
+        font-size: 1rem;
+      }
+
+      .enroll-content {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .paypal-wrapper {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">AsistenteVirtualPro</div>
+        <nav>
+          <ul>
+            <li><a href="#curso">Curso</a></li>
+            <li><a href="#beneficios">Beneficios</a></li>
+            <li><a href="#testimonios">Testimonios</a></li>
+            <li><a href="#inscripcion">Inscripción</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </nav>
+        <div class="auth-buttons">
+          <a href="#" class="login" onclick="openModal('login')">Iniciar Sesión</a>
+          <a href="#" class="register" onclick="openModal('register')">Registrarse</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Aprende a Ser Asistente Virtual y Consigue Trabajo Remoto</h1>
+      <p>Transforma tu carrera con un curso completo que te enseña desde cero cómo ofrecer servicios como asistente virtual, crear tu perfil profesional y conseguir empleo remoto con clientes internacionales.</p>
+      <a href="#" class="cta-button" onclick="openModal('register')">Comienza Ahora</a>
+    </div>
+  </section>
+
+  <!-- Información del Curso -->
+  <section id="curso" class="course-section">
+    <div class="container">
+      <h2 class="section-title">Lo que Aprenderás</h2>
+      <div class="course-grid">
+        <div class="card">
+          <h3>Módulo 1: Fundamentos del Trabajo Remoto</h3>
+          <p>Entiende el mercado global de trabajo remoto, tipos de roles disponibles y cómo posicionarte como candidato competitivo.</p>
+        </div>
+        <div class="card">
+          <h3>Módulo 2: Habilidades Clave de Asistente Virtual</h3>
+          <p>Gestión de correo, calendarios, atención al cliente, herramientas digitales (Google Workspace, Trello, Zoom).</p>
+        </div>
+        <div class="card">
+          <h3>Módulo 3: Creación de Perfil Profesional</h3>
+          <p>Aprende a escribir un CV efectivo, redactar propuestas y construir un perfil en plataformas como Upwork, Fiverr o LinkedIn.</p>
+        </div>
+        <div class="card">
+          <h3>Módulo 4: Búsqueda de Empleo y Entrevistas</h3>
+          <p>Estrategias prácticas para encontrar ofertas, enviar solicitudes ganadoras y prepararte para entrevistas remotas.</p>
+        </div>
+        <div class="card">
+          <h3>Módulo 5: Gestión de Clientes y Facturación</h3>
+          <p>Manejo de múltiples clientes, facturación internacional, uso de herramientas de pago (PayPal, Wise) y cumplimiento legal.</p>
+        </div>
+        <div class="card">
+          <h3>Módulo 6: Escalabilidad y Emprendimiento</h3>
+          <p>Cómo aumentar tus ingresos, delegar tareas y convertirte en consultor o agencia de servicios virtuales.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Beneficios -->
+  <section id="beneficios" class="benefits">
+    <div class="container">
+      <h2 class="section-title">¿Por Qué Este Curso?</h2>
+      <div class="benefits-list">
+        <div class="benefit-item">
+          <h3>Desde Cero</h3>
+          <p>No necesitas experiencia previa. Todo está explicado paso a paso para principiantes absolutos.</p>
+        </div>
+        <div class="benefit-item">
+          <h3>Acceso Inmediato</h3>
+          <p>Una vez inscrito, tendrás acceso completo las 24 horas del día, desde cualquier dispositivo.</p>
+        </div>
+        <div class="benefit-item">
+          <h3>Soporte Directo</h3>
+          <p>Recibirás acompañamiento personalizado durante todo el proceso de aprendizaje y búsqueda de empleo.</p>
+        </div>
+        <div class="benefit-item">
+          <h3>Actualizado Constantemente</h3>
+          <p>El contenido se renueva mensualmente para reflejar las últimas tendencias del mercado remoto.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonios -->
+  <section id="testimonios" class="testimonials">
+    <div class="container">
+      <h2 class="section-title">Lo que Dicen Nuestros Alumnos</h2>
+      <div class="testimonial-grid">
+        <div class="testimonial">
+          <p>"Antes no sabía ni cómo comenzar. En menos de dos meses conseguí mi primer cliente internacional gracias a las técnicas del curso."</p>
+          <div class="client">— María G., Colombia</div>
+        </div>
+        <div class="testimonial">
+          <p>"El módulo de creación de perfil cambió todo. Ahora trabajo 4 horas diarias desde casa con buen salario."</p>
+          <div class="client">— Luis R., México</div>
+        </div>
+        <div class="testimonial">
+          <p>"Me ayudó a salir de un trabajo estresante. Hoy tengo más tiempo libre y mejores ingresos como asistente virtual."</p>
+          <div class="client">— Ana P., Perú</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Inscripción -->
+  <section id="inscripcion" class="enroll-section">
+    <div class="container">
+      <div class="enroll-content">
+        <div class="enroll-text">
+          <div class="price-highlight">
+            <span>Inscripción única</span>
+            <strong>USD $25</strong>
+          </div>
+          <h2>Inscríbete y Asegura tu Lugar</h2>
+          <p>
+            Accede de inmediato a todos los módulos, sesiones grabadas, plantillas descargables y mentorías grupales en vivo.
+            Al completar tu pago recibirás automáticamente las instrucciones para ingresar a la plataforma del curso.
+          </p>
+          <p>
+            El pago se procesa con PayPal para que puedas invertir en tu formación con total seguridad desde cualquier país.
+          </p>
+          <ul class="enroll-benefits">
+            <li><span>✅</span> Acceso ilimitado a las clases y futuras actualizaciones.</li>
+            <li><span>🤝</span> Acompañamiento personalizado durante 4 semanas.</li>
+            <li><span>📂</span> Plantillas listas para usar con clientes reales.</li>
+          </ul>
+        </div>
+        <div class="paypal-wrapper">
+          <h3>Paga con PayPal</h3>
+          <p>Haz clic en el botón para completar tu inscripción segura por 25 USD.</p>
+          <div
+            id="paypal-enrollment-container"
+            class="paypal-button-container"
+            data-paypal-client-id="sb"
+            data-paypal-hosted-button-id="92GWR29J78R86"
+            data-paypal-currency="USD"
+            role="region"
+            aria-label="Botón de pago con PayPal">
+            <span>Cargando pasarela de pago…</span>
+          </div>
+          <div id="paypal-enrollment-status" class="paypal-status" role="status" aria-live="polite"></div>
+          <div class="guarantee-note">
+            ✅ Garantía de satisfacción: si el curso no cumple tus expectativas en los primeros 7 días, escríbenos y te orientamos con una alternativa.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Final -->
+  <section class="final-cta">
+    <div class="container">
+      <h2>¿Listo para Cambiar tu Vida Laboral?</h2>
+      <p>Inscríbete hoy y comienza tu camino hacia el trabajo remoto con confianza, habilidades reales y apoyo constante.</p>
+      <a href="#" onclick="openModal('register')">Regístrate Ahora</a>
+    </div>
+  </section>
+
+  <button class="whatsapp-float" type="button" aria-label="Chatea con nosotros por WhatsApp" onclick="handleWhatsAppClick()">
+    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <path d="M16.004 3C9.373 3 4 8.198 4 14.675c0 3.483 1.687 6.558 4.336 8.612L7.36 27.79l4.803-1.486a12.27 12.27 0 0 0 3.84.593c6.63 0 12.004-5.198 12.004-11.675C28.007 8.198 22.634 3 16.004 3Zm.003 20.988c-1.257 0-2.485-.314-3.58-.908l-.257-.138-2.845.88.934-2.727-.178-.282c-1.463-2.316-1.083-5.27.912-7.232 1.208-1.188 2.813-1.844 4.514-1.844h.002c3.518 0 6.384 2.78 6.384 6.197 0 3.418-2.865 6.054-6.386 6.054Zm3.733-4.82c-.203-.102-1.206-.596-1.394-.664-.187-.068-.324-.102-.46.102-.138.203-.528.664-.647.802-.12.138-.239.154-.442.051-.203-.102-.86-.316-1.64-1.005-.606-.538-1.015-1.204-1.135-1.406-.12-.203-.013-.313.09-.414.092-.09.203-.239.306-.358.103-.12.137-.205.205-.341.068-.137.034-.256-.017-.358-.051-.102-.46-1.11-.63-1.52-.166-.398-.335-.344-.46-.35-.12-.007-.257-.007-.394-.007s-.36.051-.549.256c-.187.205-.717.7-.717 1.707 0 1.007.734 1.98.836 2.118.102.137 1.447 2.212 3.515 3.103.491.211.875.337 1.174.43.492.157.94.135 1.293.082.394-.059 1.206-.492 1.377-.967.17-.475.17-.881.118-.967-.051-.085-.187-.137-.39-.239Z"></path>
+    </svg>
+  </button>
+
+  <!-- Footer -->
+  <footer id="contacto">
+    <div class="container">
+      <div class="logo" style="color: white; font-size: 1.4rem; margin-bottom: 16px;">AsistenteVirtualPro</div>
+      <div class="footer-links">
+        <a href="#">Política de Privacidad</a>
+        <a href="#">Términos y Condiciones</a>
+        <a href="#">Soporte</a>
+      </div>
+      <p class="copyright">&copy; 2025 AsistenteVirtualPro. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Modal de Login / Registro -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal" id="modal-content">
+      <!-- El contenido se carga dinámicamente -->
+    </div>
+  </div>
+
+  <script>
+    // Manejo de modales
+    function openModal(type) {
+      const modal = document.getElementById('modal');
+      const content = document.getElementById('modal-content');
+
+      if (type === 'login') {
+        content.innerHTML = `
+          <div class="modal-header">
+            <h3 class="modal-title">Iniciar Sesión</h3>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+          </div>
+          <form>
+            <div class="form-group">
+              <label for="email">Correo Electrónico</label>
+              <input type="email" id="email" placeholder="tu@correo.com" required />
+            </div>
+            <div class="form-group">
+              <label for="password">Contraseña</label>
+              <input type="password" id="password" placeholder="••••••••" required />
+            </div>
+            <button type="submit" class="submit-btn">Ingresar</button>
+          </form>
+          <p class="switch-form">
+            ¿No tienes cuenta? 
+            <span class="switch-link" onclick="openModal('register')">Regístrate aquí</span>
+          </p>
+        `;
+      } else if (type === 'register') {
+        content.innerHTML = `
+          <div class="modal-header">
+            <h3 class="modal-title">Crear Cuenta</h3>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+          </div>
+          <form>
+            <div class="form-group">
+              <label for="name">Nombre Completo</label>
+              <input type="text" id="name" placeholder="Juan Pérez" required />
+            </div>
+            <div class="form-group">
+              <label for="reg-email">Correo Electrónico</label>
+              <input type="email" id="reg-email" placeholder="tu@correo.com" required />
+            </div>
+            <div class="form-group">
+              <label for="reg-password">Contraseña</label>
+              <input type="password" id="reg-password" placeholder="••••••••" required />
+            </div>
+            <div class="form-group">
+              <label for="country">País de Residencia</label>
+              <input type="text" id="country" placeholder="México, Colombia, etc." required />
+            </div>
+            <button type="submit" class="submit-btn">Crear Cuenta</button>
+          </form>
+          <p class="switch-form">
+            ¿Ya tienes cuenta? 
+            <span class="switch-link" onclick="openModal('login')">Inicia sesión</span>
+          </p>
+        `;
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    // Cerrar modal al hacer clic fuera
+    window.onclick = function(e) {
+      const modal = document.getElementById('modal');
+      if (e.target === modal) {
+        closeModal();
+      }
+    };
+
+    function handleWhatsAppClick() {
+      const userName = prompt('¿Cómo te llamas?');
+
+      if (userName === null) {
+        return;
+      }
+
+      const trimmedName = userName.trim();
+      const finalName = trimmedName || 'Interesado/a';
+      const baseMessage = `Hola, mi nombre es ${finalName}. Me gustaría recibir más información sobre el curso Asistente Virtual Profesional.`;
+      const whatsappUrl = `https://wa.me/34655652530?text=${encodeURIComponent(baseMessage)}`;
+
+      window.open(whatsappUrl, '_blank');
+    }
+
+    // Integración PayPal Hosted Buttons
+    const PAYPAL_ENROLLMENT_CONTAINER_SELECTOR = '#paypal-enrollment-container';
+    const PAYPAL_ENROLLMENT_STATUS_SELECTOR = '#paypal-enrollment-status';
+    let paypalEnrollmentSdkPromise = null;
+
+    function updatePayPalStatus(message, isError = false) {
+      const statusEl = document.querySelector(PAYPAL_ENROLLMENT_STATUS_SELECTOR);
+      if (!statusEl) {
+        return;
+      }
+
+      statusEl.textContent = message;
+      statusEl.classList.toggle('error', Boolean(isError));
+    }
+
+    function buildPayPalHostedButtonUrl(hostedButtonId) {
+      return `https://www.paypal.com/ncp/payment/${encodeURIComponent(hostedButtonId)}`;
+    }
+
+    function injectPayPalFallback(container, hostedButtonId) {
+      if (!hostedButtonId) {
+        return;
+      }
+
+      const fallbackUrl = buildPayPalHostedButtonUrl(hostedButtonId);
+      container.innerHTML = `
+        <a class="paypal-fallback-link" href="${fallbackUrl}" target="_blank" rel="noopener noreferrer">
+          Finalizar pago seguro en PayPal
+        </a>
+      `.trim();
+    }
+
+    function loadPayPalHostedButtonsSdk(clientId, currency) {
+      if (typeof window.paypal !== 'undefined' && window.paypal?.HostedButtons) {
+        return Promise.resolve();
+      }
+
+      if (paypalEnrollmentSdkPromise) {
+        return paypalEnrollmentSdkPromise;
+      }
+
+      paypalEnrollmentSdkPromise = new Promise((resolve, reject) => {
+        const existingScript = document.querySelector('script[data-paypal-sdk="enrollment"]');
+
+        if (existingScript) {
+          if (existingScript.dataset.loaded === 'true') {
+            resolve();
+            return;
+          }
+
+          existingScript.addEventListener('load', () => {
+            existingScript.dataset.loaded = 'true';
+            resolve();
+          }, { once: true });
+
+          existingScript.addEventListener('error', () => {
+            reject(new Error('No se pudo cargar el SDK de PayPal.'));
+          }, { once: true });
+
+          return;
+        }
+
+        const script = document.createElement('script');
+        const sdkUrl = new URL('https://www.paypal.com/sdk/js');
+        sdkUrl.searchParams.set('client-id', clientId || 'sb');
+        sdkUrl.searchParams.set('components', 'hosted-buttons');
+        sdkUrl.searchParams.set('currency', currency || 'USD');
+
+        script.src = sdkUrl.toString();
+        script.async = true;
+        script.dataset.paypalSdk = 'enrollment';
+
+        script.addEventListener('load', () => {
+          script.dataset.loaded = 'true';
+          resolve();
+        }, { once: true });
+
+        script.addEventListener('error', () => {
+          reject(new Error('No se pudo cargar el SDK de PayPal.'));
+        }, { once: true });
+
+        document.head.appendChild(script);
+      });
+
+      return paypalEnrollmentSdkPromise;
+    }
+
+    function renderEnrollmentPayPalButton() {
+      const container = document.querySelector(PAYPAL_ENROLLMENT_CONTAINER_SELECTOR);
+      if (!container) {
+        return;
+      }
+
+      const hostedButtonId = container.dataset.paypalHostedButtonId;
+      const clientId = container.dataset.paypalClientId || 'sb';
+      const currency = container.dataset.paypalCurrency || 'USD';
+
+      if (!hostedButtonId) {
+        updatePayPalStatus('Configura el ID del botón de PayPal para habilitar los pagos.', true);
+        return;
+      }
+
+      updatePayPalStatus('Preparando pago seguro con PayPal…');
+
+      loadPayPalHostedButtonsSdk(clientId, currency)
+        .then(() => {
+          if (typeof window.paypal === 'undefined' || !window.paypal?.HostedButtons) {
+            throw new Error('El SDK de PayPal se cargó sin la integración de botones.');
+          }
+
+          container.innerHTML = '';
+
+          return window.paypal.HostedButtons({
+            hostedButtonId,
+            onApprove: function() {
+              updatePayPalStatus('¡Pago aprobado! Revisa tu correo para acceder al curso.');
+            },
+            onError: function(buttonError) {
+              console.error(buttonError);
+              updatePayPalStatus('No pudimos procesar el pago con PayPal. Intenta nuevamente en unos instantes o utiliza el enlace directo.', true);
+              injectPayPalFallback(container, hostedButtonId);
+            }
+          }).render(PAYPAL_ENROLLMENT_CONTAINER_SELECTOR);
+        })
+        .then(() => {
+          updatePayPalStatus('Completa tu pago con PayPal para finalizar la inscripción.');
+        })
+        .catch((error) => {
+          console.error(error);
+          updatePayPalStatus('No se pudo cargar la pasarela de PayPal. Intenta nuevamente, usa el enlace directo o contáctanos por soporte.', true);
+          injectPayPalFallback(container, hostedButtonId);
+        });
+    }
+
+    renderEnrollmentPayPalButton();
+  </script>
+
+</body>
+</html>

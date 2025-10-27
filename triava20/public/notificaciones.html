@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prueba de Notificaciones</title>
+  <script src="preload.js"></script>
+</head>
+<body>
+  <button id="permiso">Solicitar permiso</button>
+  <button id="enviar">Enviar notificación de recarga</button>
+  <script>
+    document.getElementById('permiso').addEventListener('click', solicitarMensajesImportantes);
+    document.getElementById('enviar').addEventListener('click', enviarMensajeImportante);
+  </script>
+</body>
+</html>

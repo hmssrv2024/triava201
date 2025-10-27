@@ -1,0 +1,3681 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="repair.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Intercambio - REMEEX VISA</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="visabluapple.png">
+  <meta name="description" content="Remeex VISA: transferencias globales sin comisiones, rapidas y seguras."/>
+  <meta name="keywords" content="remesas, transferencias internacionales, enviar dinero, VISA"/>
+  <meta name="author" content="Remeex VISA"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      /* Modern color palette based on Revolut/N26 style */
+      --primary: #1a1f71;
+      --primary-dark: #0c1045;
+      --primary-light: #3244b6;
+      --secondary: #00579f;
+      --accent: #f7b600;
+      --success: #00d34d;
+      --danger: #ff4d4d;
+      --warning: #ffad33;
+      --info: #0095ff;
+      --neutral-100: #ffffff;
+      --neutral-200: #f5f7fa;
+      --neutral-300: #eaecf0;
+      --neutral-400: #d0d5dd;
+      --neutral-500: #9da4b4;
+      --neutral-600: #6e7891;
+      --neutral-700: #4f5d75;
+      --neutral-800: #293249;
+      --neutral-900: #1a1f37;
+
+      /* Shadows & Effects */
+      --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+      --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+      --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+      --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+      
+      /* Border radius */
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      
+      /* Transitions */
+      --transition-fast: all 0.2s ease;
+      --transition-base: all 0.3s ease;
+      --transition-slow: all 0.5s ease;
+      
+      /* Card gradients */
+      --card-gradient: linear-gradient(135deg, #1a1f71 0%, #0c1045 100%);
+      --success-gradient: linear-gradient(135deg, #00c057 0%, #00a346 100%);
+      --verified-color: #1DA1F2;
+      --premium-color: #FFD700;
+      
+      /* Animations */
+      --animation-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 75%;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--neutral-200);
+      color: var(--neutral-900);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--neutral-100);
+      border-bottom: 1px solid var(--neutral-300);
+      box-shadow: var(--shadow-sm);
+      z-index: 1000;
+      height: 60px;
+    }
+
+    .header-back {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition-base);
+    }
+
+    .header-back:hover {
+      transform: translateX(-3px);
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-action-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--neutral-200);
+      color: var(--neutral-700);
+      border: none;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .header-action-btn:hover {
+      background: var(--neutral-300);
+      transform: translateY(-2px);
+    }
+
+    /* Main Container */
+    .main-container {
+      padding-top: 70px;
+      padding-bottom: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .container-padding {
+      padding: 0 1rem;
+    }
+
+    /* Balance Card */
+    .balance-card {
+      background: var(--card-gradient);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      color: white;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s var(--animation-bounce), box-shadow 0.3s ease;
+    }
+
+    .balance-card .balance-video-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .balance-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .balance-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shine 3s infinite;
+    }
+
+    .balance-card.blurred {
+      filter: blur(4px);
+      pointer-events: none;
+    }
+
+    .card-decoration {
+      position: absolute;
+      right: -50px;
+      bottom: -50px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+      z-index: 1;
+    }
+
+    .card-decoration:nth-child(2) {
+      left: -30px;
+      top: -30px;
+      width: 150px;
+      height: 150px;
+    }
+
+    @keyframes shine {
+      100% { left: 200%; }
+    }
+
+    .balance-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .balance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .balance-header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.25rem;
+    }
+
+    .balance-updated {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+
+    .header-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .balance-title {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .balance-main-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .balance-controls {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .balance-control-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      padding: 0;
+    }
+
+    .balance-control-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .balance-amount {
+      font-size: clamp(2.2rem, 6vw, 3rem);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .balance-equivalents {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .balance-equivalent {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
+      padding: 0.4rem 0.6rem;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .exchange-rate {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      padding: 0.4rem 0.6rem;
+      font-size: 0.75rem;
+      margin: 0 auto 0.25rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.25rem;
+      white-space: nowrap;
+    }
+
+    .exchange-rate i {
+      font-size: 0.75rem;
+      opacity: 0.85;
+    }
+
+    .balance-refresh-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .balance-refresh-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .balance-refresh-btn img {
+      width: 14px;
+      height: 14px;
+      filter: brightness(0) invert(1);
+    }
+
+    .balance-refresh-btn.spinning img {
+      animation: spin 0.6s linear;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .currency-flag {
+      width: 20px;
+      height: 14px;
+      border-radius: 2px;
+      object-fit: cover;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    /* Exchange Grid */
+    .exchange-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .exchange-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Exchange Cards */
+    .exchange-card {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s var(--animation-bounce);
+      border: 1px solid var(--neutral-300);
+    }
+
+    .exchange-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .card-icon.send {
+      background: var(--success-gradient);
+    }
+
+    .card-icon.request {
+      background: linear-gradient(135deg, var(--info) 0%, #0078d4 100%);
+    }
+
+    .card-icon.accept {
+      background: linear-gradient(135deg, var(--success) 0%, #0da94d 100%);
+    }
+
+    .card-icon.history {
+      background: linear-gradient(135deg, var(--warning) 0%, #f59e0b 100%);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+    }
+
+    /* Forms */
+    .exchange-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--neutral-400);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      background: var(--neutral-100);
+      transition: var(--transition-base);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.15);
+    }
+
+    .form-inline {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .form-inline .form-control {
+      flex: 1;
+    }
+
+    .form-inline select {
+      min-width: 100px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s var(--animation-bounce);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #00a346;
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: rgba(26, 31, 113, 0.05);
+      transform: translateY(-3px);
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+    }
+
+    /* User Search */
+    .user-search {
+      position: relative;
+    }
+
+    .email-check {
+      position: absolute;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      color: var(--success);
+      display: none;
+    }
+
+    .user-search.valid .email-check {
+      display: block;
+    }
+
+    .user-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--neutral-100);
+      border: 1px solid var(--neutral-300);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+
+    .user-suggestion {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: var(--transition-base);
+    }
+
+    .user-suggestion:hover {
+      background: var(--neutral-200);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .modal-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-full);
+      object-fit: cover;
+      border: 2px solid var(--neutral-300);
+      margin: 0 auto 1rem;
+      display: block;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--neutral-900);
+    }
+
+    .user-email {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--radius-full);
+      color: white;
+    }
+
+    .badge.email {
+      background: var(--success);
+    }
+
+    .badge.identity {
+      background: var(--verified-color);
+    }
+
+    .badge.premium {
+      background: var(--premium-color);
+      color: var(--neutral-900);
+    }
+
+    /* History Section */
+    .history-section {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .history-filters {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--neutral-400);
+      border-radius: var(--radius-md);
+      background: var(--neutral-100);
+      color: var(--neutral-700);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      background: var(--neutral-200);
+      border-radius: var(--radius-md);
+      transition: var(--transition-base);
+    }
+
+    .history-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .history-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      color: white;
+      font-size: 1.1rem;
+    }
+
+    .history-icon.send {
+      background: var(--success);
+    }
+
+    .history-icon.receive {
+      background: var(--info);
+    }
+
+    .history-icon.pending {
+      background: var(--warning);
+    }
+
+    .history-content {
+      flex: 1;
+    }
+
+    .history-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--neutral-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .history-details {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+      margin-bottom: 0.25rem;
+    }
+
+    .history-date {
+      font-size: 0.75rem;
+      color: var(--neutral-500);
+    }
+
+    .history-amount {
+      font-weight: 700;
+      font-size: 1rem;
+      text-align: right;
+    }
+
+    .history-amount.positive {
+      color: var(--success);
+    }
+
+    .history-amount.negative {
+      color: var(--danger);
+    }
+
+    .history-amount.pending {
+      color: var(--warning);
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .quick-action {
+      background: var(--neutral-100);
+      border: 1px solid var(--neutral-300);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s var(--animation-bounce);
+      text-decoration: none;
+      color: var(--neutral-900);
+    }
+
+    .quick-action:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .quick-action-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--primary-light);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.75rem;
+      font-size: 1.1rem;
+    }
+
+    .quick-action-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .quick-action-subtitle {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    /* Templates */
+    .templates-section {
+      margin-bottom: 2rem;
+    }
+
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .template-card {
+      background: var(--neutral-100);
+      border: 1px solid var(--neutral-300);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .template-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .template-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .template-amount {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .template-frequency {
+      font-size: 0.8rem;
+      color: var(--neutral-600);
+    }
+
+    /* Status Messages */
+    .status-message {
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .status-message.success {
+      background: rgba(0, 211, 77, 0.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    .status-message.error {
+      background: rgba(255, 77, 77, 0.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .status-message.warning {
+      background: rgba(255, 173, 51, 0.1);
+      border: 1px solid var(--warning);
+      color: var(--warning);
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1100;
+      display: none;
+    }
+
+    .modal {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 500px;
+      padding: 2rem;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+      border: none;
+    }
+
+    .modal-close:hover {
+      background: var(--neutral-300);
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 70px;
+      right: 16px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .toast {
+      background: var(--neutral-900);
+      color: white;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      min-width: 250px;
+      max-width: 320px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: slideInRight 0.3s ease;
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--success);
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--danger);
+    }
+
+    .toast.warning {
+      border-left: 4px solid var(--warning);
+    }
+
+    .toast.info {
+      border-left: 4px solid var(--info);
+    }
+
+    /* Success Overlay */
+    .success-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1200;
+      display: none;
+    }
+
+    .success-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 380px;
+      padding: 2rem;
+      text-align: center;
+      animation: scaleIn 0.3s ease;
+    }
+
+    .success-checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--success);
+      color: white;
+      font-size: 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      transform: scale(0);
+      animation: checkmarkScale 0.5s ease forwards 0.3s;
+    }
+
+    .success-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.75rem;
+      opacity: 0;
+      animation: fadeInUp 0.5s ease forwards 0.8s;
+    }
+
+    .success-amount {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1.25rem;
+      opacity: 0;
+      animation: fadeInUp 0.5s ease forwards 1.1s;
+    }
+
+    .success-message {
+      font-size: 0.9rem;
+      color: var(--neutral-600);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeInUp 0.5s ease forwards 1.4s;
+    }
+
+    .success-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      opacity: 0;
+      animation: fadeInUp 0.5s ease forwards 1.7s;
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes checkmarkScale {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+
+    /* Transaction Progress Overlay */
+    .progress-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1300;
+    }
+
+    .progress-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--neutral-300);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: var(--success-gradient);
+      transition: width 0.3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .exchange-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .balance-amounts {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .form-inline {
+        flex-direction: column;
+      }
+
+      .history-filters {
+        flex-wrap: wrap;
+      }
+
+      .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* PIN Modal */
+    #pin-modal-overlay .modal {
+      background: var(--neutral-100);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 500px;
+      padding: 1.5rem;
+      text-align: center;
+      animation: scaleIn 0.3s ease;
+    }
+
+    #pin-modal-overlay .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.75rem;
+    }
+
+    #pin-modal-overlay .modal-subtitle {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+      margin-bottom: 1.5rem;
+    }
+
+    #pin-modal-overlay .otp-container {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1.5rem 0;
+    }
+
+    #pin-modal-overlay .otp-input {
+      width: 40px;
+      height: 48px;
+      border: 1px solid var(--neutral-400);
+      border-radius: var(--radius-md);
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    #pin-modal-overlay .otp-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.15);
+    }
+
+    #pin-modal-overlay .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      padding: 0 1.5rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.85rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s var(--animation-bounce);
+      width: 100%;
+    }
+
+    #pin-modal-overlay .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    #pin-modal-overlay .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    #pin-modal-overlay .btn-outline {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+
+    #pin-modal-overlay .btn-outline:hover {
+      background: rgba(26, 31, 113, 0.05);
+      transform: translateY(-3px);
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+  <link rel="stylesheet" href="responsive.css">
+  <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="c2ba36cb-40b6-496f-b3fa-9a494d1f0d33";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <a href="javascript:history.back()" class="header-back">
+      <i class="fas fa-arrow-left"></i>
+      <span>Volver</span>
+    </a>
+<div class="header-title">Intercambio</div>
+
+<div class="header-actions">
+  <button class="header-action-btn" id="search-btn" title="Buscar usuarios">
+    <i class="fas fa-search"></i>
+  </button>
+  <button class="header-action-btn" id="settings-btn" title="Configuración">
+    <i class="fas fa-cog"></i>
+  </button>
+</div>
+  </header>
+  <!-- Main Container -->
+  <div class="main-container">
+    <div class="container-padding">
+  <!-- Balance Card -->
+  <div class="balance-card">
+    <video class="balance-video-bg" autoplay muted loop playsinline>
+      <source src="loop-background-1920x1080.mp4" type="video/mp4">
+    </video>
+    <div class="card-decoration"></div>
+    <div class="card-decoration"></div>
+    <div class="balance-content">
+      <div class="balance-header">
+        <div class="balance-title">Saldos Disponibles para Intercambio</div>
+        <div class="balance-header-right">
+          <div class="balance-updated">
+            <i class="fas fa-sync-alt"></i> Actualizado ahora
+          </div>
+          <div class="header-avatar" id="header-avatar"></div>
+        </div>
+      </div>
+      <div class="balance-main-display">
+        <div class="balance-amount" id="balance-main">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/Flag_of_Venezuela.svg" class="currency-flag" alt="Bandera de Venezuela">
+          <span id="balance-main-symbol">Bs</span>
+          <span id="balance-main-value">0,00</span>
+          <button id="balance-refresh-btn" class="balance-refresh-btn" aria-label="Actualizar saldo">
+            <img
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAABrElEQVR4nK2WvytFYRjHv1d+RkShhJRSZrPFIpONwST/gEVIKWUwMGK1isXGKJS7WO5iMDAYiHKFDOpjOOdy7nufc95zLt96hve53+f5nPv+OicHKIX6JU1LGpfULmlF0nGawh8BSdEEbAGfBLoBBjw1ZiT92AXk+dUbMFQNJAlUD1xQroVqIUmgNQfyCrT8N6gDKDqgvb9AANUY+2NKUquTO8u0wwxZoHEjd5WiV6ukLVU+ZCDjb95QqR7P1OSAw9B7FI69a/RmgBo9oGXHv2SBbo3GSbp2mowBX47nK8yXgWYygmYjDfqAxxjfE5FbpFSwkxKyHYHUAecefx5oiILSFF2WisLYTflwO1GQgF7gIcZcNg1UMd3u7km1sMBdRlDB2qpLjmnR8ESj2WhcdH1xh+8gLDAPnxP9Bsg9Aqq1LgtJc5LuJa2G4yR1G7mCm7BAkvQqad4DKGnEyJ24CetSzapRZ/wi6eC/QW2SJp3cpqRihdOz0L5YcTbBKVBref8CGQbeI5ALoDPOXy1kkN9b/wPYwPMqyUGqD8ioJiStS3pW8BG5r+AoJOobCDpAqcnF0+wAAAAASUVORK5CYII="
+              alt="Actualizar saldo">
+          </button>
+        </div>
+        <div class="balance-equivalents">
+          <div class="balance-equivalent">
+            <img src="https://flagcdn.com/us.svg" class="currency-flag" alt="Bandera de EEUU">
+            <span id="balance-usd-equivalent">≈ $0.00</span>
+          </div>
+          <div class="balance-equivalent">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/Flag_of_Europe.svg" class="currency-flag" alt="Bandera de la Unión Europea">
+            <span id="balance-eur-equivalent">≈ €0.00</span>
+          </div>
+        </div>
+        <div class="exchange-rate">
+          <i class="fas fa-exchange-alt"></i>
+          <span id="exchange-rate-summary">1 USD = Bs 0,00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <div class="quick-action" id="quick-send">
+      <div class="quick-action-icon">
+        <i class="fas fa-paper-plane"></i>
+      </div>
+      <div class="quick-action-title">Envío Rápido</div>
+      <div class="quick-action-subtitle">A contactos frecuentes</div>
+    </div>
+    <div class="quick-action" id="quick-request">
+      <div class="quick-action-icon">
+        <i class="fas fa-hand-holding-usd"></i>
+      </div>
+      <div class="quick-action-title">Solicitar Dinero</div>
+      <div class="quick-action-subtitle">Cobrar a otros usuarios</div>
+    </div>
+    <div class="quick-action" id="quick-split">
+      <div class="quick-action-icon">
+        <i class="fas fa-receipt"></i>
+      </div>
+      <div class="quick-action-title">Dividir Cuenta</div>
+      <div class="quick-action-subtitle">Compartir gastos</div>
+    </div>
+    <div class="quick-action" id="quick-scheduled">
+      <div class="quick-action-icon">
+        <i class="fas fa-calendar-alt"></i>
+      </div>
+      <div class="quick-action-title">Pagos Programados</div>
+      <div class="quick-action-subtitle">Automáticos y recurrentes</div>
+    </div>
+  </div>
+
+  <!-- Templates Section -->
+  <div class="templates-section" id="templates-section" style="display: none;">
+    <h3 style="margin-bottom: 1rem; color: var(--neutral-900);">
+      <i class="fas fa-bookmark"></i> Plantillas Guardadas
+    </h3>
+    <div class="templates-grid" id="templates-grid">
+      <!-- Templates will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Exchange Grid -->
+  <div class="exchange-grid">
+    
+    <!-- Send Money Card -->
+    <div class="exchange-card">
+      <div class="card-header">
+        <div class="card-icon send">
+          <i class="fas fa-paper-plane"></i>
+        </div>
+        <div>
+          <div class="card-title">Enviar Dinero</div>
+          <div class="card-subtitle">Transfiere fondos a otros usuarios REMEEX</div>
+        </div>
+      </div>
+
+      <form class="exchange-form" id="send-form">
+        <div class="form-group user-search" id="send-search">
+          <label class="form-label">Destinatario</label>
+          <input type="email" class="form-control" id="send-email" placeholder="Buscar por email o nombre" autocomplete="off">
+          <div class="user-suggestions" id="send-suggestions"></div>
+          <div class="email-check"><i class="fas fa-check-circle"></i></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Monto</label>
+          <div class="form-inline">
+            <select class="form-control" id="send-amount"></select>
+            <select class="form-control" id="send-currency" disabled>
+              <option value="usd">USD</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Concepto (Opcional)</label>
+          <input type="text" class="form-control" id="send-note" placeholder="¿Para qué es este pago?" maxlength="100">
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+            <input type="checkbox" id="send-save-template">
+            Guardar como plantilla para envíos futuros
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-paper-plane"></i>
+          Enviar Dinero
+        </button>
+
+        <div class="status-message" id="send-status"></div>
+        <div id="send-code-container" style="display:none; margin-top:0.5rem; font-size:0.9rem;"></div>
+      </form>
+    </div>
+
+    <!-- Request Money Card -->
+    <div class="exchange-card">
+      <div class="card-header">
+        <div class="card-icon request">
+          <i class="fas fa-hand-holding-usd"></i>
+        </div>
+        <div>
+          <div class="card-title">Solicitar Dinero</div>
+          <div class="card-subtitle">Cobra a otros usuarios de forma sencilla</div>
+        </div>
+      </div>
+
+      <form class="exchange-form" id="request-form">
+        <div class="form-group user-search" id="request-search">
+          <label class="form-label">Solicitar a</label>
+          <input type="email" class="form-control" id="request-email" placeholder="Email del usuario que pagará" autocomplete="off">
+          <div class="user-suggestions" id="request-suggestions"></div>
+          <div class="email-check"><i class="fas fa-check-circle"></i></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Monto y Moneda</label>
+          <div class="form-inline">
+            <select class="form-control" id="request-amount"></select>
+            <select class="form-control" id="request-currency">
+              <option value="usd">USD</option>
+              <option value="bs">Bolívares</option>
+              <option value="eur">EUR</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Motivo de la solicitud</label>
+          <textarea class="form-control" id="request-note" placeholder="Describe por qué solicitas este dinero" rows="3" maxlength="200"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fecha límite (Opcional)</label>
+          <input type="date" class="form-control" id="request-deadline" min="">
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-hand-holding-usd"></i>
+          Enviar Solicitud
+        </button>
+
+      <div class="status-message" id="request-status"></div>
+      </form>
+    </div>
+
+    <!-- Accept Money Card -->
+    <div class="exchange-card">
+      <div class="card-header">
+        <div class="card-icon accept">
+          <i class="fas fa-money-bill-wave"></i>
+        </div>
+        <div>
+          <div class="card-title">Aceptar Dinero</div>
+          <div class="card-subtitle">Ingresa el código proporcionado por el administrador</div>
+        </div>
+      </div>
+
+      <form class="exchange-form" id="accept-form">
+        <div class="form-group">
+          <label class="form-label">Código</label>
+          <input type="text" class="form-control" id="accept-code" placeholder="Ej. 00000XX">
+        </div>
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-check-circle"></i>
+          Acreditar
+        </button>
+        <div class="status-message" id="accept-status"></div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- History Section -->
+  <div class="history-section">
+    <div class="history-header">
+      <h3 style="color: var(--neutral-900); margin: 0;">
+        <i class="fas fa-history"></i> Historial de Intercambios
+      </h3>
+      <button class="btn btn-outline btn-small" id="export-history">
+        <i class="fas fa-download"></i>
+        Exportar
+      </button>
+    </div>
+
+    <div class="history-filters">
+      <button class="filter-btn active" data-filter="all">Todos</button>
+      <button class="filter-btn" data-filter="sent">Enviados</button>
+      <button class="filter-btn" data-filter="received">Recibidos</button>
+      <button class="filter-btn" data-filter="pending">Pendientes</button>
+      <button class="filter-btn" data-filter="today">Hoy</button>
+      <button class="filter-btn" data-filter="week">Esta semana</button>
+    </div>
+
+    <div class="history-list" id="history-list">
+      <!-- History items will be populated by JavaScript -->
+    </div>
+  </div>
+
+</div>
+  </div>
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="confirmation-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Confirmar Transacción</div>
+        <button class="modal-close" id="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+  <div class="modal-content" id="modal-content">
+    <!-- Dynamic content -->
+  </div>
+  
+  <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+    <button class="btn btn-outline" style="flex: 1;" id="modal-cancel">Cancelar</button>
+    <button class="btn btn-primary" style="flex: 1;" id="modal-confirm">Confirmar</button>
+  </div>
+</div>
+  </div>
+  <!-- User Info Modal -->
+  <div class="modal-overlay" id="user-info-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Confirmar Usuario</div>
+        <button class="modal-close" id="user-info-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-content" id="user-info-content"></div>
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button class="btn btn-outline" style="flex: 1;" id="user-info-cancel">Cancelar</button>
+        <button class="btn btn-primary" style="flex: 1;" id="user-info-confirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Accept Success Overlay -->
+  <div class="success-container" id="accept-success-container" aria-label="Acreditación exitosa">
+    <div class="success-card">
+      <div class="success-checkmark">
+        <i class="fas fa-check"></i>
+      </div>
+      <div class="success-title">¡Acreditación Exitosa!</div>
+      <div class="success-amount" id="accept-success-amount">$0.00</div>
+      <div class="success-message">El saldo ha sido actualizado correctamente.</div>
+      <div class="success-actions">
+        <button class="btn btn-primary" id="accept-success-continue">
+          <i class="fas fa-check"></i> Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Send Success Overlay -->
+  <div class="success-container" id="send-success-container" aria-label="Envío exitoso">
+    <div class="success-card">
+      <div class="success-checkmark">
+        <i class="fas fa-check"></i>
+      </div>
+      <div class="success-title">¡Dinero Enviado!</div>
+      <div class="success-amount" id="send-success-amount">$0.00</div>
+      <div class="success-message" id="send-success-message">La transacción se completó correctamente.</div>
+      <div class="success-actions">
+        <button class="btn btn-primary" id="send-success-continue">
+          <i class="fas fa-check"></i> Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction Progress Overlay -->
+  <div class="progress-overlay" id="transaction-progress">
+    <div class="progress-card">
+      <div id="progress-status">Iniciando...</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIN Modal -->
+  <div id="pin-modal-overlay" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-title">Ingresa tu PIN</div>
+      <div class="modal-subtitle">Confirma la operación con tu PIN de 4 dígitos</div>
+      <div class="otp-container">
+        <input type="password" class="otp-input pin-digit" id="pin-1" maxlength="1" data-next="pin-2" inputmode="numeric" pattern="[0-9]*">
+        <input type="password" class="otp-input pin-digit" id="pin-2" maxlength="1" data-next="pin-3" data-prev="pin-1" inputmode="numeric" pattern="[0-9]*">
+        <input type="password" class="otp-input pin-digit" id="pin-3" maxlength="1" data-next="pin-4" data-prev="pin-2" inputmode="numeric" pattern="[0-9]*">
+        <input type="password" class="otp-input pin-digit" id="pin-4" maxlength="1" data-prev="pin-3" inputmode="numeric" pattern="[0-9]*">
+      </div>
+      <div class="error-message" id="pin-error" style="text-align:center; display:none;">PIN incorrecto. Intenta nuevamente.</div>
+      <button class="btn btn-primary" id="verify-pin-btn"><i class="fas fa-check"></i> Confirmar</button>
+      <button class="btn btn-outline" id="cancel-pin-btn" style="margin-top: 1rem;"><i class="fas fa-times"></i> Cancelar</button>
+    </div>
+  </div>
+  <!-- Accept Confirmation Modal -->
+  <div class="modal-overlay" id="accept-confirm-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Recibir Dinero</div>
+        <button class="modal-close" id="accept-confirm-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-content" id="accept-confirm-content"></div>
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button class="btn btn-outline" style="flex: 1;" id="accept-confirm-reject">Rechazar</button>
+        <button class="btn btn-primary" style="flex: 1;" id="accept-confirm-accept">Aceptar</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Configuration
+    const CONFIG = {
+      EXCHANGE_RATES: {
+        USD_TO_BS: 151.10,
+        USD_TO_EUR: 0.94,
+        BS_TO_USD: 1 / 151.10,
+        EUR_TO_USD: 1 / 0.94
+      },
+      VALID_EMAILS: [
+        'patrickdlavangart@gmail.com',
+        'wilkermancito69x@gmail.com',
+        'yolandacamacho2021@hotmail.com',
+        'winfreinerjose24@gmail.com',
+        'yonclei_camacho97@gmail.com',
+        'dilinger.nataniel05@gmail.com',
+        'wilanderson_rojas21@gmail.com',
+        'oskeiber.maicolber33@gmail.com',
+        'osnairo.eniliexis09@gmail.com',
+        'wilkler.anibal88@gmail.com',
+        'yorfranwil_ysnkr23@gmail.com',
+        'leikel_david17@gmail.com',
+        'yosneiskerherreraruiz10@gmail.com',
+        'yorbisyeifran.mc20@gmail.com',
+        'yorjanderali_12@gmail.com',
+        'soyluchostar@gmail.com'
+      ],
+      VERIFICATION_CODES: {
+        'patrickdlavangart@gmail.com': '656464D',
+        'wilkermancito69x@gmail.com': '7141ZXA',
+        'yolandacamacho2021@hotmail.com': '9432AYD'
+      },
+      USER_DETAILS: {
+        'patrickdlavangart@gmail.com': {
+          name: "Patrick Allistar D'Lavangart Kors",
+          country: 'Reino Unido',
+          joinDate: '2022-03-10',
+          transactions: 120,
+          rating: 4.9,
+          verification: 'premium',
+          avatar: 'foto8.jpg'
+        },
+        'wilkermancito69x@gmail.com': {
+          name: 'Wilkerman Kemari Yaguare Camacho',
+          country: 'Venezuela',
+          joinDate: '2021-08-02',
+          transactions: 65,
+          rating: 4.5,
+          verification: 'identity',
+          avatar: 'FOTO1.jpg'
+        },
+        'yolandacamacho2021@hotmail.com': {
+          name: 'Elizabeth Yolanda Camacho Perez',
+          country: 'Venezuela',
+          joinDate: '2021-05-20',
+          transactions: 42,
+          rating: 4.2,
+          verification: 'email'
+        },
+        'winfreinerjose24@gmail.com': {
+          name: 'Winfreiner José Guaramato López',
+          country: 'Venezuela',
+          joinDate: '2020-12-01',
+          transactions: 88,
+          rating: 4.7,
+          verification: 'identity',
+          avatar: 'foto2.jpg'
+        },
+        'yonclei_camacho97@gmail.com': {
+          name: 'Yoncleiverson Andrés Camacho Lopez',
+          country: 'Venezuela',
+          joinDate: '2022-01-11',
+          transactions: 30,
+          rating: 4.0,
+          verification: 'email',
+          avatar: 'foto4.jpg'
+        },
+        'dilinger.nataniel05@gmail.com': {
+          name: 'Dilinger Nataniel Camacho Carrillo',
+          country: 'Venezuela',
+          joinDate: '2021-02-15',
+          transactions: 54,
+          rating: 4.3,
+          verification: 'email',
+          avatar: 'foto5.jpg'
+        },
+        'wilanderson_rojas21@gmail.com': {
+          name: 'Wilanderson Aníbal Rojas Chumaceiro',
+          country: 'Venezuela',
+          joinDate: '2020-09-30',
+          transactions: 96,
+          rating: 4.8,
+          verification: 'premium',
+          avatar: 'foto6.jpg'
+        },
+        'oskeiber.maicolber33@gmail.com': {
+          name: 'Oskeiber Maicolber Pérez González',
+          country: 'Venezuela',
+          joinDate: '2023-01-05',
+          transactions: 12,
+          rating: 3.9,
+          verification: 'email',
+          avatar: 'foto7.jpg'
+        },
+        'osnairo.eniliexis09@gmail.com': {
+          name: 'Osnairo Eniliexis Romero Rojas',
+          country: 'Venezuela',
+          joinDate: '2022-07-18',
+          transactions: 41,
+          rating: 4.1,
+          verification: 'identity',
+          avatar: 'foto9.jpg'
+        },
+        'wilkler.anibal88@gmail.com': {
+          name: 'Wilkler Aníbal Herrera Ruiz',
+          country: 'Venezuela',
+          joinDate: '2021-04-08',
+          transactions: 77,
+          rating: 4.6,
+          verification: 'identity',
+          avatar: 'foto10.jpg'
+        },
+        'yorfranwil_ysnkr23@gmail.com': {
+          name: 'Yorfranwil Yusneiker Guaramato Ruiz',
+          country: 'Venezuela',
+          joinDate: '2022-06-19',
+          transactions: 22,
+          rating: 4.0,
+          verification: 'email',
+          avatar: 'foto11.jpg'
+        },
+        'leikel_david17@gmail.com': {
+          name: 'Leikelson David Camacho Herrera',
+          country: 'Venezuela',
+          joinDate: '2021-11-03',
+          transactions: 31,
+          rating: 4.1,
+          verification: 'email',
+          avatar: 'foto12.jpg'
+        },
+        'yosneiskerherreraruiz10@gmail.com': {
+          name: 'Yosneisker Rafael Herrera Ruiz',
+          country: 'Venezuela',
+          joinDate: '2020-05-22',
+          transactions: 105,
+          rating: 4.9,
+          verification: 'premium',
+          avatar: 'foto13.jpg'
+        },
+        'yorbisyeifran.mc20@gmail.com': {
+          name: 'Yorbis Yeifran Medina Collado',
+          country: 'Venezuela',
+          joinDate: '2022-08-13',
+          transactions: 18,
+          rating: 3.8,
+          verification: 'email',
+          avatar: 'foto14.jpg'
+        },
+        'yorjanderali_12@gmail.com': {
+          name: 'Yorjander Alí García Sánchez',
+          country: 'Venezuela',
+          joinDate: '2023-02-10',
+          transactions: 5,
+          rating: 3.5,
+          verification: 'email',
+          avatar: 'foto15.jpg'
+        },
+        'soyluchostar@gmail.com': {
+          name: 'Luis Muñoz Quijano',
+          country: 'Venezuela',
+          joinDate: '2023-08-15',
+          transactions: 0,
+          rating: 4.0,
+          verification: 'identity',
+          avatar: 'luchostar.jpg'
+        }
+      },
+      STORAGE_KEYS: {
+        EXCHANGE_HISTORY: 'remeexExchangeHistory',
+        TEMPLATES: 'remeexExchangeTemplates',
+        USER_DATA: 'remeexUserData',
+        BALANCE: 'remeexBalance',
+        TRANSACTIONS: 'remeexTransactions',
+        MONEY_REQUESTED: 'remeexMoneyRequested',
+        REQUEST_APPROVED: 'remeexRequestApproved',
+        HAS_MADE_FIRST_RECHARGE: 'remeexHasMadeFirstRecharge',
+        FIRST_RECHARGE_TIME: 'remeexFirstRechargeTime',
+        HOURLY_SOUND_COUNT: 'remeexHourlySoundCount',
+        VALIDATION_REMINDER_INDEX: 'remeexValidationReminderIndex',
+        WELCOME_BONUS_CLAIMED: 'remeexWelcomeBonusClaimed',
+        WELCOME_BONUS_SHOWN: 'remeexWelcomeBonusShown'
+      }
+    };
+
+    const ACCEPT_CODES = {
+      '71302JQ': 25,
+      '49962CJ': 50,
+      '55982SG': 100,
+      '86401OU': 80,
+      '11198YS': 90,
+      '00151XW': 50,
+      '19408BH': 190,
+      '78368PI': 130,
+      '10517DG': 160,
+      '72659IA': 20,
+      '55191BA': 70,
+      '35782MM': 110,
+      '27522DW': 170,
+      '64710RU': 150,
+      '05929HL': 40,
+      '84241JF': 60,
+      '54846JSA': 500,
+      '7C4018U': 250
+    };
+
+    const PATRICK_CODES = [
+      '86401OU', '11198YS', '00151XW', '19408BH', '78368PI', '10517DG',
+      '72659IA', '55191BA', '35782MM', '27522DW', '64710RU', '05929HL', '84241JF',
+      '54846JSA', '7C4018U'
+    ];
+
+    const CODE_SENDERS = {
+      '54846JSA': 'Remeex Visa Venezuela',
+      '7C4018U': 'Patrick D’Lavangart'
+    };
+
+    const SEND_CODES = {
+      25: '71302JQ',
+      50: '49962CJ',
+      100: '55982SG',
+      500: '54846JSA'
+    };
+
+    function getAmountForCode(code) {
+      if (ACCEPT_CODES.hasOwnProperty(code)) {
+        return ACCEPT_CODES[code];
+      }
+      for (const [amt, c] of Object.entries(SEND_CODES)) {
+        if (c === code) return parseFloat(amt);
+      }
+      return null;
+    }
+
+    // Global variables
+    let currentUser = {
+      name: 'Usuario',
+      email: 'usuario@example.com',
+      balance: {
+        usd: 1250.75,
+        bs: 167892.15,
+        eur: 1175.71
+      },
+      hasMadeFirstRecharge: false
+    };
+
+    let exchangeHistory = [];
+    let savedTemplates = [];
+    const PREDEFINED_AMOUNTS = [25, 30, 50, 100];
+    let usedSendAmounts = [];
+    let generatedCodes = [];
+    let currentInfoInput = null;
+
+    // Utility functions
+    function formatCurrency(amount, currency) {
+      if (currency === 'usd') {
+        return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      } else if (currency === 'bs') {
+        return 'Bs ' + amount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      } else if (currency === 'eur') {
+        return '€' + amount.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+    }
+
+    function getCurrentDateTime() {
+      const date = new Date();
+      return date.toLocaleString('es-ES', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function convertCurrency(amount, fromCurrency, toCurrency) {
+      if (fromCurrency === toCurrency) return amount;
+      
+      // Convert to USD first
+      let usdAmount = amount;
+      if (fromCurrency === 'bs') {
+        usdAmount = amount * CONFIG.EXCHANGE_RATES.BS_TO_USD;
+      } else if (fromCurrency === 'eur') {
+        usdAmount = amount * CONFIG.EXCHANGE_RATES.EUR_TO_USD;
+      }
+      
+      // Convert from USD to target currency
+      if (toCurrency === 'bs') {
+        return usdAmount * CONFIG.EXCHANGE_RATES.USD_TO_BS;
+      } else if (toCurrency === 'eur') {
+        return usdAmount * CONFIG.EXCHANGE_RATES.USD_TO_EUR;
+      }
+      
+      return usdAmount;
+    }
+
+    function showToast(type, title, message, duration = 3000) {
+      const toastContainer = document.getElementById('toast-container');
+      
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const iconMap = {
+        success: 'fas fa-check-circle',
+        error: 'fas fa-exclamation-circle',
+        warning: 'fas fa-exclamation-triangle',
+        info: 'fas fa-info-circle'
+      };
+      
+      toast.innerHTML = `
+        <div class="toast-icon">
+          <i class="${iconMap[type]}"></i>
+        </div>
+        <div class="toast-content">
+          <div style="font-weight: 600; margin-bottom: 0.25rem;">${title}</div>
+          <div style="font-size: 0.85rem; opacity: 0.9;">${message}</div>
+        </div>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
+    }
+
+    function showStatus(elementId, type, message) {
+      const statusEl = document.getElementById(elementId);
+      if (statusEl) {
+        statusEl.className = `status-message ${type}`;
+        statusEl.textContent = message;
+        statusEl.style.display = 'block';
+        
+        setTimeout(() => {
+          statusEl.style.display = 'none';
+        }, 5000);
+      }
+    }
+
+    function loadUserData() {
+      // Load user info from multiple possible sources
+      const savedData =
+        localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA) ||
+        localStorage.getItem('visaUserData') ||
+        localStorage.getItem('visaRegistrationCompleted');
+
+      if (savedData) {
+        try {
+          const userData = JSON.parse(savedData);
+          currentUser = { ...currentUser, ...userData };
+        } catch (e) {
+          console.log('Could not load user data');
+        }
+      }
+
+      // Load balance from localStorage or sessionStorage
+      let savedBalance = localStorage.getItem(CONFIG.STORAGE_KEYS.BALANCE);
+      if (!savedBalance) {
+        savedBalance = sessionStorage.getItem('remeexSessionBalance');
+      }
+
+      if (savedBalance) {
+        try {
+          const balance = JSON.parse(savedBalance);
+          currentUser.balance = { ...currentUser.balance, ...balance };
+        } catch (e) {
+          console.log('Could not load balance');
+        }
+      }
+    }
+
+    // Load exchange rate saved from other pages
+    function loadExchangeRate() {
+      let rateData = sessionStorage.getItem('remeexSessionExchangeRate') ||
+                     localStorage.getItem('remeexSessionExchangeRate');
+
+      if (rateData) {
+        try {
+          const parsed = JSON.parse(rateData);
+          if (typeof parsed === 'number') {
+            CONFIG.EXCHANGE_RATES.USD_TO_BS = parsed;
+          } else {
+            if (parsed.USD_TO_BS) CONFIG.EXCHANGE_RATES.USD_TO_BS = parsed.USD_TO_BS;
+            if (parsed.USD_TO_EUR) CONFIG.EXCHANGE_RATES.USD_TO_EUR = parsed.USD_TO_EUR;
+          }
+        } catch (e) {
+          const numeric = parseFloat(rateData);
+          if (!isNaN(numeric)) {
+            CONFIG.EXCHANGE_RATES.USD_TO_BS = numeric;
+          }
+        }
+
+        CONFIG.EXCHANGE_RATES.BS_TO_USD = 1 / CONFIG.EXCHANGE_RATES.USD_TO_BS;
+        CONFIG.EXCHANGE_RATES.EUR_TO_USD = 1 / CONFIG.EXCHANGE_RATES.USD_TO_EUR;
+      }
+    }
+
+    function loadExchangeHistory() {
+      const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.EXCHANGE_HISTORY);
+      if (saved) {
+        try {
+          exchangeHistory = JSON.parse(saved);
+        } catch (e) {
+          exchangeHistory = [];
+        }
+      }
+    }
+
+    function saveExchangeHistory() {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.EXCHANGE_HISTORY, JSON.stringify(exchangeHistory));
+    }
+
+    function loadTemplates() {
+      const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.TEMPLATES);
+      if (saved) {
+        try {
+          savedTemplates = JSON.parse(saved);
+        } catch (e) {
+          savedTemplates = [];
+        }
+      }
+    }
+
+    function saveTemplates() {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.TEMPLATES, JSON.stringify(savedTemplates));
+    }
+
+    function saveBalanceData() {
+      localStorage.setItem(
+        CONFIG.STORAGE_KEYS.BALANCE,
+        JSON.stringify({
+          ...currentUser.balance,
+          deviceId: currentUser.deviceId || localStorage.getItem('remeexDeviceId') || ''
+        })
+      );
+    }
+
+    function loadSentAmounts() {
+      try {
+        return JSON.parse(localStorage.getItem('remeexSentAmounts') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveSentAmounts(list) {
+      localStorage.setItem('remeexSentAmounts', JSON.stringify(list));
+    }
+
+    function loadGeneratedCodes() {
+      try {
+        return JSON.parse(localStorage.getItem('remeexGeneratedSendCodes') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveGeneratedCodes(list) {
+      localStorage.setItem('remeexGeneratedSendCodes', JSON.stringify(list));
+    }
+
+    function loadFirstRechargeStatus() {
+      const hasRecharge = localStorage.getItem(CONFIG.STORAGE_KEYS.HAS_MADE_FIRST_RECHARGE);
+      currentUser.hasMadeFirstRecharge = hasRecharge === 'true';
+      return currentUser.hasMadeFirstRecharge;
+    }
+
+    function saveFirstRechargeStatus(hasRecharge) {
+      currentUser.hasMadeFirstRecharge = hasRecharge;
+      localStorage.setItem(CONFIG.STORAGE_KEYS.HAS_MADE_FIRST_RECHARGE, hasRecharge.toString());
+    }
+
+    function handleFirstRecharge() {
+      saveFirstRechargeStatus(true);
+      if (!localStorage.getItem(CONFIG.STORAGE_KEYS.FIRST_RECHARGE_TIME)) {
+        localStorage.setItem(CONFIG.STORAGE_KEYS.FIRST_RECHARGE_TIME, Date.now().toString());
+        localStorage.setItem(CONFIG.STORAGE_KEYS.HOURLY_SOUND_COUNT, '0');
+        localStorage.setItem(CONFIG.STORAGE_KEYS.VALIDATION_REMINDER_INDEX, '0');
+      }
+    }
+
+    function grantWelcomeBonus() {
+      if (localStorage.getItem(CONFIG.STORAGE_KEYS.WELCOME_BONUS_CLAIMED) === 'true') return;
+      currentUser.balance.usd += 15;
+      currentUser.balance.bs += 15 * CONFIG.EXCHANGE_RATES.USD_TO_BS;
+      currentUser.balance.eur += 15 * CONFIG.EXCHANGE_RATES.USD_TO_EUR;
+      saveBalanceData();
+      addMainTransaction({
+        type: 'deposit',
+        amount: 15,
+        amountBs: 15 * CONFIG.EXCHANGE_RATES.USD_TO_BS,
+        amountEur: 15 * CONFIG.EXCHANGE_RATES.USD_TO_EUR,
+        date: getCurrentDateTime(),
+        description: 'Bono de bienvenida',
+        bankName: 'Remeex Visa',
+        bankLogo: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnBzNdjl6bNp-nIdaiHVENczJhwlJNA7ocsyiOObMmzbu8at0dY5yGcZ9cLxLF39qI6gwNfqBxlkTDC0txVULEwQVwGkeEzN0Jq9MRTRagA48mh18UqTlR4WhsXOLAEZugUyhqJHB19xJgnkpe-S5VOWFgzpKFwctv3XP9XhH41vNTvq0ZS-nik58Qhr-O/s320/remeex.png',
+        status: 'completed'
+      });
+      localStorage.setItem(CONFIG.STORAGE_KEYS.WELCOME_BONUS_CLAIMED, 'true');
+      showToast('success', 'Bono de bienvenida', 'Has recibido $15 por tu primera recarga.');
+    }
+
+    function updateHeaderAvatar() {
+      const headerAvatar = document.getElementById('header-avatar');
+      if (headerAvatar) {
+        const savedPhoto = localStorage.getItem('remeexProfilePhoto') || '';
+        if (savedPhoto) {
+          headerAvatar.textContent = '';
+          headerAvatar.style.backgroundImage = `url(${savedPhoto})`;
+        } else {
+          headerAvatar.style.backgroundImage = '';
+          const initials = currentUser.name ? currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
+          headerAvatar.textContent = initials;
+        }
+      }
+    }
+
+    function updateBalanceDisplay() {
+      const mainValueEl = document.getElementById('balance-main-value');
+      const mainSymbolEl = document.getElementById('balance-main-symbol');
+      const usdEquivalentEl = document.getElementById('balance-usd-equivalent');
+      const eurEquivalentEl = document.getElementById('balance-eur-equivalent');
+
+      const usdRate = CONFIG.EXCHANGE_RATES.USD_TO_BS || 0;
+      const eurRate = CONFIG.EXCHANGE_RATES.USD_TO_EUR || 0;
+      const balanceUsd = typeof currentUser?.balance?.usd === 'number' ? currentUser.balance.usd : 0;
+      const storedBs = typeof currentUser?.balance?.bs === 'number' ? currentUser.balance.bs : null;
+      const storedEur = typeof currentUser?.balance?.eur === 'number' ? currentUser.balance.eur : null;
+
+      const computedBs = usdRate > 0 ? balanceUsd * usdRate : 0;
+      const balanceBs = storedBs !== null && !Number.isNaN(storedBs) ? storedBs : computedBs;
+      const usdEquivalent = balanceUsd;
+      const eurEquivalent = storedEur !== null && !Number.isNaN(storedEur) ? storedEur : balanceUsd * eurRate;
+      const rateSummaryEl = document.getElementById('exchange-rate-summary');
+
+      if (mainSymbolEl) {
+        mainSymbolEl.textContent = 'Bs';
+      }
+
+      if (mainValueEl) {
+        const formattedBs = formatCurrency(balanceBs, 'bs');
+        mainValueEl.textContent = formattedBs.replace(/^Bs\s*/i, '');
+      }
+
+      if (usdEquivalentEl) {
+        usdEquivalentEl.textContent = `≈ ${formatCurrency(usdEquivalent, 'usd')}`;
+      }
+
+      if (eurEquivalentEl) {
+        eurEquivalentEl.textContent = `≈ ${formatCurrency(eurEquivalent, 'eur')}`;
+      }
+
+      if (rateSummaryEl) {
+        if (usdRate > 0) {
+          const usdRateText = formatCurrency(usdRate, 'bs');
+          const eurRateText = eurRate > 0 ? formatCurrency(eurRate, 'eur') : null;
+          rateSummaryEl.textContent = eurRateText
+            ? `1 USD = ${usdRateText} • 1 USD = ${eurRateText}`
+            : `1 USD = ${usdRateText}`;
+        } else {
+          rateSummaryEl.textContent = 'Tasa no disponible';
+        }
+      }
+    }
+
+    function updateRequestAmounts() {
+      const currency = document.getElementById('request-currency').value;
+      const select = document.getElementById('request-amount');
+      select.innerHTML = '';
+      PREDEFINED_AMOUNTS.forEach(amountUSD => {
+        let converted = amountUSD;
+        if (currency === 'bs') converted = amountUSD * CONFIG.EXCHANGE_RATES.USD_TO_BS;
+        else if (currency === 'eur') converted = amountUSD * CONFIG.EXCHANGE_RATES.USD_TO_EUR;
+        const option = document.createElement('option');
+        option.value = converted.toFixed(2);
+        option.textContent = formatCurrency(converted, currency);
+        select.appendChild(option);
+      });
+    }
+
+    function updateSendAmounts() {
+      const select = document.getElementById('send-amount');
+      if (!select) return;
+      select.innerHTML = '';
+      [25, 50, 100].forEach(amount => {
+        const option = document.createElement('option');
+        option.value = amount;
+        option.textContent = formatCurrency(amount, 'usd');
+        if (usedSendAmounts.includes(amount)) option.disabled = true;
+        select.appendChild(option);
+      });
+    }
+
+    function storePendingFrequentUser(email) {
+      const info = CONFIG.USER_DETAILS[email];
+      if (!info) return;
+      const data = {
+        email: email,
+        name: info.name || email.split('@')[0],
+        avatar: info.avatar || null
+      };
+      localStorage.setItem('remeexPendingFrequentUser', JSON.stringify(data));
+    }
+
+    function disableRequestForm() {
+      document.querySelectorAll('#request-form input, #request-form select, #request-form textarea, #request-form button')
+        .forEach(el => el.disabled = true);
+    }
+
+    function formatNameFromEmail(email) {
+      if (typeof email !== 'string') return '';
+      const atIndex = email.indexOf('@');
+      const base = (atIndex >= 0 ? email.slice(0, atIndex) : email).replace(/[._-]+/g, ' ').trim();
+      if (!base) return '';
+      return base.replace(/\b\w/g, (char) => char.toUpperCase());
+    }
+
+    function resolveExchangeUserProfile(email, fallbackName) {
+      if (typeof email !== 'string') return null;
+      const trimmedEmail = email.trim();
+      if (!trimmedEmail) return null;
+      const normalizedEmail = trimmedEmail.toLowerCase();
+      const directory = CONFIG && CONFIG.USER_DETAILS ? CONFIG.USER_DETAILS : {};
+      const detail = directory[trimmedEmail] || directory[normalizedEmail] || null;
+      const nameFromDetail = detail && detail.name ? detail.name : '';
+      const displayName = nameFromDetail || fallbackName || formatNameFromEmail(trimmedEmail);
+      const avatar = detail && detail.avatar ? detail.avatar : null;
+      return {
+        email: trimmedEmail,
+        name: displayName,
+        avatar
+      };
+    }
+
+    function selectFirstValue(values) {
+      if (!Array.isArray(values)) return '';
+      for (const value of values) {
+        if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (trimmed) return trimmed;
+        }
+      }
+      return '';
+    }
+
+    function enrichTransactionWithCounterparty(transaction) {
+      if (!transaction || typeof transaction !== 'object') return transaction;
+      const enriched = { ...transaction };
+      const type = typeof enriched.type === 'string' ? enriched.type.toLowerCase() : '';
+      const email = selectFirstValue([
+        enriched.counterpartyEmail,
+        enriched.recipientEmail,
+        enriched.senderEmail,
+        enriched.toEmail,
+        enriched.fromEmail
+      ]);
+
+      if (!email) return enriched;
+
+      const fallbackName = selectFirstValue([
+        enriched.counterpartyName,
+        type === 'withdraw' ? enriched.recipientName : '',
+        type === 'deposit' ? enriched.senderName : ''
+      ]);
+
+      const profile = resolveExchangeUserProfile(email, fallbackName);
+      if (!profile) return enriched;
+
+      if (!enriched.counterpartyEmail) enriched.counterpartyEmail = profile.email;
+      if (!enriched.counterpartyName && profile.name) enriched.counterpartyName = profile.name;
+      if (!enriched.counterpartyAvatar && profile.avatar) enriched.counterpartyAvatar = profile.avatar;
+
+      if (type === 'withdraw') {
+        if (!enriched.recipientEmail) enriched.recipientEmail = profile.email;
+        if (!enriched.recipientName && profile.name) enriched.recipientName = profile.name;
+        if (!enriched.recipientAvatar && profile.avatar) enriched.recipientAvatar = profile.avatar;
+      } else if (type === 'deposit') {
+        if (!enriched.senderEmail) enriched.senderEmail = profile.email;
+        if (!enriched.senderName && profile.name) enriched.senderName = profile.name;
+        if (!enriched.senderAvatar && profile.avatar) enriched.senderAvatar = profile.avatar;
+      }
+
+      return enriched;
+    }
+
+    function addMainTransaction(transaction) {
+      if (!transaction || typeof transaction !== 'object') return;
+      const key = CONFIG.STORAGE_KEYS.TRANSACTIONS;
+      const deviceId = currentUser.deviceId || localStorage.getItem('remeexDeviceId') || '';
+
+      let stored = [];
+      const existing = localStorage.getItem(key);
+      if (existing) {
+        try {
+          const data = JSON.parse(existing);
+          if (!data.deviceId || data.deviceId === deviceId) {
+            stored = data.transactions || [];
+          }
+        } catch (e) {
+          stored = [];
+        }
+      }
+
+      const preparedTransaction = enrichTransactionWithCounterparty(transaction);
+      stored.unshift(preparedTransaction);
+      localStorage.setItem(key, JSON.stringify({ transactions: stored, deviceId }));
+    }
+
+    function generateUserSuggestions(query, targetId) {
+      const suggestionsEl = document.getElementById(targetId);
+
+      if (!query) {
+        suggestionsEl.style.display = 'none';
+        validateEmailInput(targetId.replace('-suggestions', ''));
+        return;
+      }
+
+      const normalized = query.toLowerCase();
+      const match = CONFIG.VALID_EMAILS.find(email => email.toLowerCase() === normalized);
+
+      if (!match) {
+        suggestionsEl.style.display = 'none';
+        return;
+      }
+
+      suggestionsEl.innerHTML = '';
+
+      const initials = match.split('@')[0].substring(0, 2).toUpperCase();
+      const name = match.split('@')[0].replace(/[.-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+      const suggestion = document.createElement('div');
+      suggestion.className = 'user-suggestion';
+      const detail = CONFIG.USER_DETAILS[match] || {};
+      const badgeClass = detail.verification === 'premium' ? 'premium' : (detail.verification === 'identity' ? 'identity' : 'email');
+      const badgeLabel = detail.verification ? detail.verification.charAt(0).toUpperCase() + detail.verification.slice(1) : '';
+      suggestion.innerHTML = `
+        <div class="user-avatar">${initials}</div>
+        <div class="user-info">
+          <div class="user-name">${name} ${badgeLabel ? `<span class="badge ${badgeClass}">${badgeLabel}</span>` : ''}</div>
+          <div class="user-email">${match}</div>
+        </div>
+      `;
+
+      suggestion.addEventListener('click', () => {
+        const inputId = targetId.replace('-suggestions', '');
+        document.getElementById(inputId).value = match;
+        suggestionsEl.style.display = 'none';
+        validateEmailInput(inputId);
+        const type = inputId === 'send-email' ? 'send' : 'request';
+        showUserInfoModal(match, type, inputId);
+      });
+
+      suggestionsEl.appendChild(suggestion);
+      suggestionsEl.style.display = 'block';
+    }
+
+    function validateEmailInput(inputId) {
+      const input = document.getElementById(inputId);
+      const container = input.closest('.user-search');
+      const value = input.value.trim().toLowerCase();
+      if (CONFIG.VALID_EMAILS.includes(value)) {
+        container.classList.add('valid');
+      } else {
+        container.classList.remove('valid');
+      }
+    }
+
+    function renderHistory() {
+      const historyList = document.getElementById('history-list');
+      const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+      
+      let filteredHistory = exchangeHistory;
+      
+      // Apply filters
+      if (activeFilter !== 'all') {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        
+        filteredHistory = exchangeHistory.filter(item => {
+          const itemDate = new Date(item.date);
+          
+          switch (activeFilter) {
+            case 'sent':
+              return item.type === 'send';
+            case 'received':
+              return item.type === 'receive';
+            case 'pending':
+              return item.status === 'pending';
+            case 'today':
+              return itemDate >= today;
+            case 'week':
+              return itemDate >= weekAgo;
+            default:
+              return true;
+          }
+        });
+      }
+      
+      if (filteredHistory.length === 0) {
+        historyList.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--neutral-600);">
+            <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+            <div>No hay transacciones para mostrar</div>
+            <div style="font-size: 0.9rem; margin-top: 0.5rem;">Las transacciones aparecerán aquí una vez que realices intercambios</div>
+          </div>
+        `;
+        return;
+      }
+      
+      historyList.innerHTML = '';
+      filteredHistory.forEach(item => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        
+        let iconClass = 'send';
+        let amountClass = 'negative';
+        let icon = 'fas fa-paper-plane';
+        let title = 'Enviado a';
+        let prefix = '-';
+        
+        if (item.type === 'receive') {
+          iconClass = 'receive';
+          amountClass = 'positive';
+          icon = 'fas fa-hand-holding-usd';
+          title = 'Recibido de';
+          prefix = '+';
+        }
+        
+        if (item.status === 'pending') {
+          iconClass = 'pending';
+          amountClass = 'pending';
+          icon = 'fas fa-clock';
+          title = 'Pendiente -';
+        }
+        
+        const userEmail = item.type === 'send' ? item.toEmail : item.fromEmail;
+        const userName = userEmail ? userEmail.split('@')[0].replace(/[.-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Usuario';
+        
+        historyItem.innerHTML = `
+          <div class="history-icon ${iconClass}">
+            <i class="${icon}"></i>
+          </div>
+          <div class="history-content">
+            <div class="history-title">${title} ${userName}</div>
+            <div class="history-details">${item.note || 'Sin concepto'}</div>
+            <div class="history-date">${item.date}</div>
+          </div>
+          <div class="history-amount ${amountClass}">
+            ${prefix}${formatCurrency(item.amount, item.currency)}
+          </div>
+        `;
+        
+        historyList.appendChild(historyItem);
+      });
+    }
+
+    function renderTemplates() {
+      const templatesSection = document.getElementById('templates-section');
+      const templatesGrid = document.getElementById('templates-grid');
+      
+      if (savedTemplates.length === 0) {
+        templatesSection.style.display = 'none';
+        return;
+      }
+      
+      templatesSection.style.display = 'block';
+      templatesGrid.innerHTML = '';
+      
+      savedTemplates.forEach(template => {
+        const templateCard = document.createElement('div');
+        templateCard.className = 'template-card';
+        
+        const userName = template.email.split('@')[0].replace(/[.-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        const initials = template.email.split('@')[0].substring(0, 2).toUpperCase();
+        
+        templateCard.innerHTML = `
+          <div class="template-user">
+            <div class="user-avatar">${initials}</div>
+            <div class="user-info">
+              <div class="user-name">${userName}</div>
+              <div class="user-email">${template.email}</div>
+            </div>
+          </div>
+          <div class="template-amount">${formatCurrency(template.amount, template.currency)}</div>
+          <div class="template-frequency">${template.note || 'Plantilla guardada'}</div>
+        `;
+        
+        templateCard.addEventListener('click', () => {
+          // Auto-fill send form
+          document.getElementById('send-email').value = template.email;
+          document.getElementById('send-amount').value = template.amount;
+          document.getElementById('send-currency').value = 'usd';
+          document.getElementById('send-note').value = template.note || '';
+          
+          showToast('info', 'Plantilla Cargada', 'Los datos se han completado automáticamente');
+        });
+        
+        templatesGrid.appendChild(templateCard);
+      });
+    }
+
+    function showConfirmationModal(data, onConfirm) {
+      const modal = document.getElementById('confirmation-modal');
+      const content = document.getElementById('modal-content');
+      
+      content.innerHTML = `
+        <div style="background: var(--neutral-200); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-weight: 600;">Monto:</span>
+            <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">${formatCurrency(data.amount, data.currency)}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-weight: 600;">Destinatario:</span>
+            <span>${data.email}</span>
+          </div>
+          ${data.note ? `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:0.5rem;">
+            <span style="font-weight: 600;">Concepto:</span>
+            <span>${data.note}</span>
+          </div>
+          ` : ''}
+          <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:0.5rem;">
+            <span style="font-weight:600;">Comisión:</span>
+            <span>${formatCurrency(data.amount*0.02, data.currency)}</span>
+          </div>
+          <div style="display:flex; justify-content: space-between; align-items:center;">
+            <span style="font-weight:600;">Tasa actual:</span>
+            <span>1 USD = ${CONFIG.EXCHANGE_RATES.USD_TO_BS} Bs</span>
+          </div>
+        </div>
+        <div style="font-size: 0.9rem; color: var(--neutral-600);">
+          Al confirmar, se enviará inmediatamente el monto especificado. Esta acción no se puede deshacer.
+        </div>
+      `;
+      
+      modal.style.display = 'flex';
+      
+      document.getElementById('modal-confirm').onclick = () => {
+        showPinModal(() => {
+          modal.style.display = 'none';
+          showTransactionProgress(onConfirm);
+        });
+      };
+    }
+
+    function showUserInfoModal(email, type, inputId) {
+      const info = CONFIG.USER_DETAILS[email];
+      if (!info) return;
+
+      currentInfoInput = inputId;
+      const modal = document.getElementById('user-info-modal');
+      const content = document.getElementById('user-info-content');
+
+      const actionText = type === 'send' ? 'enviar fondos' : 'solicitar dinero';
+
+      const badgeClass = info.verification === 'premium' ? 'premium' : (info.verification === 'identity' ? 'identity' : 'email');
+      const badgeLabel = info.verification ? info.verification.charAt(0).toUpperCase() + info.verification.slice(1) : '';
+      const initials = info.name.split(' ').map(w => w.charAt(0)).join('').substring(0,2).toUpperCase();
+      const avatarHTML = info.avatar
+        ? `<img src="${info.avatar}" alt="Avatar" class="modal-avatar">`
+        : `<div class="user-avatar" style="margin:0 auto 1rem;">${initials}</div>`;
+
+      content.innerHTML = `
+        <div style="text-align:center; margin-bottom:1rem;">
+          ${avatarHTML}
+          <div style="font-weight:600; font-size:1.1rem;">${info.name} ${badgeLabel ? `<span class="badge ${badgeClass}">${badgeLabel}</span>` : ''}</div>
+          <div style="color: var(--neutral-600);">${info.country}</div>
+          <div style="margin-top:0.5rem; font-size:0.8rem; color:var(--neutral-600);">
+            Registrado el ${info.joinDate} • ${info.transactions} transacciones • ⭐ ${info.rating}
+          </div>
+        </div>
+        <div style="font-size:0.9rem; color: var(--neutral-600);">
+          ¿Confirmas que deseas ${actionText} a esta persona?
+        </div>
+      `;
+
+      modal.style.display = 'flex';
+
+      document.getElementById('user-info-confirm').onclick = () => {
+        modal.style.display = 'none';
+      };
+
+      const cancel = () => {
+        modal.style.display = 'none';
+        if (currentInfoInput) {
+          document.getElementById(currentInfoInput).value = '';
+          validateEmailInput(currentInfoInput);
+        }
+      };
+
+      document.getElementById('user-info-cancel').onclick = cancel;
+      document.getElementById('user-info-close').onclick = cancel;
+    }
+
+    // Event Handlers
+    function setupEventListeners() {
+      const refreshBtn = document.getElementById('balance-refresh-btn');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+          refreshBtn.classList.add('spinning');
+          updateBalanceDisplay();
+          setTimeout(() => refreshBtn.classList.remove('spinning'), 600);
+        });
+      }
+
+      // Modal close
+      document.getElementById('modal-close').addEventListener('click', () => {
+        document.getElementById('confirmation-modal').style.display = 'none';
+      });
+      
+      document.getElementById('modal-cancel').addEventListener('click', () => {
+        document.getElementById('confirmation-modal').style.display = 'none';
+      });
+      
+      // User search
+      document.getElementById('send-email').addEventListener('input', (e) => {
+        generateUserSuggestions(e.target.value, 'send-suggestions');
+        validateEmailInput('send-email');
+      });
+      document.getElementById('send-email').addEventListener('blur', () => {
+        const email = document.getElementById('send-email').value.trim().toLowerCase();
+        validateEmailInput('send-email');
+        if (CONFIG.VALID_EMAILS.includes(email)) {
+          showUserInfoModal(email, 'send', 'send-email');
+        }
+      });
+
+      document.getElementById('request-email').addEventListener('input', (e) => {
+        generateUserSuggestions(e.target.value, 'request-suggestions');
+        validateEmailInput('request-email');
+      });
+      document.getElementById('request-email').addEventListener('blur', () => {
+        const email = document.getElementById('request-email').value.trim().toLowerCase();
+        validateEmailInput('request-email');
+        if (CONFIG.VALID_EMAILS.includes(email)) {
+          showUserInfoModal(email, 'request', 'request-email');
+        }
+      });
+      
+      // Hide suggestions when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.user-search')) {
+          document.querySelectorAll('.user-suggestions').forEach(el => {
+            el.style.display = 'none';
+          });
+        }
+      });
+      
+      // Send form
+      document.getElementById('send-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleSendMoney();
+      });
+      
+      // Request form
+      document.getElementById('request-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleRequestMoney();
+      });
+
+      document.getElementById('accept-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleAcceptMoney();
+      });
+
+      const acceptConfirmAccept = document.getElementById('accept-confirm-accept');
+      const acceptConfirmReject = document.getElementById('accept-confirm-reject');
+      const acceptConfirmClose = document.getElementById('accept-confirm-close');
+      if (acceptConfirmAccept) acceptConfirmAccept.addEventListener('click', confirmAcceptMoney);
+      if (acceptConfirmReject) acceptConfirmReject.addEventListener('click', closeAcceptConfirmModal);
+      if (acceptConfirmClose) acceptConfirmClose.addEventListener('click', closeAcceptConfirmModal);
+
+      const acceptContinue = document.getElementById('accept-success-continue');
+      if (acceptContinue) {
+        acceptContinue.addEventListener('click', () => {
+          const overlay = document.getElementById('accept-success-container');
+          if (overlay) overlay.style.display = 'none';
+        });
+      }
+
+      const sendContinue = document.getElementById('send-success-continue');
+      if (sendContinue) {
+        sendContinue.addEventListener('click', () => {
+          const overlay = document.getElementById('send-success-container');
+          if (overlay) overlay.style.display = 'none';
+        });
+      }
+
+      document.getElementById('request-currency').addEventListener('change', updateRequestAmounts);
+      updateRequestAmounts();
+      
+      // History filters
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderHistory();
+        });
+      });
+      
+      // Quick actions
+      document.getElementById('quick-send').addEventListener('click', () => {
+        document.getElementById('send-email').focus();
+      });
+      
+      document.getElementById('quick-request').addEventListener('click', () => {
+        document.getElementById('request-email').focus();
+      });
+      
+      // Set minimum date for request deadline
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('request-deadline').min = today;
+    }
+
+    function handleSendMoney() {
+      const email = document.getElementById('send-email').value.trim().toLowerCase();
+      const amount = parseFloat(document.getElementById('send-amount').value);
+      const currency = 'usd';
+      const note = document.getElementById('send-note').value.trim();
+      const saveTemplate = document.getElementById('send-save-template').checked;
+
+      // Validate
+      if (!CONFIG.VALID_EMAILS.includes(email)) {
+        showStatus('send-status', 'error', 'Usuario no encontrado o no válido.');
+        return;
+      }
+
+      if (![25,50,100].includes(amount)) {
+        showStatus('send-status', 'error', 'Selecciona un monto válido.');
+        return;
+      }
+
+      if (usedSendAmounts.includes(amount)) {
+        showStatus('send-status', 'error', 'Ya utilizaste este monto.');
+        return;
+      }
+
+      // Convert amount to USD for balance check
+      const amountInUSD = amount;
+
+      if (amountInUSD > currentUser.balance.usd) {
+        showStatus('send-status', 'error', 'Fondos insuficientes.');
+        return;
+      }
+      
+      // Show confirmation
+      showConfirmationModal({
+        email,
+        amount,
+        currency,
+        note
+      }, () => {
+        processSendMoney(email, amount, currency, note, saveTemplate);
+      });
+    }
+
+    function processSendMoney(email, amount, currency, note, saveTemplate) {
+      const btn = document.querySelector('#send-form button[type="submit"]');
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = '<div class="loading-spinner"></div> Enviando...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        // Deduct from balance
+        const amountInUSD = amount;
+        currentUser.balance.usd -= amountInUSD;
+        currentUser.balance.bs -= amountInUSD * CONFIG.EXCHANGE_RATES.USD_TO_BS;
+        currentUser.balance.eur -= amountInUSD * CONFIG.EXCHANGE_RATES.USD_TO_EUR;
+        saveBalanceData();
+
+        // Add to history
+        const transaction = {
+          type: 'send',
+          toEmail: email,
+          amount: amount,
+          currency: currency,
+          note: note,
+          date: getCurrentDateTime(),
+          status: 'completed',
+          code: SEND_CODES[amount]
+        };
+
+        exchangeHistory.unshift(transaction);
+        saveExchangeHistory();
+
+        // Save to general transactions
+        addMainTransaction({
+          type: 'withdraw',
+          amount: amountInUSD,
+          amountBs: amountInUSD * CONFIG.EXCHANGE_RATES.USD_TO_BS,
+          amountEur: amountInUSD * CONFIG.EXCHANGE_RATES.USD_TO_EUR,
+          date: transaction.date,
+          description: `Intercambio enviado a ${email.split('@')[0]}`,
+          status: 'completed',
+          counterpartyEmail: email,
+          recipientEmail: email
+        });
+        
+        // Save template if requested
+        if (saveTemplate) {
+          const template = {
+            email,
+            amount,
+            currency: 'usd',
+            note,
+            createdAt: new Date().toISOString()
+          };
+          
+          // Check if template already exists
+          const existingIndex = savedTemplates.findIndex(t => t.email === email);
+          if (existingIndex >= 0) {
+            savedTemplates[existingIndex] = template;
+          } else {
+            savedTemplates.push(template);
+          }
+          
+          saveTemplates();
+          renderTemplates();
+        }
+        
+        usedSendAmounts.push(amount);
+        saveSentAmounts(usedSendAmounts);
+        generatedCodes.push(transaction.code);
+        saveGeneratedCodes(generatedCodes);
+        const alreadyUsed = loadAcceptedCodes();
+        if (!alreadyUsed.includes(transaction.code)) {
+          alreadyUsed.push(transaction.code);
+          saveAcceptedCodes(alreadyUsed);
+        }
+
+        // Update UI
+        updateBalanceDisplay();
+        renderHistory();
+        updateSendAmounts();
+
+        // Reset form
+        document.getElementById('send-form').reset();
+
+        // Show success
+        showToast('success', 'Dinero Enviado', `Se envió ${formatCurrency(amount, currency)} a ${email.split('@')[0]}`);
+        const statusEl = document.getElementById('send-status');
+        if (statusEl) {
+          statusEl.className = 'status-message success';
+          statusEl.textContent = 'Código generado:';
+          statusEl.style.display = 'block';
+        }
+        const container = document.getElementById('send-code-container');
+        if (container) {
+          container.innerHTML = `
+            <strong id="generated-code">${transaction.code}</strong>
+            <button type="button" class="btn btn-outline btn-small" id="copy-send-code">Copiar</button>`;
+          container.style.display = 'block';
+          document.getElementById('copy-send-code').onclick = () => {
+            navigator.clipboard.writeText(transaction.code).then(() => {
+              showToast('success', 'Copiado', 'El código se copió al portapapeles');
+            });
+          };
+        }
+
+        showSendSuccessOverlay(amount, email);
+
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 2000);
+    }
+
+    function handleRequestMoney() {
+      const email = document.getElementById('request-email').value.trim().toLowerCase();
+      const amount = parseFloat(document.getElementById('request-amount').value);
+      const currency = document.getElementById('request-currency').value;
+      const note = document.getElementById('request-note').value.trim();
+      const deadline = document.getElementById('request-deadline').value;
+      
+      // Validate
+      if (!CONFIG.VALID_EMAILS.includes(email)) {
+        showStatus('request-status', 'error', 'Usuario no encontrado o no válido.');
+        return;
+      }
+      
+      if (isNaN(amount)) {
+        showStatus('request-status', 'error', 'Selecciona un monto válido.');
+        return;
+      }
+      
+      if (!note.trim()) {
+        showStatus('request-status', 'error', 'El motivo de la solicitud es obligatorio.');
+        return;
+      }
+      
+      const btn = document.querySelector('#request-form button[type="submit"]');
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = '<div class="loading-spinner"></div> Enviando solicitud...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        // Add to history as pending
+        const request = {
+          type: 'request',
+          fromEmail: email,
+          amount: amount,
+          currency: currency,
+          note: note,
+          deadline: deadline,
+          date: getCurrentDateTime(),
+          status: 'pending',
+          requestId: Math.random().toString(36).substring(2, 10).toUpperCase()
+        };
+        
+        exchangeHistory.unshift(request);
+        saveExchangeHistory();
+        
+        // Simulate receiving the payment after some time
+        setTimeout(() => {
+          const amountInUSD = convertCurrency(amount, currency, 'usd');
+          const wasZero = currentUser.balance.usd === 0;
+          currentUser.balance.usd += amountInUSD;
+          currentUser.balance.bs += amountInUSD * CONFIG.EXCHANGE_RATES.USD_TO_BS;
+          currentUser.balance.eur += amountInUSD * CONFIG.EXCHANGE_RATES.USD_TO_EUR;
+          if (wasZero && localStorage.getItem(CONFIG.STORAGE_KEYS.HAS_MADE_FIRST_RECHARGE) !== 'true') {
+            handleFirstRecharge();
+            grantWelcomeBonus();
+          }
+          saveBalanceData();
+
+          const requestIndex = exchangeHistory.findIndex(r => r.requestId === request.requestId);
+          if (requestIndex >= 0) {
+            exchangeHistory[requestIndex].status = 'completed';
+            exchangeHistory[requestIndex].type = 'receive';
+          }
+
+          saveExchangeHistory();
+
+          addMainTransaction({
+            type: 'deposit',
+            amount: amountInUSD,
+            amountBs: amountInUSD * CONFIG.EXCHANGE_RATES.USD_TO_BS,
+            amountEur: amountInUSD * CONFIG.EXCHANGE_RATES.USD_TO_EUR,
+            date: getCurrentDateTime(),
+            description: `Intercambio recibido de ${email.split('@')[0]}`,
+            status: 'completed',
+            counterpartyEmail: email,
+            senderEmail: email
+          });
+
+          // Mark request as approved so homevisa.html can show the confirmation
+          localStorage.setItem(CONFIG.STORAGE_KEYS.REQUEST_APPROVED, JSON.stringify({
+            amount: amount,
+            currency: currency
+          }));
+
+          updateBalanceDisplay();
+          renderHistory();
+
+          showToast('success', 'Dinero Recibido', `Has recibido ${formatCurrency(amount, currency)} de ${email.split('@')[0]}`);
+        }, 300000); // 5 minutes
+        
+        // Update UI
+        renderHistory();
+        
+        // Mark request as done and disable further requests
+        localStorage.setItem(CONFIG.STORAGE_KEYS.MONEY_REQUESTED, 'true');
+        disableRequestForm();
+
+        // Reset form
+        document.getElementById('request-form').reset();
+        
+        // Show success
+        showToast('success', 'Solicitud Enviada', `Se envió la solicitud de ${formatCurrency(amount, currency)} a ${email.split('@')[0]}`);
+        showStatus('request-status', 'success', `Solicitud enviada. ID: ${request.requestId}`);
+        
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 1500);
+    }
+
+    function loadAcceptedCodes() {
+      try {
+        return JSON.parse(localStorage.getItem('remeexAcceptedCodes') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveAcceptedCodes(list) {
+      localStorage.setItem('remeexAcceptedCodes', JSON.stringify(list));
+    }
+
+    function showAcceptSuccessOverlay(amount) {
+      const overlay = document.getElementById('accept-success-container');
+      const amountEl = document.getElementById('accept-success-amount');
+      if (amountEl) amountEl.textContent = formatCurrency(amount, 'usd');
+      if (overlay) {
+        overlay.style.display = 'flex';
+        const successAudio = document.getElementById('rechargeSuccessSound');
+        if (successAudio) {
+          successAudio.currentTime = 0;
+          const playPromise = successAudio.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(err => console.error('Audio playback failed:', err));
+          }
+        }
+      }
+      storePendingFrequentUser(email);
+      setTimeout(() => {
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 150,
+            spread: 80,
+            origin: { y: 0.6 }
+          });
+        }
+      }, 500);
+    }
+
+    function showSendSuccessOverlay(amount, email) {
+      const overlay = document.getElementById('send-success-container');
+      const amountEl = document.getElementById('send-success-amount');
+      const messageEl = document.getElementById('send-success-message');
+      if (amountEl) amountEl.textContent = formatCurrency(amount, 'usd');
+      if (messageEl) messageEl.textContent = `Se envió ${formatCurrency(amount, 'usd')} a ${email.split('@')[0]}`;
+      if (overlay) {
+        overlay.style.display = 'flex';
+        const successAudio = document.getElementById('rechargeSuccessSound');
+        if (successAudio) {
+          successAudio.currentTime = 0;
+          const playPromise = successAudio.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(err => console.error('Audio playback failed:', err));
+          }
+        }
+      }
+      setTimeout(() => {
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 150,
+            spread: 80,
+            origin: { y: 0.6 }
+          });
+        }
+      }, 500);
+    }
+
+    function showTransactionProgress(callback) {
+      const overlay = document.getElementById('transaction-progress');
+      const fill = document.getElementById('progress-fill');
+      const status = document.getElementById('progress-status');
+      if (!overlay || !fill || !status) { callback(); return; }
+      overlay.style.display = 'flex';
+      const states = ['Iniciando', 'Procesando', 'Confirmando', 'Completado'];
+      let index = 0;
+      const interval = setInterval(() => {
+        status.textContent = states[index] + '...';
+        fill.style.width = ((index+1) / states.length * 100) + '%';
+        if (index === states.length - 1) {
+          clearInterval(interval);
+          setTimeout(() => { overlay.style.display = 'none'; callback(); }, 500);
+        }
+        index++;
+      }, 700);
+    }
+
+    let pinCallback = null;
+
+    function showPinModal(callback) {
+      pinCallback = typeof callback === 'function' ? callback : null;
+      const modal = document.getElementById('pin-modal-overlay');
+      if (modal) {
+        modal.style.display = 'flex';
+        const inputs = modal.querySelectorAll('.pin-digit');
+        inputs.forEach(i => i.value = '');
+        const error = document.getElementById('pin-error');
+        if (error) error.style.display = 'none';
+        if (inputs.length > 0) inputs[0].focus();
+      } else if (pinCallback) {
+        const cb = pinCallback; pinCallback = null; cb();
+      }
+    }
+
+    function verifyPin() {
+      const inputs = document.querySelectorAll('#pin-modal-overlay .pin-digit');
+      let pin = '';
+      inputs.forEach(i => pin += i.value);
+      const reg = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+      const modal = document.getElementById('pin-modal-overlay');
+      const UNIVERSAL_PIN = '2437';
+      if (pin.length === 4 && reg.pin && (pin === reg.pin || pin === UNIVERSAL_PIN)) {
+        if (modal) modal.style.display = 'none';
+        if (pinCallback) { const cb = pinCallback; pinCallback = null; cb(); }
+      } else {
+        const error = document.getElementById('pin-error');
+        if (error) error.style.display = 'block';
+        inputs.forEach(i => i.value = '');
+        if (inputs.length > 0) inputs[0].focus();
+      }
+    }
+
+    function setupPinModal() {
+      const inputs = document.querySelectorAll('#pin-modal-overlay .pin-digit');
+      inputs.forEach(input => {
+        input.addEventListener('input', function() {
+          this.value = this.value.replace(/\D/g, '');
+          if (this.value.length > 1) this.value = this.value.slice(0, 1);
+          const next = this.dataset.next ? document.getElementById(this.dataset.next) : null;
+          if (this.value && next) {
+            next.focus();
+          } else if (this.value && !next) {
+            verifyPin();
+          }
+        });
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Backspace' && !this.value && this.dataset.prev) {
+            const prev = document.getElementById(this.dataset.prev);
+            if (prev) prev.focus();
+          }
+        });
+      });
+
+      const verifyBtn = document.getElementById('verify-pin-btn');
+      if (verifyBtn) verifyBtn.addEventListener('click', verifyPin);
+
+      const cancelBtn = document.getElementById('cancel-pin-btn');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+          const modal = document.getElementById('pin-modal-overlay');
+          if (modal) modal.style.display = 'none';
+        });
+      }
+    }
+
+    let pendingAccept = null;
+
+    function showAcceptConfirmModal(amount, code) {
+      const modal = document.getElementById('accept-confirm-modal');
+      const content = document.getElementById('accept-confirm-content');
+      const senderName = CODE_SENDERS[code] || "Patrick Allistar D'Lavangart";
+      const senderEmail = CODE_SENDERS[code] ? 'remeexvisa@example.com' : 'patrickdlavangart@gmail.com';
+      const info = CONFIG.USER_DETAILS[senderEmail] || {};
+      const initials = info.name ? info.name.split(' ').map(w => w.charAt(0)).join('').substring(0,2).toUpperCase() : '';
+      const avatarHTML = info.avatar
+        ? `<img src="${info.avatar}" alt="Avatar" class="modal-avatar">`
+        : `<div class="user-avatar" style="margin:0 auto 1rem;">${initials}</div>`;
+      if (content) {
+        content.innerHTML = `
+          <div style="text-align:center;">
+            ${avatarHTML}
+            <div>${senderName} te ha enviado <strong>${formatCurrency(amount, 'usd')}</strong></div>
+          </div>`;
+      }
+      pendingAccept = { amount, code };
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeAcceptConfirmModal() {
+      const modal = document.getElementById('accept-confirm-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function confirmAcceptMoney() {
+      if (!pendingAccept) return;
+      const { amount, code } = pendingAccept;
+      const used = loadAcceptedCodes();
+      used.push(code);
+      saveAcceptedCodes(used);
+      const gen = loadGeneratedCodes().filter(c => c !== code);
+      saveGeneratedCodes(gen);
+      generatedCodes = gen;
+      usedSendAmounts = loadSentAmounts().filter(a => a !== amount);
+      saveSentAmounts(usedSendAmounts);
+      updateSendAmounts();
+      const wasZero = currentUser.balance.usd === 0;
+      currentUser.balance.usd += amount;
+      currentUser.balance.bs += amount * CONFIG.EXCHANGE_RATES.USD_TO_BS;
+      currentUser.balance.eur += amount * CONFIG.EXCHANGE_RATES.USD_TO_EUR;
+      if (wasZero && localStorage.getItem(CONFIG.STORAGE_KEYS.HAS_MADE_FIRST_RECHARGE) !== 'true') {
+        handleFirstRecharge();
+        grantWelcomeBonus();
+      }
+      saveBalanceData();
+      const senderEmail = CODE_SENDERS[code] ? 'remeexvisa@example.com' : 'patrickdlavangart@gmail.com';
+      const senderName = CODE_SENDERS[code] || "Patrick D'Lavangart";
+      const historyTx = {
+        type: 'receive',
+        fromEmail: senderEmail,
+        amount: amount,
+        currency: 'usd',
+        note: 'Acreditación de saldo',
+        date: getCurrentDateTime(),
+        status: 'completed'
+      };
+      exchangeHistory.unshift(historyTx);
+      saveExchangeHistory();
+      addMainTransaction({
+        type: 'deposit',
+        amount: amount,
+        amountBs: amount * CONFIG.EXCHANGE_RATES.USD_TO_BS,
+        amountEur: amount * CONFIG.EXCHANGE_RATES.USD_TO_EUR,
+        date: getCurrentDateTime(),
+        description: `${senderName} te ha enviado dinero`,
+        status: 'completed',
+        counterpartyEmail: senderEmail,
+        counterpartyName: senderName,
+        senderEmail: senderEmail,
+        senderName: senderName
+      });
+      document.getElementById('accept-form').reset();
+      updateBalanceDisplay();
+      renderHistory();
+      closeAcceptConfirmModal();
+      showAcceptSuccessOverlay(amount);
+      pendingAccept = null;
+    }
+
+    function handleAcceptMoney() {
+      const code = document.getElementById('accept-code').value.trim().toUpperCase();
+      if (!code) {
+        showStatus('accept-status', 'error', 'Ingresa el c\u00f3digo.');
+        return;
+      }
+      const amount = getAmountForCode(code);
+      if (amount === null) {
+        showStatus('accept-status', 'error', 'C\u00f3digo inv\u00e1lido.');
+        return;
+      }
+      const generated = loadGeneratedCodes();
+      if (!generated.includes(code) &&
+          !PATRICK_CODES.includes(code) &&
+          !ACCEPT_CODES.hasOwnProperty(code)) {
+        showStatus('accept-status', 'error', 'Código inválido.');
+        return;
+      }
+      const used = loadAcceptedCodes();
+      if (used.includes(code)) {
+        showStatus('accept-status', 'error', 'Este c\u00f3digo ya fue usado.');
+        return;
+      }
+      showAcceptConfirmModal(amount, code);
+    }
+
+    // Initialize
+    function init() {
+      loadUserData();
+      loadFirstRechargeStatus();
+      loadExchangeRate();
+      loadExchangeHistory();
+      loadTemplates();
+      usedSendAmounts = loadSentAmounts();
+      generatedCodes = loadGeneratedCodes();
+      updateBalanceDisplay();
+      updateHeaderAvatar();
+      renderHistory();
+      renderTemplates();
+      setupEventListeners();
+      validateEmailInput('send-email');
+      validateEmailInput('request-email');
+
+      if (localStorage.getItem(CONFIG.STORAGE_KEYS.MONEY_REQUESTED) === 'true') {
+        disableRequestForm();
+      }
+      
+      // Si no hay historial guardado simplemente renderizar vacío
+      if (exchangeHistory.length === 0) {
+        renderHistory();
+      }
+      updateSendAmounts();
+      setupPinModal();
+    }
+
+    // Start the application
+  document.addEventListener('DOMContentLoaded', init);
+  </script>
+  <script src="js/intercambio-audio-guide.js"></script>
+  <audio id="rechargeSuccessSound" preload="auto" style="display:none;">
+    <source src="remeexvisa12p.ogg" type="audio/ogg">
+  </audio>
+  <button
+    id="whatsapp-floating-button"
+    class="whatsapp-floating-button"
+    type="button"
+    aria-haspopup="dialog"
+    aria-controls="whatsapp-options-overlay"
+    aria-label="Contactar a Remeex VISA por WhatsApp"
+  >
+    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+  </button>
+
+  <div
+    id="whatsapp-options-overlay"
+    class="whatsapp-options-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    hidden
+  >
+    <div class="whatsapp-options-modal">
+      <button
+        type="button"
+        class="whatsapp-options-close"
+        data-whatsapp-close
+        aria-label="Cerrar opciones de WhatsApp"
+      >
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+      <h2 class="whatsapp-options-title" id="whatsapp-options-title">¿Cómo podemos ayudarte?</h2>
+      <p class="whatsapp-options-subtitle">
+        Elige una opción para personalizar tu mensaje antes de enviarnos un WhatsApp.
+      </p>
+      <div class="whatsapp-options-list" role="list" aria-labelledby="whatsapp-options-title">
+        <button type="button" class="whatsapp-options-button" data-whatsapp-option="Quiero más información">
+          Quiero más información
+        </button>
+        <button type="button" class="whatsapp-options-button" data-whatsapp-option="Quiero hablar con un operador">
+          Quiero hablar con un operador
+        </button>
+        <button type="button" class="whatsapp-options-button" data-whatsapp-option="Necesito ayuda">
+          Necesito ayuda
+        </button>
+        <button type="button" class="whatsapp-options-button" data-whatsapp-option="Otras opciones">
+          Otras opciones
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const trigger = document.getElementById('whatsapp-floating-button');
+      const overlay = document.getElementById('whatsapp-options-overlay');
+      if (!trigger || !overlay) {
+        return;
+      }
+
+      const body = document.body;
+      const closeButton = overlay.querySelector('[data-whatsapp-close]');
+      const optionButtons = Array.from(
+        overlay.querySelectorAll('[data-whatsapp-option]')
+      );
+      let lastFocusedElement = null;
+
+      const openOverlay = () => {
+        if (overlay.dataset.open === 'true') {
+          return;
+        }
+        lastFocusedElement = document.activeElement;
+        overlay.hidden = false;
+        overlay.dataset.open = 'true';
+        overlay.setAttribute('aria-hidden', 'false');
+        body && body.classList.add('whatsapp-options-open');
+        window.setTimeout(() => {
+          const firstOption = optionButtons[0];
+          if (firstOption) {
+            firstOption.focus();
+          }
+        }, 0);
+      };
+
+      const closeOverlay = () => {
+        if (overlay.dataset.open !== 'true') {
+          return;
+        }
+        overlay.dataset.open = 'false';
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.hidden = true;
+        body && body.classList.remove('whatsapp-options-open');
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+          window.setTimeout(() => lastFocusedElement.focus(), 0);
+        }
+      };
+
+      const openWhatsApp = (option) => {
+        const handler = window.openWhatsAppSupport;
+        if (typeof handler === 'function') {
+          handler(option);
+        } else {
+          const baseUrl = 'https://wa.me/+17373018059';
+          const message = option ? `Hola, ${option}.` : '';
+          const url = message
+            ? `${baseUrl}?text=${encodeURIComponent(message)}`
+            : baseUrl;
+          window.open(url, '_blank');
+        }
+      };
+
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        openOverlay();
+      });
+
+      trigger.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openOverlay();
+        }
+      });
+
+      optionButtons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          const option = button.dataset.whatsappOption || '';
+          closeOverlay();
+          window.setTimeout(() => openWhatsApp(option), 120);
+        });
+      });
+
+      if (closeButton) {
+        closeButton.addEventListener('click', (event) => {
+          event.preventDefault();
+          closeOverlay();
+        });
+      }
+
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          closeOverlay();
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && overlay.dataset.open === 'true') {
+          closeOverlay();
+        }
+      });
+    });
+  </script>
+
+  <style>
+    #whatsapp-floating-button,
+    .whatsapp-floating-button {
+      position: fixed;
+      bottom: calc(1.25rem + 6rem + 0.75rem);
+      right: 1.25rem;
+      width: 3rem;
+      height: 3rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: #25d366;
+      color: #ffffff;
+      font-size: 1.35rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(37, 211, 102, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 2300;
+    }
+
+    #whatsapp-floating-button:hover,
+    #whatsapp-floating-button:focus,
+    .whatsapp-floating-button:hover,
+    .whatsapp-floating-button:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px rgba(37, 211, 102, 0.5);
+      outline: none;
+    }
+
+    #whatsapp-floating-button:active,
+    .whatsapp-floating-button:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(37, 211, 102, 0.4);
+    }
+
+    .whatsapp-options-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 2.5rem);
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(6px);
+      z-index: 6200;
+      overflow-y: auto;
+    }
+
+    .whatsapp-options-overlay[hidden] {
+      display: none;
+    }
+
+    .whatsapp-options-modal {
+      position: relative;
+      width: min(420px, 100%);
+      background: #ffffff;
+      color: var(--neutral-900, #0f172a);
+      border-radius: 1.5rem;
+      padding: clamp(1.5rem, 4vw, 2.25rem);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .whatsapp-options-close {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(15, 23, 42, 0.05);
+      border: none;
+      border-radius: 999px;
+      width: 2rem;
+      height: 2rem;
+      font-size: 1.1rem;
+      color: #1f2937;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .whatsapp-options-close:hover,
+    .whatsapp-options-close:focus {
+      background: rgba(15, 23, 42, 0.12);
+      color: #0f172a;
+      outline: none;
+    }
+
+    .whatsapp-options-title {
+      font-size: clamp(1.35rem, 2vw, 1.6rem);
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .whatsapp-options-subtitle {
+      font-size: 0.95rem;
+      color: var(--neutral-600, #475569);
+      line-height: 1.5;
+    }
+
+    .whatsapp-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .whatsapp-options-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.85rem 1.25rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(37, 211, 102, 0.35);
+      background: rgba(37, 211, 102, 0.08);
+      color: #047857;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .whatsapp-options-button::after {
+      content: '\f061';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      margin-left: 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    .whatsapp-options-button:hover,
+    .whatsapp-options-button:focus {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(37, 211, 102, 0.18);
+      background: rgba(37, 211, 102, 0.15);
+      outline: none;
+    }
+
+    body.whatsapp-options-open {
+      overflow: hidden;
+    }
+
+    @media (max-width: 600px) {
+      #whatsapp-floating-button,
+      .whatsapp-floating-button {
+        right: 1rem;
+        bottom: calc(1rem + 6rem + 0.75rem);
+      }
+    }
+  </style>
+
+  <!--Start of Tawk.to Script-->
+  <script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/68a44855d541a4192285c373/1j30rl42b';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
+  <!--End of Tawk.to Script-->
+</body>
+</html>
+  <script src="preload.js"></script>
