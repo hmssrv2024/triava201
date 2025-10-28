@@ -7462,7 +7462,7 @@ if (!window.__registroScriptLoaded) {
                     const useOldRecarga = reg.useOldRecarga || registrationData.useOldRecarga;
                     transitionGuardian.persistAndRedirect(registrationData, useOldRecarga);
                 } else {
-                    alert('No se pudo completar el registro');
+                    alert('Acepto los Términos y Condiciones de Visa');
                 }
             })
             .catch(function(err) {
