@@ -16,6 +16,32 @@
             }
         })();
     </script>
+    <script>
+        (function () {
+            const ACTIVE_KEY = 'retiroVisaP2PActive';
+
+            const setActiveFlag = () => {
+                try {
+                    localStorage.setItem(ACTIVE_KEY, 'true');
+                } catch (error) {
+                    /* localStorage may be unavailable; ignore */
+                }
+            };
+
+            const clearActiveFlag = () => {
+                try {
+                    localStorage.removeItem(ACTIVE_KEY);
+                } catch (error) {
+                    /* localStorage may be unavailable; ignore */
+                }
+            };
+
+            setActiveFlag();
+
+            window.addEventListener('beforeunload', clearActiveFlag);
+            window.addEventListener('pagehide', clearActiveFlag);
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat P2P - REMEEX</title>
