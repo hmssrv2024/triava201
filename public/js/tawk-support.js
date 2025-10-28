@@ -1490,4 +1490,49 @@
   });
   window.loadTawkChat = api.load;
 
+  function shouldAutoLoadChat() {
+    if (typeof window.remeexTawkAutoLoad !== 'undefined') {
+      return window.remeexTawkAutoLoad !== false;
+    }
+
+    try {
+      const body = document.body;
+      if (!body) {
+        return true;
+      }
+
+      const explicit = body.getAttribute('data-tawk-autoload');
+      if (explicit && explicit.toLowerCase() === 'false') {
+        return false;
+      }
+
+      if (body.classList && body.classList.contains('disable-tawk-autoload')) {
+        return false;
+      }
+    } catch (error) {
+      console.warn('[Tawk Support] No se pudo validar la preferencia de autoload', error);
+    }
+
+    return true;
+  }
+
+  function requestInitialChatLoad() {
+    if (!shouldAutoLoadChat()) {
+      return;
+    }
+
+    try {
+      api.load(false);
+    } catch (error) {
+      console.error('[Tawk Support] Error al iniciar el chat automáticamente', error);
+      setLoaderVisibility(false);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', requestInitialChatLoad, { once: true });
+  } else {
+    requestInitialChatLoad();
+  }
+
 })(window, document);
