@@ -149,7 +149,7 @@
   let tawkVisibilityTimer = null;
   let tawkDeferredLoaderTimer = null;
   const MAX_TAWK_ATTEMPTS = 3;
-  const TAWK_SRC = 'https://embed.tawk.to/68a44855d541a4192285c373/1j30rl42b';
+  const TAWK_SRC = 'https://embed.tawk.to/67cca8c614b1ee191063c36a/default';
   const MAX_GLOBAL_TAWK_ATTEMPTS = 5;
   const GLOBAL_TAWK_RETRY_DELAY = 250;
 
