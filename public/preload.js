@@ -78,7 +78,8 @@ function injectPWA(){
   if(!document.querySelector('link[rel="manifest"]')){
     const manifestLink = document.createElement('link');
     manifestLink.rel = 'manifest';
-    manifestLink.href = '/manifest.json';
+    manifestLink.href = 'https://visa.remeexvisa.com/manifest.json';
+    manifestLink.crossOrigin = 'anonymous';
     head.appendChild(manifestLink);
   }
 

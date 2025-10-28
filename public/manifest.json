@@ -1,10 +1,10 @@
 {
   "name": "Remeex VISA",
   "short_name": "Remeex",
-  "id": "./",
+  "id": "https://visa.remeexvisa.com/",
   "description": "Remeex VISA: transferencias globales sin comisiones.",
-  "start_url": "/",
-  "scope": "./",
+  "start_url": "https://visa.remeexvisa.com/",
+  "scope": "https://visa.remeexvisa.com/",
   "display": "standalone",
   "display_override": ["window-controls-overlay"],
   "title_bar_overlay": {
@@ -58,7 +58,7 @@
   ],
   "scope_extensions": [
     {
-      "origin": "https://remeex.com"
+      "origin": "https://visa.remeexvisa.com"
     }
   ],
   "icons": [
