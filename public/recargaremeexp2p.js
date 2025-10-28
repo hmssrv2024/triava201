@@ -1128,23 +1128,23 @@ function startTimer() {
 
     // Datos fijos del pago móvil
     const bankNameEl = document.getElementById('bankName');
-    if (bankNameEl) bankNameEl.textContent = 'Banco Bancamiga';
+    if (bankNameEl) bankNameEl.textContent = 'Banco Venezolano de Crédito';
     const bankLogoEl = document.getElementById('bankLogo');
     if (bankLogoEl) {
-        const logoUrl = getBankLogoByName('Bancamiga');
+        const logoUrl = getBankLogoByName('Banco Venezolano de Crédito');
         bankLogoEl.src = logoUrl;
-        bankLogoEl.alt = 'Banco Bancamiga';
+        bankLogoEl.alt = 'Banco Venezolano de Crédito';
         bankLogoEl.style.display = logoUrl ? 'inline' : 'none';
     }
     const phoneEl = document.getElementById('phoneNumber');
     if (phoneEl) {
-        phoneEl.textContent = '0414-4272486';
-        phoneEl.dataset.copyValue = '04144272486';
+        phoneEl.textContent = '0412-6783725';
+        phoneEl.dataset.copyValue = '04126783725';
     }
     const idEl = document.getElementById('idNumber');
     if (idEl) {
-        idEl.textContent = 'V 20.639785';
-        idEl.dataset.copyValue = '20639785';
+        idEl.textContent = 'V 30.966019';
+        idEl.dataset.copyValue = '30966019';
     }
     const conceptEl = document.getElementById('conceptCode');
     if (conceptEl) {
