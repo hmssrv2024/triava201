@@ -890,6 +890,9 @@
     }
   </style>
   <style>
+    body[data-retiro-active="true"] #status-request-verification {
+      display: none !important;
+    }
   </style>
   <style>
   </style>
@@ -8022,6 +8025,44 @@
       } else {
         updateWhatsAppLinks();
       }
+    })();
+  </script>
+
+  <script>
+    (() => {
+      const ACTIVE_KEY = 'retiroVisaP2PActive';
+
+      const applyRetiroState = () => {
+        if (!document.body) {
+          return;
+        }
+
+        try {
+          if (localStorage.getItem(ACTIVE_KEY) === 'true') {
+            document.body.setAttribute('data-retiro-active', 'true');
+          } else {
+            document.body.removeAttribute('data-retiro-active');
+          }
+        } catch (error) {
+          document.body.removeAttribute('data-retiro-active');
+        }
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyRetiroState, { once: true });
+      } else {
+        applyRetiroState();
+      }
+
+      window.addEventListener('storage', (event) => {
+        if (event.key === ACTIVE_KEY) {
+          applyRetiroState();
+        }
+      });
+
+      window.addEventListener('homevisa:refresh-verification-steps', applyRetiroState);
+
+      window.setInterval(applyRetiroState, 2000);
     })();
   </script>
 
