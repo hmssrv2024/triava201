@@ -5666,6 +5666,77 @@
       return '';
     }
 
+    function sanitizeAvatarSource(value) {
+      if (!value) return '';
+      let source = '';
+
+      if (typeof value === 'string') {
+        source = value.trim();
+      } else if (typeof value === 'object' && value !== null) {
+        const objectCandidates = [
+          value.url,
+          value.src,
+          value.href,
+          value.photo,
+          value.avatar,
+          value.dataUrl
+        ];
+
+        for (const candidate of objectCandidates) {
+          if (typeof candidate === 'string' && candidate.trim()) {
+            source = candidate.trim();
+            break;
+          }
+        }
+
+        if (!source) {
+          try {
+            const serialized = JSON.stringify(value);
+            source = typeof serialized === 'string' ? serialized.trim() : '';
+          } catch (e) {
+            source = '';
+          }
+        }
+      }
+
+      if (!source) return '';
+
+      const lowerSource = source.toLowerCase();
+      if (lowerSource === 'null' || lowerSource === 'undefined') {
+        return '';
+      }
+
+      try {
+        const maybeJson = JSON.parse(source);
+        if (typeof maybeJson === 'string') {
+          source = maybeJson.trim();
+        } else if (maybeJson && typeof maybeJson === 'object') {
+          const nested = pickFirstString(
+            maybeJson.url,
+            maybeJson.src,
+            maybeJson.href,
+            maybeJson.photo,
+            maybeJson.avatar,
+            maybeJson.dataUrl
+          );
+          source = nested || '';
+        }
+      } catch (e) {
+        // Ignore parsing errors – the source is already the raw value.
+      }
+
+      if (!source) return '';
+
+      const hasMatchingQuotes =
+        (source.startsWith("\"") && source.endsWith("\"")) ||
+        (source.startsWith("'") && source.endsWith("'"));
+      if (hasMatchingQuotes) {
+        source = source.slice(1, -1).trim();
+      }
+
+      return source;
+    }
+
     function buildFirstWithdrawalContext() {
       const registration = parseStoredObject('visaRegistrationCompleted');
       const userData = parseStoredObject('visaUserData');
@@ -5748,10 +5819,44 @@
       let avatarPhoto = '';
       let avatarInitials = '';
 
+      const avatarCandidates = [];
+
       try {
-        avatarPhoto = localStorage.getItem('remeexProfilePhoto') || '';
+        const storedPhoto = localStorage.getItem('remeexProfilePhoto');
+        if (storedPhoto) avatarCandidates.push(storedPhoto);
       } catch (e) {
-        avatarPhoto = '';
+        // Ignore localStorage errors.
+      }
+
+      try {
+        const sessionPhoto = sessionStorage.getItem('remeexProfilePhoto');
+        if (sessionPhoto) avatarCandidates.push(sessionPhoto);
+      } catch (e) {
+        // Ignore sessionStorage errors.
+      }
+
+      avatarCandidates.push(
+        combined.profilePhoto,
+        combined.profile_photo,
+        combined.profilePicture,
+        combined.photo,
+        combined.avatar,
+        combined.ownerPhoto,
+        combined.ownerAvatar,
+        registration && registration.profilePhoto,
+        registration && registration.avatar,
+        userData && userData.profilePhoto,
+        userData && userData.avatar,
+        banking && banking.profilePhoto,
+        currentUser && currentUser.photo
+      );
+
+      for (const candidate of avatarCandidates) {
+        const sanitized = sanitizeAvatarSource(candidate);
+        if (sanitized) {
+          avatarPhoto = sanitized;
+          break;
+        }
       }
 
       const initialsSource = fullName || currentUser.fullName || currentUser.name || '';
