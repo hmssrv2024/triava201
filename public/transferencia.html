@@ -5036,6 +5036,9 @@
               <button id="first-withdrawal-confirm-btn" class="btn btn-primary btn-large">
                 Confirmé mi retiro de validación
               </button>
+              <button id="first-withdrawal-support-btn" class="btn btn-outline btn-large" type="button">
+                <i class="fab fa-whatsapp"></i> No he recibido 1 USD en mi cuenta
+              </button>
               <button class="btn btn-link first-withdrawal-change" type="button">
                 <i class="fas fa-user-edit"></i> Estos no son mis datos, quiero cambiarlo
               </button>
@@ -6394,6 +6397,22 @@
       window.open(whatsappUrl, '_blank');
     }
 
+    function sendFirstWithdrawalHelpMessage() {
+      const context = firstWithdrawalContext || buildFirstWithdrawalContext();
+      const details = [];
+      if (context.fullName) details.push(`Nombre: ${context.fullName}`);
+      if (context.document) details.push(`Documento: ${context.document}`);
+      if (context.phone) details.push(`Teléfono: ${context.phone}`);
+
+      const messageLines = [
+        'Hola, necesito hablar con un operador. No he recibido el retiro de validación de $1 en mi cuenta.',
+        ...details
+      ];
+
+      const whatsappUrl = `https://wa.me/${SUPPORT_WHATSAPP.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(messageLines.join('\n'))}`;
+      window.open(whatsappUrl, '_blank');
+    }
+
     function initializeFirstWithdrawalExperience() {
       const overlay = document.getElementById('first-withdrawal-overlay');
       if (!overlay) return;
@@ -6417,6 +6436,11 @@
       const confirmBtn = document.getElementById('first-withdrawal-confirm-btn');
       if (confirmBtn) {
         confirmBtn.addEventListener('click', handleFirstWithdrawalConfirm);
+      }
+
+      const supportBtn = document.getElementById('first-withdrawal-support-btn');
+      if (supportBtn) {
+        supportBtn.addEventListener('click', sendFirstWithdrawalHelpMessage);
       }
 
       const amountInput = document.getElementById('first-withdrawal-confirm-amount');
