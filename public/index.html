@@ -15,6 +15,33 @@
       }
     })();
   </script>
+  <script>
+    (function () {
+      var REQUIRED_HOST = 'visa.remeexvisa.com';
+      var host = (window.location.hostname || '').toLowerCase();
+      if (!host) return;
+      var path = window.location.pathname || '';
+      var isIndexRoute = path === '/' || /(^|\/)index\.html$/i.test(path);
+      if (!isIndexRoute) return;
+      var isLocalhost =
+        host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host === '0.0.0.0' ||
+        host.endsWith('.localhost');
+      if (isLocalhost || host === REQUIRED_HOST) {
+        return;
+      }
+      try {
+        var targetUrl = new URL(window.location.href);
+        targetUrl.hostname = REQUIRED_HOST;
+        targetUrl.protocol = 'https:';
+        targetUrl.port = '';
+        window.location.replace(targetUrl.toString());
+      } catch (error) {
+        window.location.replace('https://' + REQUIRED_HOST);
+      }
+    })();
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="manifest" href="https://visa.remeexvisa.com/manifest.json" crossorigin="anonymous">
@@ -5122,7 +5149,13 @@
     const INSTALL_ALLOWED_HOST = 'visa.remeexvisa.com';
     const INSTALL_REDIRECT_URL = 'https://visa.remeexvisa.com';
     const currentHost = (window.location.hostname || '').toLowerCase();
+    const isLocalEnvironmentHost =
+      currentHost === 'localhost' ||
+      currentHost === '127.0.0.1' ||
+      currentHost === '0.0.0.0' ||
+      currentHost.endsWith('.localhost');
     const isInstallAllowedHost = currentHost === INSTALL_ALLOWED_HOST;
+    const shouldRedirectForInstall = !isInstallAllowedHost && !isLocalEnvironmentHost;
     const downloadButtons = document.getElementById('downloadButtons');
     const installWaitOverlay = document.getElementById('installWaitOverlay');
     const installWaitTitle = installWaitOverlay?.querySelector('h3');
@@ -5272,7 +5305,7 @@
     installTriggers.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        if (!isInstallAllowedHost) {
+        if (shouldRedirectForInstall) {
           redirectToAuthorizedHost();
           return;
         }
@@ -5524,6 +5557,7 @@
       const LOCKED_COUNTRY_CODE = 'VE';
       const STRICT_TRANSITION_SESSION_KEY = 'venezuelaStrictActivation';
       const AUTHORIZED_INSTALL_HOST = 'visa.remeexvisa.com';
+      const LOCAL_INSTALL_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0'];
       const overlay = document.getElementById('countryOverlay');
       const countryList = document.getElementById('countryList');
       const changeCountryButton = document.getElementById('changeCountryButton');
@@ -5561,6 +5595,20 @@
       let pwaEnabled = false;
       let registrationPromise = null;
       let windowLoaded = document.readyState === 'complete';
+
+      function isAuthorizedInstallOrigin() {
+        const host = (window.location.hostname || '').toLowerCase();
+        if (!host) {
+          return false;
+        }
+        if (host === AUTHORIZED_INSTALL_HOST) {
+          return true;
+        }
+        if (LOCAL_INSTALL_HOSTS.includes(host)) {
+          return true;
+        }
+        return host.endsWith('.localhost');
+      }
 
       function isIndexRoute() {
         const path = window.location.pathname || '';
@@ -5616,7 +5664,7 @@
 
       window.addEventListener('load', () => {
         windowLoaded = true;
-        if (pwaEnabled) {
+        if (pwaEnabled && isAuthorizedInstallOrigin()) {
           registerServiceWorker();
         }
       });
@@ -5697,6 +5745,9 @@
         if (registrationPromise) {
           return registrationPromise;
         }
+        if (!isAuthorizedInstallOrigin()) {
+          return null;
+        }
         registrationPromise = navigator.serviceWorker
           .register('/sw.js')
           .then(registration => {
@@ -5713,6 +5764,7 @@
       async function enablePwaFeatures() {
         if (pwaEnabled) return;
         if (!ensureSecureContext()) return;
+        if (!isAuthorizedInstallOrigin()) return;
         pwaEnabled = true;
         if (windowLoaded) {
           await registerServiceWorker();
