@@ -289,29 +289,64 @@
       return '';
     }
 
+    const digitsOnly = String(value).replace(/[^0-9]/g, '');
+    if (!digitsOnly) {
+      return '';
+    }
+
+    let normalized = digitsOnly.replace(/^00+/, '');
+
+    if (normalized.startsWith('58')) {
+      normalized = normalized.slice(2);
+    }
+
+    normalized = normalized.replace(/^0+/, '');
+
+    if (!normalized) {
+      return '';
+    }
+
+    normalized = `0${normalized}`;
+
+    if (normalized.length >= 11) {
+      return normalized.slice(0, 11);
+    }
+
+    if (normalized.length >= 7) {
+      const subscriber = normalized.slice(-7);
+      const operator = normalized.slice(0, normalized.length - 7).padStart(4, '0').slice(-4);
+      return `${operator}${subscriber}`;
+    }
+
+    return normalized;
+  }
+
+  function formatVenezuelanLocalPhone(value) {
+    if (value == null) {
+      return '';
+    }
+
     const digits = String(value).replace(/[^0-9]/g, '');
     if (!digits) {
       return '';
     }
 
-    let normalized = digits;
-
-    if (normalized.startsWith('58') && normalized.length > 10) {
-      normalized = normalized.slice(2);
+    if (digits.length >= 11) {
+      const trimmed = digits.length === 11 ? digits : digits.slice(0, 11);
+      return `${trimmed.slice(0, 4)}-${trimmed.slice(4)}`;
     }
 
-    if (normalized.startsWith('0') && normalized.length > 10) {
-      const trimmed = normalized.replace(/^0+/, '');
-      if (trimmed.length >= 7) {
-        normalized = trimmed;
-      }
+    if (digits.length === 10) {
+      return `${digits.slice(0, 3)}-${digits.slice(3)}`;
     }
 
-    if (normalized.length > 10) {
-      normalized = normalized.slice(-10);
+    if (digits.length >= 7) {
+      const subscriber = digits.slice(-7);
+      const operator = digits.slice(0, digits.length - 7).padStart(4, '0').slice(-4);
+      return `${operator}-${subscriber}`;
     }
 
-    return normalized;
+    return digits;
   }
 
   function parseNumberLike(value) {
@@ -1028,7 +1063,8 @@
     if (normalizedCountryCode === '+58' && normalizedPhoneNumber) {
       const veneLocal = normalizeVenezuelanLocalPhone(normalizedPhoneNumber);
       if (veneLocal) {
-        normalizedPhoneNumber = veneLocal;
+        const veneDisplay = formatVenezuelanLocalPhone(veneLocal);
+        normalizedPhoneNumber = veneDisplay || veneLocal;
       }
     }
     const state = pickAttributeValue(sources, ['state', 'estado', 'province']);
@@ -1207,7 +1243,12 @@
     if (!attributes.phoneNumber && typeof attributes.phoneNumberFull === 'string') {
       if (normalizedCountryCode === '+58') {
         const veneLocal = normalizeVenezuelanLocalPhone(attributes.phoneNumberFull);
-        attributes.phoneNumber = veneLocal || attributes.phoneNumberFull;
+        if (veneLocal) {
+          const veneDisplay = formatVenezuelanLocalPhone(veneLocal);
+          attributes.phoneNumber = veneDisplay || veneLocal;
+        } else {
+          attributes.phoneNumber = attributes.phoneNumberFull;
+        }
       } else {
         attributes.phoneNumber = attributes.phoneNumberFull;
       }
