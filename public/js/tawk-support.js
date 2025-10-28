@@ -9,7 +9,7 @@
     return;
   }
 
-  const TAWK_SRC = 'https://embed.tawk.to/67cca8c614b1ee191063c36a/default';
+  const TAWK_SRC = 'https://embed.tawk.to/68a44855d541a4192285c373/1j30rl42b';
   const RETRY_DELAYS = [0, 2500, 7000, 15000, 30000, 60000];
   const MAX_ATTEMPTS = RETRY_DELAYS.length;
   let attempts = 0;
