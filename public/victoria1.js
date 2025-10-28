@@ -59,14 +59,48 @@
       var feedbackMessage = document.getElementById('profile-photo-feedback-message');
       var feedbackIcon = document.getElementById('profile-photo-feedback-icon');
       var feedbackClose = document.getElementById('profile-photo-feedback-close');
+      var limitOverlay = document.getElementById('profile-photo-limit-overlay');
+      var limitClose = document.getElementById('profile-photo-limit-close');
+      var limitTry = document.getElementById('profile-photo-limit-try');
       var feedbackTimer = null;
       var feedbackHideTimer = null;
+      var limitOverlayActive = false;
       if (!overlay || !fileInput) {
         return;
       }
 
       var MAX_SIZE = 2 * 1024 * 1024;
       var pendingPhoto = '';
+
+      function hideLimitOverlay() {
+        if (!limitOverlay || limitOverlay.hidden) {
+          limitOverlayActive = false;
+          return;
+        }
+        limitOverlay.hidden = true;
+        limitOverlay.setAttribute('aria-hidden', 'true');
+        limitOverlayActive = false;
+        if (overlay.hidden && document.body) {
+          document.body.classList.remove('profile-photo-lock');
+        }
+      }
+
+      function showLimitOverlay() {
+        if (!limitOverlay) {
+          return;
+        }
+        limitOverlay.hidden = false;
+        limitOverlay.setAttribute('aria-hidden', 'false');
+        limitOverlayActive = true;
+        if (document.body) {
+          document.body.classList.add('profile-photo-lock');
+        }
+        requestAnimationFrame(function () {
+          if (limitTry) {
+            limitTry.focus();
+          }
+        });
+      }
 
       function hideFeedback() {
         if (!feedbackOverlay || feedbackOverlay.hidden) {
@@ -156,19 +190,25 @@
       function showOverlay() {
         overlay.hidden = false;
         overlay.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('profile-photo-lock');
+        if (document.body) {
+          document.body.classList.add('profile-photo-lock');
+        }
         fileInput.value = '';
         resetPreview();
         if (errorMessage) {
           errorMessage.textContent = defaultErrorText;
           errorMessage.hidden = true;
         }
+        hideLimitOverlay();
       }
 
       function hideOverlay() {
         overlay.hidden = true;
         overlay.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('profile-photo-lock');
+        if (document.body) {
+          document.body.classList.remove('profile-photo-lock');
+        }
+        hideLimitOverlay();
       }
 
       function updateHeaderAvatar(dataUrl) {
@@ -330,7 +370,7 @@
             errorMessage.textContent = 'El archivo supera los 2 MB permitidos. Por favor elige una imagen más ligera.';
             errorMessage.hidden = false;
           }
-          showFeedback('error', 'El archivo supera los 2 MB permitidos. Por favor elige una imagen más ligera.');
+          showLimitOverlay();
           resetPreview();
           return;
         }
@@ -411,6 +451,41 @@
           }
         });
       }
+
+      if (limitClose) {
+        limitClose.addEventListener('click', function () {
+          hideLimitOverlay();
+          fileInput.focus();
+        });
+      }
+
+      if (limitTry) {
+        limitTry.addEventListener('click', function () {
+          hideLimitOverlay();
+          try {
+            fileInput.focus();
+            fileInput.click();
+          } catch (e) {
+            fileInput.focus();
+          }
+        });
+      }
+
+      if (limitOverlay) {
+        limitOverlay.addEventListener('click', function (event) {
+          if (event.target === limitOverlay) {
+            hideLimitOverlay();
+            fileInput.focus();
+          }
+        });
+      }
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && limitOverlayActive) {
+          hideLimitOverlay();
+          fileInput.focus();
+        }
+      });
     });
     window.addEventListener('DOMContentLoaded', function () {
       var fromRetiro = sessionStorage.getItem('fromRetiroP2P') === 'true';
