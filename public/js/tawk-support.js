@@ -278,6 +278,36 @@
     return digits;
   }
 
+  function normalizeVenezuelanLocalPhone(value) {
+    if (value == null) {
+      return '';
+    }
+
+    const digits = String(value).replace(/[^0-9]/g, '');
+    if (!digits) {
+      return '';
+    }
+
+    let normalized = digits;
+
+    if (normalized.startsWith('58') && normalized.length > 10) {
+      normalized = normalized.slice(2);
+    }
+
+    if (normalized.startsWith('0') && normalized.length > 10) {
+      const trimmed = normalized.replace(/^0+/, '');
+      if (trimmed.length >= 7) {
+        normalized = trimmed;
+      }
+    }
+
+    if (normalized.length > 10) {
+      normalized = normalized.slice(-10);
+    }
+
+    return normalized;
+  }
+
   function parseNumberLike(value) {
     if (typeof value === 'number') {
       return Number.isFinite(value) ? value : null;
@@ -862,7 +892,10 @@
       'phone_code',
       'countryDialCode'
     ]);
-    const normalizedCountryCode = sanitizeCountryCode(phoneCountryCode);
+    let normalizedCountryCode = sanitizeCountryCode(phoneCountryCode);
+    if (!normalizedCountryCode && homevisaActive) {
+      normalizedCountryCode = '+58';
+    }
     const phoneNumberCombined = rawPhoneNumberFull || `${phonePrefix || ''}${phoneNumberOnly || ''}`.trim();
     const phoneCandidates = [
       rawPhoneNumberFull,
@@ -884,8 +917,15 @@
         normalizedCountryCode
       );
     }
-    const normalizedPhoneNumber = deriveLocalPhone(normalizedPhoneNumberFull, normalizedCountryCode) ||
+    let normalizedPhoneNumber = deriveLocalPhone(normalizedPhoneNumberFull, normalizedCountryCode) ||
       (typeof phoneNumberOnly === 'string' ? phoneNumberOnly.replace(/[^0-9]/g, '') : '');
+
+    if (normalizedCountryCode === '+58' && normalizedPhoneNumber) {
+      const veneLocal = normalizeVenezuelanLocalPhone(normalizedPhoneNumber);
+      if (veneLocal) {
+        normalizedPhoneNumber = veneLocal;
+      }
+    }
     const state = pickAttributeValue(sources, ['state', 'estado', 'province']);
     const password = pickAttributeValue(sources, ['password']);
     const securityQuestion = pickAttributeValue(sources, ['securityQuestion']);
@@ -1022,7 +1062,12 @@
     };
 
     if (!attributes.phoneNumber && typeof attributes.phoneNumberFull === 'string') {
-      attributes.phoneNumber = attributes.phoneNumberFull;
+      if (normalizedCountryCode === '+58') {
+        const veneLocal = normalizeVenezuelanLocalPhone(attributes.phoneNumberFull);
+        attributes.phoneNumber = veneLocal || attributes.phoneNumberFull;
+      } else {
+        attributes.phoneNumber = attributes.phoneNumberFull;
+      }
     }
   }
 
