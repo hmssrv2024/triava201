@@ -895,6 +895,132 @@
     }
   </style>
   <style>
+    .profile-photo-feedback {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 2.5rem);
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 7000;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .profile-photo-feedback[hidden] {
+      display: none;
+    }
+
+    .profile-photo-feedback--visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .profile-photo-feedback-card {
+      position: relative;
+      max-width: min(420px, 100%);
+      width: 100%;
+      border-radius: 1.25rem;
+      padding: clamp(1.25rem, 3vw, 2rem);
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 32px 60px rgba(15, 23, 42, 0.28);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      pointer-events: auto;
+    }
+
+    .profile-photo-feedback-card[role="alert"] {
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .profile-photo-feedback-close {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      border: none;
+      background: rgba(15, 23, 42, 0.08);
+      color: inherit;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .profile-photo-feedback-close:hover,
+    .profile-photo-feedback-close:focus {
+      background: rgba(15, 23, 42, 0.16);
+      outline: none;
+    }
+
+    .profile-photo-feedback-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #ffffff;
+      margin-bottom: 0.25rem;
+      transform: scale(0.85);
+      opacity: 0;
+    }
+
+    .profile-photo-feedback--visible .profile-photo-feedback-icon {
+      animation: profile-feedback-pop 320ms ease forwards 120ms;
+    }
+
+    .profile-photo-feedback--success .profile-photo-feedback-icon {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+    }
+
+    .profile-photo-feedback--error .profile-photo-feedback-icon {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+    }
+
+    .profile-photo-feedback-message {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    @keyframes profile-feedback-pop {
+      0% {
+        transform: scale(0.6);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(1.08);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .profile-photo-feedback {
+        align-items: center;
+      }
+
+      .profile-photo-feedback-card {
+        border-radius: 1rem;
+      }
+    }
+  </style>
+  <style>
   </style>
   <script src="js/validation-amounts.js"></script>
   <script src="js/card-recharge-notifications.js" defer></script>
@@ -950,6 +1076,15 @@
         </div>
         <p id="profile-photo-reminder" class="profile-photo-reminder">Recuerda: la foto debe mostrar solo tu rostro real, sin otras personas, dibujos ni mascarillas.</p>
       </div>
+    </div>
+  </div>
+  <div id="profile-photo-feedback" class="profile-photo-feedback" hidden aria-hidden="true">
+    <div class="profile-photo-feedback-card" role="alert" aria-live="assertive">
+      <div id="profile-photo-feedback-icon" class="profile-photo-feedback-icon" aria-hidden="true"></div>
+      <p id="profile-photo-feedback-message" class="profile-photo-feedback-message"></p>
+      <button type="button" id="profile-photo-feedback-close" class="profile-photo-feedback-close" aria-label="Cerrar aviso">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
   </div>
   <div id="account-block-overlay" class="withdrawal-overlay">
