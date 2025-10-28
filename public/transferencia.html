@@ -5556,21 +5556,26 @@
       const digits = phone.replace(/\D/g, '');
       if (!digits) return phone.trim();
 
-      let normalizedDigits = digits;
-      if (normalizedDigits.length === 12 && normalizedDigits.startsWith('58')) {
-        normalizedDigits = `0${normalizedDigits.slice(2)}`;
+      let normalizedDigits = digits.replace(/^00+/, '');
+
+      if (normalizedDigits.startsWith('58') && normalizedDigits.length > 10) {
+        normalizedDigits = normalizedDigits.slice(2);
+      }
+
+      if (normalizedDigits.length > 10 && normalizedDigits.startsWith('0')) {
+        normalizedDigits = normalizedDigits.replace(/^0+/, '');
       }
 
       if (normalizedDigits.length === 11 && normalizedDigits.startsWith('0')) {
-        return `${normalizedDigits.slice(0, 4)}-${normalizedDigits.slice(4, 7)}-${normalizedDigits.slice(7)}`;
+        normalizedDigits = normalizedDigits.slice(1);
       }
 
       if (normalizedDigits.length === 10) {
-        return `${normalizedDigits.slice(0, 3)}-${normalizedDigits.slice(3, 6)}-${normalizedDigits.slice(6)}`;
+        return `${normalizedDigits.slice(0, 3)}-${normalizedDigits.slice(3)}`;
       }
 
-      if (normalizedDigits.length === 12 && normalizedDigits.startsWith('0')) {
-        return `${normalizedDigits.slice(0, 4)}-${normalizedDigits.slice(4, 8)}-${normalizedDigits.slice(8)}`;
+      if (normalizedDigits.length === 7) {
+        return `${normalizedDigits.slice(0, 3)}-${normalizedDigits.slice(3)}`;
       }
 
       return phone.trim();
@@ -5589,6 +5594,44 @@
       if (!bankId || !CONFIG || !CONFIG.BANKS) return null;
       const nationalBanks = Array.isArray(CONFIG.BANKS.NACIONAL) ? CONFIG.BANKS.NACIONAL : [];
       return nationalBanks.find(bank => bank.id === bankId) || null;
+    }
+
+    function resolveBankInfo(...candidates) {
+      if (!CONFIG) return null;
+      const bankCodes = CONFIG.BANK_CODES || {};
+      const nationalBanks = Array.isArray(CONFIG.BANKS && CONFIG.BANKS.NACIONAL)
+        ? CONFIG.BANKS.NACIONAL
+        : [];
+      for (const candidate of candidates) {
+        if (candidate === undefined || candidate === null) continue;
+        const value = String(candidate).trim();
+        if (!value) continue;
+
+        const infoById = getBankInfoById(value);
+        if (infoById) return infoById;
+
+        const bankCodeEntry = Object.entries(bankCodes).find(([, code]) => code === value);
+        if (bankCodeEntry) {
+          const infoByCode = getBankInfoById(bankCodeEntry[0]);
+          if (infoByCode) return infoByCode;
+        }
+
+        const infoByName = nationalBanks.find(bank =>
+          typeof bank.name === 'string' && bank.name.toLowerCase() === value.toLowerCase()
+        );
+        if (infoByName) return infoByName;
+      }
+      return null;
+    }
+
+    function pickFirstString(...candidates) {
+      for (const candidate of candidates) {
+        if (typeof candidate === 'string') {
+          const trimmed = candidate.trim();
+          if (trimmed) return trimmed;
+        }
+      }
+      return '';
     }
 
     function buildFirstWithdrawalContext() {
@@ -5618,22 +5661,49 @@
       const rawPhone = buildFullPhoneNumber(combined);
       const displayPhone = formatDisplayPhone(rawPhone);
 
-      let bankName = '';
-      let bankLogo = '';
+      const bankInfo = resolveBankInfo(
+        selectedBank ? selectedBank.id : '',
+        banking.bankId,
+        combined.bankId,
+        combined.primaryBankId,
+        combined.bankIdentifier,
+        combined.bankCode,
+        combined.bankCodeSelected,
+        combined.selectedBankId
+      );
 
-      if (selectedBank) {
-        bankName = selectedBank.name || '';
-        bankLogo = selectedBank.logo || '';
-      } else if (banking.bankName) {
-        bankName = banking.bankName;
-      }
+      let bankName = pickFirstString(
+        selectedBank ? selectedBank.name : '',
+        banking.bankName,
+        banking.bank,
+        combined.bankName,
+        combined.primaryBankName,
+        combined.primaryBank,
+        combined.bank,
+        combined.destinationBank,
+        combined.bankEntity,
+        combined.bankSelected,
+        combined.accountBank
+      );
 
-      const bankInfo = banking.bankId ? getBankInfoById(banking.bankId) : null;
-      if (!bankLogo && bankInfo && bankInfo.logo) {
-        bankLogo = bankInfo.logo;
-      }
       if (!bankName && bankInfo && bankInfo.name) {
         bankName = bankInfo.name;
+      }
+
+      let bankLogo = pickFirstString(
+        selectedBank ? selectedBank.logo : '',
+        banking.bankLogo,
+        combined.bankLogo,
+        combined.primaryBankLogo,
+        combined.bankLogoUrl,
+        combined.bankLogoURL,
+        combined.bank_logo,
+        combined.logo,
+        combined.bankImage
+      );
+
+      if (!bankLogo && bankInfo && bankInfo.logo) {
+        bankLogo = bankInfo.logo;
       }
 
       const accountNumber = banking.accountNumber || combined.accountNumber || '';
