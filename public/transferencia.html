@@ -5929,6 +5929,8 @@
           if (avatarImgEl) {
             avatarImgEl.src = context.avatarPhoto;
             avatarImgEl.alt = context.fullName ? `Avatar de ${context.fullName}` : 'Avatar del titular';
+            avatarImgEl.style.display = 'block';
+            avatarImgEl.setAttribute('aria-hidden', 'false');
           }
           avatarEl.textContent = '';
           avatarEl.classList.add('with-image');
@@ -5936,6 +5938,8 @@
           if (avatarImgEl) {
             avatarImgEl.removeAttribute('src');
             avatarImgEl.alt = '';
+            avatarImgEl.style.display = 'none';
+            avatarImgEl.setAttribute('aria-hidden', 'true');
           }
           avatarEl.style.backgroundImage = '';
           avatarEl.textContent = context.avatarInitials || (context.fullName ? context.fullName.charAt(0).toUpperCase() : '');
