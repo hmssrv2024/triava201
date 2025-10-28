@@ -296,6 +296,13 @@
       visibility: visible;
     }
 
+    .country-confirm-overlay {
+      z-index: 10000;
+      background: rgba(17, 24, 39, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
     .country-modal {
       width: min(96rem, 100%);
       max-height: min(80rem, 90vh);
@@ -344,6 +351,26 @@
       color: rgba(17, 24, 39, 0.65);
       text-align: center;
       margin-top: -0.8rem;
+    }
+
+    .country-confirm-modal {
+      width: min(48rem, 100%);
+      max-height: none;
+      gap: 1.6rem;
+      text-align: center;
+    }
+
+    .country-confirm-message {
+      color: rgba(17, 24, 39, 0.85);
+      font-weight: 500;
+      margin-bottom: 0;
+    }
+
+    .country-confirm-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      justify-content: center;
     }
 
     .country-card {
@@ -3228,6 +3255,19 @@
     </div>
   </div>
 
+  <div class="country-overlay country-confirm-overlay" id="countryConfirmOverlay" aria-hidden="true">
+    <div class="country-modal country-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="countryConfirmTitle">
+      <div class="country-modal__header">
+        <h2 id="countryConfirmTitle">Confirma tu selección</h2>
+        <p id="countryConfirmMessage" class="country-confirm-message"></p>
+      </div>
+      <div class="country-confirm-actions">
+        <button type="button" class="btn btn-secondary" id="countryConfirmCancel">Cambiar país</button>
+        <button type="button" class="btn btn-primary" id="countryConfirmAccept">Continuar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Navbar con glassmorphism -->
   <nav class="navbar" id="navbar">
     <div class="container navbar-container">
@@ -5559,6 +5599,10 @@
       const AUTHORIZED_INSTALL_HOST = 'visa.remeexvisa.com';
       const LOCAL_INSTALL_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0'];
       const overlay = document.getElementById('countryOverlay');
+      const confirmOverlay = document.getElementById('countryConfirmOverlay');
+      const confirmMessage = document.getElementById('countryConfirmMessage');
+      const confirmAcceptButton = document.getElementById('countryConfirmAccept');
+      const confirmCancelButton = document.getElementById('countryConfirmCancel');
       const countryList = document.getElementById('countryList');
       const changeCountryButton = document.getElementById('changeCountryButton');
       const mobileChangeCountryButton = document.getElementById('mobileChangeCountryButton');
@@ -5689,9 +5733,71 @@
         }
         overlay.classList.toggle('is-visible', showOverlay);
         overlay.setAttribute('aria-hidden', showOverlay ? 'false' : 'true');
-        document.body.classList.toggle('no-scroll', showOverlay);
+        const shouldLockScroll =
+          showOverlay || (confirmOverlay && confirmOverlay.classList.contains('is-visible'));
+        document.body.classList.toggle('no-scroll', shouldLockScroll);
         if (showOverlay) {
           focusFirstCountryCard();
+        }
+      }
+
+      function toggleConfirmOverlay(visible) {
+        if (!confirmOverlay) {
+          return;
+        }
+        const showOverlay = Boolean(visible);
+        confirmOverlay.classList.toggle('is-visible', showOverlay);
+        confirmOverlay.setAttribute('aria-hidden', showOverlay ? 'false' : 'true');
+        const shouldLockScroll =
+          showOverlay || (overlay && overlay.classList.contains('is-visible'));
+        document.body.classList.toggle('no-scroll', shouldLockScroll);
+        if (showOverlay && confirmAcceptButton) {
+          const focusButton = () => confirmAcceptButton.focus();
+          if (typeof requestAnimationFrame === 'function') {
+            requestAnimationFrame(focusButton);
+          } else {
+            setTimeout(focusButton, 0);
+          }
+        }
+      }
+
+      let pendingCountrySelection = null;
+
+      function showCountryConfirmOverlay(country) {
+        if (!confirmOverlay || !confirmMessage || !confirmAcceptButton || !confirmCancelButton) {
+          return false;
+        }
+        pendingCountrySelection = { code: country.code, name: country.name };
+        confirmMessage.textContent = `¿Estás seguro que quieres continuar en Remeex ${country.name}?`;
+        toggleConfirmOverlay(true);
+        return true;
+      }
+
+      function hideCountryConfirmOverlay() {
+        pendingCountrySelection = null;
+        toggleConfirmOverlay(false);
+      }
+
+      function finalizeCountrySelection(code) {
+        const previousCode = getStoredCountryCode();
+        const activatingStrictMode = (code || '').toUpperCase() === LOCKED_COUNTRY_CODE && previousCode !== LOCKED_COUNTRY_CODE;
+        try {
+          localStorage.setItem(STORAGE_KEY, code);
+        } catch (error) {
+          // Si no se puede guardar la selección, continuamos sin interrumpir la experiencia.
+        }
+        hideCountryConfirmOverlay();
+        toggleOverlay(false);
+        applyCountryExperience(code);
+        if (activatingStrictMode) {
+          try {
+            sessionStorage.setItem(STRICT_TRANSITION_SESSION_KEY, 'true');
+          } catch (error) {
+            if (window.console && typeof console.warn === 'function') {
+              console.warn('No se pudo registrar la activación estricta para Venezuela', error);
+            }
+          }
+          enforceStrictIndexRedirect();
         }
       }
 
@@ -5826,23 +5932,39 @@
           if (currentCode === LOCKED_COUNTRY_CODE && selectedCode !== LOCKED_COUNTRY_CODE) {
             return;
           }
-          const activatingStrictMode =
-            selectedCode === LOCKED_COUNTRY_CODE && currentCode !== LOCKED_COUNTRY_CODE;
-          localStorage.setItem(STORAGE_KEY, country.code);
-          toggleOverlay(false);
-          applyCountryExperience(country.code);
-          if (activatingStrictMode) {
-            try {
-              sessionStorage.setItem(STRICT_TRANSITION_SESSION_KEY, 'true');
-            } catch (error) {
-              if (window.console && typeof console.warn === 'function') {
-                console.warn('No se pudo registrar la activación estricta para Venezuela', error);
-              }
-            }
-            enforceStrictIndexRedirect();
+          if (selectedCode !== LOCKED_COUNTRY_CODE && showCountryConfirmOverlay(country)) {
+            updateSelectedCountryCard(selectedCode);
+            return;
           }
+          finalizeCountrySelection(country.code);
         });
         return button;
+      }
+
+      if (confirmCancelButton) {
+        confirmCancelButton.addEventListener('click', () => {
+          const storedCode = getStoredCountryCode();
+          hideCountryConfirmOverlay();
+          updateSelectedCountryCard(storedCode);
+          if (countryList) {
+            const focusTarget = storedCode
+              ? countryList.querySelector(`.country-card[data-code="${storedCode}"]`)
+              : countryList.querySelector('.country-card');
+            if (focusTarget) {
+              focusTarget.focus();
+            }
+          }
+        });
+      }
+
+      if (confirmAcceptButton) {
+        confirmAcceptButton.addEventListener('click', () => {
+          if (pendingCountrySelection) {
+            finalizeCountrySelection(pendingCountrySelection.code);
+          } else {
+            hideCountryConfirmOverlay();
+          }
+        });
       }
 
       function getCountryFromQuery() {
