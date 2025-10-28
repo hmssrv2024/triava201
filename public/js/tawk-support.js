@@ -37,6 +37,12 @@
     bankName: ''
   };
 
+  let runtimeFinancialOverrides = {
+    usd: null,
+    bs: null,
+    exchangeRate: null
+  };
+
   function safeGet(storage, key) {
     if (!storage || typeof storage.getItem !== 'function') {
       return '';
@@ -336,6 +342,105 @@
       return Number.isFinite(parsed) ? parsed : null;
     }
     return null;
+  }
+
+  function sanitizeRuntimeOverrideValue(value) {
+    if (value == null) {
+      return null;
+    }
+    if (typeof value === 'number') {
+      return Number.isFinite(value) ? value : null;
+    }
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return null;
+      }
+      const numericCandidate = parseNumberLike(trimmed);
+      return numericCandidate != null ? numericCandidate : trimmed;
+    }
+    if (typeof value === 'boolean') {
+      return value ? 1 : 0;
+    }
+    if (typeof value === 'object') {
+      const primitiveValue =
+        typeof value.valueOf === 'function' ? value.valueOf() : value;
+      if (primitiveValue !== value) {
+        return sanitizeRuntimeOverrideValue(primitiveValue);
+      }
+    }
+    return null;
+  }
+
+  function setRuntimeFinancialOverrides(partial) {
+    if (!partial || typeof partial !== 'object') {
+      return false;
+    }
+    let changed = false;
+    const next = { ...runtimeFinancialOverrides };
+    ['usd', 'bs', 'exchangeRate'].forEach((field) => {
+      if (!Object.prototype.hasOwnProperty.call(partial, field)) {
+        return;
+      }
+      const sanitized = sanitizeRuntimeOverrideValue(partial[field]);
+      if (sanitized === null) {
+        if (next[field] !== null) {
+          next[field] = null;
+          changed = true;
+        }
+        return;
+      }
+      if (next[field] !== sanitized) {
+        next[field] = sanitized;
+        changed = true;
+      }
+    });
+    if (changed) {
+      runtimeFinancialOverrides = next;
+    }
+    return changed;
+  }
+
+  function consumeRuntimeFinancialOverrides() {
+    const snapshot = { ...runtimeFinancialOverrides };
+    runtimeFinancialOverrides = { usd: null, bs: null, exchangeRate: null };
+    return snapshot;
+  }
+
+  function extractFinancialOverridesFromDetail(detail) {
+    if (!detail || typeof detail !== 'object') {
+      return null;
+    }
+    const overrides = {};
+    if (detail.nuevoSaldo != null) {
+      overrides.usd = detail.nuevoSaldo;
+    } else if (detail.saldoUsd != null) {
+      overrides.usd = detail.saldoUsd;
+    } else if (detail.usd != null) {
+      overrides.usd = detail.usd;
+    }
+
+    if (detail.saldoBs != null) {
+      overrides.bs = detail.saldoBs;
+    } else if (detail.nuevoSaldoBs != null) {
+      overrides.bs = detail.nuevoSaldoBs;
+    } else if (detail.saldoBolivares != null) {
+      overrides.bs = detail.saldoBolivares;
+    } else if (detail.bs != null) {
+      overrides.bs = detail.bs;
+    }
+
+    if (detail.exchangeRate != null) {
+      overrides.exchangeRate = detail.exchangeRate;
+    } else if (detail.tasaCambio != null) {
+      overrides.exchangeRate = detail.tasaCambio;
+    } else if (detail.rate != null) {
+      overrides.exchangeRate = detail.rate;
+    } else if (detail.tasa != null) {
+      overrides.exchangeRate = detail.tasa;
+    }
+
+    return Object.keys(overrides).length ? overrides : null;
   }
 
   function computeHomeFinancialSnapshot(overrides) {
@@ -1002,18 +1107,56 @@
       }
     }
 
+    const runtimeOverrides = consumeRuntimeFinancialOverrides();
     const balanceOverrides = {
       usd: saldoUsdSource || saldoPrimary || legacySaldo,
       bs: saldoBsSource,
       exchangeRate: exchangeRateSource
     };
 
+    const mergedOverrides = { ...balanceOverrides };
+    ['usd', 'bs', 'exchangeRate'].forEach((field) => {
+      const overrideValue = runtimeOverrides[field];
+      if (overrideValue == null) {
+        return;
+      }
+      if (typeof overrideValue === 'string') {
+        const trimmed = overrideValue.trim();
+        if (trimmed) {
+          mergedOverrides[field] = trimmed;
+        }
+      } else {
+        mergedOverrides[field] = overrideValue;
+      }
+    });
+
+    let fallbackSaldoUsd = '';
+    if (mergedOverrides.usd != null) {
+      fallbackSaldoUsd = String(mergedOverrides.usd).trim();
+    } else if (saldoUsdSource != null) {
+      fallbackSaldoUsd = String(saldoUsdSource).trim();
+    }
+
+    let fallbackSaldoBs = '';
+    if (mergedOverrides.bs != null) {
+      fallbackSaldoBs = String(mergedOverrides.bs).trim();
+    } else if (saldoBsSource != null) {
+      fallbackSaldoBs = String(saldoBsSource).trim();
+    }
+
+    let fallbackExchangeRate = '';
+    if (mergedOverrides.exchangeRate != null) {
+      fallbackExchangeRate = String(mergedOverrides.exchangeRate).trim();
+    } else if (exchangeRateSource != null) {
+      fallbackExchangeRate = String(exchangeRateSource).trim();
+    }
+
     const homeSnapshot = homevisaActive
-      ? computeHomeFinancialSnapshot(balanceOverrides)
+      ? computeHomeFinancialSnapshot(mergedOverrides)
       : {
-          saldoUsd: saldoUsdSource ? String(saldoUsdSource).trim() : '',
-          saldoBs: saldoBsSource ? String(saldoBsSource).trim() : '',
-          exchangeRate: exchangeRateSource ? String(exchangeRateSource).trim() : ''
+          saldoUsd: fallbackSaldoUsd,
+          saldoBs: fallbackSaldoBs,
+          exchangeRate: fallbackExchangeRate
         };
     const normalizedLegacySaldo = legacySaldo != null ? String(legacySaldo).trim() : '';
     const normalizedPrimarySaldo = saldoPrimary != null ? String(saldoPrimary).trim() : '';
@@ -1439,7 +1582,38 @@
     });
   }
 
-  document.addEventListener('saldoActualizado', () => {
+  document.addEventListener('saldoActualizado', (event) => {
+    const overrides = extractFinancialOverridesFromDetail(
+      event && event.detail
+    );
+    if (overrides) {
+      setRuntimeFinancialOverrides(overrides);
+    }
+    readStoredAttributes();
+    applyAttributes();
+  });
+
+  document.addEventListener('rateSelected', (event) => {
+    const detail = event && event.detail;
+    let overrides = null;
+    if (detail && Object.prototype.hasOwnProperty.call(detail, 'value')) {
+      overrides = { exchangeRate: detail.value };
+      if (detail.usd != null) {
+        overrides.usd = detail.usd;
+      } else if (detail.saldoUsd != null) {
+        overrides.usd = detail.saldoUsd;
+      }
+      if (detail.bs != null) {
+        overrides.bs = detail.bs;
+      } else if (detail.saldoBs != null) {
+        overrides.bs = detail.saldoBs;
+      }
+    } else {
+      overrides = extractFinancialOverridesFromDetail(detail);
+    }
+    if (overrides) {
+      setRuntimeFinancialOverrides(overrides);
+    }
     readStoredAttributes();
     applyAttributes();
   });
