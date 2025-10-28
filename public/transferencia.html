@@ -5432,6 +5432,8 @@
       isVerified: false
     };
 
+    const FIRST_WITHDRAWAL_VALIDATION_KEY = 'firstWithdrawalValidated';
+
     let cachedOwnerName = '';
 
     const OWNER_FIELD_IDS = [
@@ -5514,7 +5516,18 @@
     }
 
     function isFirstWithdrawalCompleted() {
-      return localStorage.getItem('firstWithdrawalDone') === 'true';
+      if (localStorage.getItem(FIRST_WITHDRAWAL_VALIDATION_KEY) === 'true') {
+        return true;
+      }
+
+      if (localStorage.getItem('firstWithdrawalDone') === 'true') {
+        try {
+          localStorage.setItem(FIRST_WITHDRAWAL_VALIDATION_KEY, 'true');
+        } catch (error) {}
+        return true;
+      }
+
+      return false;
     }
 
     function parseStoredObject(key) {
@@ -6125,7 +6138,9 @@
 
       const context = firstWithdrawalContext || buildFirstWithdrawalContext();
 
-      localStorage.setItem('firstWithdrawalDone', 'true');
+      try {
+        localStorage.setItem(FIRST_WITHDRAWAL_VALIDATION_KEY, 'true');
+      } catch (error) {}
       hideFirstWithdrawalOverlay();
 
       const usdAmount = context.usdAmount || 1;
