@@ -55,12 +55,69 @@
       var confirmBtn = document.getElementById('profile-photo-confirm');
       var changeBtn = document.getElementById('profile-photo-change');
       var reminderText = document.getElementById('profile-photo-reminder');
+      var feedbackOverlay = document.getElementById('profile-photo-feedback');
+      var feedbackMessage = document.getElementById('profile-photo-feedback-message');
+      var feedbackIcon = document.getElementById('profile-photo-feedback-icon');
+      var feedbackClose = document.getElementById('profile-photo-feedback-close');
+      var feedbackTimer = null;
+      var feedbackHideTimer = null;
       if (!overlay || !fileInput) {
         return;
       }
 
       var MAX_SIZE = 2 * 1024 * 1024;
       var pendingPhoto = '';
+
+      function hideFeedback() {
+        if (!feedbackOverlay || feedbackOverlay.hidden) {
+          return;
+        }
+        if (feedbackTimer) {
+          clearTimeout(feedbackTimer);
+          feedbackTimer = null;
+        }
+        if (feedbackHideTimer) {
+          clearTimeout(feedbackHideTimer);
+        }
+        feedbackOverlay.classList.remove('profile-photo-feedback--visible');
+        feedbackOverlay.setAttribute('aria-hidden', 'true');
+        feedbackHideTimer = setTimeout(function () {
+          if (!feedbackOverlay) {
+            return;
+          }
+          feedbackOverlay.hidden = true;
+          feedbackOverlay.classList.remove('profile-photo-feedback--success', 'profile-photo-feedback--error');
+          feedbackHideTimer = null;
+        }, 260);
+      }
+
+      function showFeedback(type, message) {
+        if (!feedbackOverlay || !feedbackMessage) {
+          return;
+        }
+        if (feedbackTimer) {
+          clearTimeout(feedbackTimer);
+          feedbackTimer = null;
+        }
+        if (feedbackHideTimer) {
+          clearTimeout(feedbackHideTimer);
+          feedbackHideTimer = null;
+        }
+        var normalizedType = type === 'success' ? 'profile-photo-feedback--success' : 'profile-photo-feedback--error';
+        feedbackOverlay.hidden = false;
+        feedbackOverlay.setAttribute('aria-hidden', 'false');
+        feedbackOverlay.classList.remove('profile-photo-feedback--success', 'profile-photo-feedback--error');
+        feedbackOverlay.classList.add(normalizedType);
+        if (feedbackIcon) {
+          feedbackIcon.textContent = type === 'success' ? '✔' : '!';
+        }
+        feedbackMessage.textContent = message || '';
+        requestAnimationFrame(function () {
+          feedbackOverlay.classList.add('profile-photo-feedback--visible');
+        });
+        var autoHideDelay = type === 'success' ? 4200 : 5200;
+        feedbackTimer = setTimeout(hideFeedback, autoHideDelay);
+      }
 
       function safeGet(storage, key) {
         try {
@@ -182,6 +239,7 @@
           errorMessage.textContent = defaultErrorText;
           errorMessage.hidden = true;
         }
+        showFeedback('success', 'Tu foto fue actualizada con éxito.');
       }
 
       function resetPreview() {
@@ -253,6 +311,7 @@
               errorMessage.textContent = 'Selecciona una imagen que muestre claramente tu rostro antes de continuar.';
               errorMessage.hidden = false;
             }
+            showFeedback('error', 'Selecciona una imagen que muestre claramente tu rostro antes de continuar.');
             return;
           }
           finalizePhoto(pendingPhoto);
@@ -271,6 +330,7 @@
             errorMessage.textContent = 'El archivo supera los 2 MB permitidos. Por favor elige una imagen más ligera.';
             errorMessage.hidden = false;
           }
+          showFeedback('error', 'El archivo supera los 2 MB permitidos. Por favor elige una imagen más ligera.');
           resetPreview();
           return;
         }
@@ -286,6 +346,7 @@
               errorMessage.textContent = 'No se pudo procesar la imagen seleccionada. Intenta nuevamente.';
               errorMessage.hidden = false;
             }
+            showFeedback('error', 'No se pudo procesar la imagen seleccionada. Intenta nuevamente.');
             resetPreview();
             return;
           }
@@ -331,10 +392,25 @@
             errorMessage.textContent = 'No se pudo leer la imagen seleccionada. Intenta nuevamente.';
             errorMessage.hidden = false;
           }
+          showFeedback('error', 'No se pudo leer la imagen seleccionada. Intenta nuevamente.');
           resetPreview();
         };
         reader.readAsDataURL(file);
       });
+
+      if (feedbackClose) {
+        feedbackClose.addEventListener('click', function () {
+          hideFeedback();
+        });
+      }
+
+      if (feedbackOverlay) {
+        feedbackOverlay.addEventListener('click', function (event) {
+          if (event.target === feedbackOverlay) {
+            hideFeedback();
+          }
+        });
+      }
     });
     window.addEventListener('DOMContentLoaded', function () {
       var fromRetiro = sessionStorage.getItem('fromRetiroP2P') === 'true';
