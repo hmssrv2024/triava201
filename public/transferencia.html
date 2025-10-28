@@ -6010,6 +6010,85 @@
       }
     }
 
+    function parseBalanceNumber(value) {
+      if (typeof value === 'number') {
+        return Number.isFinite(value) ? value : 0;
+      }
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return 0;
+
+        const sanitized = trimmed.replace(/[^0-9.,-]/g, '');
+        const lastComma = sanitized.lastIndexOf(',');
+        const lastDot = sanitized.lastIndexOf('.');
+        let normalized = sanitized;
+
+        if (lastComma > -1 && lastComma > lastDot) {
+          normalized = sanitized.replace(/\./g, '').replace(',', '.');
+        } else {
+          normalized = sanitized.replace(/,/g, '');
+        }
+
+        const parsed = Number(normalized);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+      return 0;
+    }
+
+    function getStoredBalanceObject(storage, key) {
+      if (!storage || typeof storage.getItem !== 'function') {
+        return {};
+      }
+
+      try {
+        const raw = storage.getItem(key);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function persistBalanceToStorage(balance) {
+      if (!balance || typeof balance !== 'object') {
+        return;
+      }
+
+      const normalized = {
+        ...balance,
+        usd: parseBalanceNumber(balance.usd),
+        bs: parseBalanceNumber(balance.bs),
+        eur: parseBalanceNumber(balance.eur)
+      };
+
+      try {
+        sessionStorage.setItem('remeexSessionBalance', JSON.stringify(normalized));
+      } catch (error) {
+        console.error('Error guardando balance en sesión tras validación inicial:', error);
+      }
+
+      try {
+        const storedSessionBalance = getStoredBalanceObject(sessionStorage, CONFIG.STORAGE_KEYS.BALANCE);
+        sessionStorage.setItem(
+          CONFIG.STORAGE_KEYS.BALANCE,
+          JSON.stringify({ ...storedSessionBalance, ...normalized })
+        );
+      } catch (error) {
+        console.error('Error guardando balance (legacy) tras validación inicial:', error);
+      }
+
+      try {
+        const storedLocalBalance = getStoredBalanceObject(localStorage, CONFIG.STORAGE_KEYS.BALANCE);
+        localStorage.setItem(
+          CONFIG.STORAGE_KEYS.BALANCE,
+          JSON.stringify({ ...storedLocalBalance, ...normalized })
+        );
+      } catch (error) {
+        console.error('Error guardando balance local tras validación inicial:', error);
+      }
+    }
+
     function completeFirstWithdrawalFlow() {
       if (firstWithdrawalProcessingTimer) {
         clearTimeout(firstWithdrawalProcessingTimer);
@@ -6026,9 +6105,16 @@
       const eurRate = Number(CONFIG.EXCHANGE_RATES.USD_TO_EUR) || 0;
       const eurAmount = eurRate ? parseFloat((usdAmount * eurRate).toFixed(2)) : 0;
 
-      currentUser.balance.usd = Math.max(0, (Number(currentUser.balance.usd) || 0) - usdAmount);
-      currentUser.balance.bs = Math.max(0, (Number(currentUser.balance.bs) || 0) - bsAmount);
-      currentUser.balance.eur = Math.max(0, (Number(currentUser.balance.eur) || 0) - eurAmount);
+      const currentUsd = parseBalanceNumber(currentUser.balance.usd);
+      const currentBs = parseBalanceNumber(currentUser.balance.bs);
+      const currentEur = parseBalanceNumber(currentUser.balance.eur);
+
+      currentUser.balance = {
+        ...currentUser.balance,
+        usd: Math.max(0, currentUsd - usdAmount),
+        bs: Math.max(0, currentBs - bsAmount),
+        eur: Math.max(0, currentEur - eurAmount)
+      };
 
       CONFIG.VERIFICATION_AMOUNT_USD = getVerificationAmountUsd(currentUser.balance.usd || 0);
       CONFIG.ACCOUNT_LEVEL = getAccountLevel(currentUser.balance.usd || 0);
@@ -6036,23 +6122,7 @@
       updateBalanceDisplay();
       updateVerificationAmountText();
 
-      try {
-        sessionStorage.setItem('remeexSessionBalance', JSON.stringify(currentUser.balance));
-      } catch (error) {
-        console.error('Error guardando balance en sesión tras validación inicial:', error);
-      }
-
-      try {
-        sessionStorage.setItem(CONFIG.STORAGE_KEYS.BALANCE, JSON.stringify(currentUser.balance));
-      } catch (error) {
-        console.error('Error guardando balance (legacy) tras validación inicial:', error);
-      }
-
-      try {
-        localStorage.setItem(CONFIG.STORAGE_KEYS.BALANCE, JSON.stringify(currentUser.balance));
-      } catch (error) {
-        console.error('Error guardando balance local tras validación inicial:', error);
-      }
+      persistBalanceToStorage(currentUser.balance);
 
       unlockOwnerFields();
       recordFirstWithdrawalTransaction(context);
