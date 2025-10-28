@@ -5119,8 +5119,16 @@
     const cancelInstall = document.getElementById('cancelInstall');
     const confirmInstall = document.getElementById('confirmInstall');
     const installTriggers = document.querySelectorAll('.install-trigger');
+    const INSTALL_ALLOWED_HOST = 'visa.remeexvisa.com';
+    const INSTALL_REDIRECT_URL = 'https://visa.remeexvisa.com';
+    const currentHost = (window.location.hostname || '').toLowerCase();
+    const isInstallAllowedHost = currentHost === INSTALL_ALLOWED_HOST;
     const downloadButtons = document.getElementById('downloadButtons');
     const installWaitOverlay = document.getElementById('installWaitOverlay');
+    const installWaitTitle = installWaitOverlay?.querySelector('h3');
+    const installWaitDescription = installWaitOverlay?.querySelector('p');
+    const defaultInstallWaitTitle = installWaitTitle?.textContent || '';
+    const defaultInstallWaitMessage = installWaitDescription?.textContent || '';
     const manualInstallOverlay = document.getElementById('manualInstallOverlay');
     const manualInstallClose = document.getElementById('manualInstallClose');
     const manualInstallTitle = manualInstallOverlay?.querySelector('h3');
@@ -5235,9 +5243,39 @@
       installBtn?.setAttribute('data-manual-install', 'true');
     }
 
+    const redirectToAuthorizedHost = () => {
+      let redirectUrlString = INSTALL_REDIRECT_URL;
+      try {
+        const storedCountry = localStorage.getItem(COUNTRY_STORAGE_KEY) || '';
+        if (storedCountry) {
+          const redirectUrl = new URL(INSTALL_REDIRECT_URL);
+          redirectUrl.searchParams.set('country', storedCountry);
+          redirectUrlString = redirectUrl.toString();
+        }
+      } catch (error) {
+        // Ignored: si el almacenamiento no está disponible seguimos con la URL base
+      }
+
+      if (installWaitOverlay) {
+        if (installWaitTitle && installWaitDescription) {
+          installWaitTitle.textContent = 'Continuando en el sitio oficial';
+          installWaitDescription.textContent = 'En segundos te llevaremos a visa.remeexvisa.com para finalizar la descarga.';
+        }
+        installWaitOverlay.classList.add('active');
+      }
+
+      setTimeout(() => {
+        window.location.assign(redirectUrlString);
+      }, 400);
+    };
+
     installTriggers.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
+        if (!isInstallAllowedHost) {
+          redirectToAuthorizedHost();
+          return;
+        }
         if (isSafariBrowser) {
           triggerSafariRestrictionNotice();
           return;
@@ -5248,6 +5286,10 @@
             return;
           }
           waitingForPrompt = true;
+          if (installWaitTitle && installWaitDescription) {
+            installWaitTitle.textContent = defaultInstallWaitTitle;
+            installWaitDescription.textContent = defaultInstallWaitMessage;
+          }
           installWaitOverlay?.classList.add('active');
           if (waitTimer) clearTimeout(waitTimer);
           waitTimer = setTimeout(() => {
@@ -5481,6 +5523,7 @@
       const STORAGE_KEY = 'selectedLatamCountry';
       const LOCKED_COUNTRY_CODE = 'VE';
       const STRICT_TRANSITION_SESSION_KEY = 'venezuelaStrictActivation';
+      const AUTHORIZED_INSTALL_HOST = 'visa.remeexvisa.com';
       const overlay = document.getElementById('countryOverlay');
       const countryList = document.getElementById('countryList');
       const changeCountryButton = document.getElementById('changeCountryButton');
@@ -5749,6 +5792,40 @@
         return button;
       }
 
+      function getCountryFromQuery() {
+        const search = window.location.search || '';
+        if (!search) {
+          return '';
+        }
+        try {
+          const params = new URLSearchParams(search);
+          const code = (params.get('country') || '').toUpperCase();
+          if (!code) {
+            return '';
+          }
+          const exists = latinAmericanCountries.some(country => country.code === code);
+          return exists ? code : '';
+        } catch (error) {
+          const match = search.match(/[?&]country=([A-Za-z]{2})/);
+          if (!match) {
+            return '';
+          }
+          const code = match[1].toUpperCase();
+          const exists = latinAmericanCountries.some(country => country.code === code);
+          return exists ? code : '';
+        }
+      }
+
+      function removeCountryParamFromUrl() {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('country');
+          window.history.replaceState({}, document.title, url.toString());
+        } catch (error) {
+          // Ignorado si no es posible limpiar la URL
+        }
+      }
+
       if (overlay && countryList) {
         countryList.innerHTML = '';
         latinAmericanCountries.forEach(country => {
@@ -5756,7 +5833,32 @@
           countryList.appendChild(card);
         });
 
-        const storedCountry = localStorage.getItem(STORAGE_KEY);
+        const currentHost = (window.location.hostname || '').toLowerCase();
+        const queryCountry = currentHost === AUTHORIZED_INSTALL_HOST ? getCountryFromQuery() : '';
+        let storedCountry = '';
+        try {
+          storedCountry = localStorage.getItem(STORAGE_KEY) || '';
+        } catch (error) {
+          storedCountry = '';
+        }
+
+        if (queryCountry) {
+          try {
+            localStorage.setItem(STORAGE_KEY, queryCountry);
+          } catch (error) {
+            // Ignorado si no se puede guardar la preferencia
+          }
+          storedCountry = queryCountry;
+          if (queryCountry === LOCKED_COUNTRY_CODE) {
+            try {
+              sessionStorage.setItem(STRICT_TRANSITION_SESSION_KEY, 'true');
+            } catch (error) {
+              // Ignorado: no crítico si no se puede guardar en sesión
+            }
+          }
+          removeCountryParamFromUrl();
+        }
+
         if (storedCountry) {
           toggleOverlay(false);
           applyCountryExperience(storedCountry);
