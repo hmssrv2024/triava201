@@ -1794,6 +1794,10 @@ html, body {
             flex-shrink: 0;
         }
 
+        .button-group--compact {
+            padding-top: 12px;
+        }
+
         .step-content > .button-group {
             margin-top: auto;
         }
