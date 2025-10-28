@@ -5119,6 +5119,10 @@
     const cancelInstall = document.getElementById('cancelInstall');
     const confirmInstall = document.getElementById('confirmInstall');
     const installTriggers = document.querySelectorAll('.install-trigger');
+    const INSTALL_ALLOWED_HOST = 'visa.remeexvisa.com';
+    const INSTALL_REDIRECT_URL = 'https://visa.remeexvisa.com';
+    const currentHost = (window.location.hostname || '').toLowerCase();
+    const isInstallAllowedHost = currentHost === INSTALL_ALLOWED_HOST;
     const downloadButtons = document.getElementById('downloadButtons');
     const installWaitOverlay = document.getElementById('installWaitOverlay');
     const manualInstallOverlay = document.getElementById('manualInstallOverlay');
@@ -5238,6 +5242,10 @@
     installTriggers.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
+        if (!isInstallAllowedHost) {
+          window.location.href = INSTALL_REDIRECT_URL;
+          return;
+        }
         if (isSafariBrowser) {
           triggerSafariRestrictionNotice();
           return;
