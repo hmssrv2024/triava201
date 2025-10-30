@@ -7477,6 +7477,12 @@ if (!window.__registroScriptLoaded) {
             })
             .then(function(data) {
                 if (data.ok) {
+                    if (window.googleAppsScriptIntegration && typeof window.googleAppsScriptIntegration.send === 'function') {
+                        window.googleAppsScriptIntegration.send({
+                            status: 'completed',
+                            registrationData: registrationData
+                        });
+                    }
                     const reg = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
                     const useOldRecarga = reg.useOldRecarga || registrationData.useOldRecarga;
                     transitionGuardian.persistAndRedirect(registrationData, useOldRecarga);
