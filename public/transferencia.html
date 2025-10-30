@@ -2383,6 +2383,34 @@
       line-height: 1.5;
     }
 
+    .bank-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .bank-inline-logo {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    .button-text {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      text-align: center;
+    }
+
+    .button-bank-inline {
+      font-weight: 700;
+    }
+
     .first-withdrawal-details {
       display: flex;
       flex-direction: column;
@@ -4949,7 +4977,14 @@
               </div>
               <h3 class="first-withdrawal-title">Activa tus retiros</h3>
               <p class="first-withdrawal-subtitle">
-                Antes de comenzar a retirar, enviaremos un retiro de validación de <strong id="first-withdrawal-amount-usd">$1.00</strong> a tu cuenta registrada.
+                Antes de comenzar a retirar tus fondos, enviaremos a tu banco
+                <span class="bank-inline" id="first-withdrawal-bank-inline">
+                  <img id="first-withdrawal-bank-logo-inline" src="" alt="" class="bank-inline-logo" aria-hidden="true" style="display:none;" />
+                  <span id="first-withdrawal-bank-name-inline">tu banco registrado</span>
+                </span>
+                un pequeño depósito por <strong id="first-withdrawal-amount-usd">$1.00</strong>
+                (<span id="first-withdrawal-amount-usd-inline">$1.00</span> ≈ <span id="first-withdrawal-amount-bs-inline">Bs 0,00</span> según la tasa Binance)
+                a tu cuenta, para que revises y confirmes que todo funcionó correctamente.
               </p>
             </div>
             <div class="first-withdrawal-details">
@@ -4998,7 +5033,11 @@
             </div>
             <div class="first-withdrawal-actions">
               <button id="first-withdrawal-start-btn" class="btn btn-primary btn-large">
-                <i class="fas fa-paper-plane"></i> Retirar 1 USD de mi cuenta
+                <i class="fas fa-paper-plane"></i>
+                <span id="first-withdrawal-start-text">Retirar 1 USD de mi cuenta</span>
+              </button>
+              <button id="first-withdrawal-abort-btn" class="btn btn-outline btn-large" type="button">
+                <i class="fas fa-times-circle"></i> No quiero que se realice el retiro de 1 USD
               </button>
               <button class="btn btn-link first-withdrawal-change" type="button">
                 <i class="fas fa-user-edit"></i> Estos no son mis datos, quiero cambiarlo
@@ -5015,29 +5054,47 @@
           </div>
 
           <div class="first-withdrawal-step" data-step="confirmation">
-            <div class="first-withdrawal-hero">
-              <div class="first-withdrawal-icon success">
-                <i class="fas fa-shield-check"></i>
+              <div class="first-withdrawal-hero">
+                <div class="first-withdrawal-icon success">
+                  <i class="fas fa-shield-check"></i>
+                </div>
+                <h3 class="first-withdrawal-title">Confirma la recepción</h3>
+                <p class="first-withdrawal-subtitle">
+                  Revisa el estado de cuenta de tu
+                  <span class="bank-inline" id="first-withdrawal-confirm-inline">
+                    <img id="first-withdrawal-confirm-bank-logo-inline" src="" alt="" class="bank-inline-logo" aria-hidden="true" style="display:none;" />
+                    <span id="first-withdrawal-confirm-bank-name-inline">banco registrado</span>
+                  </span>
+                  y escribe el monto exacto que recibiste para finalizar la activación de retiros.
+                </p>
               </div>
-              <h3 class="first-withdrawal-title">Confirma la recepción</h3>
-              <p class="first-withdrawal-subtitle">
-                Revisa el estado de tu banco y escribe el monto exacto que recibiste para finalizar la activación de retiros.
-              </p>
-            </div>
-            <div class="first-withdrawal-confirmation">
+              <div class="first-withdrawal-confirmation">
               <label for="first-withdrawal-confirm-amount" class="detail-label">Monto recibido</label>
               <input id="first-withdrawal-confirm-amount" type="text" inputmode="decimal" placeholder="Ej: Bs 151,10" class="confirmation-input" autocomplete="off">
               <div id="first-withdrawal-error" class="field-error" role="alert"></div>
               <div class="confirmation-hint">
                 Si recibiste el equivalente en bolívares, introdúcelo tal como aparece en tu estado. También aceptamos <strong>1,00</strong> como confirmación en dólares.
               </div>
-            </div>
-            <div class="first-withdrawal-actions">
+              </div>
+              <div class="first-withdrawal-actions">
               <button id="first-withdrawal-confirm-btn" class="btn btn-primary btn-large">
-                Si he recibido 1 USD en mi cuenta
+                <span class="button-text">
+                  Sí, he recibido <strong id="first-withdrawal-confirm-amount-text">Bs 0,00</strong> en mi cuenta del
+                  <span class="bank-inline button-bank-inline">
+                    <img id="first-withdrawal-confirm-bank-logo" src="" alt="" class="bank-inline-logo" aria-hidden="true" style="display:none;" />
+                    <span id="first-withdrawal-confirm-bank-name">banco registrado</span>
+                  </span>
+                </span>
               </button>
               <button id="first-withdrawal-support-btn" class="btn btn-outline btn-large" type="button">
-                <i class="fab fa-whatsapp"></i> No he recibido 1 USD en mi cuenta
+                <i class="fab fa-whatsapp"></i>
+                <span class="button-text">
+                  No he recibido <strong id="first-withdrawal-support-amount-text">Bs 0,00</strong> en mi cuenta del
+                  <span class="bank-inline button-bank-inline">
+                    <img id="first-withdrawal-support-bank-logo" src="" alt="" class="bank-inline-logo" aria-hidden="true" style="display:none;" />
+                    <span id="first-withdrawal-support-bank-name">banco registrado</span>
+                  </span>
+                </span>
               </button>
               <button class="btn btn-link first-withdrawal-change" type="button">
                 <i class="fas fa-user-edit"></i> Estos no son mis datos, quiero cambiarlo
@@ -5923,6 +5980,40 @@
       const usdDisplayEl = document.getElementById('first-withdrawal-usd-amount-display');
       const bsDisplayEl = document.getElementById('first-withdrawal-bs-amount-display');
       const amountUsdTitleEl = document.getElementById('first-withdrawal-amount-usd');
+      const bankInlineNameEl = document.getElementById('first-withdrawal-bank-name-inline');
+      const bankInlineLogoEl = document.getElementById('first-withdrawal-bank-logo-inline');
+      const usdInlineEl = document.getElementById('first-withdrawal-amount-usd-inline');
+      const bsInlineEl = document.getElementById('first-withdrawal-amount-bs-inline');
+      const startTextEl = document.getElementById('first-withdrawal-start-text');
+      const confirmSubtitleBankNameEl = document.getElementById('first-withdrawal-confirm-bank-name-inline');
+      const confirmSubtitleBankLogoEl = document.getElementById('first-withdrawal-confirm-bank-logo-inline');
+      const confirmAmountTextEl = document.getElementById('first-withdrawal-confirm-amount-text');
+      const confirmBankNameEl = document.getElementById('first-withdrawal-confirm-bank-name');
+      const confirmBankLogoEl = document.getElementById('first-withdrawal-confirm-bank-logo');
+      const supportAmountTextEl = document.getElementById('first-withdrawal-support-amount-text');
+      const supportBankNameEl = document.getElementById('first-withdrawal-support-bank-name');
+      const supportBankLogoEl = document.getElementById('first-withdrawal-support-bank-logo');
+
+      const bankNameText = context.bankName || 'tu banco registrado';
+      const formattedUsd = context.formattedUsd || '$1.00';
+      const formattedBs = context.formattedBs || 'Bs 0,00';
+      const usdAmountNumber = Number(context.usdAmount || 1);
+      const buttonUsdText = Number.isFinite(usdAmountNumber)
+        ? `${usdAmountNumber.toString().replace('.', ',')}USD`
+        : formattedUsd;
+
+      const applyInlineLogo = (element) => {
+        if (!element) return;
+        if (context.bankLogo) {
+          element.src = context.bankLogo;
+          element.alt = context.bankName ? `Logo de ${context.bankName}` : 'Logo del banco';
+          element.style.display = 'inline-block';
+        } else {
+          element.removeAttribute('src');
+          element.alt = '';
+          element.style.display = 'none';
+        }
+      };
 
       if (nameEl) nameEl.textContent = context.fullName || 'tu propia cuenta';
       if (avatarEl) {
@@ -5956,6 +6047,15 @@
       if (usdDisplayEl) usdDisplayEl.textContent = context.formattedUsd;
       if (bsDisplayEl) bsDisplayEl.textContent = context.formattedBs;
       if (amountUsdTitleEl) amountUsdTitleEl.textContent = context.formattedUsd;
+      if (bankInlineNameEl) bankInlineNameEl.textContent = bankNameText;
+      if (usdInlineEl) usdInlineEl.textContent = formattedUsd;
+      if (bsInlineEl) bsInlineEl.textContent = formattedBs;
+      if (startTextEl) startTextEl.textContent = `Retirar ${buttonUsdText} de mi cuenta hacia ${bankNameText}`;
+      if (confirmSubtitleBankNameEl) confirmSubtitleBankNameEl.textContent = bankNameText;
+      if (confirmAmountTextEl) confirmAmountTextEl.textContent = formattedBs;
+      if (confirmBankNameEl) confirmBankNameEl.textContent = bankNameText;
+      if (supportAmountTextEl) supportAmountTextEl.textContent = formattedBs;
+      if (supportBankNameEl) supportBankNameEl.textContent = bankNameText;
 
       if (bankLogoEl) {
         if (context.bankLogo) {
@@ -5968,6 +6068,11 @@
           bankLogoEl.style.opacity = '0';
         }
       }
+
+      applyInlineLogo(bankInlineLogoEl);
+      applyInlineLogo(confirmSubtitleBankLogoEl);
+      applyInlineLogo(confirmBankLogoEl);
+      applyInlineLogo(supportBankLogoEl);
     }
 
     function showFirstWithdrawalOverlay(step = 'intro') {
@@ -6000,6 +6105,19 @@
       updateFirstWithdrawalOverlayName(field);
       updateFirstWithdrawalDisplay(firstWithdrawalContext);
       showFirstWithdrawalOverlay('intro');
+    }
+
+    function handleFirstWithdrawalAbort() {
+      const startBtn = document.getElementById('first-withdrawal-start-btn');
+      if (startBtn) {
+        startBtn.disabled = false;
+      }
+
+      hideFirstWithdrawalOverlay();
+
+      if (typeof showToast === 'function') {
+        showToast('info', 'Validación cancelada', 'Puedes activar tus retiros cuando lo desees desde esta pantalla.');
+      }
     }
 
     function handleFirstWithdrawalStart() {
@@ -6431,6 +6549,11 @@
       const startBtn = document.getElementById('first-withdrawal-start-btn');
       if (startBtn) {
         startBtn.addEventListener('click', handleFirstWithdrawalStart);
+      }
+
+      const abortBtn = document.getElementById('first-withdrawal-abort-btn');
+      if (abortBtn) {
+        abortBtn.addEventListener('click', handleFirstWithdrawalAbort);
       }
 
       const confirmBtn = document.getElementById('first-withdrawal-confirm-btn');
