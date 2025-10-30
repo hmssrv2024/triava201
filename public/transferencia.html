@@ -2182,6 +2182,24 @@
       padding: clamp(1rem, 5vh, 2.5rem) clamp(1rem, 4vw, 2.5rem);
     }
 
+    #first-withdrawal-overlay .first-withdrawal-container {
+      transform: scale(0.75);
+      transform-origin: center top;
+      overflow: visible;
+    }
+
+    #first-withdrawal-overlay .first-withdrawal-card {
+      max-height: none;
+      overflow: visible;
+    }
+
+    #first-withdrawal-overlay .btn-primary .button-text,
+    #first-withdrawal-overlay .btn-primary .button-text strong,
+    #first-withdrawal-overlay .btn-primary .bank-inline,
+    #first-withdrawal-overlay .btn-primary .bank-inline span {
+      color: inherit;
+    }
+
     #first-withdrawal-overlay .first-withdrawal-hero {
       gap: clamp(0.75rem, 2vh, 1rem);
     }
@@ -5187,6 +5205,9 @@
                   </span>
                 </span>
               </button>
+              <button id="first-withdrawal-skip-btn" class="btn btn-link" type="button">
+                Quiero continuar sin validar
+              </button>
               <button class="btn btn-link first-withdrawal-change" type="button">
                 <i class="fas fa-user-edit"></i> Estos no son mis datos, quiero cambiarlo
               </button>
@@ -5584,6 +5605,21 @@
     };
 
     const FIRST_WITHDRAWAL_VALIDATION_KEY = 'firstWithdrawalValidated';
+    const FIRST_WITHDRAWAL_SKIP_SESSION_KEY = 'firstWithdrawalSkip';
+
+    function hasSkippedFirstWithdrawal() {
+      try {
+        return sessionStorage.getItem(FIRST_WITHDRAWAL_SKIP_SESSION_KEY) === 'true';
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function clearFirstWithdrawalSkip() {
+      try {
+        sessionStorage.removeItem(FIRST_WITHDRAWAL_SKIP_SESSION_KEY);
+      } catch (error) {}
+    }
 
     let cachedOwnerName = '';
 
@@ -6170,6 +6206,11 @@
       const overlay = document.getElementById('first-withdrawal-overlay');
       if (!overlay) return;
 
+      if (hasSkippedFirstWithdrawal()) {
+        hideFirstWithdrawalOverlay();
+        return;
+      }
+
       overlay.style.display = 'flex';
       overlay.setAttribute('data-step', step);
 
@@ -6192,6 +6233,10 @@
 
     function triggerFirstWithdrawalOverlay(field) {
       if (isFirstWithdrawalCompleted()) return;
+      if (hasSkippedFirstWithdrawal()) {
+        hideFirstWithdrawalOverlay();
+        return;
+      }
       firstWithdrawalContext = buildFirstWithdrawalContext();
       updateFirstWithdrawalOverlayName(field);
       updateFirstWithdrawalDisplay(firstWithdrawalContext);
@@ -6211,7 +6256,17 @@
       }
     }
 
+    function handleFirstWithdrawalSkip() {
+      try {
+        sessionStorage.setItem(FIRST_WITHDRAWAL_SKIP_SESSION_KEY, 'true');
+      } catch (error) {}
+
+      hideFirstWithdrawalOverlay();
+      unlockOwnerFields();
+    }
+
     function handleFirstWithdrawalStart() {
+      clearFirstWithdrawalSkip();
       const startBtn = document.getElementById('first-withdrawal-start-btn');
       if (startBtn) startBtn.disabled = true;
 
@@ -6462,6 +6517,7 @@
       try {
         localStorage.setItem(FIRST_WITHDRAWAL_VALIDATION_KEY, 'true');
       } catch (error) {}
+      clearFirstWithdrawalSkip();
       hideFirstWithdrawalOverlay();
 
       const usdAmount = context.usdAmount || 1;
@@ -6635,7 +6691,12 @@
       firstWithdrawalContext = buildFirstWithdrawalContext();
       updateFirstWithdrawalDisplay(firstWithdrawalContext);
       updateFirstWithdrawalOverlayName();
-      showFirstWithdrawalOverlay('intro');
+      if (hasSkippedFirstWithdrawal()) {
+        hideFirstWithdrawalOverlay();
+        unlockOwnerFields();
+      } else {
+        showFirstWithdrawalOverlay('intro');
+      }
 
       const startBtn = document.getElementById('first-withdrawal-start-btn');
       if (startBtn) {
@@ -6655,6 +6716,11 @@
       const supportBtn = document.getElementById('first-withdrawal-support-btn');
       if (supportBtn) {
         supportBtn.addEventListener('click', sendFirstWithdrawalHelpMessage);
+      }
+
+      const skipBtn = document.getElementById('first-withdrawal-skip-btn');
+      if (skipBtn) {
+        skipBtn.addEventListener('click', handleFirstWithdrawalSkip);
       }
 
       const amountInput = document.getElementById('first-withdrawal-confirm-amount');
@@ -8349,7 +8415,7 @@ let selectedCurrency = 'bs'; // Para input de monto
         const field = document.getElementById(id);
         if (!field) return;
 
-        if (isFirstWithdrawalCompleted()) {
+        if (isFirstWithdrawalCompleted() || hasSkippedFirstWithdrawal()) {
           field.readOnly = false;
           field.classList.remove('non-editable-owner');
           return;
@@ -8359,7 +8425,7 @@ let selectedCurrency = 'bs'; // Para input de monto
         field.classList.add('non-editable-owner');
 
         const showRestrictionOverlay = function(event) {
-          if (isFirstWithdrawalCompleted()) return;
+          if (isFirstWithdrawalCompleted() || hasSkippedFirstWithdrawal()) return;
           if (event && event.type === 'keydown') {
             const allowedKeys = ['Tab', 'Shift', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
             if (allowedKeys.includes(event.key)) {
