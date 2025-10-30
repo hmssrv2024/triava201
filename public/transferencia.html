@@ -2346,6 +2346,137 @@
       animation: fadeIn 0.35s ease;
     }
 
+    .first-withdrawal-wizard {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    .wizard-progress {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .wizard-progress-step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(26, 31, 113, 0.08);
+      color: var(--neutral-600);
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .wizard-progress-step .wizard-progress-number {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      box-shadow: inset 0 0 0 1px rgba(26, 31, 113, 0.2);
+    }
+
+    .wizard-progress-step.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .wizard-progress-step.completed {
+      background: rgba(0, 211, 77, 0.18);
+      color: var(--success);
+    }
+
+    .wizard-progress-step.completed .wizard-progress-number {
+      box-shadow: inset 0 0 0 1px rgba(0, 211, 77, 0.4);
+    }
+
+    .wizard-panel {
+      display: none;
+      flex-direction: column;
+      gap: 0.75rem;
+      background: rgba(255, 255, 255, 0.65);
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      box-shadow: inset 0 0 0 1px rgba(26, 31, 113, 0.08);
+    }
+
+    .wizard-panel.active {
+      display: flex;
+    }
+
+    .wizard-panel-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .wizard-panel p {
+      font-size: 0.9rem;
+      color: var(--neutral-700);
+      line-height: 1.45;
+    }
+
+    .wizard-panel-list {
+      margin: 0;
+      padding-left: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      color: var(--neutral-700);
+      font-size: 0.9rem;
+    }
+
+    .wizard-panel-list li {
+      line-height: 1.45;
+    }
+
+    .wizard-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .wizard-nav-button {
+      flex: 1;
+      border: 1px solid var(--neutral-300);
+      background: white;
+      color: var(--neutral-700);
+      border-radius: var(--radius-lg);
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .wizard-nav-button:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .wizard-nav-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .wizard-nav-button.is-hidden {
+      display: none;
+    }
+
     .first-withdrawal-hero {
       display: flex;
       flex-direction: column;
@@ -2546,6 +2677,14 @@
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
+    }
+
+    .first-withdrawal-actions.wizard-final-actions {
+      display: none;
+    }
+
+    .first-withdrawal-actions.wizard-final-actions.active {
+      display: flex;
     }
 
     .first-withdrawal-processing {
@@ -4949,60 +5088,106 @@
               </div>
               <h3 class="first-withdrawal-title">Activa tus retiros</h3>
               <p class="first-withdrawal-subtitle">
-                Antes de comenzar a retirar, enviaremos un retiro de validación de <strong id="first-withdrawal-amount-usd">$1.00</strong> a tu cuenta registrada.
+                Te guiaremos paso a paso y enviaremos un retiro de validación de <strong id="first-withdrawal-amount-usd">$1.00</strong> para comprobar que todo funciona.
               </p>
             </div>
-            <div class="first-withdrawal-details">
-              <div class="first-withdrawal-detail user-detail">
-                <div class="first-withdrawal-user-avatar" id="first-withdrawal-user-avatar" role="img" aria-label="Avatar del titular">
-                  <img id="first-withdrawal-user-avatar-img" class="first-withdrawal-user-avatar-img" alt="" aria-hidden="true" />
+            <div class="first-withdrawal-wizard" role="group" aria-labelledby="first-withdrawal-amount-usd">
+              <div class="wizard-progress" role="list" aria-label="Pasos para activar los retiros">
+                <div class="wizard-progress-step active" data-wizard-index="0" role="listitem">
+                  <span class="wizard-progress-number">1</span>
+                  <span class="wizard-progress-label">Entiende</span>
                 </div>
-                <div class="first-withdrawal-user-texts">
-                  <span class="detail-label">Titular</span>
-                  <span class="detail-value" id="first-withdrawal-user-name">—</span>
+                <div class="wizard-progress-step" data-wizard-index="1" role="listitem">
+                  <span class="wizard-progress-number">2</span>
+                  <span class="wizard-progress-label">Prepárate</span>
                 </div>
-              </div>
-              <div class="first-withdrawal-grid">
-                <div class="first-withdrawal-detail">
-                  <span class="detail-label">Documento</span>
-                  <span class="detail-value" id="first-withdrawal-user-id">—</span>
-                </div>
-                <div class="first-withdrawal-detail">
-                  <span class="detail-label">Teléfono móvil</span>
-                  <span class="detail-value" id="first-withdrawal-user-phone">—</span>
+                <div class="wizard-progress-step" data-wizard-index="2" role="listitem">
+                  <span class="wizard-progress-number">3</span>
+                  <span class="wizard-progress-label">Confirma</span>
                 </div>
               </div>
-              <div class="first-withdrawal-bank">
-                <div class="bank-logo-wrapper">
-                  <img id="first-withdrawal-bank-logo" src="" alt="Logo del banco" class="bank-logo-img" />
-                </div>
-                <div class="bank-texts">
-                  <span class="detail-label">Banco destino</span>
-                  <span class="detail-value" id="first-withdrawal-bank-name">—</span>
-                  <span class="detail-caption" id="first-withdrawal-bank-extra"></span>
-                </div>
+
+              <div class="wizard-panel active" data-wizard-index="0">
+                <h4 class="wizard-panel-title">¿Qué haremos por ti?</h4>
+                <p>Remeex enviará automáticamente un retiro de validación por <strong id="first-withdrawal-amount-usd-panel">$1.00</strong> a la cuenta que registraste.</p>
+                <ul class="wizard-panel-list">
+                  <li>Verás en vivo qué tan rápido llegan los depósitos.</li>
+                  <li>Confirmamos que tu cuenta realmente recibe fondos.</li>
+                  <li>Verificamos que tú tienes acceso a tu banca en línea.</li>
+                </ul>
               </div>
-              <div class="first-withdrawal-amount-card">
-                <div class="amount-row">
-                  <div>
-                    <span class="detail-label">Monto de validación</span>
-                    <span class="amount-value" id="first-withdrawal-usd-amount-display">$1.00</span>
+
+              <div class="wizard-panel" data-wizard-index="1">
+                <h4 class="wizard-panel-title">¿Qué debes hacer?</h4>
+                <ul class="wizard-panel-list">
+                  <li>Cuando inicies, te avisaremos que estamos enviando el retiro de validación.</li>
+                  <li>Abre tu banca o aplicación para ver el monto entrante lo antes posible.</li>
+                  <li>Anota el equivalente exacto en bolívares que recibas (o <strong>1,00 USD</strong>) porque lo escribirás para confirmar.</li>
+                </ul>
+                <p>Si algo no coincide, podrás reportarlo antes de continuar.</p>
+              </div>
+
+              <div class="wizard-panel" data-wizard-index="2">
+                <h4 class="wizard-panel-title">Tu cuenta registrada</h4>
+                <p>Revisa que estos datos sean los tuyos. Usaremos esta cuenta para el retiro de validación.</p>
+                <div class="first-withdrawal-details">
+                  <div class="first-withdrawal-detail user-detail">
+                    <div class="first-withdrawal-user-avatar" id="first-withdrawal-user-avatar" role="img" aria-label="Avatar del titular">
+                      <img id="first-withdrawal-user-avatar-img" class="first-withdrawal-user-avatar-img" alt="" aria-hidden="true" />
+                    </div>
+                    <div class="first-withdrawal-user-texts">
+                      <span class="detail-label">Titular</span>
+                      <span class="detail-value" id="first-withdrawal-user-name">—</span>
+                    </div>
                   </div>
-                  <div class="amount-divider"></div>
-                  <div>
-                    <span class="detail-label">Equivalente estimado</span>
-                    <span class="amount-secondary" id="first-withdrawal-bs-amount-display">Bs 0,00</span>
+                  <div class="first-withdrawal-grid">
+                    <div class="first-withdrawal-detail">
+                      <span class="detail-label">Documento</span>
+                      <span class="detail-value" id="first-withdrawal-user-id">—</span>
+                    </div>
+                    <div class="first-withdrawal-detail">
+                      <span class="detail-label">Teléfono móvil</span>
+                      <span class="detail-value" id="first-withdrawal-user-phone">—</span>
+                    </div>
+                  </div>
+                  <div class="first-withdrawal-bank">
+                    <div class="bank-logo-wrapper">
+                      <img id="first-withdrawal-bank-logo" src="" alt="Logo del banco" class="bank-logo-img" />
+                    </div>
+                    <div class="bank-texts">
+                      <span class="detail-label">Banco destino</span>
+                      <span class="detail-value" id="first-withdrawal-bank-name">—</span>
+                      <span class="detail-caption" id="first-withdrawal-bank-extra"></span>
+                    </div>
+                  </div>
+                  <div class="first-withdrawal-amount-card">
+                    <div class="amount-row">
+                      <div>
+                        <span class="detail-label">Monto de validación</span>
+                        <span class="amount-value" id="first-withdrawal-usd-amount-display">$1.00</span>
+                      </div>
+                      <div class="amount-divider"></div>
+                      <div>
+                        <span class="detail-label">Equivalente estimado</span>
+                        <span class="amount-secondary" id="first-withdrawal-bs-amount-display">Bs 0,00</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
+                <div class="first-withdrawal-actions wizard-final-actions" id="first-withdrawal-primary-actions">
+                  <button id="first-withdrawal-start-btn" class="btn btn-primary btn-large">
+                    <i class="fas fa-paper-plane"></i> Retirar 1 USD de mi cuenta
+                  </button>
+                  <button class="btn btn-link first-withdrawal-change" type="button">
+                    <i class="fas fa-user-edit"></i> Estos no son mis datos, quiero cambiarlo
+                  </button>
+                </div>
               </div>
-            </div>
-            <div class="first-withdrawal-actions">
-              <button id="first-withdrawal-start-btn" class="btn btn-primary btn-large">
-                <i class="fas fa-paper-plane"></i> Retirar 1 USD de mi cuenta
-              </button>
-              <button class="btn btn-link first-withdrawal-change" type="button">
-                <i class="fas fa-user-edit"></i> Estos no son mis datos, quiero cambiarlo
-              </button>
+
+              <div class="wizard-navigation">
+                <button type="button" class="wizard-nav-button" data-action="prev">Atrás</button>
+                <button type="button" class="wizard-nav-button" data-action="next">Siguiente</button>
+              </div>
             </div>
           </div>
 
@@ -5923,6 +6108,7 @@
       const usdDisplayEl = document.getElementById('first-withdrawal-usd-amount-display');
       const bsDisplayEl = document.getElementById('first-withdrawal-bs-amount-display');
       const amountUsdTitleEl = document.getElementById('first-withdrawal-amount-usd');
+      const amountUsdPanelEl = document.getElementById('first-withdrawal-amount-usd-panel');
 
       if (nameEl) nameEl.textContent = context.fullName || 'tu propia cuenta';
       if (avatarEl) {
@@ -5956,6 +6142,7 @@
       if (usdDisplayEl) usdDisplayEl.textContent = context.formattedUsd;
       if (bsDisplayEl) bsDisplayEl.textContent = context.formattedBs;
       if (amountUsdTitleEl) amountUsdTitleEl.textContent = context.formattedUsd;
+      if (amountUsdPanelEl) amountUsdPanelEl.textContent = context.formattedUsd;
 
       if (bankLogoEl) {
         if (context.bankLogo) {
@@ -5968,6 +6155,88 @@
           bankLogoEl.style.opacity = '0';
         }
       }
+    }
+
+    let firstWithdrawalWizardState = null;
+    let firstWithdrawalWizardIndex = 0;
+
+    function updateFirstWithdrawalWizard() {
+      if (!firstWithdrawalWizardState) return;
+      const { panels, progress, prevBtn, nextBtn, actions } = firstWithdrawalWizardState;
+      const total = panels.length;
+      if (!total) return;
+
+      if (firstWithdrawalWizardIndex < 0) firstWithdrawalWizardIndex = 0;
+      if (firstWithdrawalWizardIndex > total - 1) firstWithdrawalWizardIndex = total - 1;
+
+      panels.forEach((panel, index) => {
+        panel.classList.toggle('active', index === firstWithdrawalWizardIndex);
+      });
+
+      progress.forEach((stepEl, index) => {
+        const isActive = index === firstWithdrawalWizardIndex;
+        stepEl.classList.toggle('active', isActive);
+        stepEl.classList.toggle('completed', index < firstWithdrawalWizardIndex);
+        stepEl.setAttribute('aria-current', isActive ? 'step' : 'false');
+      });
+
+      if (prevBtn) {
+        const isFirst = firstWithdrawalWizardIndex === 0;
+        prevBtn.disabled = isFirst;
+        prevBtn.classList.toggle('is-hidden', isFirst);
+      }
+
+      if (nextBtn) {
+        const isLast = firstWithdrawalWizardIndex >= total - 1;
+        nextBtn.classList.toggle('is-hidden', isLast);
+      }
+
+      if (actions) {
+        actions.classList.toggle('active', firstWithdrawalWizardIndex === total - 1);
+      }
+    }
+
+    function changeFirstWithdrawalWizardStep(delta) {
+      if (!firstWithdrawalWizardState) return;
+      const total = firstWithdrawalWizardState.panels.length;
+      if (!total) return;
+
+      firstWithdrawalWizardIndex = Math.min(total - 1, Math.max(0, firstWithdrawalWizardIndex + delta));
+      updateFirstWithdrawalWizard();
+    }
+
+    function resetFirstWithdrawalWizard() {
+      firstWithdrawalWizardIndex = 0;
+      updateFirstWithdrawalWizard();
+    }
+
+    function setupFirstWithdrawalWizard() {
+      const container = document.querySelector('.first-withdrawal-wizard');
+      if (!container || container.dataset.initialized === 'true') return;
+
+      const panels = Array.from(container.querySelectorAll('.wizard-panel'));
+      if (!panels.length) return;
+
+      firstWithdrawalWizardState = {
+        container,
+        panels,
+        progress: Array.from(container.querySelectorAll('.wizard-progress-step')),
+        prevBtn: container.querySelector('.wizard-nav-button[data-action="prev"]'),
+        nextBtn: container.querySelector('.wizard-nav-button[data-action="next"]'),
+        actions: document.getElementById('first-withdrawal-primary-actions')
+      };
+
+      container.dataset.initialized = 'true';
+
+      const { prevBtn, nextBtn } = firstWithdrawalWizardState;
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => changeFirstWithdrawalWizardStep(-1));
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => changeFirstWithdrawalWizardStep(1));
+      }
+
+      resetFirstWithdrawalWizard();
     }
 
     function showFirstWithdrawalOverlay(step = 'intro') {
@@ -5985,6 +6254,10 @@
           element.classList.remove('active');
         }
       });
+
+      if (step === 'intro') {
+        resetFirstWithdrawalWizard();
+      }
     }
 
     function hideFirstWithdrawalOverlay() {
@@ -6000,6 +6273,7 @@
       updateFirstWithdrawalOverlayName(field);
       updateFirstWithdrawalDisplay(firstWithdrawalContext);
       showFirstWithdrawalOverlay('intro');
+      setupFirstWithdrawalWizard();
     }
 
     function handleFirstWithdrawalStart() {
@@ -6427,6 +6701,7 @@
       updateFirstWithdrawalDisplay(firstWithdrawalContext);
       updateFirstWithdrawalOverlayName();
       showFirstWithdrawalOverlay('intro');
+      setupFirstWithdrawalWizard();
 
       const startBtn = document.getElementById('first-withdrawal-start-btn');
       if (startBtn) {
