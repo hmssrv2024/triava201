@@ -2153,21 +2153,103 @@
     }
 
     .first-withdrawal-container {
-      width: 100%;
-      max-width: 520px;
-      padding: 0 1.5rem;
+      width: min(520px, 100%);
+      max-height: min(calc(var(--vh) - 2rem), 640px);
+      display: flex;
+      flex-direction: column;
+      padding: clamp(1rem, 3vh, 1.5rem);
+      overflow: hidden;
     }
 
     .first-withdrawal-card {
       background: var(--neutral-100);
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow-xl);
-      padding: 2rem 1.75rem;
+      padding: clamp(1.35rem, 2.5vh + 0.5rem, 2rem) clamp(1.1rem, 2vw + 0.6rem, 1.75rem);
       display: flex;
       flex-direction: column;
-      gap: 1.75rem;
+      gap: clamp(1rem, 2.5vh, 1.75rem);
       position: relative;
       overflow: hidden;
+      flex: 1;
+      max-height: 100%;
+      overflow-y: auto;
+    }
+
+    #first-withdrawal-overlay {
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 5vh, 2.5rem) clamp(1rem, 4vw, 2.5rem);
+    }
+
+    #first-withdrawal-overlay .first-withdrawal-hero {
+      gap: clamp(0.75rem, 2vh, 1rem);
+    }
+
+    #first-withdrawal-overlay .first-withdrawal-subtitle {
+      font-size: clamp(0.9rem, 1.8vh, 1rem);
+    }
+
+    #first-withdrawal-overlay .first-withdrawal-icon {
+      width: clamp(54px, 10vh, 72px);
+      height: clamp(54px, 10vh, 72px);
+    }
+
+    #first-withdrawal-overlay .first-withdrawal-icon i {
+      font-size: clamp(1.4rem, 4vh, 1.8rem);
+    }
+
+    #first-withdrawal-overlay .first-withdrawal-detail {
+      padding: clamp(0.75rem, 2vh, 1rem);
+    }
+
+    #first-withdrawal-overlay .first-withdrawal-bank {
+      gap: clamp(0.65rem, 2vh, 1rem);
+    }
+
+    #first-withdrawal-overlay .bank-logo-wrapper {
+      width: clamp(52px, 10vh, 64px);
+      height: clamp(52px, 10vh, 64px);
+    }
+
+    #first-withdrawal-overlay .amount-row {
+      gap: clamp(0.65rem, 2vh, 1rem);
+    }
+
+    #first-withdrawal-overlay .first-withdrawal-actions {
+      gap: clamp(0.65rem, 2vh, 0.85rem);
+    }
+
+    #first-withdrawal-overlay .btn-large {
+      height: clamp(44px, 6vh, 48px);
+      font-size: clamp(0.9rem, 1.8vh, 0.95rem);
+    }
+
+    @media (max-height: 720px) {
+      #first-withdrawal-overlay {
+        padding: 1.25rem;
+      }
+
+      #first-withdrawal-overlay .first-withdrawal-container {
+        max-height: calc(var(--vh) - 2.5rem);
+      }
+
+      #first-withdrawal-overlay .first-withdrawal-card {
+        padding: 1.25rem 1.1rem;
+        gap: 1.1rem;
+      }
+
+      #first-withdrawal-overlay .first-withdrawal-title {
+        font-size: 1.1rem;
+      }
+
+      #first-withdrawal-overlay .amount-value {
+        font-size: 1.05rem;
+      }
+
+      #first-withdrawal-overlay .amount-secondary {
+        font-size: 0.95rem;
+      }
     }
 
     .first-withdrawal-success-animation {
@@ -2632,8 +2714,17 @@
     }
 
     @media (max-width: 480px) {
+      #first-withdrawal-overlay {
+        padding: clamp(0.85rem, 5vw, 1.25rem);
+      }
+
+      #first-withdrawal-overlay .first-withdrawal-container {
+        max-height: calc(var(--vh) - clamp(1.5rem, 10vw, 2.5rem));
+        padding: clamp(0.85rem, 5vw, 1.25rem);
+      }
+
       .first-withdrawal-card {
-        padding: 1.75rem 1.25rem;
+        padding: clamp(1.1rem, 6vw, 1.5rem) clamp(1rem, 6vw, 1.35rem);
       }
 
       .first-withdrawal-grid {
