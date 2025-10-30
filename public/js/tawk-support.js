@@ -1061,6 +1061,18 @@
         }
       }
     }
+
+    const wrapper =
+      (container && typeof container.closest === 'function' && container.closest('.support-chat')) ||
+      (loader && typeof loader.closest === 'function' && loader.closest('.support-chat'));
+    if (wrapper) {
+      const hasActiveChat = Boolean(container && container.getAttribute('data-active') === 'true');
+      if (visible || hasActiveChat) {
+        wrapper.setAttribute('aria-hidden', 'false');
+      } else {
+        wrapper.setAttribute('aria-hidden', 'true');
+      }
+    }
   }
 
   function hideLoaderIfWidgetPresent() {

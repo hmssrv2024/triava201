@@ -238,6 +238,7 @@ if (!window.__registroScriptLoaded) {
         let supportOverlayPrimaryAction = null;
         let lastFocusedElementBeforeSupportOverlay = null;
         let supportOverlayInitialized = false;
+        let supportTriggerButton = null;
         let whatsappOverlayElement = null;
         let whatsappOverlayConfirmButton = null;
         let whatsappOverlayOptionButtons = [];
@@ -2971,6 +2972,10 @@ if (!window.__registroScriptLoaded) {
             supportOverlayElement.removeAttribute('aria-hidden');
             document.body.classList.add('overlay-active');
 
+            if (supportTriggerButton) {
+                supportTriggerButton.setAttribute('aria-expanded', 'true');
+            }
+
             const focusTarget = supportOverlayPrimaryAction || getSupportOverlayFocusableElements()[0];
             if (focusTarget) {
                 setTimeout(() => {
@@ -2996,6 +3001,10 @@ if (!window.__registroScriptLoaded) {
                 document.body.classList.remove('overlay-active');
             }
 
+            if (supportTriggerButton) {
+                supportTriggerButton.setAttribute('aria-expanded', 'false');
+            }
+
             if (lastFocusedElementBeforeSupportOverlay) {
                 try {
                     lastFocusedElementBeforeSupportOverlay.focus({ preventScroll: true });
@@ -3013,9 +3022,19 @@ if (!window.__registroScriptLoaded) {
             const supportButton = document.getElementById('support-btn');
 
             if (supportButton) {
+                supportTriggerButton = supportButton;
+                supportButton.setAttribute('aria-haspopup', 'dialog');
+                supportButton.setAttribute('aria-controls', 'supportChannelOverlay');
+                supportButton.setAttribute('aria-expanded', 'false');
                 supportButton.addEventListener('click', (event) => {
                     event.preventDefault();
                     showSupportChannelOverlay();
+                });
+                supportButton.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        showSupportChannelOverlay();
+                    }
                 });
             }
         }
