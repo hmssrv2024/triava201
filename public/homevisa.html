@@ -159,6 +159,69 @@
       text-decoration: underline;
     }
 
+    .settings-nav-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .settings-nav-btn.has-chevron {
+      justify-content: space-between;
+      padding-right: 0.75rem;
+    }
+
+    .settings-nav-btn.has-chevron .settings-nav-content {
+      margin-right: 1rem;
+    }
+
+    .settings-nav-chevron {
+      color: var(--neutral-500, #64748b);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .settings-nav-btn[aria-expanded='true'] .settings-nav-chevron {
+      transform: rotate(180deg);
+      color: var(--neutral-700, #334155);
+    }
+
+    .settings-submenu {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-left: 3.1rem;
+    }
+
+    .settings-submenu[hidden] {
+      display: none !important;
+    }
+
+    .settings-sub-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--neutral-200, #e2e8f0);
+      border-radius: var(--radius-md, 0.75rem);
+      padding: 0.55rem 0.75rem;
+      color: var(--neutral-900, #0f172a);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .settings-sub-btn:hover,
+    .settings-sub-btn:focus {
+      background: var(--neutral-300, #cbd5f5);
+      transform: translateY(-1px);
+      text-decoration: none;
+      outline: none;
+    }
+
+    .settings-sub-btn i {
+      color: #25d366;
+      font-size: 0.95rem;
+    }
+
     .signature-reasons-overlay {
       position: fixed;
       inset: 0;
@@ -3991,6 +4054,38 @@
                 <div class="settings-nav-description">Activar servicios y funciones</div>
               </div>
             </button>
+
+            <div class="settings-nav-group">
+              <button
+                class="settings-nav-btn has-chevron"
+                id="digital-signature-btn"
+                type="button"
+                aria-expanded="false"
+                aria-controls="digital-signature-options"
+              >
+                <div class="settings-nav-icon verification">
+                  <i class="fas fa-file-signature"></i>
+                </div>
+                <div class="settings-nav-content">
+                  <div class="settings-nav-title">Firma digital</div>
+                  <div class="settings-nav-description">Gestionar verificación de firma</div>
+                </div>
+                <div class="settings-nav-chevron" aria-hidden="true">
+                  <i class="fas fa-chevron-down"></i>
+                </div>
+              </button>
+              <div class="settings-submenu" id="digital-signature-options" hidden>
+                <a
+                  class="settings-sub-btn"
+                  href="https://wa.me/+17373018059?text=Hola%20Remeex%20Visa%2C%20tengo%20problemas%20con%20mi%20firma%20digital%20y%20necesito%20reanudar%20la%20verificaci%C3%B3n%20de%20seguridad."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                  <span>Problemas con mi firma</span>
+                </a>
+              </div>
+            </div>
 
             <button class="settings-nav-btn" id="nfc-sb7-btn">
               <div class="settings-nav-icon wallets">
@@ -8331,6 +8426,59 @@
       } else {
         updateWhatsAppLinks();
       }
+    })();
+  </script>
+
+  <script>
+    (() => {
+      const toggleBtn = document.getElementById('digital-signature-btn');
+      const submenu = document.getElementById('digital-signature-options');
+
+      if (!toggleBtn || !submenu) {
+        return;
+      }
+
+      const closeMenu = () => {
+        submenu.setAttribute('hidden', '');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      };
+
+      const openMenu = () => {
+        submenu.removeAttribute('hidden');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+      };
+
+      const toggleMenu = () => {
+        if (submenu.hasAttribute('hidden')) {
+          openMenu();
+        } else {
+          closeMenu();
+        }
+      };
+
+      toggleBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        toggleMenu();
+      });
+
+      toggleBtn.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggleMenu();
+        } else if (event.key === 'Escape') {
+          closeMenu();
+        }
+      });
+
+      document.addEventListener('click', (event) => {
+        if (
+          !submenu.hasAttribute('hidden') &&
+          !toggleBtn.contains(event.target) &&
+          !submenu.contains(event.target)
+        ) {
+          closeMenu();
+        }
+      });
     })();
   </script>
 
