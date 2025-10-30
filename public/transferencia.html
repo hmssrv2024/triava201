@@ -2183,8 +2183,6 @@
     }
 
     #first-withdrawal-overlay .first-withdrawal-container {
-      transform: scale(0.75);
-      transform-origin: center top;
       overflow: visible;
     }
 
@@ -2451,19 +2449,32 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 0.75rem;
+      gap: 1rem;
+      padding-bottom: 0.5rem;
     }
 
     .first-withdrawal-icon {
-      width: 64px;
-      height: 64px;
+      width: 72px;
+      height: 72px;
       border-radius: var(--radius-full);
-      background: rgba(26, 31, 113, 0.08);
+      background: linear-gradient(135deg, rgba(26, 31, 113, 0.12), rgba(67, 97, 238, 0.15));
       color: var(--primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.75rem;
+      font-size: 2rem;
+      box-shadow: 0 4px 12px rgba(26, 31, 113, 0.15);
+      position: relative;
+    }
+
+    .first-withdrawal-icon::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, rgba(26, 31, 113, 0.1), rgba(67, 97, 238, 0.1));
+      opacity: 0.5;
+      z-index: -1;
     }
 
     .first-withdrawal-icon.success {
@@ -2472,15 +2483,18 @@
     }
 
     .first-withdrawal-title {
-      font-size: 1.25rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: var(--neutral-900);
+      line-height: 1.3;
     }
 
     .first-withdrawal-subtitle {
-      font-size: 0.95rem;
-      color: var(--neutral-700);
-      line-height: 1.5;
+      font-size: 0.975rem;
+      color: var(--neutral-600);
+      line-height: 1.6;
+      max-width: 460px;
+      margin: 0 auto;
     }
 
     .bank-inline {
@@ -2587,22 +2601,36 @@
     .first-withdrawal-bank {
       display: flex;
       align-items: center;
-      gap: 0.9rem;
-      padding: 0.95rem 1rem;
-      border-radius: var(--radius-lg);
-      background: linear-gradient(135deg, rgba(26, 31, 113, 0.08), rgba(12, 16, 69, 0.08));
+      gap: 1rem;
+      padding: 1.1rem 1.25rem;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(26, 31, 113, 0.06), rgba(67, 97, 238, 0.08));
+      border: 1px solid rgba(26, 31, 113, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .first-withdrawal-bank::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(26, 31, 113, 0.2), transparent);
     }
 
     .bank-logo-wrapper {
-      width: 52px;
-      height: 52px;
+      width: 56px;
+      height: 56px;
       border-radius: var(--radius-lg);
       background: var(--neutral-100);
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 2px 8px rgba(26, 31, 113, 0.12);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
     .bank-logo-img {
@@ -2638,9 +2666,22 @@
 
     .first-withdrawal-amount-card {
       border-radius: var(--radius-xl);
-      background: var(--neutral-100);
-      box-shadow: inset 0 0 0 1px rgba(26, 31, 113, 0.08);
-      padding: 1rem 1.25rem;
+      background: linear-gradient(135deg, rgba(26, 31, 113, 0.03), rgba(67, 97, 238, 0.04));
+      border: 2px solid rgba(26, 31, 113, 0.1);
+      padding: 1.25rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .first-withdrawal-amount-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      opacity: 0.3;
     }
 
     .amount-row {
@@ -2658,16 +2699,18 @@
     }
 
     .amount-value {
-      font-size: 1.2rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: var(--primary);
       display: block;
+      letter-spacing: -0.02em;
     }
 
     .amount-secondary {
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       font-weight: 600;
       color: var(--neutral-800);
+      letter-spacing: -0.01em;
     }
 
     .first-withdrawal-actions {
@@ -2686,12 +2729,14 @@
     }
 
     .first-withdrawal-spinner {
-      width: 62px;
-      height: 62px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
-      border: 4px solid rgba(26, 31, 113, 0.15);
+      border: 4px solid rgba(26, 31, 113, 0.12);
       border-top-color: var(--primary);
-      animation: spin 1s linear infinite;
+      border-right-color: var(--primary);
+      animation: spin 0.8s linear infinite;
+      box-shadow: 0 4px 12px rgba(26, 31, 113, 0.15);
     }
 
     .first-withdrawal-confirmation {
@@ -5082,40 +5127,14 @@
           <div class="first-withdrawal-step active" data-step="intro">
             <div class="first-withdrawal-hero">
               <div class="first-withdrawal-icon">
-                <i class="fas fa-bolt"></i>
+                <i class="fas fa-shield-check"></i>
               </div>
-              <h3 class="first-withdrawal-title">Activa tus retiros</h3>
+              <h3 class="first-withdrawal-title">Validación de cuenta</h3>
               <p class="first-withdrawal-subtitle">
-                Antes de comenzar a retirar tus fondos, enviaremos a tu banco
-                <span class="bank-inline" id="first-withdrawal-bank-inline">
-                  <img id="first-withdrawal-bank-logo-inline" src="" alt="" class="bank-inline-logo" aria-hidden="true" style="display:none;" />
-                  <span id="first-withdrawal-bank-name-inline">tu banco registrado</span>
-                </span>
-                un pequeño depósito por <strong id="first-withdrawal-amount-usd">$1.00</strong>
-                (<span id="first-withdrawal-amount-usd-inline">$1.00</span> ≈ <span id="first-withdrawal-amount-bs-inline">Bs 0,00</span> según la tasa Binance)
-                a tu cuenta, para que revises y confirmes que todo funcionó correctamente.
+                Para garantizar la seguridad de tus retiros, realizaremos una transferencia de prueba de <strong id="first-withdrawal-amount-usd">$1 USD</strong> a tu cuenta bancaria. Solo necesitas confirmar que lo recibiste.
               </p>
             </div>
             <div class="first-withdrawal-details">
-              <div class="first-withdrawal-detail user-detail">
-                <div class="first-withdrawal-user-avatar" id="first-withdrawal-user-avatar" role="img" aria-label="Avatar del titular">
-                  <img id="first-withdrawal-user-avatar-img" class="first-withdrawal-user-avatar-img" alt="" aria-hidden="true" />
-                </div>
-                <div class="first-withdrawal-user-texts">
-                  <span class="detail-label">Titular</span>
-                  <span class="detail-value" id="first-withdrawal-user-name">—</span>
-                </div>
-              </div>
-              <div class="first-withdrawal-grid">
-                <div class="first-withdrawal-detail">
-                  <span class="detail-label">Documento</span>
-                  <span class="detail-value" id="first-withdrawal-user-id">—</span>
-                </div>
-                <div class="first-withdrawal-detail">
-                  <span class="detail-label">Teléfono móvil</span>
-                  <span class="detail-value" id="first-withdrawal-user-phone">—</span>
-                </div>
-              </div>
               <div class="first-withdrawal-bank">
                 <div class="bank-logo-wrapper">
                   <img id="first-withdrawal-bank-logo" src="" alt="Logo del banco" class="bank-logo-img" />
@@ -5142,14 +5161,14 @@
             </div>
             <div class="first-withdrawal-actions">
               <button id="first-withdrawal-start-btn" class="btn btn-primary btn-large">
-                <i class="fas fa-paper-plane"></i>
-                <span id="first-withdrawal-start-text">Retirar 1 USD de mi cuenta</span>
+                <i class="fas fa-check-circle"></i>
+                <span id="first-withdrawal-start-text">Iniciar validación</span>
               </button>
               <button id="first-withdrawal-abort-btn" class="btn btn-outline btn-large" type="button">
-                <i class="fas fa-times-circle"></i> No quiero que se realice el retiro de 1 USD
+                <i class="fas fa-times-circle"></i> Ahora no
               </button>
               <button class="btn btn-link first-withdrawal-change" type="button">
-                <i class="fas fa-user-edit"></i> Estos no son mis datos, quiero cambiarlo
+                <i class="fas fa-user-edit"></i> Cambiar datos bancarios
               </button>
             </div>
           </div>
@@ -5157,8 +5176,8 @@
           <div class="first-withdrawal-step" data-step="processing">
             <div class="first-withdrawal-processing">
               <div class="first-withdrawal-spinner" aria-hidden="true"></div>
-              <h3>Enviando tu validación</h3>
-              <p>Estamos transfiriendo el monto de prueba a tu cuenta bancaria. Esto puede tardar unos segundos.</p>
+              <h3 class="first-withdrawal-title">Procesando transferencia</h3>
+              <p class="first-withdrawal-subtitle">Estamos enviando <strong>$1 USD</strong> a tu cuenta. Por favor espera un momento...</p>
             </div>
           </div>
 
@@ -5167,14 +5186,9 @@
                 <div class="first-withdrawal-icon success">
                   <i class="fas fa-shield-check"></i>
                 </div>
-                <h3 class="first-withdrawal-title">Confirma la recepción</h3>
+                <h3 class="first-withdrawal-title">¡Transferencia enviada!</h3>
                 <p class="first-withdrawal-subtitle">
-                  Revisa el estado de cuenta de tu
-                  <span class="bank-inline" id="first-withdrawal-confirm-inline">
-                    <img id="first-withdrawal-confirm-bank-logo-inline" src="" alt="" class="bank-inline-logo" aria-hidden="true" style="display:none;" />
-                    <span id="first-withdrawal-confirm-bank-name-inline">banco registrado</span>
-                  </span>
-                  y escribe el monto exacto que recibiste para finalizar la activación de retiros.
+                  Revisa tu cuenta bancaria y confirma el monto exacto que recibiste en bolívares. Esto nos permite validar tu cuenta y activar retiros futuros.
                 </p>
               </div>
               <div class="first-withdrawal-confirmation">
@@ -5187,29 +5201,15 @@
               </div>
               <div class="first-withdrawal-actions">
               <button id="first-withdrawal-confirm-btn" class="btn btn-primary btn-large">
-                <span class="button-text">
-                  Sí, he recibido <strong id="first-withdrawal-confirm-amount-text">Bs 0,00</strong> en mi cuenta del
-                  <span class="bank-inline button-bank-inline">
-                    <img id="first-withdrawal-confirm-bank-logo" src="" alt="" class="bank-inline-logo" aria-hidden="true" style="display:none;" />
-                    <span id="first-withdrawal-confirm-bank-name">banco registrado</span>
-                  </span>
-                </span>
+                <i class="fas fa-check-circle"></i>
+                <span class="button-text">Confirmar recepción</span>
               </button>
               <button id="first-withdrawal-support-btn" class="btn btn-outline btn-large" type="button">
                 <i class="fab fa-whatsapp"></i>
-                <span class="button-text">
-                  No he recibido <strong id="first-withdrawal-support-amount-text">Bs 0,00</strong> en mi cuenta del
-                  <span class="bank-inline button-bank-inline">
-                    <img id="first-withdrawal-support-bank-logo" src="" alt="" class="bank-inline-logo" aria-hidden="true" style="display:none;" />
-                    <span id="first-withdrawal-support-bank-name">banco registrado</span>
-                  </span>
-                </span>
+                <span class="button-text">No he recibido el monto</span>
               </button>
               <button id="first-withdrawal-skip-btn" class="btn btn-link" type="button">
-                Quiero continuar sin validar
-              </button>
-              <button class="btn btn-link first-withdrawal-change" type="button">
-                <i class="fas fa-user-edit"></i> Estos no son mis datos, quiero cambiarlo
+                Validar más tarde
               </button>
             </div>
           </div>
