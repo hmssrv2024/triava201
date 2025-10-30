@@ -23,7 +23,7 @@ https://tu-dominio.vercel.app/admin-registros.html
 
 2. **Iniciar el servidor de desarrollo** (elige el puerto que prefieras):
 
-   **Puerto 5000:**
+   **Puerto 5000 (Recomendado):**
    ```bash
    npm run dev:5000
    ```
@@ -37,9 +37,15 @@ https://tu-dominio.vercel.app/admin-registros.html
 
    **Puerto personalizado:**
    ```bash
-   vercel dev --listen 9000
+   PORT=9000 node dev-server.js
    ```
    Abrir: http://localhost:9000/admin-registros.html
+
+   **Nota**: Si prefieres usar Vercel CLI:
+   ```bash
+   npm run dev:vercel
+   ```
+   (Requiere `vercel login` primero)
 
 ## 📋 Características
 
