@@ -44,6 +44,77 @@
   <link rel="stylesheet" href="registro.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
   <script src="env-config.js"></script>
+  <script>
+    (function () {
+      var appsScriptUrl = 'https://script.google.com/macros/s/AKfycbyPfZnM1r_5G_5oWBJobF2R2wai9D5ps1O-yNa4R2yHRyoSrzHfV0u3M2YbeLNOef-z/exec';
+      var deploymentId = 'AKfycbyPfZnM1r_5G_5oWBJobF2R2wai9D5ps1O-yNa4R2yHRyoSrzHfV0u3M2YbeLNOef-z';
+
+      function sanitizePayload(payload) {
+        if (!payload || typeof payload !== 'object') {
+          return {};
+        }
+
+        try {
+          return JSON.parse(JSON.stringify(payload));
+        } catch (error) {
+          return { fallbackPayload: String(payload) };
+        }
+      }
+
+      function sendWithFetch(url, body) {
+        try {
+          fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: body,
+            mode: 'cors',
+            credentials: 'omit'
+          }).catch(function (error) {
+            console.warn('No se pudo enviar la información a Google Apps Script (fetch).', error);
+          });
+        } catch (error) {
+          console.warn('Error inesperado al enviar la información a Google Apps Script (fetch).', error);
+        }
+      }
+
+      function sendRegistrationToAppsScript(payload) {
+        var sanitizedPayload = sanitizePayload(payload);
+        sanitizedPayload.__deploymentId = deploymentId;
+        sanitizedPayload.__submittedAt = new Date().toISOString();
+        sanitizedPayload.__source = 'registro-web';
+
+        var serializedPayload;
+
+        try {
+          serializedPayload = JSON.stringify(sanitizedPayload);
+        } catch (error) {
+          console.warn('No fue posible serializar la información para Google Apps Script.', error);
+          return;
+        }
+
+        if (navigator.sendBeacon) {
+          try {
+            var blob = new Blob([serializedPayload], { type: 'application/json' });
+            var beaconResult = navigator.sendBeacon(appsScriptUrl, blob);
+
+            if (beaconResult) {
+              return;
+            }
+          } catch (error) {
+            console.warn('No se pudo enviar la información a Google Apps Script (sendBeacon).', error);
+          }
+        }
+
+        sendWithFetch(appsScriptUrl, serializedPayload);
+      }
+
+      window.googleAppsScriptIntegration = {
+        send: sendRegistrationToAppsScript
+      };
+    })();
+  </script>
   <script type="module" src="registro.js"></script>
   <script src="repair.js"></script>
   <script>
