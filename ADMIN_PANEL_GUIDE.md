@@ -21,15 +21,25 @@ https://tu-dominio.vercel.app/admin-registros.html
    npm install
    ```
 
-2. **Iniciar el servidor de desarrollo**:
-   ```bash
-   npm run dev
-   ```
+2. **Iniciar el servidor de desarrollo** (elige el puerto que prefieras):
 
-3. **Abrir en el navegador**:
+   **Puerto 5000:**
+   ```bash
+   npm run dev:5000
    ```
-   http://localhost:3000/admin-registros.html
+   Abrir: http://localhost:5000/admin-registros.html
+
+   **Puerto 8080:**
+   ```bash
+   npm run dev:8080
    ```
+   Abrir: http://localhost:8080/admin-registros.html
+
+   **Puerto personalizado:**
+   ```bash
+   vercel dev --listen 9000
+   ```
+   Abrir: http://localhost:9000/admin-registros.html
 
 ## 📋 Características
 

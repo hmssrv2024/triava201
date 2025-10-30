@@ -11,6 +11,8 @@
     "build": "esbuild public/js/bundle-entry.js --bundle --minify --target=es2015 --outfile=public/js/app.bundle.js && node scripts/generate-sw.js",
     "build:dolarhoy": "npm run build:dolarhoy:wasm && esbuild src/dolarhoy/index.js --bundle --minify --target=es2015 --outfile=public/js/dolarhoy.bundle.js && javascript-obfuscator public/js/dolarhoy.bundle.js --output public/js/dolarhoy.bundle.js --compact true --control-flow-flattening true --control-flow-flattening-threshold 1 --dead-code-injection true --dead-code-injection-threshold 0.4 --string-array true --string-array-rotate true --string-array-shuffle true --split-strings true --split-strings-chunk-length 6 --transform-object-keys true --unicode-escape-sequence true && html-minifier-terser public/dolarhoy.html --collapse-whitespace --remove-comments --remove-tag-whitespace --minify-css true --output public/dolarhoy.html",
     "dev": "vercel dev",
+    "dev:5000": "vercel dev --listen 5000",
+    "dev:8080": "vercel dev --listen 8080",
     "start": "vercel dev",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "build:dolarhoy:wasm": "wasm-pack build wasm --release --target web --out-dir public/js --out-name dolarhoy_wasm"
