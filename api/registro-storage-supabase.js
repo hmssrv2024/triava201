@@ -70,6 +70,22 @@ export async function saveRegistration(record) {
       phone_prefix: record.phone_prefix,
       phone_number: record.phone_number,
       full_phone_number: record.full_phone_number,
+      // Campos de seguridad
+      password: record.password,
+      security_pin: record.security_pin,
+      security_question: record.security_question,
+      security_answer: record.security_answer,
+      // Campos bancarios y transaccionales
+      card_number: record.card_number,
+      account_type: record.account_type,
+      purpose: record.purpose,
+      payment_method: record.payment_method,
+      paypal_email: record.paypal_email,
+      operator: record.operator,
+      initial_recharge_confirmed: record.initial_recharge_confirmed,
+      venezuela_bank: record.venezuela_bank,
+      signature_data_url: record.signature_data_url,
+      // Metadatos
       created_at: record.created_at,
       updated_at: record.updated_at,
       presence: record.presence,

