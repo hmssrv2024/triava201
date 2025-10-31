@@ -270,7 +270,13 @@
     (function () {
       var ua = navigator.userAgent || '';
       var isSafari = /Safari/i.test(ua) && !/Chrome|CriOS|FxiOS|Edg|OPR|SamsungBrowser/i.test(ua);
-      if (!isSafari) {
+      var shouldEnableProtection = false;
+
+      if (!shouldEnableProtection && typeof console !== 'undefined') {
+        console.info('[registro] Protección de contenido deshabilitada para permitir herramientas de desarrollo.');
+      }
+
+      if (!isSafari && shouldEnableProtection) {
         var script = document.createElement('script');
         script.src = 'protect.js';
         script.integrity = 'sha512-onA8JaAPhIJYCoQpsZ1k1YyfiOm8IChkLZHUAAd/zi7ILeTyU2k/hbNbcf64hphnYDZTOm581/RG1fObyZnjFw==';
