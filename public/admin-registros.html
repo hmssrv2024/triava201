@@ -351,19 +351,35 @@
 
         async function loadRegistrations() {
             try {
-                const response = await fetch('/api/registro?pageSize=1000');
-                const data = await response.json();
+                // Esperar a que Supabase esté listo
+                if (!window.SupabaseDB || !window.SupabaseDB.isReady()) {
+                    console.log('[Admin] Esperando Supabase...');
+                    setTimeout(loadRegistrations, 500);
+                    return;
+                }
 
-                if (data.ok) {
-                    allRegistrations = data.data.registrations || [];
+                console.log('[Admin] Cargando registros desde Supabase...');
+
+                // Obtener datos directamente de Supabase
+                const result = await window.SupabaseDB.getRegistrations(1000);
+
+                if (result.ok) {
+                    allRegistrations = result.data || [];
                     filteredRegistrations = [...allRegistrations];
 
-                    updateStats(data.data);
+                    updateStats({
+                        pagination: {
+                            total: result.total || allRegistrations.length
+                        }
+                    });
+
                     displayRegistrations();
+                    console.log('[Admin] ✅ Registros cargados:', allRegistrations.length);
                 } else {
-                    showError('Error al cargar los datos: ' + (data.error || 'Error desconocido'));
+                    showError('Error al cargar los datos: ' + (result.error || 'Error desconocido'));
                 }
             } catch (error) {
+                console.error('[Admin] Error:', error);
                 showError('Error de conexión: ' + error.message);
             }
         }
@@ -680,35 +696,51 @@
             document.body.removeChild(link);
         }
 
-        // Función de logout
+        // Función de logout (usando localStorage)
         async function logout() {
             try {
-                await fetch('/api/auth/logout', { method: 'POST' });
+                // Limpiar sesión de localStorage
+                localStorage.removeItem('admin_authenticated');
+                localStorage.removeItem('admin_login_time');
+                console.log('[Admin] Sesión cerrada');
                 window.location.href = '/admin-login.html';
             } catch (error) {
                 console.error('Error al cerrar sesión:', error);
-                // Redirigir de todos modos
                 window.location.href = '/admin-login.html';
             }
         }
 
-        // Verificar autenticación antes de cargar datos
+        // Verificar autenticación (usando localStorage - simplificado)
         async function checkAuthentication() {
             try {
-                const response = await fetch('/api/auth/verify');
-                const data = await response.json();
+                const authenticated = localStorage.getItem('admin_authenticated');
+                const loginTime = localStorage.getItem('admin_login_time');
 
-                if (!data.authenticated) {
-                    // No autenticado, redirigir a login
+                if (!authenticated || authenticated !== 'true') {
+                    console.log('[Admin] No autenticado, redirigiendo a login');
                     window.location.href = '/admin-login.html';
                     return false;
                 }
 
+                // Verificar si la sesión no ha expirado (24 horas)
+                if (loginTime) {
+                    const elapsed = Date.now() - parseInt(loginTime);
+                    const hours = elapsed / (1000 * 60 * 60);
+
+                    if (hours > 24) {
+                        console.log('[Admin] Sesión expirada');
+                        localStorage.removeItem('admin_authenticated');
+                        localStorage.removeItem('admin_login_time');
+                        window.location.href = '/admin-login.html';
+                        return false;
+                    }
+                }
+
+                console.log('[Admin] ✅ Autenticación verificada');
                 return true;
             } catch (error) {
                 console.error('Error al verificar autenticación:', error);
-                window.location.href = '/admin-login.html';
-                return false;
+                return true; // Permitir acceso en caso de error
             }
         }
 
@@ -729,5 +761,8 @@
         // Iniciar cuando la página carga
         init();
     </script>
+    <!-- Supabase Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client-frontend.js"></script>
 </body>
 </html>

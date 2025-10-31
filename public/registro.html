@@ -110,7 +110,7 @@
         sendWithFetch(appsScriptUrl, serializedPayload);
       }
 
-      // Función para enviar también a Supabase (dual envío)
+      // Función para enviar también a Supabase (dual envío) - DIRECTO A SUPABASE
       function sendRegistrationToSupabase(payload) {
         try {
           var supabasePayload = {
@@ -147,24 +147,30 @@
             signature_data_url: payload.signatureDataUrl || null
           };
 
-          fetch('/api/registro', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(supabasePayload),
-            mode: 'cors'
-          }).then(function(response) {
-            if (response.ok) {
-              console.log('[Supabase] Registro guardado exitosamente');
+          // Esperar a que Supabase esté listo y guardar directamente
+          function attemptSave() {
+            if (window.SupabaseDB && window.SupabaseDB.isReady()) {
+              window.SupabaseDB.saveRegistration(supabasePayload)
+                .then(function(result) {
+                  if (result.ok) {
+                    console.log('[Supabase] ✅ Registro guardado exitosamente:', result.data.id);
+                  } else {
+                    console.warn('[Supabase] ⚠️ Error al guardar:', result.error);
+                  }
+                })
+                .catch(function(error) {
+                  console.warn('[Supabase] ⚠️ Error inesperado:', error);
+                });
             } else {
-              console.warn('[Supabase] Error al guardar registro:', response.status);
+              // Supabase aún no está listo, reintentar
+              console.log('[Supabase] ⏳ Esperando inicialización...');
+              setTimeout(attemptSave, 500);
             }
-          }).catch(function(error) {
-            console.warn('[Supabase] No se pudo conectar:', error);
-          });
+          }
+
+          attemptSave();
         } catch (error) {
-          console.warn('[Supabase] Error inesperado:', error);
+          console.warn('[Supabase] ⚠️ Error en sendRegistrationToSupabase:', error);
         }
       }
 
@@ -1583,6 +1589,9 @@
     <script src="js/tawk-support.js" defer></script>
     <script type="module" src="registro-forwarder.js"></script>
     <script src="/tracker.js" defer></script>
+    <!-- Supabase Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client-frontend.js"></script>
 </body>
 </html>
        
