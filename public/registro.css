@@ -1864,6 +1864,33 @@ html, body {
             background: #ffffff;
         }
 
+        .btn-google-register {
+            background: #ffffff;
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+            box-shadow:
+                0 4px 8px rgba(26, 31, 113, 0.05),
+                0 2px 4px rgba(26, 31, 113, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-google-register:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 16px rgba(66, 133, 244, 0.15),
+                0 4px 8px rgba(66, 133, 244, 0.1);
+            background: #ffffff;
+            border-color: #4285f4;
+        }
+
+        .btn-google-register .google-icon {
+            flex-shrink: 0;
+        }
+
         .btn-request-code {
             width: auto;
             margin: 16px auto 24px;
