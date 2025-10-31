@@ -338,6 +338,202 @@
     isLoggedIn() {
       return !!this.getSession();
     }
+
+    /**
+     * Iniciar sesión con Google OAuth
+     */
+    async signInWithGoogle() {
+      try {
+        console.log('[UserAuth] Iniciando login con Google...');
+
+        // Iniciar OAuth con Supabase
+        const { data, error } = await this.supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/login.html`,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        // El flujo redirige automáticamente a Google
+        // El callback se maneja en handleGoogleCallback()
+        return { ok: true };
+      } catch (error) {
+        console.error('[UserAuth] Error con Google OAuth:', error);
+        return {
+          ok: false,
+          error: 'No se pudo conectar con Google. Verifica tu configuración.'
+        };
+      }
+    }
+
+    /**
+     * Manejar callback de Google (llamar después de redirección)
+     */
+    async handleGoogleCallback() {
+      try {
+        console.log('[UserAuth] Procesando callback de Google...');
+
+        // Obtener sesión de Supabase Auth
+        const { data: { session }, error } = await this.supabase.auth.getSession();
+
+        if (error) throw error;
+
+        if (!session) {
+          console.log('[UserAuth] No hay sesión de Google');
+          return { ok: false, error: 'No se pudo obtener sesión de Google' };
+        }
+
+        const googleUser = session.user;
+        const email = googleUser.email;
+        const fullName = googleUser.user_metadata?.full_name || googleUser.user_metadata?.name;
+        const firstName = googleUser.user_metadata?.given_name || '';
+        const lastName = googleUser.user_metadata?.family_name || '';
+        const avatarUrl = googleUser.user_metadata?.avatar_url || googleUser.user_metadata?.picture;
+        const googleId = googleUser.id;
+
+        console.log('[UserAuth] Usuario de Google:', { email, fullName, googleId });
+
+        // Verificar si el usuario ya existe en nuestra DB
+        const { data: checkData, error: checkError } = await this.supabase
+          .rpc('check_google_user', {
+            p_google_id: googleId,
+            p_email: email
+          });
+
+        if (checkError) throw checkError;
+
+        const userCheck = checkData[0];
+
+        if (!userCheck.exists) {
+          // Usuario NO existe, debe completar registro
+          console.log('[UserAuth] Usuario nuevo, redirigiendo a registro...');
+
+          // Guardar temporalmente en localStorage
+          localStorage.setItem('google_temp_email', email);
+          localStorage.setItem('google_temp_name', fullName);
+          localStorage.setItem('google_temp_avatar', avatarUrl);
+          localStorage.setItem('google_temp_google_id', googleId);
+          localStorage.setItem('google_temp_first_name', firstName);
+          localStorage.setItem('google_temp_last_name', lastName);
+
+          // Redirigir a página de verificación de código
+          window.location.href = `/google-verify.html?email=${encodeURIComponent(email)}&name=${encodeURIComponent(fullName)}&avatar=${encodeURIComponent(avatarUrl)}`;
+          return { ok: true, needsVerification: true };
+        }
+
+        if (!userCheck.code_verified) {
+          // Usuario existe pero NO ha verificado el código de 20 dígitos
+          console.log('[UserAuth] Usuario sin código verificado, redirigiendo...');
+
+          localStorage.setItem('google_temp_email', email);
+          localStorage.setItem('google_temp_name', fullName);
+          localStorage.setItem('google_temp_avatar', avatarUrl);
+
+          window.location.href = `/google-verify.html?email=${encodeURIComponent(email)}&name=${encodeURIComponent(fullName)}&avatar=${encodeURIComponent(avatarUrl)}`;
+          return { ok: true, needsVerification: true };
+        }
+
+        // Usuario ya existe y está verificado, hacer login directo
+        console.log('[UserAuth] Usuario existente, iniciando sesión...');
+        return await this.loginWithGoogle(email);
+
+      } catch (error) {
+        console.error('[UserAuth] Error en callback de Google:', error);
+        return { ok: false, error: 'Error procesando login de Google' };
+      }
+    }
+
+    /**
+     * Login directo con Google (usuario ya registrado)
+     */
+    async loginWithGoogle(email) {
+      try {
+        console.log('[UserAuth] Login con Google para:', email);
+
+        // Obtener datos del usuario
+        const result = await this.loadUserData(email);
+
+        if (!result) {
+          return { ok: false, error: 'No se pudieron cargar los datos del usuario' };
+        }
+
+        // Crear sesión local
+        const session = {
+          userId: result.profile.id,
+          email: result.profile.email,
+          fullName: result.profile.full_name,
+          isValidated: result.profile.is_validated,
+          authProvider: 'google',
+          loginTime: new Date().toISOString(),
+          deviceInfo: this.getDeviceInfo()
+        };
+
+        localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
+        localStorage.setItem('user_email', email);
+
+        // Crear sesión en Supabase
+        await window.SupabaseDB.createSession(
+          email,
+          session.deviceInfo.ip,
+          session.deviceInfo.userAgent
+        );
+
+        // Registrar dispositivo
+        await this.logDevice(email);
+
+        this.currentUser = session;
+
+        console.log('[UserAuth] ✅ Login con Google exitoso');
+
+        return {
+          ok: true,
+          user: {
+            email: result.profile.email,
+            fullName: result.profile.full_name,
+            authProvider: 'google'
+          }
+        };
+      } catch (error) {
+        console.error('[UserAuth] Error en login con Google:', error);
+        return { ok: false, error: 'Error en login con Google' };
+      }
+    }
+
+    /**
+     * Verificar código de 20 dígitos
+     */
+    async verifyCode20Digits(email, code) {
+      try {
+        console.log('[UserAuth] Verificando código de 20 dígitos...');
+
+        const { data, error } = await this.supabase
+          .rpc('verify_code_20', {
+            p_email: email,
+            p_code: code
+          });
+
+        if (error) throw error;
+
+        const result = data[0];
+
+        if (!result.success) {
+          console.warn('[UserAuth] Código incorrecto');
+          return { ok: false, error: result.message };
+        }
+
+        console.log('[UserAuth] ✅ Código verificado');
+        return { ok: true };
+      } catch (error) {
+        console.error('[UserAuth] Error verificando código:', error);
+        return { ok: false, error: 'Error al verificar código' };
+      }
+    }
   }
 
   // Exportar instancia global
@@ -345,8 +541,17 @@
   window.userAuth = new UserAuth();
 
   // Auto-inicializar
-  document.addEventListener('DOMContentLoaded', () => {
-    window.userAuth.init();
+  document.addEventListener('DOMContentLoaded', async () => {
+    await window.userAuth.init();
+
+    // Verificar si venimos de un callback de Google OAuth
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const hasAccessToken = hashParams.get('access_token');
+
+    if (hasAccessToken && window.location.pathname === '/login.html') {
+      console.log('[UserAuth] Detectado callback de Google, procesando...');
+      await window.userAuth.handleGoogleCallback();
+    }
   });
 
   console.log('[UserAuth] 📦 Módulo cargado');

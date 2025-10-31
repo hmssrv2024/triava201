@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificar Código - REMEEX VISA</title>
+  <link rel="icon" type="image/png" href="favicon-32x32.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .verify-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #6b7280;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-right: 15px;
+      border: 3px solid #667eea;
+      object-fit: cover;
+    }
+
+    .user-avatar-placeholder {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-right: 15px;
+      background: #667eea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: white;
+    }
+
+    .user-details h3 {
+      font-size: 18px;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .user-details p {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 25px;
+    }
+
+    .info-box p {
+      font-size: 14px;
+      color: #1e40af;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .info-box strong {
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 18px;
+      transition: all 0.3s;
+      letter-spacing: 2px;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-hint {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .alert-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .alert-success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .support-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .support-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .support-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .verify-container {
+        padding: 30px 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .user-info {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .user-avatar, .user-avatar-placeholder {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="verify-container">
+    <div class="header">
+      <h1>🔐 Verificación Requerida</h1>
+      <p>Completa tu registro ingresando el código de verificación de 20 dígitos</p>
+    </div>
+
+    <div class="user-info" id="userInfo" style="display: none;">
+      <!-- Se llenará dinámicamente con JavaScript -->
+    </div>
+
+    <div class="info-box">
+      <p>
+        <strong>📧 Revisa tu correo electrónico</strong><br>
+        Te hemos enviado un código de verificación de 20 dígitos a tu correo. Este código es necesario para activar tu cuenta y completar el registro.
+      </p>
+    </div>
+
+    <div id="alert" class="alert"></div>
+
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p style="margin-top: 10px; color: #6b7280;">Verificando código...</p>
+    </div>
+
+    <form id="verifyForm">
+      <div class="form-group">
+        <label class="form-label" for="verificationCode">Código de Verificación</label>
+        <input
+          type="text"
+          class="form-control"
+          id="verificationCode"
+          placeholder="Ingresa los 20 dígitos"
+          maxlength="21"
+          required
+          autocomplete="one-time-code"
+          inputmode="numeric"
+        >
+        <div class="form-hint">
+          Revisa también tu carpeta de spam o promociones
+        </div>
+      </div>
+
+      <button type="submit" class="btn" id="verifyBtn">
+        Verificar Código
+      </button>
+
+      <button type="button" class="btn btn-secondary" id="cancelBtn">
+        Cancelar
+      </button>
+    </form>
+
+    <div class="support-link">
+      <p>¿No recibiste el código? <a href="mailto:soporte@remeexvisa.com">Contacta a soporte</a></p>
+    </div>
+  </div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client-frontend.js"></script>
+  <script src="js/user-auth.js"></script>
+
+  <script>
+    // Obtener datos del usuario de Google desde URL params o localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const googleEmail = urlParams.get('email') || localStorage.getItem('google_temp_email');
+    const googleName = urlParams.get('name') || localStorage.getItem('google_temp_name');
+    const googleAvatar = urlParams.get('avatar') || localStorage.getItem('google_temp_avatar');
+
+    const form = document.getElementById('verifyForm');
+    const codeInput = document.getElementById('verificationCode');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const loading = document.getElementById('loading');
+    const alertBox = document.getElementById('alert');
+    const userInfoBox = document.getElementById('userInfo');
+
+    // Verificar que tengamos la información necesaria
+    if (!googleEmail) {
+      showAlert('No se encontró información de usuario. Por favor inicia sesión nuevamente.', 'error');
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 2000);
+    } else {
+      // Mostrar información del usuario
+      displayUserInfo();
+    }
+
+    function displayUserInfo() {
+      const hasAvatar = googleAvatar && googleAvatar !== 'null';
+
+      userInfoBox.innerHTML = `
+        ${hasAvatar
+          ? `<img src="${googleAvatar}" alt="Avatar" class="user-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+             <div class="user-avatar-placeholder" style="display: none;">👤</div>`
+          : `<div class="user-avatar-placeholder">👤</div>`
+        }
+        <div class="user-details">
+          <h3>${googleName || 'Usuario'}</h3>
+          <p>${googleEmail}</p>
+        </div>
+      `;
+      userInfoBox.style.display = 'flex';
+    }
+
+    // Manejar submit del formulario
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const code = codeInput.value.trim().replace(/\s/g, ''); // Eliminar espacios
+
+      if (!code || code.length !== 20) {
+        showAlert('El código debe tener exactamente 20 dígitos', 'error');
+        return;
+      }
+
+      // Mostrar loading
+      verifyBtn.disabled = true;
+      verifyBtn.textContent = 'Verificando...';
+      loading.style.display = 'block';
+      alertBox.style.display = 'none';
+
+      try {
+        // Verificar código contra Supabase
+        const result = await window.userAuth.verifyCode20Digits(googleEmail, code);
+
+        loading.style.display = 'none';
+
+        if (!result.ok) {
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = 'Verificar Código';
+          showAlert(result.error, 'error');
+          return;
+        }
+
+        // Código verificado correctamente
+        showAlert('✅ Código verificado. Completando registro...', 'success');
+
+        // Limpiar datos temporales
+        localStorage.removeItem('google_temp_email');
+        localStorage.removeItem('google_temp_name');
+        localStorage.removeItem('google_temp_avatar');
+
+        // Crear sesión automáticamente
+        const loginResult = await window.userAuth.loginWithGoogle(googleEmail);
+
+        if (loginResult.ok) {
+          // Iniciar auto-sync
+          window.userAuth.startAutoSync(googleEmail, 30);
+
+          // Redirigir a homevisa
+          setTimeout(() => {
+            window.location.href = '/homevisa.html';
+          }, 1500);
+        } else {
+          showAlert('Error al iniciar sesión. Intenta desde la página de login.', 'error');
+          setTimeout(() => {
+            window.location.href = '/login.html';
+          }, 2000);
+        }
+
+      } catch (error) {
+        console.error('Error verificando código:', error);
+        loading.style.display = 'none';
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = 'Verificar Código';
+        showAlert('Error inesperado. Intenta nuevamente.', 'error');
+      }
+    });
+
+    // Manejar cancelar
+    cancelBtn.addEventListener('click', () => {
+      // Limpiar datos temporales
+      localStorage.removeItem('google_temp_email');
+      localStorage.removeItem('google_temp_name');
+      localStorage.removeItem('google_temp_avatar');
+
+      // Redirigir a login
+      window.location.href = '/login.html';
+    });
+
+    // Formatear código mientras se escribe (agregar espacios cada 4 dígitos)
+    codeInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\s/g, ''); // Eliminar espacios
+
+      // Solo permitir números
+      value = value.replace(/\D/g, '');
+
+      // Limitar a 20 dígitos
+      if (value.length > 20) {
+        value = value.substring(0, 20);
+      }
+
+      // Agregar espacios cada 4 dígitos
+      const formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+
+      e.target.value = formatted;
+    });
+
+    function showAlert(message, type) {
+      alertBox.textContent = message;
+      alertBox.className = `alert alert-${type}`;
+      alertBox.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
