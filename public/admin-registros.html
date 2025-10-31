@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Registros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            color: #212529;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .pagination button {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-info {
+            padding: 10px 20px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            margin: 30px;
+            border-radius: 8px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: #e7f3ff;
+            color: #0066cc;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+
+        .no-data h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                padding: 15px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .export-btn {
+            background: #28a745;
+        }
+
+        .export-btn:hover {
+            background: #218838;
+        }
+
+        .refresh-btn {
+            background: #17a2b8;
+        }
+
+        .refresh-btn:hover {
+            background: #138496;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .header {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="btn logout-btn" onclick="logout()">🚪 Cerrar Sesión</button>
+            <h1>📊 Panel de Administración</h1>
+            <p>Gestión de Registros de Usuarios</p>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <h3 id="totalUsers">-</h3>
+                <p>Total Registros</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="currentPage">-</h3>
+                <p>Página Actual</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalPages">-</h3>
+                <p>Total Páginas</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="recordsShown">-</h3>
+                <p>Registros Mostrados</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Buscar por email, nombre, teléfono...">
+            </div>
+            <button class="btn refresh-btn" onclick="loadRegistrations()">🔄 Actualizar</button>
+            <button class="btn export-btn" onclick="exportToCSV()">📥 Exportar CSV</button>
+        </div>
+
+        <div id="content">
+            <div class="loading">⏳ Cargando datos...</div>
+        </div>
+
+        <div class="pagination" id="pagination" style="display: none;">
+            <button onclick="changePage('first')">⏮️ Primera</button>
+            <button onclick="changePage('prev')">◀️ Anterior</button>
+            <span class="page-info" id="pageInfo">Página 1 de 1</span>
+            <button onclick="changePage('next')">Siguiente ▶️</button>
+            <button onclick="changePage('last')">Última ⏭️</button>
+        </div>
+    </div>
+
+    <script>
+        let allRegistrations = [];
+        let filteredRegistrations = [];
+        let currentPage = 1;
+        let totalPages = 1;
+        let pageSize = 50;
+
+        async function loadRegistrations() {
+            try {
+                const response = await fetch('/api/registro?pageSize=1000');
+                const data = await response.json();
+
+                if (data.ok) {
+                    allRegistrations = data.data.registrations || [];
+                    filteredRegistrations = [...allRegistrations];
+
+                    updateStats(data.data);
+                    displayRegistrations();
+                } else {
+                    showError('Error al cargar los datos: ' + (data.error || 'Error desconocido'));
+                }
+            } catch (error) {
+                showError('Error de conexión: ' + error.message);
+            }
+        }
+
+        function updateStats(data) {
+            document.getElementById('totalUsers').textContent = data.pagination?.total || 0;
+            document.getElementById('totalPages').textContent = Math.ceil(filteredRegistrations.length / pageSize);
+            document.getElementById('currentPage').textContent = currentPage;
+            document.getElementById('recordsShown').textContent = Math.min(pageSize, filteredRegistrations.length);
+        }
+
+        function displayRegistrations() {
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredRegistrations.slice(start, end);
+
+            if (pageData.length === 0) {
+                document.getElementById('content').innerHTML = `
+                    <div class="no-data">
+                        <h2>📭 No hay registros</h2>
+                        <p>No se encontraron registros de usuarios.</p>
+                    </div>
+                `;
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+
+            totalPages = Math.ceil(filteredRegistrations.length / pageSize);
+
+            let html = `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Nombre Completo</th>
+                                <th>Email</th>
+                                <th>País</th>
+                                <th>Teléfono</th>
+                                <th>Documento</th>
+                                <th>Fecha Nacimiento</th>
+                                <th>Género</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            pageData.forEach(reg => {
+                const date = reg.created_at ? new Date(reg.created_at).toLocaleString('es-ES') : '-';
+                const fullName = reg.full_name || `${reg.first_name || ''} ${reg.last_name || ''}`.trim() || '-';
+                const email = reg.email || '-';
+                const country = reg.country || '-';
+                const phone = reg.full_phone_number || reg.phone_number || '-';
+                const document = reg.document_number ? `${reg.document_type || 'DOC'}: ${reg.document_number}` : '-';
+                const birthDate = (reg.birth_year && reg.birth_month && reg.birth_day)
+                    ? `${reg.birth_day}/${reg.birth_month}/${reg.birth_year}`
+                    : '-';
+                const gender = reg.gender || '-';
+
+                html += `
+                    <tr>
+                        <td>${date}</td>
+                        <td><strong>${fullName}</strong></td>
+                        <td>${email}</td>
+                        <td><span class="badge badge-primary">${country}</span></td>
+                        <td>${phone}</td>
+                        <td>${document}</td>
+                        <td>${birthDate}</td>
+                        <td>${gender}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('content').innerHTML = html;
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const pagination = document.getElementById('pagination');
+            const pageInfo = document.getElementById('pageInfo');
+
+            if (totalPages > 1) {
+                pagination.style.display = 'flex';
+                pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+            } else {
+                pagination.style.display = 'none';
+            }
+
+            // Update stats
+            document.getElementById('currentPage').textContent = currentPage;
+            document.getElementById('totalPages').textContent = totalPages;
+            const recordsShown = Math.min(pageSize, filteredRegistrations.length - ((currentPage - 1) * pageSize));
+            document.getElementById('recordsShown').textContent = recordsShown;
+        }
+
+        function changePage(direction) {
+            switch(direction) {
+                case 'first':
+                    currentPage = 1;
+                    break;
+                case 'prev':
+                    if (currentPage > 1) currentPage--;
+                    break;
+                case 'next':
+                    if (currentPage < totalPages) currentPage++;
+                    break;
+                case 'last':
+                    currentPage = totalPages;
+                    break;
+            }
+            displayRegistrations();
+        }
+
+        function showError(message) {
+            document.getElementById('content').innerHTML = `
+                <div class="error">
+                    <strong>❌ Error:</strong> ${message}
+                </div>
+            `;
+        }
+
+        // Búsqueda en tiempo real
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+
+            if (!searchTerm) {
+                filteredRegistrations = [...allRegistrations];
+            } else {
+                filteredRegistrations = allRegistrations.filter(reg => {
+                    const searchableText = [
+                        reg.email,
+                        reg.full_name,
+                        reg.first_name,
+                        reg.last_name,
+                        reg.phone_number,
+                        reg.full_phone_number,
+                        reg.country,
+                        reg.document_number
+                    ].filter(Boolean).join(' ').toLowerCase();
+
+                    return searchableText.includes(searchTerm);
+                });
+            }
+
+            currentPage = 1;
+            displayRegistrations();
+        });
+
+        // Exportar a CSV
+        function exportToCSV() {
+            if (filteredRegistrations.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+
+            const headers = ['Fecha', 'Nombre Completo', 'Email', 'País', 'Teléfono', 'Tipo Documento', 'Número Documento', 'Fecha Nacimiento', 'Género'];
+
+            const rows = filteredRegistrations.map(reg => {
+                const date = reg.created_at ? new Date(reg.created_at).toLocaleString('es-ES') : '';
+                const fullName = reg.full_name || `${reg.first_name || ''} ${reg.last_name || ''}`.trim();
+                const birthDate = (reg.birth_year && reg.birth_month && reg.birth_day)
+                    ? `${reg.birth_day}/${reg.birth_month}/${reg.birth_year}`
+                    : '';
+
+                return [
+                    date,
+                    fullName,
+                    reg.email || '',
+                    reg.country || '',
+                    reg.full_phone_number || reg.phone_number || '',
+                    reg.document_type || '',
+                    reg.document_number || '',
+                    birthDate,
+                    reg.gender || ''
+                ];
+            });
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `registros_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Función de logout
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/admin-login.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                // Redirigir de todos modos
+                window.location.href = '/admin-login.html';
+            }
+        }
+
+        // Verificar autenticación antes de cargar datos
+        async function checkAuthentication() {
+            try {
+                const response = await fetch('/api/auth/verify');
+                const data = await response.json();
+
+                if (!data.authenticated) {
+                    // No autenticado, redirigir a login
+                    window.location.href = '/admin-login.html';
+                    return false;
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error al verificar autenticación:', error);
+                window.location.href = '/admin-login.html';
+                return false;
+            }
+        }
+
+        // Inicialización
+        async function init() {
+            // Verificar autenticación primero
+            const isAuthenticated = await checkAuthentication();
+
+            if (isAuthenticated) {
+                // Cargar datos
+                loadRegistrations();
+
+                // Auto-actualizar cada 30 segundos
+                setInterval(loadRegistrations, 30000);
+            }
+        }
+
+        // Iniciar cuando la página carga
+        init();
+    </script>
+</body>
+</html>

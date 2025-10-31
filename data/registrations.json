@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "id": "0547293f-2cf3-4f82-8ee4-ded4201224d8",
+    "email": "guillermo@homevisa.com",
+    "first_name": "Guillermo",
+    "last_name": "Cuchinelly",
+    "full_name": "Guillermo Cuchinelly",
+    "preferred_name": null,
+    "nickname": null,
+    "country": "VE",
+    "state": null,
+    "gender": null,
+    "birth_day": "15",
+    "birth_month": "12",
+    "birth_year": "1985",
+    "document_type": null,
+    "document_number": null,
+    "phone_country_code": "58",
+    "phone_prefix": null,
+    "phone_number": "4121234567",
+    "full_phone_number": null,
+    "created_at": "2025-10-31T11:03:30.537Z",
+    "updated_at": "2025-10-31T11:03:30.537Z",
+    "presence": null,
+    "forwarded_at": null,
+    "external_reference": null
+  }
+]
