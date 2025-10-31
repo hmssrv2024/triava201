@@ -8520,5 +8520,82 @@
     })();
   </script>
 
+  <!-- Sistema de Autenticación Multi-Dispositivo -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client-frontend.js"></script>
+  <script src="js/user-auth.js"></script>
+  <script src="js/user-notifications.js"></script>
+
+  <script>
+    (async function() {
+      console.log('[HomeVisa] Verificando sesión...');
+
+      // Esperar a que UserAuth esté listo
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Verificar sesión
+      const session = await window.userAuth.checkSession();
+
+      if (!session) {
+        // Sin sesión → Redirigir a login
+        console.log('[HomeVisa] Sin sesión, redirigiendo a login...');
+        window.location.href = '/login.html';
+        return;
+      }
+
+      if (session.blocked) {
+        // Cuenta bloqueada → Mostrar alerta y redirigir
+        alert('⛔ Tu cuenta está bloqueada. Motivo: ' + (session.reason || 'No especificado'));
+        await window.userAuth.logout();
+        window.location.href = '/login.html';
+        return;
+      }
+
+      // Sesión válida
+      console.log('[HomeVisa] ✅ Sesión válida:', session.email);
+
+      // Iniciar sincronización automática cada 30 segundos
+      window.userAuth.startAutoSync(session.email, 30);
+
+      // Iniciar sistema de notificaciones
+      const notificationSystem = new UserNotificationSystem();
+      await notificationSystem.init(session.email);
+
+      // Escuchar evento de sincronización de datos
+      window.addEventListener('user-data-synced', (event) => {
+        const userData = event.detail;
+        console.log('[HomeVisa] 🔄 Datos sincronizados:', userData);
+
+        // Actualizar UI con nuevos datos
+        if (userData.balance) {
+          // Actualizar saldo en UI (buscar elementos comunes)
+          const balanceElements = document.querySelectorAll('[data-balance], .balance-amount, #user-balance, #current-balance');
+          balanceElements.forEach(el => {
+            if (el) {
+              el.textContent = `$${userData.balance.current_balance.toFixed(2)}`;
+            }
+          });
+        }
+
+        // Disparar evento para que otros módulos se actualicen
+        window.dispatchEvent(new CustomEvent('balance-updated', {
+          detail: userData.balance
+        }));
+      });
+
+      // Logout cuando se cierra la ventana
+      window.addEventListener('beforeunload', () => {
+        // Enviar beacon para marcar offline
+        if (session && session.email) {
+          navigator.sendBeacon('/api/user/logout', JSON.stringify({
+            email: session.email
+          }));
+        }
+      });
+
+      console.log('[HomeVisa] 🚀 Sistema iniciado correctamente');
+    })();
+  </script>
+
   </body>
 </html>
