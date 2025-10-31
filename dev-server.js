@@ -3,9 +3,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import registroHandler from './api/registro.js';
-import loginHandler from './api/auth/login.js';
-import verifyHandler from './api/auth/verify.js';
-import logoutHandler from './api/auth/logout.js';
+import authHandler from './api/auth/[path].js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,30 +18,13 @@ app.use(express.urlencoded({ extended: true }));
 // Servir archivos estáticos de public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Auth API Routes
-app.all('/api/auth/login', async (req, res) => {
+// Auth API Routes - Unified handler
+app.all('/api/auth/:path', async (req, res) => {
   try {
-    await loginHandler(req, res);
+    req.query.path = req.params.path;
+    await authHandler(req, res);
   } catch (error) {
-    console.error('Error en /api/auth/login:', error);
-    res.status(500).json({ ok: false, error: error.message });
-  }
-});
-
-app.all('/api/auth/verify', async (req, res) => {
-  try {
-    await verifyHandler(req, res);
-  } catch (error) {
-    console.error('Error en /api/auth/verify:', error);
-    res.status(500).json({ authenticated: false, error: error.message });
-  }
-});
-
-app.all('/api/auth/logout', async (req, res) => {
-  try {
-    await logoutHandler(req, res);
-  } catch (error) {
-    console.error('Error en /api/auth/logout:', error);
+    console.error('Error en /api/auth/*:', error);
     res.status(500).json({ ok: false, error: error.message });
   }
 });
