@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { readRegistrations, saveRegistration } from './registro-storage.js';
+import { readRegistrations, saveRegistration } from './registro-storage-supabase.js';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_MAX_RECORDS = 200;
@@ -342,16 +342,28 @@ export default async function handler(req, res) {
     const normalized = normalizeRegistration(payload);
     validateNormalizedRegistration(normalized);
 
-    const forwardResult = await forwardRegistration(normalized);
-    const remoteId = forwardResult.body?.id
-      || forwardResult.body?.data?.id
-      || forwardResult.body?.result?.id
-      || normalized.id;
+    // Solo hacer forward si la URL está configurada y no es example.com
+    let remoteId = normalized.id;
+    let forwarded = false;
+    const forwardUrl = process.env.OPENROUTER_REGISTRATION_URL || process.env.REGISTRO_FORWARD_URL;
+
+    if (forwardUrl && !forwardUrl.includes('example.com')) {
+      try {
+        const forwardResult = await forwardRegistration(normalized);
+        remoteId = forwardResult.body?.id
+          || forwardResult.body?.data?.id
+          || forwardResult.body?.result?.id
+          || normalized.id;
+        forwarded = true;
+      } catch (forwardError) {
+        console.warn('[registro] Forward failed, continuing without it:', forwardError.message);
+      }
+    }
 
     const storedRecord = {
       ...normalized,
       id: remoteId,
-      forwarded_at: new Date().toISOString(),
+      forwarded_at: forwarded ? new Date().toISOString() : null,
       external_reference: remoteId !== normalized.id ? normalized.id : null
     };
 
