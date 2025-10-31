@@ -274,11 +274,30 @@
         .refresh-btn:hover {
             background: #138496;
         }
+
+        .logout-btn {
+            background: #dc3545;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .header {
+            position: relative;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <button class="btn logout-btn" onclick="logout()">🚪 Cerrar Sesión</button>
             <h1>📊 Panel de Administración</h1>
             <p>Gestión de Registros de Usuarios</p>
         </div>
@@ -546,11 +565,54 @@
             document.body.removeChild(link);
         }
 
-        // Cargar datos al iniciar
-        loadRegistrations();
+        // Función de logout
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/admin-login.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                // Redirigir de todos modos
+                window.location.href = '/admin-login.html';
+            }
+        }
 
-        // Auto-actualizar cada 30 segundos
-        setInterval(loadRegistrations, 30000);
+        // Verificar autenticación antes de cargar datos
+        async function checkAuthentication() {
+            try {
+                const response = await fetch('/api/auth/verify');
+                const data = await response.json();
+
+                if (!data.authenticated) {
+                    // No autenticado, redirigir a login
+                    window.location.href = '/admin-login.html';
+                    return false;
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error al verificar autenticación:', error);
+                window.location.href = '/admin-login.html';
+                return false;
+            }
+        }
+
+        // Inicialización
+        async function init() {
+            // Verificar autenticación primero
+            const isAuthenticated = await checkAuthentication();
+
+            if (isAuthenticated) {
+                // Cargar datos
+                loadRegistrations();
+
+                // Auto-actualizar cada 30 segundos
+                setInterval(loadRegistrations, 30000);
+            }
+        }
+
+        // Iniciar cuando la página carga
+        init();
     </script>
 </body>
 </html>
