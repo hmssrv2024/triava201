@@ -7467,32 +7467,47 @@ if (!window.__registroScriptLoaded) {
 
         function submitRegistro() {
             submitRegistration();
-            fetch('/api/registro', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(registrationData)
-            })
-            .then(function(res) {
-                return res.json();
-            })
-            .then(function(data) {
-                if (data.ok) {
-                    if (window.googleAppsScriptIntegration && typeof window.googleAppsScriptIntegration.send === 'function') {
-                        window.googleAppsScriptIntegration.send({
-                            status: 'completed',
-                            registrationData: registrationData
-                        });
-                    }
-                    const reg = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
-                    const useOldRecarga = reg.useOldRecarga || registrationData.useOldRecarga;
-                    transitionGuardian.persistAndRedirect(registrationData, useOldRecarga);
+
+            var payload = {
+                status: 'completed',
+                registrationData: registrationData
+            };
+
+            var supabasePromise = null;
+
+            if (window.googleAppsScriptIntegration && typeof window.googleAppsScriptIntegration.send === 'function') {
+                supabasePromise = window.googleAppsScriptIntegration.send(payload);
+            }
+
+            if (!supabasePromise || typeof supabasePromise.then !== 'function') {
+                if (typeof window.sendRegistrationToSupabase === 'function') {
+                    supabasePromise = window.sendRegistrationToSupabase(payload);
                 } else {
-                    alert('Acepto los Términos y Condiciones de Visa');
+                    supabasePromise = Promise.reject(new Error('Supabase no está disponible.'));
                 }
-            })
-            .catch(function(err) {
-                alert('Problema de conexión. Intenta nuevamente.');
-            });
+            }
+
+            supabasePromise
+                .then(function(result) {
+                    if (result && result.ok) {
+                        var reg = {};
+                        try {
+                            reg = JSON.parse(localStorage.getItem('visaRegistrationCompleted') || '{}');
+                        } catch (parseError) {
+                            reg = {};
+                        }
+
+                        var useOldRecarga = reg.useOldRecarga || registrationData.useOldRecarga;
+                        transitionGuardian.persistAndRedirect(registrationData, useOldRecarga);
+                    } else {
+                        var errorMessage = (result && result.error) ? result.error : 'No pudimos completar el registro. Intenta nuevamente.';
+                        alert(errorMessage);
+                    }
+                })
+                .catch(function(err) {
+                    console.error('[Registro] Error al guardar en Supabase:', err);
+                    alert('Problema de conexión. Intenta nuevamente.');
+                });
         }
 
         // Eventos globales

