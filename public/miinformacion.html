@@ -64,7 +64,7 @@
       max-width: 1100px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 1.5rem;
     }
 
@@ -107,7 +107,7 @@
 
     .info-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 0.75rem 1.25rem;
     }
 
@@ -162,6 +162,133 @@
       border-radius: 14px;
       background: rgba(56, 189, 248, 0.08);
       border: 1px solid rgba(56, 189, 248, 0.18);
+    }
+
+    .profile-card {
+      grid-column: 1 / -1;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .avatar-frame {
+      width: 104px;
+      height: 104px;
+      border-radius: 28px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px solid rgba(148, 163, 184, 0.35);
+      position: relative;
+      overflow: hidden;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 16px 35px rgba(15, 23, 42, 0.45);
+    }
+
+    .avatar-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .avatar-fallback {
+      font-size: 2.75rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--accent);
+    }
+
+    .profile-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      min-width: 200px;
+    }
+
+    .profile-primary {
+      margin: 0;
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .profile-secondary {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .profile-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem 1.25rem;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .meta-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .meta-value {
+      font-size: 0.98rem;
+      font-weight: 500;
+      color: var(--text);
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .raw-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    details.raw-entry {
+      background: rgba(15, 23, 42, 0.35);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 12px;
+      padding: 0.75rem 0.9rem;
+    }
+
+    details.raw-entry[open] {
+      background: rgba(15, 23, 42, 0.45);
+    }
+
+    details.raw-entry summary {
+      cursor: pointer;
+      font-weight: 600;
+      outline: none;
+    }
+
+    details.raw-entry summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .raw-entry .raw-meta {
+      margin: 0.35rem 0 0.55rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .raw-entry .raw-empty {
+      font-size: 0.9rem;
+      color: var(--muted);
+      padding: 0.5rem 0;
     }
 
     .balance-pill h3 {
@@ -298,6 +425,11 @@
       .table-wrapper {
         max-height: 360px;
       }
+
+      .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
@@ -308,12 +440,38 @@
   </header>
 
   <main>
+    <section class="card profile-card" id="profile-card">
+      <h2>
+        Perfil del titular
+        <span class="badge" id="profile-updated">Sin sincronizar</span>
+      </h2>
+      <div class="profile-header">
+        <div class="avatar-frame" aria-live="polite">
+          <img id="profile-avatar" alt="Foto de perfil del usuario" loading="lazy" />
+          <span class="avatar-fallback" id="profile-avatar-fallback" aria-hidden="true">?</span>
+        </div>
+        <div class="profile-details">
+          <p class="profile-primary" id="profile-name">Usuario Remeex</p>
+          <p class="profile-secondary" id="profile-email">Sin correo sincronizado</p>
+        </div>
+      </div>
+      <div class="profile-meta" id="profile-meta"></div>
+    </section>
+
     <section class="card" id="registration-card">
       <h2>
         Datos de registro
         <span class="badge" id="registration-updated">Sin sincronizar</span>
       </h2>
       <div id="registration-content" class="info-grid"></div>
+    </section>
+
+    <section class="card" id="registration-snapshots-card">
+      <h2>
+        Fuentes completas del registro
+        <span class="badge" id="registration-snapshots-badge">Sin sincronizar</span>
+      </h2>
+      <div id="registration-snapshots" class="raw-sections"></div>
     </section>
 
     <section class="card" id="rate-card">
