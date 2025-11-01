@@ -8536,18 +8536,20 @@
     })();
   </script>
 
-  <!-- Sistema de Autenticación Multi-Dispositivo -->
+  <!-- DESHABILITADO: Sistema de Autenticación Multi-Dispositivo
+       Requiere configuración completa de Supabase + funciones RPC
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client-frontend.js"></script>
   <script src="js/user-auth.js"></script>
   <script src="js/user-notifications.js"></script>
+  -->
 
+  <!-- Sistema de Verificación Simple basado en localStorage -->
   <script>
-    (async function() {
-      console.log('[HomeVisa] Verificando sesión...');
+    (function() {
+      console.log('[HomeVisa] Verificando acceso...');
 
-      // VERIFICAR PRIMERO SI EL USUARIO TIENE REGISTRO COMPLETADO
-      // Esto permite que usuarios recién registrados accedan sin sesión de UserAuth
+      // Verificar si el usuario tiene registro completado
       const hasRegistrationCompleted = () => {
         try {
           const registration = localStorage.getItem('visaRegistrationCompleted');
@@ -8562,86 +8564,15 @@
 
       const isRegistered = hasRegistrationCompleted();
 
-      if (isRegistered) {
-        console.log('[HomeVisa] ✅ Usuario con registro completado, permitiendo acceso');
-        // Usuario registrado - permitir acceso sin verificar UserAuth
-        // El sistema de UserAuth se sincronizará en segundo plano
-      } else {
-        // Solo verificar UserAuth si NO tiene registro completado
-        // Esperar a que UserAuth esté listo
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Verificar sesión
-        const session = await window.userAuth.checkSession();
-
-        if (!session) {
-          // Sin sesión ni registro → Redirigir a index
-          console.log('[HomeVisa] Sin sesión ni registro, redirigiendo a index...');
-          window.location.href = '/index.html';
-          return;
-        }
-
-        if (session.blocked) {
-          // Cuenta bloqueada → Mostrar alerta y redirigir
-          alert('⛔ Tu cuenta está bloqueada. Motivo: ' + (session.reason || 'No especificado'));
-          await window.userAuth.logout();
-          window.location.href = '/index.html';
-          return;
-        }
-
-        // Sesión válida
-        console.log('[HomeVisa] ✅ Sesión válida:', session.email);
+      if (!isRegistered) {
+        // Sin registro completado → Redirigir a index
+        console.log('[HomeVisa] Sin registro completado, redirigiendo a index...');
+        window.location.href = '/index.html';
+        return;
       }
 
-      // Intentar sincronización con UserAuth si está disponible
-      try {
-        const session = await window.userAuth.checkSession();
-        if (session && session.email) {
-          console.log('[HomeVisa] ✅ Sesión UserAuth válida:', session.email);
-
-          // Iniciar sincronización automática cada 30 segundos
-          window.userAuth.startAutoSync(session.email, 30);
-
-          // Iniciar sistema de notificaciones
-          const notificationSystem = new UserNotificationSystem();
-          await notificationSystem.init(session.email);
-
-          // Escuchar evento de sincronización de datos
-          window.addEventListener('user-data-synced', (event) => {
-            const userData = event.detail;
-            console.log('[HomeVisa] 🔄 Datos sincronizados:', userData);
-
-            // Actualizar UI con nuevos datos
-            if (userData.balance) {
-              // Actualizar saldo en UI (buscar elementos comunes)
-              const balanceElements = document.querySelectorAll('[data-balance], .balance-amount, #user-balance, #current-balance');
-              balanceElements.forEach(el => {
-                if (el) {
-                  el.textContent = `$${userData.balance.current_balance.toFixed(2)}`;
-                }
-              });
-            }
-
-            // Disparar evento para que otros módulos se actualicen
-            window.dispatchEvent(new CustomEvent('balance-updated', {
-              detail: userData.balance
-            }));
-          });
-
-          // Logout cuando se cierra la ventana
-          window.addEventListener('beforeunload', () => {
-            // Enviar beacon para marcar offline
-            if (session && session.email) {
-              navigator.sendBeacon('/api/user/logout', JSON.stringify({
-                email: session.email
-              }));
-            }
-          });
-        }
-      } catch (error) {
-        console.warn('[HomeVisa] UserAuth no disponible o error en sincronización:', error);
-      }
-
+      // Usuario registrado - permitir acceso
+      console.log('[HomeVisa] ✅ Usuario con registro completado, permitiendo acceso');
       console.log('[HomeVisa] 🚀 Sistema iniciado correctamente');
     })();
   </script>
