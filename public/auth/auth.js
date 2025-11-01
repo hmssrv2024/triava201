@@ -7,6 +7,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Inicializar cliente de Supabase
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const DEFAULT_REDIRECT_PATH = '/admin-registros.html';
+
 // =====================================================
 // ELEMENTOS DEL DOM
 // =====================================================
@@ -79,6 +81,24 @@ function validateEmail(email) {
 
 function validatePassword(password) {
     return password.length >= 6;
+}
+
+function getRedirectUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const redirectParam = params.get('redirect');
+
+    if (redirectParam) {
+        try {
+            const redirectUrl = new URL(redirectParam, window.location.origin);
+            if (redirectUrl.origin === window.location.origin && redirectUrl.pathname !== '/auth/login.html') {
+                return `${redirectUrl.pathname}${redirectUrl.search}${redirectUrl.hash}`;
+            }
+        } catch (error) {
+            console.warn('Parámetro de redirección inválido, se usará el destino por defecto.', error);
+        }
+    }
+
+    return DEFAULT_REDIRECT_PATH;
 }
 
 // =====================================================
@@ -184,9 +204,10 @@ async function handleLogin(email, password) {
 
         // Paso 5: Mostrar éxito y redirigir
         showSuccess('Autenticación exitosa. Redirigiendo...');
-        
+
+        const redirectUrl = getRedirectUrl();
         setTimeout(() => {
-            window.location.href = '../admin/admin-dashboard.html';
+            window.location.href = redirectUrl;
         }, 1500);
 
         return true;
@@ -268,10 +289,10 @@ async function checkExistingSession() {
         if (user) {
             // Verificar si es admin
             const adminData = await checkIfUserIsAdmin(user.id);
-            
+
             if (adminData) {
                 // Ya está autenticado, redirigir al dashboard
-                window.location.href = '../admin/admin-dashboard.html';
+                window.location.href = getRedirectUrl();
             } else {
                 // No es admin, cerrar sesión
                 await supabase.auth.signOut();

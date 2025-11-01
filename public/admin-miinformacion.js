@@ -188,7 +188,13 @@ function redirectToLogin() {
   } catch (error) {
     console.warn('[AdminMiInformacion] No se pudo limpiar la sesión en storage.', error);
   }
-  window.location.href = '/auth/login.html';
+  const currentUrl = new URL(window.location.href);
+  const redirectPath = `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`;
+  const loginUrl = new URL('/auth/login.html', window.location.origin);
+  if (redirectPath && redirectPath !== '/auth/login.html') {
+    loginUrl.searchParams.set('redirect', redirectPath);
+  }
+  window.location.href = loginUrl.toString();
 }
 
 function applyAdminDefaults() {
