@@ -83,6 +83,7 @@ const COMMAND_LABELS = {
 
 const MAX_RECORDS = 250;
 const STORAGE_OPERATOR_KEY = 'adminMiInformacionOperator';
+const ADMIN_SESSION_STORAGE_KEY = 'admin_user';
 
 const relativeFormatter = new Intl.RelativeTimeFormat('es', { numeric: 'auto' });
 const dateFormatter = new Intl.DateTimeFormat('es-VE', { dateStyle: 'medium', timeStyle: 'short' });
@@ -100,6 +101,7 @@ const currencyFormatter = {
 const state = {
   client: null,
   realtimeChannel: null,
+  admin: null,
   rawSnapshots: [],
   snapshotMap: new Map(),
   filteredSnapshots: [],
@@ -179,6 +181,96 @@ const elements = {
 };
 
 let toastTimeout = null;
+
+function redirectToLogin() {
+  try {
+    sessionStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
+  } catch (error) {
+    console.warn('[AdminMiInformacion] No se pudo limpiar la sesión en storage.', error);
+  }
+  window.location.href = '/auth/login.html';
+}
+
+function applyAdminDefaults() {
+  if (!elements.operatorInput) return;
+  if (state.operatorName) return;
+  if (state.admin && state.admin.full_name) {
+    elements.operatorInput.value = state.admin.full_name;
+    state.operatorName = state.admin.full_name.trim();
+  }
+}
+
+async function verifyAdminSession(client) {
+  if (!client || !client.auth) {
+    console.error('[AdminMiInformacion] Cliente de Supabase inválido para verificación.');
+    redirectToLogin();
+    return false;
+  }
+
+  setSupabaseStatus('warning', 'Verificando sesión', 'Confirmando permisos de administrador…');
+
+  try {
+    const {
+      data: { user },
+      error: authError
+    } = await client.auth.getUser();
+
+    if (authError || !user) {
+      console.error('[AdminMiInformacion] Sesión no válida o expirada.', authError);
+      redirectToLogin();
+      return false;
+    }
+
+    const { data: adminData, error: adminError } = await client
+      .from('admin_users')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (adminError || !adminData) {
+      console.error('[AdminMiInformacion] Usuario autenticado no es administrador activo.', adminError);
+      await client.auth.signOut();
+      redirectToLogin();
+      return false;
+    }
+
+    state.admin = adminData;
+
+    try {
+      sessionStorage.setItem(ADMIN_SESSION_STORAGE_KEY, JSON.stringify(adminData));
+    } catch (error) {
+      console.warn('[AdminMiInformacion] No se pudo persistir la sesión de admin.', error);
+    }
+
+    applyAdminDefaults();
+
+    setSupabaseStatus('online', 'Sesión verificada', 'Administrador autenticado correctamente');
+    return true;
+  } catch (error) {
+    console.error('[AdminMiInformacion] Error verificando la sesión de administrador.', error);
+    redirectToLogin();
+    return false;
+  }
+}
+
+async function ensureAuthenticatedClient() {
+  const client = await connectSupabase();
+  if (!client) {
+    return null;
+  }
+
+  const isValidSession = await verifyAdminSession(client);
+  if (!isValidSession) {
+    return null;
+  }
+
+  if (!state.realtimeChannel) {
+    subscribeRealtime();
+  }
+
+  return client;
+}
 
 function setSupabaseStatus(status, label, meta) {
   if (!elements.statusCard) return;
@@ -1246,7 +1338,7 @@ function addCommand(command) {
 }
 
 async function fetchSnapshots() {
-  if (!state.client) return;
+  if (!state.client || !state.admin) return;
   state.loadingSnapshots = true;
   try {
     const { data, error } = await state.client
@@ -1268,7 +1360,7 @@ async function fetchSnapshots() {
 }
 
 async function fetchCommands() {
-  if (!state.client) return;
+  if (!state.client || !state.admin) return;
   state.loadingCommands = true;
   try {
     const { data, error } = await state.client
@@ -1294,11 +1386,16 @@ async function fetchCommands() {
   }
 }
 
-async function refreshAll() {
-  if (!state.client) {
-    await connectSupabase();
+async function refreshAll(options = {}) {
+  const { skipAuthCheck = false } = options;
+
+  if (!skipAuthCheck) {
+    const client = await ensureAuthenticatedClient();
+    if (!client) return;
   }
-  if (!state.client) return;
+
+  if (!state.client || !state.admin) return;
+
   if (elements.refreshButton) {
     elements.refreshButton.disabled = true;
   }
@@ -1315,9 +1412,24 @@ async function connectSupabase() {
   setSupabaseStatus('warning', 'Inicializando', 'Preparando cliente de Supabase…');
   try {
     const config = Object.assign({}, DEFAULT_SUPABASE_CONFIG, window.miInformacionAdminConfig || {});
-    state.client = createClient(config.url, config.anonKey, { auth: { persistSession: false } });
-    setSupabaseStatus('online', 'Conectado a Supabase', 'Cliente inicializado correctamente');
-    subscribeRealtime();
+    state.client = createClient(config.url, config.anonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    });
+
+    if (state.client?.auth?.onAuthStateChange) {
+      state.client.auth.onAuthStateChange((event, session) => {
+        if (!session || event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+          state.admin = null;
+          redirectToLogin();
+        }
+      });
+    }
+
+    setSupabaseStatus('warning', 'Cliente inicializado', 'Listo para verificar credenciales de administrador');
     return state.client;
   } catch (error) {
     console.error('[AdminMiInformacion] Error inicializando Supabase:', error);
@@ -1328,7 +1440,7 @@ async function connectSupabase() {
 }
 
 function subscribeRealtime() {
-  if (!state.client || !state.client.channel) return;
+  if (!state.client || !state.client.channel || !state.admin) return;
   if (state.realtimeChannel) {
     state.realtimeChannel.unsubscribe();
   }
@@ -1468,8 +1580,9 @@ function attachEventListeners() {
 async function init() {
   restoreOperatorName();
   attachEventListeners();
-  await connectSupabase();
-  await refreshAll();
+  const client = await ensureAuthenticatedClient();
+  if (!client) return;
+  await refreshAll({ skipAuthCheck: true });
 }
 
 init().catch((error) => {
