@@ -164,6 +164,114 @@
       border: 1px solid rgba(56, 189, 248, 0.18);
     }
 
+    .history-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      align-items: stretch;
+    }
+
+    .account-level-box {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 16px;
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .account-level-box h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .account-level-tier {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .account-level-summary {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .account-level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.65rem 1rem;
+    }
+
+    .account-level-note {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .history-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .history-stat {
+      padding: 0.95rem 1.05rem;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(15, 23, 42, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .history-stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .history-stat-value {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .history-stat-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .history-hint {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .history-balance-secondary {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .history-delta-positive {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .history-delta-negative {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
     .profile-card {
       grid-column: 1 / -1;
     }
@@ -471,6 +579,10 @@
         flex-direction: column;
         align-items: flex-start;
       }
+
+      .history-overview {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -559,6 +671,56 @@
     <section class="card" id="balance-card">
       <h2>Saldo actual <span class="badge" id="balance-updated">--</span></h2>
       <div class="balance-summary" id="balance-summary"></div>
+    </section>
+
+    <section class="card" id="balance-history-card">
+      <h2>Histórico de saldo y validación <span class="badge" id="balance-history-badge">--</span></h2>
+      <div class="history-overview">
+        <div class="account-level-box">
+          <h3>Estado de tu cuenta</h3>
+          <p class="account-level-tier" id="account-level-tier">Nivel no disponible</p>
+          <p class="account-level-summary" id="account-level-summary">Sin datos sincronizados.</p>
+          <div class="account-level-grid">
+            <div class="info-item">
+              <span class="info-label">Saldo actual</span>
+              <span class="info-value" id="account-level-balance">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Puntos acumulados</span>
+              <span class="info-value" id="account-level-points">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Validación (USD)</span>
+              <span class="info-value" id="account-validation-usd">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Validación (Bs)</span>
+              <span class="info-value" id="account-validation-bs">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Validación (EUR)</span>
+              <span class="info-value" id="account-validation-eur">--</span>
+            </div>
+          </div>
+          <p class="account-level-note" id="account-validation-note">Los montos de validación aparecerán cuando se detecte tu nivel.</p>
+        </div>
+        <div class="history-stats" id="balance-history-stats"></div>
+      </div>
+      <p class="history-hint" id="balance-history-hint" hidden>Utiliza estos puntos para graficar la evolución de tu saldo.</p>
+      <div class="table-wrapper" id="balance-history-table-wrapper" hidden>
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Saldo</th>
+              <th>Variación</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody id="balance-history-body"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="balance-history-empty">Aún no se han registrado cambios de saldo en este dispositivo.</div>
     </section>
 
     <section class="card" id="transactions-card">
