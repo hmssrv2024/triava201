@@ -103,6 +103,31 @@
       text-transform: uppercase;
       background: rgba(148, 163, 184, 0.15);
       color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .badge[data-status="success"] {
+      background: rgba(74, 222, 128, 0.18);
+      color: #bbf7d0;
+      border-color: rgba(74, 222, 128, 0.45);
+    }
+
+    .badge[data-status="error"] {
+      background: rgba(248, 113, 113, 0.18);
+      color: #fecaca;
+      border-color: rgba(248, 113, 113, 0.45);
+    }
+
+    .badge[data-status="syncing"] {
+      background: rgba(56, 189, 248, 0.22);
+      color: #bae6fd;
+      border-color: rgba(56, 189, 248, 0.55);
+    }
+
+    .badge[data-status="info"] {
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--muted);
+      border-color: rgba(148, 163, 184, 0.35);
     }
 
     .info-grid {
@@ -394,6 +419,36 @@
       background: rgba(56, 189, 248, 0.18);
       border-color: rgba(56, 189, 248, 0.45);
       color: #bae6fd;
+    }
+
+    .supabase-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .supabase-status-text {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .supabase-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .supabase-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .supabase-actions button[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     .remote-status-text {
@@ -803,6 +858,20 @@
   </header>
 
   <main>
+    <section class="card supabase-card" id="supabase-sync-card">
+      <h2>
+        Sincronización con Supabase
+        <span class="badge" id="supabase-sync-badge">Inactiva</span>
+      </h2>
+      <p class="supabase-status-text" id="supabase-sync-message">
+        La información de esta página se enviará automáticamente a tu backend cuando se detecten datos.
+      </p>
+      <div class="supabase-actions">
+        <button type="button" class="remote-btn" id="supabase-sync-now">Enviar datos ahora</button>
+        <span class="supabase-meta" id="supabase-sync-meta">Sin sincronizaciones registradas.</span>
+      </div>
+    </section>
+
     <section class="card profile-card" id="profile-card">
       <h2>
         Perfil del titular
