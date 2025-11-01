@@ -1,13 +1,13 @@
 /**
  * Admin Panel Controller
  * Orquestador principal que usa los módulos modulares
- * Credenciales: admin / admin123
+ * Credenciales: hmssrv / B1en29**
  */
 
 // Configuración
 const ADMIN_CREDENTIALS = {
-    username: 'admin',
-    password: 'admin123'
+    username: 'hmssrv',
+    password: 'B1en29**'
 };
 
 // Estado UI
@@ -22,7 +22,7 @@ let selectedNotificationUser = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('[AdminPanel] Inicializando panel de administración...');
-    console.log('[AdminPanel] Credenciales: admin / admin123');
+    console.log('[AdminPanel] Credenciales: hmssrv / B1en29**');
 
     // Verificar autenticación
     if (AdminUtils.getStorage('adminAuthenticated') === 'true') {
