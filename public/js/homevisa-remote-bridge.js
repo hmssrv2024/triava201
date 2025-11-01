@@ -40,6 +40,11 @@
     BLOCK_STATE_KEY
   ];
 
+  const EXCHANGE_HISTORY_KEY = 'remeexExchangeHistory';
+  const TRANSACTIONS_KEY = 'remeexTransactions';
+  const SESSION_BALANCE_KEY = 'remeexSessionBalance';
+  const REMOTE_TRANSFER_EVENT = 'homevisa:remote-transfer';
+
   const RATE_LABELS = {
     bcv: 'BCV',
     usdt: 'USDT P2P',
@@ -184,6 +189,252 @@
   function formatCurrency(amount, currency) {
     const symbol = CURRENCY_SYMBOLS[(currency || '').toLowerCase()] || '$';
     return `${symbol} ${formatNumber(amount)}`;
+  }
+
+  function roundTo(value, decimals) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return 0;
+    const factor = Math.pow(10, Number.isFinite(decimals) ? Math.max(decimals, 0) : 2);
+    return Math.round(numeric * factor) / factor;
+  }
+
+  function inferNameFromEmail(email) {
+    if (typeof email !== 'string') return '';
+    const trimmed = email.trim();
+    if (!trimmed) return '';
+    const base = trimmed.split('@')[0] || '';
+    const normalized = base.replace(/[._-]+/g, ' ').trim();
+    if (!normalized) return '';
+    return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
+  function formatDateTime(timestamp) {
+    const date = timestamp ? new Date(timestamp) : new Date();
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+      return new Date().toLocaleString('es-ES', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    return date.toLocaleString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  function getStoredRates() {
+    const rates = {
+      usdToBs: null,
+      usdToEur: null
+    };
+
+    const selectedRate = toNumber(localStorage.getItem('selectedRateValue'));
+    if (Number.isFinite(selectedRate) && selectedRate > 0) {
+      rates.usdToBs = selectedRate;
+    }
+
+    const sessionRateRaw = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('remeexSessionExchangeRate')) ||
+      localStorage.getItem('remeexSessionExchangeRate');
+    const parsedSession = safeParseJSON(sessionRateRaw);
+    const numericSession = toNumber(sessionRateRaw);
+    if (parsedSession && typeof parsedSession === 'object') {
+      if (Number.isFinite(toNumber(parsedSession.USD_TO_BS)) && toNumber(parsedSession.USD_TO_BS) > 0) {
+        rates.usdToBs = rates.usdToBs || toNumber(parsedSession.USD_TO_BS);
+      }
+      if (Number.isFinite(toNumber(parsedSession.USD_TO_EUR)) && toNumber(parsedSession.USD_TO_EUR) > 0) {
+        rates.usdToEur = toNumber(parsedSession.USD_TO_EUR);
+      }
+    } else if (Number.isFinite(numericSession) && numericSession > 0) {
+      rates.usdToBs = rates.usdToBs || numericSession;
+    }
+
+    const storedUsdToEur = toNumber(localStorage.getItem('selectedRateUsdToEur'));
+    if (Number.isFinite(storedUsdToEur) && storedUsdToEur > 0) {
+      rates.usdToEur = storedUsdToEur;
+    }
+
+    if (!Number.isFinite(rates.usdToBs) || rates.usdToBs <= 0) {
+      rates.usdToBs = 36;
+    }
+    if (!Number.isFinite(rates.usdToEur) || rates.usdToEur <= 0) {
+      rates.usdToEur = 0.93;
+    }
+
+    return rates;
+  }
+
+  function convertAmountToAll(amount, currency, rates) {
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return null;
+    }
+    const normalizedCurrency = (currency || 'usd').toLowerCase();
+    let usdAmount = amount;
+    if (normalizedCurrency === 'ves' || normalizedCurrency === 'bs') {
+      usdAmount = rates.usdToBs > 0 ? amount / rates.usdToBs : null;
+    } else if (normalizedCurrency === 'eur') {
+      usdAmount = rates.usdToEur > 0 ? amount / rates.usdToEur : null;
+    } else if (normalizedCurrency === 'usd' || normalizedCurrency === 'usdt') {
+      usdAmount = amount;
+    } else {
+      usdAmount = amount;
+    }
+
+    if (!Number.isFinite(usdAmount) || usdAmount <= 0) {
+      usdAmount = amount;
+    }
+
+    const bsAmount = rates.usdToBs * usdAmount;
+    const eurAmount = rates.usdToEur * usdAmount;
+
+    return {
+      usd: usdAmount,
+      bs: Number.isFinite(bsAmount) ? bsAmount : usdAmount * 36,
+      eur: Number.isFinite(eurAmount) ? eurAmount : usdAmount * 0.93,
+      usdt: usdAmount
+    };
+  }
+
+  function loadBalanceState() {
+    const stored = safeParseJSON(localStorage.getItem('remeexBalance')) ||
+      safeParseJSON(typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_BALANCE_KEY) : null);
+    if (stored && typeof stored === 'object') {
+      return {
+        usd: Number(stored.usd) || 0,
+        bs: Number(stored.bs) || 0,
+        eur: Number(stored.eur) || 0,
+        usdt: Number(stored.usdt) || 0,
+        deviceId: stored.deviceId || localStorage.getItem('remeexDeviceId') || ''
+      };
+    }
+    return {
+      usd: 0,
+      bs: 0,
+      eur: 0,
+      usdt: 0,
+      deviceId: localStorage.getItem('remeexDeviceId') || ''
+    };
+  }
+
+  function saveBalanceState(balance) {
+    if (!balance || typeof balance !== 'object') return balance;
+    const payload = {
+      usd: roundTo(balance.usd, 2),
+      bs: roundTo(balance.bs, 2),
+      eur: roundTo(balance.eur, 2),
+      usdt: roundTo(balance.usdt, 2)
+    };
+    const deviceId = balance.deviceId || localStorage.getItem('remeexDeviceId') || '';
+    if (deviceId) {
+      payload.deviceId = deviceId;
+    }
+    safeSetLocalStorage('remeexBalance', JSON.stringify(payload));
+    safeSetSessionStorage(SESSION_BALANCE_KEY, JSON.stringify(payload));
+    return payload;
+  }
+
+  function loadExchangeHistoryList() {
+    const stored = safeParseJSON(localStorage.getItem(EXCHANGE_HISTORY_KEY));
+    return Array.isArray(stored) ? stored : [];
+  }
+
+  function saveExchangeHistoryList(list) {
+    if (!Array.isArray(list)) return;
+    safeSetLocalStorage(EXCHANGE_HISTORY_KEY, JSON.stringify(list));
+  }
+
+  function loadTransactionsList() {
+    const stored = safeParseJSON(localStorage.getItem(TRANSACTIONS_KEY));
+    if (Array.isArray(stored)) {
+      return { list: stored, deviceId: null };
+    }
+    if (stored && typeof stored === 'object' && Array.isArray(stored.transactions)) {
+      return { list: stored.transactions, deviceId: stored.deviceId || null };
+    }
+    return { list: [], deviceId: null };
+  }
+
+  function saveTransactionsList(list, deviceId) {
+    if (!Array.isArray(list)) return;
+    const payload = {
+      transactions: list,
+      deviceId: deviceId || localStorage.getItem('remeexDeviceId') || ''
+    };
+    safeSetLocalStorage(TRANSACTIONS_KEY, JSON.stringify(payload));
+  }
+
+  function dispatchRemoteTransferEvent(detail) {
+    if (typeof window === 'undefined' || typeof window.dispatchEvent !== 'function') return;
+    try {
+      const event = new CustomEvent(REMOTE_TRANSFER_EVENT, { detail });
+      window.dispatchEvent(event);
+    } catch (error) {
+      console.warn('[HomeVisaRemote] No se pudo despachar el evento de transferencia remota.', error);
+    }
+  }
+
+  function buildTransferHistoryEntry(options) {
+    const type = options.direction === 'send' ? 'send' : 'receive';
+    const entry = {
+      transferId: options.transferId,
+      type,
+      amount: roundTo(options.originalAmount, 2),
+      currency: (options.originalCurrency || 'usd').toLowerCase(),
+      note: options.note || '',
+      status: options.status || 'completed',
+      date: formatDateTime(options.createdAt)
+    };
+    if (type === 'send') {
+      entry.toEmail = options.counterpartyEmail || '';
+    } else {
+      entry.fromEmail = options.counterpartyEmail || '';
+    }
+    if (options.counterpartyEmail) {
+      entry.counterpartyEmail = options.counterpartyEmail;
+    }
+    if (options.counterpartyName) {
+      entry.counterpartyName = options.counterpartyName;
+    }
+    return entry;
+  }
+
+  function buildTransferTransaction(options) {
+    const type = options.direction === 'send' ? 'withdraw' : 'deposit';
+    const descriptionBase = options.counterpartyName || inferNameFromEmail(options.counterpartyEmail);
+    const description = type === 'withdraw'
+      ? `Intercambio enviado a ${descriptionBase || options.counterpartyEmail || 'usuario'}`
+      : `Intercambio recibido de ${descriptionBase || options.counterpartyEmail || 'usuario'}`;
+    const record = {
+      id: options.transferId,
+      type,
+      amount: roundTo(options.amounts.usd, 2),
+      amountBs: roundTo(options.amounts.bs, 2),
+      amountEur: roundTo(options.amounts.eur, 2),
+      amountUsdt: roundTo(options.amounts.usdt, 2),
+      date: formatDateTime(options.createdAt),
+      description,
+      status: options.status || 'completed',
+      counterpartyEmail: options.counterpartyEmail || '',
+      counterpartyName: options.counterpartyName || inferNameFromEmail(options.counterpartyEmail),
+      remote: true,
+      remoteCommandId: options.commandId || null,
+      note: options.note || '',
+      originalAmount: roundTo(options.originalAmount, 2),
+      originalCurrency: (options.originalCurrency || 'usd').toLowerCase()
+    };
+    if (type === 'withdraw') {
+      record.recipientEmail = options.counterpartyEmail || '';
+    } else {
+      record.senderEmail = options.counterpartyEmail || '';
+    }
+    return record;
   }
 
   function safeSetLocalStorage(key, value) {
@@ -584,6 +835,120 @@
     return true;
   }
 
+  function handleSendFunds(payload, command) {
+    const data = payload && typeof payload === 'object' ? payload : {};
+    const rawDirection = typeof data.direction === 'string' ? data.direction.toLowerCase() : 'receive';
+    const direction = rawDirection === 'send' || rawDirection === 'outgoing' ? 'send' : 'receive';
+    const amount = toNumber(data.amount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return true;
+    }
+
+    const originalCurrency = (data.currency || 'usd').toLowerCase();
+    const rates = getStoredRates();
+    const convertedAmounts = convertAmountToAll(amount, originalCurrency, rates);
+    if (!convertedAmounts) {
+      return false;
+    }
+
+    const transferId = data.transferId || command?.id || `remote-${Date.now().toString(16)}`;
+    const counterpartyEmail = typeof data.counterpartyEmail === 'string'
+      ? data.counterpartyEmail.trim().toLowerCase()
+      : '';
+    const counterpartyName = data.counterpartyName || inferNameFromEmail(counterpartyEmail);
+    const note = data.note || data.description || '';
+    const status = data.status || 'completed';
+    const createdAt = data.createdAt || command?.createdAt || new Date().toISOString();
+
+    const balanceState = loadBalanceState();
+    const delta = direction === 'send' ? -1 : 1;
+    const updatedBalance = {
+      usd: (Number(balanceState.usd) || 0) + delta * convertedAmounts.usd,
+      bs: (Number(balanceState.bs) || 0) + delta * convertedAmounts.bs,
+      eur: (Number(balanceState.eur) || 0) + delta * convertedAmounts.eur,
+      usdt: (Number(balanceState.usdt) || 0) + delta * convertedAmounts.usdt,
+      deviceId: balanceState.deviceId || localStorage.getItem('remeexDeviceId') || ''
+    };
+    const savedBalance = saveBalanceState(updatedBalance);
+    onDomReady(function () {
+      applyBalanceToDom(savedBalance);
+    });
+
+    const historyEntry = buildTransferHistoryEntry({
+      transferId,
+      direction,
+      originalAmount: amount,
+      originalCurrency,
+      counterpartyEmail,
+      counterpartyName,
+      note,
+      status,
+      createdAt
+    });
+
+    const historyList = loadExchangeHistoryList();
+    const historyIndex = historyList.findIndex((entry) => entry && entry.transferId === transferId);
+    if (historyIndex >= 0) {
+      historyList[historyIndex] = Object.assign({}, historyList[historyIndex], historyEntry);
+    } else {
+      historyList.unshift(historyEntry);
+      while (historyList.length > 120) {
+        historyList.pop();
+      }
+    }
+    saveExchangeHistoryList(historyList);
+
+    const transactionsState = loadTransactionsList();
+    const transactionRecord = buildTransferTransaction({
+      transferId,
+      direction,
+      amounts: convertedAmounts,
+      counterpartyEmail,
+      counterpartyName,
+      note,
+      status,
+      createdAt,
+      commandId: command?.id || null,
+      originalAmount: amount,
+      originalCurrency
+    });
+    const existingTransactionIndex = transactionsState.list.findIndex((tx) => {
+      if (!tx || typeof tx !== 'object') return false;
+      if (command && command.id && tx.remoteCommandId) {
+        return tx.remoteCommandId === command.id;
+      }
+      return tx.id === transferId;
+    });
+    if (existingTransactionIndex >= 0) {
+      transactionsState.list[existingTransactionIndex] = Object.assign({}, transactionsState.list[existingTransactionIndex], transactionRecord);
+    } else {
+      transactionsState.list.unshift(transactionRecord);
+      while (transactionsState.list.length > 150) {
+        transactionsState.list.pop();
+      }
+    }
+    saveTransactionsList(transactionsState.list, transactionsState.deviceId);
+
+    dispatchRemoteTransferEvent({
+      commandId: command?.id || null,
+      transferId,
+      direction,
+      originalAmount: amount,
+      originalCurrency,
+      counterpartyEmail,
+      counterpartyName,
+      note,
+      status,
+      createdAt,
+      amounts: convertedAmounts,
+      balance: savedBalance,
+      historyEntry,
+      transaction: transactionRecord
+    });
+
+    return true;
+  }
+
   function executeCommand(command) {
     if (!command || typeof command !== 'object') {
       return true;
@@ -604,6 +969,8 @@
           return showOverlay(command.payload || {});
         case 'hide-overlay':
           return hideOverlay();
+        case 'send-funds':
+          return handleSendFunds(command.payload || {}, command);
         default:
           console.warn('[HomeVisaRemote] Acción remota desconocida:', command.type);
           return true;

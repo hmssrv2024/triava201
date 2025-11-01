@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Intercambio - REMEEX VISA</title>
+  <script src="js/homevisa-remote-bridge.js" defer></script>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="apple-touch-icon" href="visabluapple.png">
@@ -2122,6 +2123,77 @@
       );
     }
 
+    function loadStoredBalanceSnapshot() {
+      const raw = localStorage.getItem(CONFIG.STORAGE_KEYS.BALANCE) ||
+        (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('remeexSessionBalance') : null);
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function applyBalanceSnapshotToCurrent(snapshot) {
+      if (!snapshot || typeof snapshot !== 'object') return;
+      if (!currentUser.balance) {
+        currentUser.balance = { usd: 0, bs: 0, eur: 0 };
+      }
+      if (typeof snapshot.usd === 'number') currentUser.balance.usd = snapshot.usd;
+      if (typeof snapshot.bs === 'number') currentUser.balance.bs = snapshot.bs;
+      if (typeof snapshot.eur === 'number') currentUser.balance.eur = snapshot.eur;
+      if (typeof snapshot.usdt === 'number') currentUser.balance.usdt = snapshot.usdt;
+      saveBalanceData();
+    }
+
+    function handleRemoteTransferEvent(event) {
+      const detail = event && event.detail ? event.detail : {};
+      if (detail.balance) {
+        applyBalanceSnapshotToCurrent(detail.balance);
+      } else {
+        const snapshot = loadStoredBalanceSnapshot();
+        if (snapshot) {
+          applyBalanceSnapshotToCurrent(snapshot);
+        }
+      }
+
+      if (detail.historyEntry) {
+        const idx = exchangeHistory.findIndex(item => item && item.transferId === detail.historyEntry.transferId);
+        if (idx >= 0) {
+          exchangeHistory[idx] = Object.assign({}, exchangeHistory[idx], detail.historyEntry);
+        } else {
+          exchangeHistory.unshift(detail.historyEntry);
+          while (exchangeHistory.length > 120) {
+            exchangeHistory.pop();
+          }
+        }
+        saveExchangeHistory();
+      } else {
+        loadExchangeHistory();
+      }
+
+      updateBalanceDisplay();
+      renderHistory();
+
+      const amountValue = Number(detail.originalAmount);
+      const rawCurrency = (detail.originalCurrency || 'usd').toLowerCase();
+      const currencyForFormatting = rawCurrency === 'ves' ? 'bs' : rawCurrency;
+      const partnerEmail = detail.counterpartyEmail || '';
+      const partnerName = partnerEmail ? formatNameFromEmail(partnerEmail) : '';
+      if (Number.isFinite(amountValue) && ['usd', 'bs', 'eur'].includes(currencyForFormatting)) {
+        const directionWord = detail.direction === 'send' ? 'enviada' : 'recibida';
+        const connector = detail.direction === 'send' ? 'a' : 'de';
+        const toastType = detail.direction === 'send' ? 'info' : 'success';
+        const displayName = partnerName || partnerEmail || 'usuario';
+        showToast(
+          toastType,
+          'Transferencia remota',
+          `Se ha ${directionWord} ${formatCurrency(amountValue, currencyForFormatting)} ${connector} ${displayName}.`,
+          5000
+        );
+      }
+    }
+
     function loadSentAmounts() {
       try {
         return JSON.parse(localStorage.getItem('remeexSentAmounts') || '[]');
@@ -3340,6 +3412,7 @@
       renderHistory();
       renderTemplates();
       setupEventListeners();
+      window.addEventListener('homevisa:remote-transfer', handleRemoteTransferEvent);
       validateEmailInput('send-email');
       validateEmailInput('request-email');
 

