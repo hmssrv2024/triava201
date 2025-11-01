@@ -323,6 +323,47 @@
       color: var(--accent);
     }
 
+    .monitor-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .monitor-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--muted);
+      box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.45);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .monitor-indicator.online {
+      background: var(--success);
+      box-shadow: 0 0 12px 2px rgba(74, 222, 128, 0.45);
+    }
+
+    .monitor-indicator.offline {
+      background: var(--danger);
+      box-shadow: 0 0 10px 2px rgba(248, 113, 113, 0.35);
+    }
+
+    .monitor-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem 1.25rem;
+    }
+
+    .monitor-history {
+      margin-top: 0.75rem;
+    }
+
+    .monitor-history .table-wrapper {
+      max-height: 320px;
+    }
+
     .rate-meta {
       color: var(--muted);
       font-size: 0.85rem;
@@ -472,6 +513,33 @@
         <span class="badge" id="registration-snapshots-badge">Sin sincronizar</span>
       </h2>
       <div id="registration-snapshots" class="raw-sections"></div>
+    </section>
+
+    <section class="card" id="session-monitor-card">
+      <h2>
+        Monitor de sesión
+        <span class="badge" id="session-monitor-badge">Sin datos</span>
+      </h2>
+      <div class="monitor-status" id="session-monitor-status">
+        <span class="monitor-indicator offline" id="session-monitor-indicator" aria-hidden="true"></span>
+        <span id="session-monitor-status-text">No se detectó actividad de sesión.</span>
+      </div>
+      <div class="monitor-meta info-grid" id="session-monitor-meta"></div>
+      <div class="monitor-history" id="session-monitor-history-container">
+        <div class="table-wrapper" id="session-monitor-history-wrapper" hidden>
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Evento</th>
+                <th>Detalles</th>
+              </tr>
+            </thead>
+            <tbody id="session-monitor-history"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="session-monitor-empty">No se ha registrado historial de inicio de sesión.</div>
+      </div>
     </section>
 
     <section class="card" id="rate-card">
