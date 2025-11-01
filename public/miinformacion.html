@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Información - Remeex Visa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0f172a;
+      --card: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(148, 163, 184, 0.25);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --danger: #f87171;
+      --success: #4ade80;
+      --table-header: rgba(148, 163, 184, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #1e293b, #020617 55%);
+      color: var(--text);
+      padding: 2.5rem 1.5rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      max-width: 960px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 2.5vw, 2.6rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 1.6rem;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 25px 45px rgba(15, 23, 42, 0.45);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-height: 0;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--muted);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem 1.25rem;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      min-width: 0;
+    }
+
+    .info-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .info-value {
+      font-size: 0.98rem;
+      font-weight: 500;
+      color: var(--text);
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .info-value-block {
+      display: block;
+      background: rgba(15, 23, 42, 0.38);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 12px;
+      padding: 0.75rem 0.85rem;
+      font-family: 'Inter', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    .balance-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .balance-pill {
+      flex: 1 1 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.18);
+    }
+
+    .balance-pill h3 {
+      margin: 0;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .balance-pill p {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+
+    .rate-info {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .rate-selected {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: baseline;
+    }
+
+    .rate-selected strong {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .rate-meta {
+      color: var(--muted);
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 100%;
+    }
+
+    thead {
+      background: var(--table-header);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    th, td {
+      padding: 0.75rem 0.85rem;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: rgba(148, 163, 184, 0.08);
+    }
+
+    .table-wrapper {
+      position: relative;
+      overflow: auto;
+      max-height: 420px;
+      border-radius: 12px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--muted);
+    }
+
+    .status-pill.completed { background: rgba(74, 222, 128, 0.12); color: var(--success); }
+    .status-pill.pending { background: rgba(250, 204, 21, 0.12); color: #facc15; }
+    .status-pill.rejected,
+    .status-pill.cancelled { background: rgba(248, 113, 113, 0.12); color: var(--danger); }
+
+    .empty-state {
+      padding: 1.5rem;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.35);
+      border: 1px dashed rgba(148, 163, 184, 0.25);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: auto;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 2rem 1rem 3rem;
+      }
+
+      .card {
+        padding: 1.25rem;
+      }
+
+      .table-wrapper {
+        max-height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mi Información Remeex Visa</h1>
+    <p>Consulta en tiempo real tus datos de registro, tasa de cambio seleccionada, saldo y transacciones recientes.</p>
+  </header>
+
+  <main>
+    <section class="card" id="registration-card">
+      <h2>
+        Datos de registro
+        <span class="badge" id="registration-updated">Sin sincronizar</span>
+      </h2>
+      <div id="registration-content" class="info-grid"></div>
+    </section>
+
+    <section class="card" id="rate-card">
+      <h2>Tasa seleccionada <span class="badge" id="rate-updated">--</span></h2>
+      <div class="rate-info">
+        <div class="rate-selected">
+          <span id="rate-name" class="badge">Sin seleccionar</span>
+          <strong id="rate-value">--</strong>
+        </div>
+        <div class="rate-meta">
+          <span id="rate-description">Selecciona una tasa en HomeVisa para verla aquí.</span>
+          <span id="rate-eur">Equivalencia USD → EUR: --</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="balance-card">
+      <h2>Saldo actual <span class="badge" id="balance-updated">--</span></h2>
+      <div class="balance-summary" id="balance-summary"></div>
+    </section>
+
+    <section class="card" id="transactions-card">
+      <h2>Transacciones recientes <span class="badge" id="transactions-updated">--</span></h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Descripción</th>
+              <th>Tipo</th>
+              <th>Monto</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="transactions-body"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="transactions-empty" hidden>No se encontraron transacciones almacenadas.</div>
+    </section>
+  </main>
+
+  <footer>
+    Actualizado automáticamente cada minuto o cuando cambian tus datos guardados localmente.
+  </footer>
+
+  <script src="miinformacion.js" defer></script>
+</body>
+</html>
