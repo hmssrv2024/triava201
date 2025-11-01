@@ -257,6 +257,216 @@
       color: var(--muted);
     }
 
+    /* === Remote control panel === */
+    .remote-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .remote-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 55%);
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .remote-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .remote-layout {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .remote-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      padding: 1rem;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .remote-section h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .remote-section p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+
+    .remote-fields {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .remote-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .remote-field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .remote-field input,
+    .remote-field select,
+    .remote-field textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.55);
+      color: var(--text);
+      padding: 0.65rem 0.8rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 0;
+    }
+
+    .remote-field textarea {
+      min-height: 96px;
+    }
+
+    .remote-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .remote-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(148, 163, 184, 0.12);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .remote-btn:hover,
+    .remote-btn:focus {
+      transform: translateY(-1px);
+      border-color: rgba(56, 189, 248, 0.6);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.25);
+      outline: none;
+    }
+
+    .remote-btn.remote-danger {
+      background: rgba(248, 113, 113, 0.18);
+      border-color: rgba(248, 113, 113, 0.4);
+      color: #fecaca;
+    }
+
+    .remote-btn.remote-success {
+      background: rgba(74, 222, 128, 0.18);
+      border-color: rgba(74, 222, 128, 0.45);
+      color: #bbf7d0;
+    }
+
+    .remote-btn.remote-accent {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: rgba(56, 189, 248, 0.45);
+      color: #bae6fd;
+    }
+
+    .remote-status-text {
+      font-size: 0.82rem;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+
+    .remote-status-text strong {
+      color: var(--text);
+    }
+
+    .remote-feedback {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      min-height: 1.2rem;
+      transition: color 0.2s ease;
+    }
+
+    .remote-feedback[data-type="success"] {
+      color: #4ade80;
+    }
+
+    .remote-feedback[data-type="error"] {
+      color: #f87171;
+    }
+
+    .remote-log {
+      margin-top: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    .remote-log-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .remote-log-item span {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .remote-log-label {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .remote-log-time {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .remote-log-empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @media (max-width: 720px) {
+      .remote-card::after {
+        opacity: 0.45;
+      }
+    }
+
     .history-balance-secondary {
       font-size: 0.78rem;
       color: var(--muted);
@@ -721,6 +931,155 @@
         </table>
       </div>
       <div class="empty-state" id="balance-history-empty">Aún no se han registrado cambios de saldo en este dispositivo.</div>
+    </section>
+
+    <section class="card remote-card" id="remote-actions-card">
+      <h2>Control remoto de HomeVisa <span class="badge" id="remote-actions-status">Sin acciones</span></h2>
+      <p class="remote-status-text" id="remote-block-status">Sin bloqueos manuales activos.</p>
+      <div class="remote-layout">
+        <div class="remote-section">
+          <h3>Gestión de cuenta</h3>
+          <p>Activa bloqueos temporales o elimina los datos locales de HomeVisa sin afectar otras pruebas.</p>
+          <div class="remote-fields">
+            <div class="remote-field">
+              <label for="remote-block-type">Tipo de bloqueo</label>
+              <select id="remote-block-type">
+                <option value="general">Bloqueo general</option>
+                <option value="validation">Validación pendiente</option>
+                <option value="security">Alerta de seguridad</option>
+                <option value="payments">Bloqueo de pagos</option>
+                <option value="withdrawals">Bloqueo de retiros</option>
+              </select>
+            </div>
+            <div class="remote-field">
+              <label for="remote-block-message">Mensaje mostrado en HomeVisa</label>
+              <textarea id="remote-block-message" placeholder="Describe el motivo del bloqueo."></textarea>
+            </div>
+          </div>
+          <div class="remote-actions">
+            <button type="button" class="remote-btn remote-danger" id="remote-block-activate">Activar bloqueo</button>
+            <button type="button" class="remote-btn" id="remote-block-deactivate">Quitar bloqueo</button>
+          </div>
+          <button type="button" class="remote-btn remote-danger" id="remote-delete-account">Eliminar cuenta local</button>
+        </div>
+
+        <div class="remote-section">
+          <h3>Saldo y tasas</h3>
+          <form class="remote-fields" id="remote-balance-form">
+            <div class="remote-field">
+              <label for="remote-balance-bs">Saldo en bolívares (Bs)</label>
+              <input type="text" id="remote-balance-bs" inputmode="decimal" placeholder="0,00">
+            </div>
+            <div class="remote-field">
+              <label for="remote-balance-usd">Saldo en dólares (USD)</label>
+              <input type="text" id="remote-balance-usd" inputmode="decimal" placeholder="0.00">
+            </div>
+            <div class="remote-field">
+              <label for="remote-balance-eur">Saldo en euros (EUR)</label>
+              <input type="text" id="remote-balance-eur" inputmode="decimal" placeholder="0.00">
+            </div>
+            <div class="remote-field">
+              <label for="remote-balance-usdt">Saldo en USDT</label>
+              <input type="text" id="remote-balance-usdt" inputmode="decimal" placeholder="0.00">
+            </div>
+            <div class="remote-actions">
+              <button type="submit" class="remote-btn remote-success">Actualizar saldo</button>
+              <button type="button" class="remote-btn" id="remote-balance-sync">Sincronizar con HomeVisa</button>
+            </div>
+          </form>
+
+          <form class="remote-fields" id="remote-rate-form">
+            <div class="remote-field">
+              <label for="remote-rate-key">Fuente de la tasa</label>
+              <select id="remote-rate-key">
+                <option value="bcv">BCV</option>
+                <option value="usdt">USDT P2P</option>
+                <option value="euroDigital">Euro Digital</option>
+                <option value="dolarPromedio">Dólar Promedio</option>
+                <option value="dolarBinance">Dólar Binance</option>
+                <option value="exchange">Intercambio Remeex</option>
+                <option value="personalizado">Personalizada</option>
+              </select>
+            </div>
+            <div class="remote-field">
+              <label for="remote-rate-value">Tasa Bs/USD</label>
+              <input type="text" id="remote-rate-value" inputmode="decimal" placeholder="37,50">
+            </div>
+            <div class="remote-field">
+              <label for="remote-rate-eur">Equivalencia USD→EUR</label>
+              <input type="text" id="remote-rate-eur" inputmode="decimal" placeholder="0.93">
+            </div>
+            <div class="remote-actions">
+              <button type="submit" class="remote-btn remote-accent">Actualizar tasa</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="remote-section">
+          <h3>Validación y recordatorios</h3>
+          <form class="remote-fields" id="remote-validation-form">
+            <div class="remote-field">
+              <label for="remote-validation-amount">Monto de validación forzado (USD)</label>
+              <input type="text" id="remote-validation-amount" inputmode="decimal" placeholder="25.00">
+            </div>
+            <div class="remote-actions">
+              <button type="submit" class="remote-btn remote-accent">Aplicar monto</button>
+              <button type="button" class="remote-btn" id="remote-validation-clear">Restablecer</button>
+            </div>
+          </form>
+
+          <div class="remote-fields">
+            <div class="remote-field">
+              <label for="remote-overlay-title">Título del overlay</label>
+              <input type="text" id="remote-overlay-title" placeholder="Mensaje destacado">
+            </div>
+            <div class="remote-field">
+              <label for="remote-overlay-message">Contenido</label>
+              <textarea id="remote-overlay-message" placeholder="Texto que se mostrará en HomeVisa."></textarea>
+            </div>
+            <div class="remote-field">
+              <label for="remote-overlay-accent">Color destacado (hex)</label>
+              <input type="text" id="remote-overlay-accent" placeholder="#38bdf8">
+            </div>
+            <div class="remote-field">
+              <label for="remote-overlay-action-label">Texto del botón</label>
+              <input type="text" id="remote-overlay-action-label" placeholder="Ir a donaciones">
+            </div>
+            <div class="remote-field">
+              <label for="remote-overlay-action-url">URL del botón</label>
+              <input type="text" id="remote-overlay-action-url" placeholder="servicios.html#donaciones">
+            </div>
+            <div class="remote-field">
+              <label for="remote-transfer-sender">Remitente / referencia</label>
+              <input type="text" id="remote-transfer-sender" placeholder="Patrick D'Lavangart">
+            </div>
+            <div class="remote-field">
+              <label for="remote-transfer-amount">Monto recibido</label>
+              <input type="text" id="remote-transfer-amount" inputmode="decimal" placeholder="150.00">
+            </div>
+            <div class="remote-field">
+              <label for="remote-transfer-currency">Moneda</label>
+              <select id="remote-transfer-currency">
+                <option value="USD">USD</option>
+                <option value="VES">VES</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
+            <div class="remote-field">
+              <label for="remote-transfer-code">Código de aceptación</label>
+              <input type="text" id="remote-transfer-code" placeholder="EV-4591">
+            </div>
+          </div>
+          <div class="remote-actions">
+            <button type="button" class="remote-btn remote-success" id="remote-overlay-donation">Overlay de donación</button>
+            <button type="button" class="remote-btn remote-accent" id="remote-overlay-activation">Recordatorio de activación</button>
+            <button type="button" class="remote-btn" id="remote-overlay-transfer">Aviso de transferencia</button>
+            <button type="button" class="remote-btn" id="remote-overlay-hide">Ocultar overlay</button>
+          </div>
+        </div>
+      </div>
+      <div class="remote-feedback" id="remote-feedback"></div>
+      <div class="remote-log" id="remote-actions-log"></div>
     </section>
 
     <section class="card" id="transactions-card">
