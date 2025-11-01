@@ -8,7 +8,8 @@ const DEFAULT_SUPABASE_CONFIG = {
 
 const TABLES = {
   snapshots: 'miinformacion_snapshots',
-  commands: 'miinformacion_remote_commands'
+  commands: 'miinformacion_remote_commands',
+  profiles: 'profiles'
 };
 
 const RATE_LABELS = {
@@ -103,6 +104,7 @@ const state = {
   realtimeChannel: null,
   admin: null,
   rawSnapshots: [],
+  profileSnapshots: [],
   snapshotMap: new Map(),
   filteredSnapshots: [],
   commands: [],
@@ -111,7 +113,8 @@ const state = {
   selectedId: null,
   operatorName: '',
   loadingSnapshots: false,
-  loadingCommands: false
+  loadingCommands: false,
+  loadingProfiles: false
 };
 
 const elements = {
@@ -396,6 +399,16 @@ function parseNumericInput(value) {
   return Number.isFinite(numeric) ? numeric : null;
 }
 
+function pickNumeric(...values) {
+  for (const value of values) {
+    const parsed = parseNumericInput(value);
+    if (parsed !== null && Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  return null;
+}
+
 function inferNameFromEmail(email) {
   if (typeof email !== 'string') return '';
   const base = email.trim().split('@')[0] || '';
@@ -490,7 +503,153 @@ function normalizeSnapshot(row) {
     validationAmount: remote?.validationAmount ?? null,
     sessionMonitor: data.sessionMonitor || {},
     data,
-    searchValues
+    searchValues,
+    source: row.source || 'snapshot'
+  };
+}
+
+function normalizeProfileSnapshot(profile) {
+  if (!profile) return null;
+
+  const email = (profile.email || '').trim() || null;
+  const deviceId = profile.device_id || profile.deviceId || null;
+  const identifier = email
+    ? email.toLowerCase()
+    : deviceId
+      ? `device:${deviceId.toLowerCase()}`
+      : `profile:${profile.id || Date.now().toString(16)}`;
+
+  const fullName =
+    profile.full_name ||
+    profile.fullName ||
+    profile.preferred_name ||
+    inferNameFromEmail(email) ||
+    deviceId ||
+    'Usuario sin nombre';
+
+  const initials = ((profile.initials || fullName.charAt(0) || 'U')).toString().toUpperCase();
+
+  const accountStatus = profile.account_status || profile.status || null;
+  const kycStatus = String(profile.kyc_status || profile.validation_status || '').toLowerCase();
+  const validated = Boolean(
+    kycStatus.includes('aprob') ||
+      kycStatus.includes('approve') ||
+      kycStatus.includes('complete') ||
+      profile.kyc_completed ||
+      profile.kyc_completed_at ||
+      profile.verified_at
+  );
+
+  const blocked = Boolean(
+    profile.is_blocked ||
+      profile.blocked ||
+      (typeof accountStatus === 'string' && accountStatus.toLowerCase().includes('bloque')) ||
+      (typeof profile.account_flags === 'string' && profile.account_flags.toLowerCase().includes('bloque')) ||
+      (Array.isArray(profile.account_flags) &&
+        profile.account_flags.some((flag) => String(flag).toLowerCase().includes('bloque')))
+  );
+
+  const collectedAt = profile.updated_at || profile.last_login_at || profile.created_at || null;
+
+  const balance = {
+    usd: pickNumeric(profile.balance_usd, profile.balanceUsd, profile.usd_balance, profile.balance?.usd),
+    bs: pickNumeric(
+      profile.balance_bs,
+      profile.balanceBs,
+      profile.ves_balance,
+      profile.balance?.bs,
+      profile.balance?.ves
+    ),
+    eur: pickNumeric(profile.balance_eur, profile.balanceEur, profile.eur_balance, profile.balance?.eur),
+    usdt: pickNumeric(profile.balance_usdt, profile.balanceUsdt, profile.usdt_balance, profile.balance?.usdt)
+  };
+
+  const rate = {
+    key: profile.rate_source || profile.rateSource || profile.rate_key || null,
+    value: pickNumeric(profile.rate_value, profile.rateValue, profile.rate),
+    usdToEur: pickNumeric(profile.rate_usd_to_eur, profile.rateUsdToEur),
+    updatedAt: profile.rate_updated_at || profile.rateUpdatedAt || collectedAt
+  };
+
+  const validationAmount = pickNumeric(
+    profile.validation_amount,
+    profile.validationAmount,
+    profile.kyc_validation_amount,
+    profile.monto_validacion
+  );
+
+  const remote = { validationAmount: validationAmount ?? null };
+  if (blocked) {
+    remote.blockState = {
+      active: true,
+      type: 'general',
+      message: profile.block_reason || 'Cuenta bloqueada desde perfiles'
+    };
+  }
+
+  const documentNumber =
+    profile.document_number || profile.dni || profile.document || profile.documentNumber || null;
+  const documentType = profile.document_type || profile.documentType || profile.dni_type || null;
+
+  const searchValues = [
+    fullName,
+    email,
+    deviceId,
+    documentNumber,
+    documentType,
+    profile.phone_number,
+    profile.country,
+    profile.state,
+    profile.city
+  ]
+    .filter(Boolean)
+    .map((value) => value.toString().toLowerCase());
+
+  const profileData = {
+    ...profile,
+    deviceId,
+    createdAt: profile.created_at || profile.createdAt
+  };
+
+  const accountInfo = {
+    status: accountStatus || profile.status || null,
+    accountTier: profile.account_tier || profile.tier || profile.level || null,
+    createdAt: profile.created_at || profile.createdAt,
+    validationStatus: profile.kyc_status || profile.validation_status || null,
+    blocked
+  };
+
+  return {
+    id: profile.id,
+    identifier,
+    email,
+    deviceId,
+    fullName,
+    initials,
+    documentNumber,
+    documentType,
+    collectedAt,
+    lastSyncAt: profile.last_sync_at || profile.lastSyncAt || collectedAt,
+    location: profile.city || profile.state || profile.country || null,
+    accountStatus: accountStatus || (blocked ? 'Bloqueado' : 'Activo'),
+    blocked,
+    validated,
+    profile: profileData,
+    accountInfo,
+    remote,
+    balance,
+    rate,
+    validationAmount,
+    sessionMonitor: {},
+    data: {
+      profile: profileData,
+      accountInfo,
+      balance,
+      rate,
+      remote
+    },
+    searchValues,
+    source: 'profile'
   };
 }
 
@@ -518,17 +677,49 @@ function normalizeCommand(row) {
   };
 }
 
+function getSnapshotPriority(snapshot) {
+  if (!snapshot || !snapshot.source) return 1;
+  if (snapshot.source === 'snapshot') return 0;
+  if (snapshot.source === 'profile') return 1;
+  return 2;
+}
+
 function rebuildSnapshotIndex() {
   state.snapshotMap.clear();
-  const sorted = [...state.rawSnapshots].sort((a, b) => compareByDateDesc(a.collectedAt, b.collectedAt));
-  sorted.forEach((snapshot) => {
-    if (!snapshot || !snapshot.identifier) return;
-    if (!state.snapshotMap.has(snapshot.identifier)) {
-      state.snapshotMap.set(snapshot.identifier, snapshot);
-    }
-  });
+  const combined = [...state.rawSnapshots, ...state.profileSnapshots];
+  combined
+    .filter(Boolean)
+    .sort((a, b) => {
+      const priorityDiff = getSnapshotPriority(a) - getSnapshotPriority(b);
+      if (priorityDiff !== 0) {
+        return priorityDiff;
+      }
+      return compareByDateDesc(a.collectedAt || a.lastSyncAt, b.collectedAt || b.lastSyncAt);
+    })
+    .forEach((snapshot) => {
+      if (!snapshot || !snapshot.identifier) return;
+      if (!state.snapshotMap.has(snapshot.identifier)) {
+        state.snapshotMap.set(snapshot.identifier, snapshot);
+      }
+    });
   state.filteredSnapshots = Array.from(state.snapshotMap.values());
   applyFilters();
+}
+
+function getLatestSnapshot() {
+  let latest = null;
+  let latestTime = 0;
+  const consider = (snapshot) => {
+    if (!snapshot) return;
+    const time = toTimestamp(snapshot.collectedAt || snapshot.lastSyncAt);
+    if (time > latestTime) {
+      latest = snapshot;
+      latestTime = time;
+    }
+  };
+  state.rawSnapshots.forEach(consider);
+  state.profileSnapshots.forEach(consider);
+  return latest;
 }
 
 function updateMetrics() {
@@ -542,8 +733,9 @@ function updateMetrics() {
     elements.metrics.commands.textContent = state.commands.length.toString();
   }
   if (elements.metrics.lastSync) {
-    const latest = state.rawSnapshots[0];
-    elements.metrics.lastSync.textContent = latest ? formatRelativeTime(latest.collectedAt) : '—';
+    const latest = getLatestSnapshot();
+    const timestamp = latest ? latest.collectedAt || latest.lastSyncAt : null;
+    elements.metrics.lastSync.textContent = timestamp ? formatRelativeTime(timestamp) : '—';
   }
 }
 
@@ -630,6 +822,14 @@ function renderUserList() {
       sub.appendChild(rateBadge);
     }
 
+    if (snapshot.source === 'profile') {
+      const sourceBadge = document.createElement('span');
+      sourceBadge.className = 'badge';
+      sourceBadge.dataset.tone = 'info';
+      sourceBadge.textContent = 'Perfil Supabase';
+      sub.appendChild(sourceBadge);
+    }
+
     if (snapshot.documentNumber) {
       const docBadge = document.createElement('span');
       docBadge.className = 'badge';
@@ -641,7 +841,11 @@ function renderUserList() {
 
     const time = document.createElement('p');
     time.className = 'user-list__meta';
-    time.textContent = `Último snapshot · ${formatRelativeTime(snapshot.collectedAt)}`;
+    const timeLabel = snapshot.source === 'profile' ? 'Última actualización' : 'Último snapshot';
+    const timeValue = snapshot.collectedAt || snapshot.lastSyncAt;
+    time.textContent = timeValue
+      ? `${timeLabel} · ${formatRelativeTime(timeValue)}`
+      : `${timeLabel} · Sin registros`;
     item.appendChild(time);
 
     fragment.appendChild(item);
@@ -734,6 +938,14 @@ function renderDetailHeader(snapshot) {
     locationBadge.className = 'badge';
     locationBadge.textContent = snapshot.location;
     chips.appendChild(locationBadge);
+  }
+
+  if (snapshot.source === 'profile') {
+    const profileBadge = document.createElement('span');
+    profileBadge.className = 'badge';
+    profileBadge.dataset.tone = 'info';
+    profileBadge.textContent = 'Datos desde Supabase';
+    chips.appendChild(profileBadge);
   }
 
   elements.detailHeader.appendChild(chips);
@@ -953,7 +1165,11 @@ function updateDetailStatus(snapshot) {
   if (!elements.detailStatus) return;
   const snapshotCount = state.rawSnapshots.filter((item) => item.identifier === snapshot.identifier).length;
   const commands = state.commands.filter((command) => commandMatchesSnapshot(command, snapshot));
-  elements.detailStatus.textContent = `Snapshots: ${snapshotCount} · Comandos registrados: ${commands.length}`;
+  let statusText = `Snapshots: ${snapshotCount} · Comandos registrados: ${commands.length}`;
+  if (snapshot.source === 'profile' && snapshotCount === 0) {
+    statusText += ' · Datos directos desde perfiles';
+  }
+  elements.detailStatus.textContent = statusText;
   elements.detailStatus.hidden = false;
 }
 
@@ -1392,6 +1608,27 @@ async function fetchCommands() {
   }
 }
 
+async function fetchProfiles() {
+  if (!state.client || !state.admin) return;
+  state.loadingProfiles = true;
+  try {
+    const { data, error } = await state.client
+      .from(TABLES.profiles)
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(MAX_RECORDS);
+    if (error) throw error;
+    state.profileSnapshots = (data || []).map(normalizeProfileSnapshot).filter(Boolean);
+    rebuildSnapshotIndex();
+    updateMetrics();
+  } catch (error) {
+    console.error('[AdminMiInformacion] Error obteniendo perfiles:', error);
+    showToast(`Error obteniendo perfiles: ${error.message || error}`, 'error');
+  } finally {
+    state.loadingProfiles = false;
+  }
+}
+
 async function refreshAll(options = {}) {
   const { skipAuthCheck = false } = options;
 
@@ -1405,8 +1642,12 @@ async function refreshAll(options = {}) {
   if (elements.refreshButton) {
     elements.refreshButton.disabled = true;
   }
-  setSupabaseStatus('warning', 'Actualizando datos', 'Consultando snapshots y comandos en Supabase…');
-  await Promise.all([fetchSnapshots(), fetchCommands()]);
+  setSupabaseStatus(
+    'warning',
+    'Actualizando datos',
+    'Consultando snapshots, perfiles y comandos en Supabase…'
+  );
+  await Promise.all([fetchSnapshots(), fetchProfiles(), fetchCommands()]);
   setSupabaseStatus('online', 'Conectado a Supabase', `Última actualización · ${formatRelativeTime(new Date())}`);
   if (elements.refreshButton) {
     elements.refreshButton.disabled = false;
