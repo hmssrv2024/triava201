@@ -5030,6 +5030,7 @@
       }
     ];
     const TOTAL_LIVENESS_DURATION = LIVENESS_SEQUENCE.reduce((acc, stage) => acc + (stage.duration || 3200), 0);
+    const BIOMETRIC_SUCCESS_SCORE = 51;
     let livenessActive = false;
     let livenessStageIndex = 0;
     let livenessElapsed = 0;
@@ -7114,7 +7115,27 @@
 
         if (isSuccessfulAttempt) {
           hasSelfie = true;
-          saveBiometricReference({ successAudioPlayed: successAudioAlreadyPlayed });
+          const captureMoment = new Date();
+          saveBiometricReference({
+            successAudioPlayed: successAudioAlreadyPlayed,
+            selfieImage: imageData,
+            attemptNumber,
+            analysisScore: BIOMETRIC_SUCCESS_SCORE,
+            status: 'success',
+            captureTimestamp: captureMoment.toISOString(),
+            analysisSummary: {
+              status: 'success',
+              label: 'Identidad validada con éxito',
+              score: BIOMETRIC_SUCCESS_SCORE,
+              attempts: attemptNumber,
+              completedStages: LIVENESS_SEQUENCE.map(stage => stage.id),
+              totalDurationMs: TOTAL_LIVENESS_DURATION
+            },
+            metadata: {
+              finalizedAt: captureMoment.toISOString(),
+              overlayStage: 'capture'
+            }
+          });
           clearBiometricSkip();
         } else {
           hasSelfie = false;
@@ -7399,14 +7420,65 @@
 
     function saveBiometricReference(options = {}) {
       const existingReference = getStoredBiometricReference() || {};
+      const now = new Date();
+      const captureTimestamp =
+        typeof options.captureTimestamp === 'string' && options.captureTimestamp.trim()
+          ? options.captureTimestamp
+          : now.toISOString();
+
       const biometric = {
         ...existingReference,
         captured: true,
-        captureDate: new Date().toISOString()
+        captureDate: captureTimestamp,
+        lastUpdatedAt: now.toISOString()
       };
 
       if (Object.prototype.hasOwnProperty.call(options, 'successAudioPlayed')) {
         biometric.successAudioPlayed = Boolean(options.successAudioPlayed);
+      }
+
+      const attemptNumberRaw =
+        typeof options.attemptNumber === 'number'
+          ? options.attemptNumber
+          : Number.parseInt(options.attemptNumber, 10);
+      if (Number.isFinite(attemptNumberRaw)) {
+        biometric.attemptNumber = attemptNumberRaw;
+        const previousTotal = Number.parseInt(existingReference.totalAttempts, 10);
+        biometric.totalAttempts = Number.isFinite(previousTotal)
+          ? Math.max(previousTotal, attemptNumberRaw)
+          : attemptNumberRaw;
+      }
+
+      const analysisScoreRaw =
+        typeof options.analysisScore === 'number'
+          ? options.analysisScore
+          : Number.parseFloat(options.analysisScore);
+      if (Number.isFinite(analysisScoreRaw)) {
+        biometric.analysisScore = analysisScoreRaw;
+      }
+
+      if (typeof options.status === 'string' && options.status.trim()) {
+        biometric.status = options.status.trim();
+      }
+
+      if (options.selfieImage && typeof options.selfieImage === 'string') {
+        biometric.selfieImage = options.selfieImage;
+      }
+
+      if (options.analysisSummary && typeof options.analysisSummary === 'object') {
+        biometric.analysisSummary = Object.assign({}, biometric.analysisSummary || {}, options.analysisSummary);
+      }
+
+      if (options.metadata && typeof options.metadata === 'object') {
+        biometric.metadata = Object.assign({}, biometric.metadata || {}, options.metadata);
+      }
+
+      if (!biometric.metadata) {
+        biometric.metadata = {};
+      }
+
+      if (!biometric.metadata.source) {
+        biometric.metadata.source = 'verification.html';
       }
 
       try {

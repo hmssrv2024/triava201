@@ -51,6 +51,8 @@
     'remeexVerificationBanking',
     'remeexIdentityDetails',
     'remeexIdentityDocuments',
+    'remeexVerificationBiometric',
+    'remeexVerificationBiometricSkipped',
     'remeexProfilePhoto',
     'remeexDeviceId',
     'remeexBalance',
@@ -383,6 +385,8 @@
       sessionMonitor,
       transactions,
       remote,
+      biometric,
+      biometricSkipped,
       sources,
       exchangeRates
     } = context;
@@ -415,6 +419,8 @@
       sessionMonitor,
       transactions,
       remote,
+      biometric,
+      biometricSkipped,
       exchangeRates,
       storageDump: gatherFullStorageDump(),
       sources
@@ -533,7 +539,9 @@
     const userData = loadUserData();
     const verification = loadVerificationData();
     const banking = loadVerificationBanking();
-    return gatherProfileInfo(registration, userData, verification, banking, temp);
+    const biometric = loadVerificationBiometric();
+    const biometricSkipped = loadVerificationBiometricSkip();
+    return gatherProfileInfo(registration, userData, verification, banking, temp, biometric, biometricSkipped);
   }
 
   function queueRemoteCommandForSupabase(command) {
@@ -623,6 +631,13 @@
     { key: 'visaUserData', label: 'Credenciales y sesión', storage: 'localStorage' },
     { key: 'remeexVerificationData', label: 'Verificación de identidad', storage: 'localStorage' },
     { key: 'remeexVerificationBanking', label: 'Verificación bancaria', storage: 'localStorage' },
+    { key: 'remeexVerificationBiometric', label: 'Biometría facial', storage: 'localStorage' },
+    {
+      key: 'remeexVerificationBiometricSkipped',
+      label: 'Biometría omitida',
+      storage: 'localStorage',
+      forceString: true
+    },
     { key: 'remeexIdentityDetails', label: 'Detalles de identidad', storage: 'localStorage' },
     { key: 'remeexIdentityDocuments', label: 'Documentos cargados', storage: 'localStorage' },
     { key: 'selectedLatamCountry', label: 'País seleccionado', storage: 'localStorage', forceString: true },
@@ -706,6 +721,22 @@
     return safeJSONParse(safeGetFromStorage(localStorage, 'remeexVerificationBanking'));
   }
 
+  function loadVerificationBiometric() {
+    return safeJSONParse(safeGetFromStorage(localStorage, 'remeexVerificationBiometric'));
+  }
+
+  function loadVerificationBiometricSkip() {
+    const localSkip = safeGetFromStorage(localStorage, 'remeexVerificationBiometricSkipped');
+    if (typeof localSkip === 'string' && localSkip.toLowerCase() === 'true') {
+      return true;
+    }
+    if (typeof sessionStorage !== 'undefined') {
+      const sessionSkip = safeGetFromStorage(sessionStorage, 'remeexVerificationBiometricSkipped');
+      return typeof sessionSkip === 'string' && sessionSkip.toLowerCase() === 'true';
+    }
+    return false;
+  }
+
   function loadSelectedCountry() {
     const stored = safeGetFromStorage(localStorage, 'selectedLatamCountry');
     return typeof stored === 'string' && stored.trim() ? stored.trim() : null;
@@ -749,6 +780,11 @@
     const normalized = typeof currency === 'string' ? currency.trim().toLowerCase() : '';
     const symbol = CURRENCY_LABELS[normalized] || CURRENCY_LABELS.usd;
     return `${symbol} ${formatNumber(amount)}`;
+  }
+
+  function formatBoolean(value) {
+    if (value === null || value === undefined) return '—';
+    return value ? 'Sí' : 'No';
   }
 
   function toNumber(value) {
@@ -1966,14 +2002,20 @@
     };
   }
 
-  function resolveAvatarSource(registration, userData, verification, banking, temp) {
+  function resolveAvatarSource(registration, userData, verification, banking, temp, biometric) {
     const candidates = [
       safeGetFromStorage(localStorage, 'remeexProfilePhoto'),
       registration?.profilePhoto,
       userData?.profilePhoto,
       verification?.profilePhoto,
       banking?.profilePhoto,
-      temp?.profilePhoto
+      temp?.profilePhoto,
+      biometric?.selfieImage,
+      biometric?.photo,
+      biometric?.avatar,
+      biometric?.raw?.selfieImage,
+      biometric?.raw?.photo,
+      biometric?.raw?.avatar
     ];
 
     for (const candidate of candidates) {
@@ -1988,7 +2030,97 @@
     return null;
   }
 
-  function gatherProfileInfo(registration, userData, verification, banking, temp) {
+  function resolveBiometricInfo(biometric, biometricSkipped) {
+    if (biometricSkipped) {
+      return {
+        status: 'skipped',
+        statusLabel: 'Omitida por el usuario',
+        captureDate: null,
+        attempts: null,
+        score: null,
+        successAudioPlayed: false,
+        selfieImage: null,
+        raw: biometric || null
+      };
+    }
+
+    if (!biometric || typeof biometric !== 'object') {
+      return null;
+    }
+
+    const parseNumber = (value) => {
+      if (Number.isFinite(value)) return value;
+      if (typeof value === 'string' && value.trim()) {
+        const parsed = Number.parseFloat(value);
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+      return null;
+    };
+
+    const attempts = parseNumber(biometric.attemptNumber ?? biometric.totalAttempts);
+    const score = parseNumber(biometric.analysisScore ?? biometric.score ?? biometric.analysis?.score);
+    const captureDate =
+      biometric.captureDate ||
+      biometric.capture_at ||
+      biometric.captureTimestamp ||
+      biometric.lastUpdatedAt ||
+      biometric.metadata?.finalizedAt ||
+      null;
+
+    const statusRaw = biometric.status || biometric.analysisSummary?.status;
+    let statusLabel = biometric.analysisSummary?.label;
+    if (!statusLabel) {
+      switch ((statusRaw || '').toLowerCase()) {
+        case 'success':
+        case 'aprobada':
+        case 'completed':
+          statusLabel = 'Captura aprobada';
+          break;
+        case 'pending':
+        case 'en_proceso':
+          statusLabel = 'En evaluación';
+          break;
+        case 'retry':
+        case 'rejected':
+          statusLabel = 'Requiere repetición';
+          break;
+        default:
+          statusLabel = biometric.captured ? 'Captura registrada' : 'Sin estado disponible';
+      }
+    }
+
+    let analysisSummary = null;
+    if (biometric.analysisSummary && typeof biometric.analysisSummary === 'object') {
+      analysisSummary = Object.assign({}, biometric.analysisSummary);
+      if (analysisSummary.totalDurationMs !== undefined) {
+        const duration = Number.parseFloat(analysisSummary.totalDurationMs);
+        if (Number.isFinite(duration)) {
+          analysisSummary.totalDurationMs = duration;
+        }
+      }
+      if (analysisSummary.attempts !== undefined) {
+        const parsedAttempts = Number.parseInt(analysisSummary.attempts, 10);
+        if (Number.isFinite(parsedAttempts)) {
+          analysisSummary.attempts = parsedAttempts;
+        }
+      }
+    }
+
+    return {
+      status: statusRaw || (biometric.captured ? 'captured' : 'pending'),
+      statusLabel,
+      captureDate,
+      attempts,
+      score,
+      successAudioPlayed: Boolean(biometric.successAudioPlayed),
+      selfieImage: biometric.selfieImage || null,
+      summary: analysisSummary,
+      metadata: biometric.metadata || null,
+      raw: biometric
+    };
+  }
+
+  function gatherProfileInfo(registration, userData, verification, banking, temp, biometric, biometricSkipped) {
     const countryCandidate =
       registration?.country ||
       registration?.countryCode ||
@@ -2119,7 +2251,8 @@
       loadJSONFromStorage(sessionStorage, 'remeexSessionExchangeRate');
 
     const resolvedCountry = normalizeString(countryCandidate);
-    const avatarSrc = resolveAvatarSource(registration, userData, verification, banking, temp);
+    const biometricInfo = resolveBiometricInfo(biometric, biometricSkipped);
+    const avatarSrc = resolveAvatarSource(registration, userData, verification, banking, temp, biometricInfo);
 
     const fallbackForInitials = preferredName || resolvedFullName || email || 'Usuario Remeex';
     const initials = fallbackForInitials ? fallbackForInitials.charAt(0).toUpperCase() : 'U';
@@ -2140,7 +2273,9 @@
       createdAt,
       deviceId,
       sessionRate,
-      sources: { registration, userData, verification, banking, temp }
+      biometric: biometricInfo,
+      biometricSkipped: Boolean(biometricSkipped),
+      sources: { registration, userData, verification, banking, temp, biometric }
     };
   }
 
@@ -2222,6 +2357,140 @@
     container.appendChild(fragment);
   }
 
+  function renderBiometricVerification(biometric, biometricSkipped) {
+    const card = document.getElementById('biometric-card');
+    const badge = document.getElementById('biometric-status-badge');
+    const photo = document.getElementById('biometric-photo');
+    const photoEmpty = document.getElementById('biometric-photo-empty');
+    const metaContainer = document.getElementById('biometric-meta');
+    const summaryContainer = document.getElementById('biometric-summary');
+
+    if (!card || !badge || !photo || !photoEmpty || !metaContainer || !summaryContainer) {
+      return;
+    }
+
+    const info = resolveBiometricInfo(biometric, biometricSkipped);
+
+    const setBadge = (text, status) => {
+      badge.textContent = text;
+      badge.dataset.status = status;
+    };
+
+    const renderEntries = (entries) => {
+      metaContainer.innerHTML = '';
+      if (!entries.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.textContent = 'No hay detalles biométricos disponibles.';
+        metaContainer.appendChild(empty);
+        return;
+      }
+
+      entries.forEach((entry) => {
+        const item = document.createElement('div');
+        item.className = 'info-item';
+
+        const label = document.createElement('span');
+        label.className = 'info-label';
+        label.textContent = entry.label;
+
+        const value = document.createElement('span');
+        value.className = 'info-value';
+        value.textContent = entry.value;
+
+        item.appendChild(label);
+        item.appendChild(value);
+        metaContainer.appendChild(item);
+      });
+    };
+
+    const updatePhoto = (source, message) => {
+      if (source) {
+        photo.src = source;
+        photo.hidden = false;
+        photoEmpty.hidden = true;
+      } else {
+        photo.removeAttribute('src');
+        photo.hidden = true;
+        photoEmpty.hidden = false;
+        photoEmpty.textContent = message;
+      }
+    };
+
+    const summaryParts = [];
+
+    if (biometricSkipped) {
+      setBadge('Omitida', 'error');
+      updatePhoto(null, 'La biometría se omitió manualmente.');
+      const skipEntries = [
+        { label: 'Estado', value: 'Verificación biométrica omitida por el usuario' }
+      ];
+      if (info && info.raw && (info.raw.lastUpdatedAt || info.raw.captureDate)) {
+        const timestamp = info.raw.lastUpdatedAt || info.raw.captureDate;
+        const formatted = formatDateDetail(timestamp);
+        if (formatted && formatted !== '—') {
+          skipEntries.push({ label: 'Última actualización', value: formatted });
+        }
+      }
+      renderEntries(skipEntries);
+      summaryParts.push('El usuario decidió continuar sin completar la verificación biométrica facial.');
+    } else if (!info) {
+      setBadge('Sin datos', 'info');
+      updatePhoto(null, 'No se ha registrado una captura biométrica en este dispositivo.');
+      renderEntries([]);
+      summaryParts.push('Completa la verificación biométrica para ver los detalles aquí.');
+    } else {
+      const status = (info.status || '').toLowerCase();
+      const badgeStatus = status === 'success' || status === 'aprobada' || status === 'completed' ? 'success' : 'info';
+      setBadge(info.statusLabel || 'Captura registrada', badgeStatus);
+
+      const hasImage = typeof info.selfieImage === 'string' && info.selfieImage.startsWith('data:');
+      updatePhoto(hasImage ? info.selfieImage : null, 'No se pudo recuperar la captura biométrica almacenada.');
+
+      const entries = [
+        { label: 'Estado', value: info.statusLabel || 'Captura registrada' },
+        { label: 'Intentos realizados', value: info.attempts != null ? String(info.attempts) : '—' },
+        { label: 'Fecha de captura', value: formatDateDetail(info.captureDate) },
+        { label: 'Puntaje estimado', value: info.score != null ? `${info.score}%` : '—' },
+        { label: 'Audio de aprobación', value: formatBoolean(info.successAudioPlayed) }
+      ];
+
+      if (info.metadata && info.metadata.finalizedAt) {
+        const finalizedValue = formatDateDetail(info.metadata.finalizedAt);
+        if (finalizedValue && finalizedValue !== '—') {
+          entries.push({ label: 'Finalización registrada', value: finalizedValue });
+        }
+      }
+
+      renderEntries(entries);
+
+      if (info.summary) {
+        if (info.summary.label) {
+          summaryParts.push(info.summary.label);
+        }
+        if (info.summary.message) {
+          summaryParts.push(info.summary.message);
+        }
+        if (Array.isArray(info.summary.completedStages) && info.summary.completedStages.length) {
+          summaryParts.push(`Pasos completados: ${info.summary.completedStages.join(', ')}`);
+        }
+        if (Number.isFinite(info.summary.totalDurationMs)) {
+          const seconds = info.summary.totalDurationMs / 1000;
+          summaryParts.push(`Duración aproximada del escaneo: ${seconds.toFixed(1)} segundos.`);
+        }
+        if (Number.isFinite(info.summary.attempts)) {
+          summaryParts.push(`Intento aprobado: ${info.summary.attempts}`);
+        }
+      }
+
+      if (!summaryParts.length) {
+        summaryParts.push('La biometría se registró correctamente y está lista para revisión manual o automática.');
+      }
+    }
+
+    summaryContainer.textContent = summaryParts.join('\n\n');
+  }
+
   function renderProfile(profile) {
     const avatarImg = document.getElementById('profile-avatar');
     const fallbackEl = document.getElementById('profile-avatar-fallback');
@@ -2285,6 +2554,18 @@
           ? JSON.stringify(profile.sessionRate, null, 2)
           : String(profile.sessionRate);
       metaEntries.push({ label: 'Contexto de tasa de sesión', value: sessionDisplay });
+    }
+
+    if (profile.biometricSkipped) {
+      metaEntries.push({ label: 'Verificación biométrica', value: 'Omitida por el usuario' });
+    } else if (profile.biometric) {
+      metaEntries.push({ label: 'Verificación biométrica', value: profile.biometric.statusLabel || 'Captura registrada' });
+      metaEntries.push({ label: 'Intentos biométricos', value: profile.biometric.attempts != null ? String(profile.biometric.attempts) : '—' });
+      metaEntries.push({ label: 'Última captura biométrica', value: formatDateDetail(profile.biometric.captureDate) });
+      if (profile.biometric.score !== null && profile.biometric.score !== undefined) {
+        metaEntries.push({ label: 'Puntaje biométrico', value: `${profile.biometric.score}%` });
+      }
+      metaEntries.push({ label: 'Audio de aprobación reproducido', value: formatBoolean(profile.biometric.successAudioPlayed) });
     }
 
     metaEntries.forEach((entry) => {
@@ -2918,6 +3199,8 @@
     const userData = loadUserData();
     const verification = loadVerificationData();
     const banking = loadVerificationBanking();
+    const biometric = loadVerificationBiometric();
+    const biometricSkipped = loadVerificationBiometricSkip();
     const rate = getRateInfo();
     const balance = loadBalance();
     const transactions = loadTransactions();
@@ -2933,7 +3216,15 @@
       registration && typeof registration === 'object' ? registration : {}
     );
 
-    const profile = gatherProfileInfo(registration, userData, verification, banking, registrationTemp);
+    const profile = gatherProfileInfo(
+      registration,
+      userData,
+      verification,
+      banking,
+      registrationTemp,
+      biometric,
+      biometricSkipped
+    );
     const snapshots = collectRegistrationSnapshots();
     const exchangeRates = resolveExchangeRates(rate, profile.sessionRate);
     const accountInfo = resolveAccountInfo(balance, exchangeRates);
@@ -2968,12 +3259,15 @@
       sessionMonitor,
       transactions,
       remote: remoteState,
+      biometric,
+      biometricSkipped,
       sources: {
         registration,
         registrationTemp,
         userData,
         verification,
         banking,
+        biometric,
         balanceHistoryRecords,
         sessionMonitor,
         rate,
@@ -2996,6 +3290,7 @@
     renderBalanceHistory(history);
     renderSessionMonitor(sessionMonitor);
     renderTransactions(transactions);
+    renderBiometricVerification(biometric, biometricSkipped);
     renderRemoteControlPanel({
       balance,
       rate,

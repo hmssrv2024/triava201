@@ -172,6 +172,49 @@
       white-space: pre-wrap;
     }
 
+    .biometric-content {
+      display: grid;
+      grid-template-columns: minmax(160px, 220px) 1fr;
+      gap: 1.25rem;
+      align-items: flex-start;
+    }
+
+    .biometric-photo {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .biometric-photo img {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.4);
+    }
+
+    .biometric-photo .empty-state {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .biometric-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem 1.25rem;
+    }
+
+    .biometric-notes {
+      margin-top: 0.85rem;
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.35);
+      font-size: 0.9rem;
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+
     .balance-summary {
       display: flex;
       flex-wrap: wrap;
@@ -848,6 +891,14 @@
       .history-overview {
         grid-template-columns: 1fr;
       }
+
+      .biometric-content {
+        grid-template-columns: 1fr;
+      }
+
+      .biometric-photo img {
+        max-width: 240px;
+      }
     }
   </style>
 </head>
@@ -904,6 +955,21 @@
         <span class="badge" id="registration-snapshots-badge">Sin sincronizar</span>
       </h2>
       <div id="registration-snapshots" class="raw-sections"></div>
+    </section>
+
+    <section class="card" id="biometric-card">
+      <h2>
+        Verificación biométrica
+        <span class="badge" id="biometric-status-badge">Sin datos</span>
+      </h2>
+      <div class="biometric-content">
+        <div class="biometric-photo">
+          <img id="biometric-photo" alt="Selfie capturada durante la verificación biométrica" loading="lazy" hidden>
+          <div class="empty-state" id="biometric-photo-empty">No se ha registrado una captura biométrica en este dispositivo.</div>
+        </div>
+        <div class="biometric-meta" id="biometric-meta"></div>
+      </div>
+      <div class="biometric-notes" id="biometric-summary">Completa la verificación biométrica para ver los detalles aquí.</div>
     </section>
 
     <section class="card" id="session-monitor-card">
