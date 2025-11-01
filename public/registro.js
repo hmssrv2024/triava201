@@ -6868,7 +6868,9 @@ if (!window.__registroScriptLoaded) {
                 fullName: registrationData.fullName || `${registrationData.firstName || ''} ${registrationData.lastName || ''}`.trim(),
                 nickname: registrationData.nickname,
                 deviceId: registrationData.deviceId,
-                completed: true
+                completed: true,
+                auth_provider: (window.googleRegisterData && window.googleRegisterData.authProvider) ? 'google' : 'email',
+                googleId: (window.googleRegisterData && window.googleRegisterData.googleId) ? window.googleRegisterData.googleId : undefined
             };
             localStorage.setItem('visaUserData', JSON.stringify(loginData));
 

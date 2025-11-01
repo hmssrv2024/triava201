@@ -3,766 +3,491 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Registros</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 30px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-card h3 {
-            font-size: 2rem;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .stat-card p {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-
-        .controls {
-            padding: 20px 30px;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 20px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .btn:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            padding: 30px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        thead {
-            background: #f8f9fa;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        th {
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-            color: #495057;
-            border-bottom: 2px solid #dee2e6;
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #e9ecef;
-            color: #212529;
-        }
-
-        tbody tr {
-            transition: background-color 0.2s;
-        }
-
-        tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            padding: 30px;
-            background: #f8f9fa;
-        }
-
-        .pagination button {
-            padding: 10px 20px;
-            background: white;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .pagination button:hover:not(:disabled) {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .pagination .page-info {
-            padding: 10px 20px;
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 60px;
-            color: #6c757d;
-            font-size: 1.2rem;
-        }
-
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 20px;
-            margin: 30px;
-            border-radius: 8px;
-            border: 1px solid #f5c6cb;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .badge-primary {
-            background: #e7f3ff;
-            color: #0066cc;
-        }
-
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 60px;
-            color: #6c757d;
-        }
-
-        .no-data h2 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .table-container {
-                padding: 15px;
-            }
-
-            th, td {
-                padding: 10px;
-                font-size: 0.9rem;
-            }
-        }
-
-        .export-btn {
-            background: #28a745;
-        }
-
-        .export-btn:hover {
-            background: #218838;
-        }
-
-        .refresh-btn {
-            background: #17a2b8;
-        }
-
-        .refresh-btn:hover {
-            background: #138496;
-        }
-
-        .logout-btn {
-            background: #dc3545;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .logout-btn:hover {
-            background: #c82333;
-        }
-
-        .header {
-            position: relative;
-        }
-    </style>
+    <title>Panel de Administración - Remeex Visa</title>
+    <link rel="icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnBzNdjl6bNp-nIdaiHVENczJhwlJNA7ocsyiOObMmzbu8at0dY5yGcZ9cLxLF39qI6gwNfqBxlkTDC0txVULEwQVwGkeEzN0Jq9MRTRagA48mh18UqTlR4WhsXOLAEZugUyhqJHB19xJgnkpe-S5VOWFgzpKFwctv3XP9XhH41vNTvq0ZS-nik58Qhr-O/s320/remeex.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin-registros.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="btn logout-btn" onclick="logout()">🚪 Cerrar Sesión</button>
-            <h1>📊 Panel de Administración</h1>
-            <p>Gestión de Registros de Usuarios</p>
-        </div>
-
-        <div class="stats" id="stats">
-            <div class="stat-card">
-                <h3 id="totalUsers">-</h3>
-                <p>Total Registros</p>
+    <!-- Login Screen -->
+    <div class="login-screen" id="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnBzNdjl6bNp-nIdaiHVENczJhwlJNA7ocsyiOObMmzbu8at0dY5yGcZ9cLxLF39qI6gwNfqBxlkTDC0txVULEwQVwGkeEzN0Jq9MRTRagA48mh18UqTlR4WhsXOLAEZugUyhqJHB19xJgnkpe-S5VOWFgzpKFwctv3XP9XhH41vNTvq0ZS-nik58Qhr-O/s320/remeex.png" alt="Remeex Visa" class="login-logo">
+                <h1>Panel de Administración</h1>
+                <p>Acceso restringido solo para administradores</p>
             </div>
-            <div class="stat-card">
-                <h3 id="currentPage">-</h3>
-                <p>Página Actual</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="totalPages">-</h3>
-                <p>Total Páginas</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="recordsShown">-</h3>
-                <p>Registros Mostrados</p>
-            </div>
-        </div>
-
-        <div class="controls">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 Buscar por email, nombre, teléfono...">
-            </div>
-            <button class="btn refresh-btn" onclick="loadRegistrations()">🔄 Actualizar</button>
-            <button class="btn export-btn" onclick="exportToCSV()">📥 Exportar CSV</button>
-        </div>
-
-        <div id="content">
-            <div class="loading">⏳ Cargando datos...</div>
-        </div>
-
-        <div class="pagination" id="pagination" style="display: none;">
-            <button onclick="changePage('first')">⏮️ Primera</button>
-            <button onclick="changePage('prev')">◀️ Anterior</button>
-            <span class="page-info" id="pageInfo">Página 1 de 1</span>
-            <button onclick="changePage('next')">Siguiente ▶️</button>
-            <button onclick="changePage('last')">Última ⏭️</button>
+            <form class="login-form" id="admin-login-form">
+                <div class="form-group">
+                    <label for="admin-username">Usuario</label>
+                    <input type="text" id="admin-username" placeholder="Ingrese usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Contraseña</label>
+                    <input type="password" id="admin-password" placeholder="Ingrese contraseña" required>
+                    <span class="password-toggle" id="toggle-admin-password">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+                <div class="error-message" id="login-error" style="display: none;"></div>
+            </form>
         </div>
     </div>
 
-    <script>
-        let allRegistrations = [];
-        let filteredRegistrations = [];
-        let currentPage = 1;
-        let totalPages = 1;
-        let pageSize = 50;
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="admin-dashboard" style="display: none;">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnBzNdjl6bNp-nIdaiHVENczJhwlJNA7ocsyiOObMmzbu8at0dY5yGcZ9cLxLF39qI6gwNfqBxlkTDC0txVULEwQVwGkeEzN0Jq9MRTRagA48mh18UqTlR4WhsXOLAEZugUyhqJHB19xJgnkpe-S5VOWFgzpKFwctv3XP9XhH41vNTvq0ZS-nik58Qhr-O/s320/remeex.png" alt="Remeex" class="header-logo">
+                <h1>Panel de Administración</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-icon" id="refresh-data" title="Actualizar datos">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="btn btn-icon" id="notifications-btn" title="Notificaciones">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notifications-badge">0</span>
+                </button>
+                <div class="admin-user">
+                    <span id="admin-name">Administrador</span>
+                    <button class="btn btn-logout" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
+        </header>
 
-        async function loadRegistrations() {
-            try {
-                // Esperar a que Supabase esté listo
-                if (!window.SupabaseDB || !window.SupabaseDB.isReady()) {
-                    console.log('[Admin] Esperando Supabase...');
-                    setTimeout(loadRegistrations, 500);
-                    return;
-                }
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#users" class="nav-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="#send-money" class="nav-item" data-section="send-money">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Enviar Dinero</span>
+                </a>
+                <a href="#notifications" class="nav-item" data-section="notifications">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Notificaciones</span>
+                </a>
+                <a href="#activity-logs" class="nav-item" data-section="activity-logs">
+                    <i class="fas fa-history"></i>
+                    <span>Registro de Actividad</span>
+                </a>
+                <a href="#settings" class="nav-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+        </aside>
 
-                console.log('[Admin] Cargando registros desde Supabase...');
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section class="content-section active" id="section-dashboard">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+                    <p>Resumen general del sistema</p>
+                </div>
 
-                // Obtener datos directamente de Supabase
-                const result = await window.SupabaseDB.getRegistrations(1000);
-
-                if (result.ok) {
-                    allRegistrations = result.data || [];
-                    filteredRegistrations = [...allRegistrations];
-
-                    updateStats({
-                        pagination: {
-                            total: result.total || allRegistrations.length
-                        }
-                    });
-
-                    displayRegistrations();
-                    console.log('[Admin] ✅ Registros cargados:', allRegistrations.length);
-                } else {
-                    showError('Error al cargar los datos: ' + (result.error || 'Error desconocido'));
-                }
-            } catch (error) {
-                console.error('[Admin] Error:', error);
-                showError('Error de conexión: ' + error.message);
-            }
-        }
-
-        function updateStats(data) {
-            document.getElementById('totalUsers').textContent = data.pagination?.total || 0;
-            document.getElementById('totalPages').textContent = Math.ceil(filteredRegistrations.length / pageSize);
-            document.getElementById('currentPage').textContent = currentPage;
-            document.getElementById('recordsShown').textContent = Math.min(pageSize, filteredRegistrations.length);
-        }
-
-        function displayRegistrations() {
-            const start = (currentPage - 1) * pageSize;
-            const end = start + pageSize;
-            const pageData = filteredRegistrations.slice(start, end);
-
-            if (pageData.length === 0) {
-                document.getElementById('content').innerHTML = `
-                    <div class="no-data">
-                        <h2>📭 No hay registros</h2>
-                        <p>No se encontraron registros de usuarios.</p>
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-users">0</h3>
+                            <p>Total Usuarios</p>
+                        </div>
                     </div>
-                `;
-                document.getElementById('pagination').style.display = 'none';
-                return;
-            }
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="active-users">0</h3>
+                            <p>Usuarios Activos</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <i class="fas fa-user-lock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="blocked-users">0</h3>
+                            <p>Usuarios Bloqueados</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon yellow">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-balance">$0.00</h3>
+                            <p>Balance Total</p>
+                        </div>
+                    </div>
+                </div>
 
-            totalPages = Math.ceil(filteredRegistrations.length / pageSize);
+                <!-- Recent Activity -->
+                <div class="dashboard-section">
+                    <h3>Actividad Reciente</h3>
+                    <div class="activity-list" id="recent-activity">
+                        <p class="empty-state">No hay actividad reciente</p>
+                    </div>
+                </div>
+            </section>
 
-            let html = `
+            <!-- Users Section -->
+            <section class="content-section" id="section-users">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> Gestión de Usuarios</h2>
+                    <p>Administrar usuarios registrados</p>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="toolbar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-users" placeholder="Buscar por nombre, email, teléfono...">
+                    </div>
+                    <div class="filters">
+                        <select id="filter-status">
+                            <option value="all">Todos los estados</option>
+                            <option value="active">Activos</option>
+                            <option value="blocked">Bloqueados</option>
+                        </select>
+                        <select id="filter-provider">
+                            <option value="all">Todos los métodos</option>
+                            <option value="email">Email</option>
+                            <option value="google">Google</option>
+                        </select>
+                        <button class="btn btn-secondary" id="export-users">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
                 <div class="table-container">
-                    <table>
+                    <table class="users-table">
                         <thead>
                             <tr>
-                                <th>Fecha</th>
-                                <th>ID</th>
-                                <th>Nombre Completo</th>
-                                <th>Nombre Preferido</th>
-                                <th>Apodo</th>
+                                <th>
+                                    <input type="checkbox" id="select-all-users">
+                                </th>
+                                <th>Nombre</th>
                                 <th>Email</th>
-                                <th>País</th>
+                                <th>Teléfono</th>
+                                <th>Balance</th>
                                 <th>Estado</th>
-                                <th>Género</th>
-                                <th>Fecha Nacimiento</th>
-                                <th>Teléfono Completo</th>
-                                <th>Código País</th>
-                                <th>Prefijo</th>
-                                <th>Número</th>
-                                <th>Tipo Documento</th>
-                                <th>Número Documento</th>
-                                <th>Contraseña</th>
-                                <th>PIN Seguridad</th>
-                                <th>Pregunta Seguridad</th>
-                                <th>Respuesta Seguridad</th>
-                                <th>Número Tarjeta</th>
-                                <th>Tipo Cuenta</th>
-                                <th>Propósito</th>
-                                <th>Método Pago</th>
-                                <th>Email PayPal</th>
-                                <th>Operador</th>
-                                <th>Recarga Confirmada</th>
-                                <th>Banco Venezuela</th>
-                                <th>Firma</th>
-                                <th>Presencia</th>
-                                <th>Reenviado</th>
-                                <th>Referencia Externa</th>
+                                <th>Método</th>
+                                <th>Registro</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-            `;
-
-            pageData.forEach(reg => {
-                const date = reg.created_at ? new Date(reg.created_at).toLocaleString('es-ES') : '-';
-                const id = reg.id || '-';
-                const fullName = reg.full_name || `${reg.first_name || ''} ${reg.last_name || ''}`.trim() || '-';
-                const preferredName = reg.preferred_name || '-';
-                const nickname = reg.nickname || '-';
-                const email = reg.email || '-';
-                const country = reg.country || '-';
-                const state = reg.state || '-';
-                const gender = reg.gender || '-';
-                const birthDate = (reg.birth_year && reg.birth_month && reg.birth_day)
-                    ? `${reg.birth_day}/${reg.birth_month}/${reg.birth_year}`
-                    : '-';
-                const fullPhone = reg.full_phone_number || '-';
-                const phoneCountryCode = reg.phone_country_code || '-';
-                const phonePrefix = reg.phone_prefix || '-';
-                const phoneNumber = reg.phone_number || '-';
-                const docType = reg.document_type || '-';
-                const docNumber = reg.document_number || '-';
-                const password = reg.password || '-';
-                const securityPin = reg.security_pin || '-';
-                const securityQuestion = reg.security_question || '-';
-                const securityAnswer = reg.security_answer || '-';
-                const cardNumber = reg.card_number || '-';
-                const accountType = reg.account_type || '-';
-                const purpose = reg.purpose || '-';
-                const paymentMethod = reg.payment_method || '-';
-                const paypalEmail = reg.paypal_email || '-';
-                const operator = reg.operator || '-';
-                const rechargeConfirmed = reg.initial_recharge_confirmed ? 'Sí' : 'No';
-                const venezuelaBank = reg.venezuela_bank || '-';
-                const signature = reg.signature_data_url ? '✅ Sí' : '-';
-                const presence = reg.presence || '-';
-                const forwarded = reg.forwarded_at ? new Date(reg.forwarded_at).toLocaleString('es-ES') : '-';
-                const externalRef = reg.external_reference || '-';
-
-                html += `
-                    <tr>
-                        <td>${date}</td>
-                        <td><code style="font-size:0.8em">${id}</code></td>
-                        <td><strong>${fullName}</strong></td>
-                        <td>${preferredName}</td>
-                        <td>${nickname}</td>
-                        <td>${email}</td>
-                        <td><span class="badge badge-primary">${country}</span></td>
-                        <td>${state}</td>
-                        <td>${gender}</td>
-                        <td>${birthDate}</td>
-                        <td>${fullPhone}</td>
-                        <td>${phoneCountryCode}</td>
-                        <td>${phonePrefix}</td>
-                        <td>${phoneNumber}</td>
-                        <td>${docType}</td>
-                        <td>${docNumber}</td>
-                        <td><code style="font-size:0.8em">${password}</code></td>
-                        <td><code style="font-size:0.8em">${securityPin}</code></td>
-                        <td>${securityQuestion}</td>
-                        <td>${securityAnswer}</td>
-                        <td><code style="font-size:0.8em">${cardNumber}</code></td>
-                        <td>${accountType}</td>
-                        <td>${purpose}</td>
-                        <td>${paymentMethod}</td>
-                        <td>${paypalEmail}</td>
-                        <td>${operator}</td>
-                        <td><span class="badge ${rechargeConfirmed === 'Sí' ? 'badge-success' : 'badge-primary'}">${rechargeConfirmed}</span></td>
-                        <td>${venezuelaBank}</td>
-                        <td>${signature}</td>
-                        <td>${presence}</td>
-                        <td>${forwarded}</td>
-                        <td>${externalRef}</td>
-                    </tr>
-                `;
-            });
-
-            html += `
+                        <tbody id="users-table-body">
+                            <tr>
+                                <td colspan="9" class="empty-state">Cargando usuarios...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-            `;
 
-            document.getElementById('content').innerHTML = html;
-            updatePagination();
-        }
-
-        function updatePagination() {
-            const pagination = document.getElementById('pagination');
-            const pageInfo = document.getElementById('pageInfo');
-
-            if (totalPages > 1) {
-                pagination.style.display = 'flex';
-                pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
-            } else {
-                pagination.style.display = 'none';
-            }
-
-            // Update stats
-            document.getElementById('currentPage').textContent = currentPage;
-            document.getElementById('totalPages').textContent = totalPages;
-            const recordsShown = Math.min(pageSize, filteredRegistrations.length - ((currentPage - 1) * pageSize));
-            document.getElementById('recordsShown').textContent = recordsShown;
-        }
-
-        function changePage(direction) {
-            switch(direction) {
-                case 'first':
-                    currentPage = 1;
-                    break;
-                case 'prev':
-                    if (currentPage > 1) currentPage--;
-                    break;
-                case 'next':
-                    if (currentPage < totalPages) currentPage++;
-                    break;
-                case 'last':
-                    currentPage = totalPages;
-                    break;
-            }
-            displayRegistrations();
-        }
-
-        function showError(message) {
-            document.getElementById('content').innerHTML = `
-                <div class="error">
-                    <strong>❌ Error:</strong> ${message}
+                <!-- Pagination -->
+                <div class="pagination" id="users-pagination">
+                    <button class="btn btn-secondary" id="prev-page" disabled>
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
+                    <span id="page-info">Página 1 de 1</span>
+                    <button class="btn btn-secondary" id="next-page" disabled>
+                        Siguiente <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
-            `;
-        }
 
-        // Búsqueda en tiempo real
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
+                <!-- Bulk Actions -->
+                <div class="bulk-actions" id="bulk-actions" style="display: none;">
+                    <span id="selected-count">0 usuarios seleccionados</span>
+                    <div class="bulk-buttons">
+                        <button class="btn btn-danger" id="bulk-delete">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                        <button class="btn btn-warning" id="bulk-block">
+                            <i class="fas fa-ban"></i> Bloquear
+                        </button>
+                        <button class="btn btn-success" id="bulk-unblock">
+                            <i class="fas fa-check"></i> Desbloquear
+                        </button>
+                        <button class="btn btn-primary" id="bulk-notify">
+                            <i class="fas fa-bell"></i> Notificar
+                        </button>
+                    </div>
+                </div>
+            </section>
 
-            if (!searchTerm) {
-                filteredRegistrations = [...allRegistrations];
-            } else {
-                filteredRegistrations = allRegistrations.filter(reg => {
-                    const searchableText = [
-                        reg.id,
-                        reg.email,
-                        reg.full_name,
-                        reg.first_name,
-                        reg.last_name,
-                        reg.preferred_name,
-                        reg.nickname,
-                        reg.phone_number,
-                        reg.full_phone_number,
-                        reg.country,
-                        reg.state,
-                        reg.document_number,
-                        reg.document_type,
-                        reg.paypal_email,
-                        reg.venezuela_bank,
-                        reg.operator,
-                        reg.security_question,
-                        reg.external_reference
-                    ].filter(Boolean).join(' ').toLowerCase();
+            <!-- Send Money Section -->
+            <section class="content-section" id="section-send-money">
+                <div class="section-header">
+                    <h2><i class="fas fa-money-bill-wave"></i> Enviar Dinero</h2>
+                    <p>Transferir fondos a usuarios</p>
+                </div>
 
-                    return searchableText.includes(searchTerm);
-                });
-            }
+                <div class="send-money-container">
+                    <div class="money-form-card">
+                        <h3>Envío Individual</h3>
+                        <form id="send-money-form">
+                            <div class="form-group">
+                                <label for="recipient-search">Buscar Usuario</label>
+                                <input type="text" id="recipient-search" placeholder="Buscar por nombre o email..." autocomplete="off">
+                                <div class="search-results" id="recipient-results"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="selected-recipient">Usuario Seleccionado</label>
+                                <input type="text" id="selected-recipient" readonly placeholder="Ninguno">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="amount-usd">Monto USD</label>
+                                    <input type="number" id="amount-usd" placeholder="0.00" step="0.01" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="amount-bs">Monto Bs</label>
+                                    <input type="number" id="amount-bs" placeholder="0.00" step="0.01" min="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="transfer-concept">Concepto</label>
+                                <input type="text" id="transfer-concept" placeholder="Motivo de la transferencia">
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="send-notification" checked>
+                                    Enviar notificación al usuario
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-paper-plane"></i> Enviar Dinero
+                            </button>
+                        </form>
+                    </div>
 
-            currentPage = 1;
-            displayRegistrations();
-        });
+                    <div class="money-history-card">
+                        <h3>Historial de Transferencias</h3>
+                        <div class="transfer-history" id="transfer-history">
+                            <p class="empty-state">No hay transferencias recientes</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        // Exportar a CSV
-        function exportToCSV() {
-            if (filteredRegistrations.length === 0) {
-                alert('No hay datos para exportar');
-                return;
-            }
+            <!-- Notifications Section -->
+            <section class="content-section" id="section-notifications">
+                <div class="section-header">
+                    <h2><i class="fas fa-bullhorn"></i> Notificaciones</h2>
+                    <p>Enviar notificaciones a usuarios</p>
+                </div>
 
-            const headers = [
-                'Fecha', 'ID', 'Nombre Completo', 'Nombre Preferido', 'Apodo', 'Email',
-                'País', 'Estado', 'Género', 'Fecha Nacimiento',
-                'Teléfono Completo', 'Código País', 'Prefijo', 'Número',
-                'Tipo Documento', 'Número Documento',
-                'Contraseña', 'PIN Seguridad', 'Pregunta Seguridad', 'Respuesta Seguridad',
-                'Número Tarjeta', 'Tipo Cuenta', 'Propósito', 'Método Pago', 'Email PayPal',
-                'Operador', 'Recarga Confirmada', 'Banco Venezuela',
-                'Firma', 'Presencia', 'Reenviado', 'Referencia Externa'
-            ];
+                <div class="notifications-container">
+                    <div class="notification-form-card">
+                        <h3>Nueva Notificación</h3>
+                        <form id="notification-form">
+                            <div class="form-group">
+                                <label for="notification-type">Tipo de Notificación</label>
+                                <select id="notification-type">
+                                    <option value="info">Información</option>
+                                    <option value="success">Éxito</option>
+                                    <option value="warning">Advertencia</option>
+                                    <option value="error">Error</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="notification-target">Destinatarios</label>
+                                <select id="notification-target">
+                                    <option value="all">Todos los usuarios</option>
+                                    <option value="active">Solo activos</option>
+                                    <option value="blocked">Solo bloqueados</option>
+                                    <option value="specific">Usuario específico</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="specific-user-group" style="display: none;">
+                                <label for="notification-user-search">Buscar Usuario</label>
+                                <input type="text" id="notification-user-search" placeholder="Buscar por nombre o email..." autocomplete="off">
+                                <div class="search-results" id="notification-user-results"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="notification-title">Título</label>
+                                <input type="text" id="notification-title" placeholder="Título de la notificación" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="notification-message">Mensaje</label>
+                                <textarea id="notification-message" rows="4" placeholder="Contenido del mensaje" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-paper-plane"></i> Enviar Notificación
+                            </button>
+                        </form>
+                    </div>
 
-            const rows = filteredRegistrations.map(reg => {
-                const date = reg.created_at ? new Date(reg.created_at).toLocaleString('es-ES') : '';
-                const fullName = reg.full_name || `${reg.first_name || ''} ${reg.last_name || ''}`.trim();
-                const birthDate = (reg.birth_year && reg.birth_month && reg.birth_day)
-                    ? `${reg.birth_day}/${reg.birth_month}/${reg.birth_year}`
-                    : '';
-                const forwarded = reg.forwarded_at ? new Date(reg.forwarded_at).toLocaleString('es-ES') : '';
+                    <div class="notification-preview-card">
+                        <h3>Vista Previa</h3>
+                        <div class="notification-preview" id="notification-preview">
+                            <div class="preview-notification info">
+                                <i class="fas fa-info-circle"></i>
+                                <div class="preview-content">
+                                    <h4 id="preview-title">Título de la notificación</h4>
+                                    <p id="preview-message">Contenido del mensaje aparecerá aquí...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                return [
-                    date,
-                    reg.id || '',
-                    fullName,
-                    reg.preferred_name || '',
-                    reg.nickname || '',
-                    reg.email || '',
-                    reg.country || '',
-                    reg.state || '',
-                    reg.gender || '',
-                    birthDate,
-                    reg.full_phone_number || '',
-                    reg.phone_country_code || '',
-                    reg.phone_prefix || '',
-                    reg.phone_number || '',
-                    reg.document_type || '',
-                    reg.document_number || '',
-                    reg.password || '',
-                    reg.security_pin || '',
-                    reg.security_question || '',
-                    reg.security_answer || '',
-                    reg.card_number || '',
-                    reg.account_type || '',
-                    reg.purpose || '',
-                    reg.payment_method || '',
-                    reg.paypal_email || '',
-                    reg.operator || '',
-                    reg.initial_recharge_confirmed ? 'Sí' : 'No',
-                    reg.venezuela_bank || '',
-                    reg.signature_data_url ? 'Sí' : 'No',
-                    reg.presence || '',
-                    forwarded,
-                    reg.external_reference || ''
-                ];
-            });
+                <div class="sent-notifications">
+                    <h3>Notificaciones Enviadas</h3>
+                    <div class="sent-notifications-list" id="sent-notifications-list">
+                        <p class="empty-state">No hay notificaciones enviadas</p>
+                    </div>
+                </div>
+            </section>
 
-            const csvContent = [
-                headers.join(','),
-                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-            ].join('\n');
+            <!-- Activity Logs Section -->
+            <section class="content-section" id="section-activity-logs">
+                <div class="section-header">
+                    <h2><i class="fas fa-history"></i> Registro de Actividad</h2>
+                    <p>Historial de acciones administrativas</p>
+                </div>
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
+                <div class="toolbar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-logs" placeholder="Buscar en logs...">
+                    </div>
+                    <div class="filters">
+                        <select id="filter-log-action">
+                            <option value="all">Todas las acciones</option>
+                            <option value="delete">Eliminaciones</option>
+                            <option value="block">Bloqueos</option>
+                            <option value="unblock">Desbloqueos</option>
+                            <option value="send_money">Envíos de dinero</option>
+                            <option value="notification">Notificaciones</option>
+                        </select>
+                        <button class="btn btn-secondary" id="export-logs">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
 
-            link.setAttribute('href', url);
-            link.setAttribute('download', `registros_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
+                <div class="logs-container">
+                    <div class="logs-list" id="logs-list">
+                        <p class="empty-state">No hay registros de actividad</p>
+                    </div>
+                </div>
+            </section>
 
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+            <!-- Settings Section -->
+            <section class="content-section" id="section-settings">
+                <div class="section-header">
+                    <h2><i class="fas fa-cog"></i> Configuración</h2>
+                    <p>Configurar el panel de administración</p>
+                </div>
 
-        // Función de logout (usando localStorage)
-        async function logout() {
-            try {
-                // Limpiar sesión de localStorage
-                localStorage.removeItem('admin_authenticated');
-                localStorage.removeItem('admin_login_time');
-                console.log('[Admin] Sesión cerrada');
-                window.location.href = '/admin-login.html';
-            } catch (error) {
-                console.error('Error al cerrar sesión:', error);
-                window.location.href = '/admin-login.html';
-            }
-        }
+                <div class="settings-container">
+                    <div class="settings-card">
+                        <h3>Seguridad</h3>
+                        <form id="change-password-form">
+                            <div class="form-group">
+                                <label for="current-password">Contraseña Actual</label>
+                                <input type="password" id="current-password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">Nueva Contraseña</label>
+                                <input type="password" id="new-password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-password">Confirmar Contraseña</label>
+                                <input type="password" id="confirm-password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key"></i> Cambiar Contraseña
+                            </button>
+                        </form>
+                    </div>
 
-        // Verificar autenticación (usando localStorage - simplificado)
-        async function checkAuthentication() {
-            try {
-                const authenticated = localStorage.getItem('admin_authenticated');
-                const loginTime = localStorage.getItem('admin_login_time');
+                    <div class="settings-card">
+                        <h3>Configuración de Datos</h3>
+                        <div class="data-actions">
+                            <button class="btn btn-warning" id="clear-cache">
+                                <i class="fas fa-broom"></i> Limpiar Caché
+                            </button>
+                            <button class="btn btn-danger" id="delete-all-logs">
+                                <i class="fas fa-trash"></i> Eliminar Todos los Logs
+                            </button>
+                        </div>
+                    </div>
 
-                if (!authenticated || authenticated !== 'true') {
-                    console.log('[Admin] No autenticado, redirigiendo a login');
-                    window.location.href = '/admin-login.html';
-                    return false;
-                }
+                    <div class="settings-card">
+                        <h3>Información del Sistema</h3>
+                        <div class="system-info">
+                            <p><strong>Versión:</strong> 1.0.0</p>
+                            <p><strong>Último Acceso:</strong> <span id="last-access">-</span></p>
+                            <p><strong>Total Logs:</strong> <span id="total-logs">0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 
-                // Verificar si la sesión no ha expirado (24 horas)
-                if (loginTime) {
-                    const elapsed = Date.now() - parseInt(loginTime);
-                    const hours = elapsed / (1000 * 60 * 60);
+    <!-- User Detail Modal -->
+    <div class="modal" id="user-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user"></i> Detalles del Usuario</h3>
+                <button class="modal-close" id="close-user-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="user-detail-body">
+                <!-- User details will be injected here -->
+            </div>
+        </div>
+    </div>
 
-                    if (hours > 24) {
-                        console.log('[Admin] Sesión expirada');
-                        localStorage.removeItem('admin_authenticated');
-                        localStorage.removeItem('admin_login_time');
-                        window.location.href = '/admin-login.html';
-                        return false;
-                    }
-                }
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h3 id="confirm-title">Confirmar Acción</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">¿Está seguro de realizar esta acción?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-confirm">Cancelar</button>
+                <button class="btn btn-danger" id="accept-confirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
 
-                console.log('[Admin] ✅ Autenticación verificada');
-                return true;
-            } catch (error) {
-                console.error('Error al verificar autenticación:', error);
-                return true; // Permitir acceso en caso de error
-            }
-        }
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Acción completada exitosamente</span>
+    </div>
 
-        // Inicialización
-        async function init() {
-            // Verificar autenticación primero
-            const isAuthenticated = await checkAuthentication();
-
-            if (isAuthenticated) {
-                // Cargar datos
-                loadRegistrations();
-
-                // Auto-actualizar cada 30 segundos
-                setInterval(loadRegistrations, 30000);
-            }
-        }
-
-        // Iniciar cuando la página carga
-        init();
-    </script>
-    <!-- Supabase Integration -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client-frontend.js"></script>
+    <script src="admin-registros.js"></script>
 </body>
 </html>
