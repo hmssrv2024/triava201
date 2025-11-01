@@ -28,9 +28,9 @@
 
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-const SUPABASE_URL = "https://zjbbniliprbksblevrlq.supabase.co";
+const SUPABASE_URL = "https://ewdkxszfkqwlkyszodxu.supabase.co";
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqYmJuaWxpcHJia3NibGV2cmxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzA3NzQsImV4cCI6MjA3NTE0Njc3NH0.sWpZpvkaEYcExxzKQgkI5KNPGHyqF5L_Ww6BKzdwRIo";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3ZGt4c3pma3F3bGt5c3pvZHh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3ODM5MzMsImV4cCI6MjA3NzM1OTkzM30.alofRt3MEn5UgSsSMk5zWTF0On1PGVepdME-MOoqk-M";
 const STORAGE_BUCKET = "user-files"; // Ajusta si usas un nombre diferente.
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
