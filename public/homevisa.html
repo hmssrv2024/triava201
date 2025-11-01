@@ -8544,6 +8544,286 @@
   <script src="js/user-notifications.js"></script>
   -->
 
+  <script>
+    (function () {
+      'use strict';
+
+      if (!window || !window.localStorage) {
+        return;
+      }
+
+      const STORAGE_KEY = 'homevisaSessionMonitor';
+      const MAX_HISTORY = 40;
+      const HEARTBEAT_INTERVAL = 30000;
+      const sessionId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+
+      let heartbeatTimer = null;
+      let offlineHandled = false;
+
+      function safeParse(value) {
+        if (!value || typeof value !== 'string') return null;
+        try {
+          return JSON.parse(value);
+        } catch (error) {
+          console.warn('[HomeVisa][Monitor] No se pudo analizar un valor almacenado.', error);
+          return null;
+        }
+      }
+
+      function readMonitor() {
+        try {
+          return safeParse(window.localStorage.getItem(STORAGE_KEY)) || null;
+        } catch (error) {
+          console.warn('[HomeVisa][Monitor] No se pudo leer el monitor de sesión.', error);
+          return null;
+        }
+      }
+
+      function writeMonitor(data) {
+        if (!data || typeof data !== 'object') {
+          return;
+        }
+
+        const clone = Object.assign({}, data);
+        clone.history = Array.isArray(clone.history) ? clone.history.slice(0, MAX_HISTORY) : [];
+        clone.updatedAt = new Date().toISOString();
+
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(clone));
+        } catch (error) {
+          console.warn('[HomeVisa][Monitor] No se pudo guardar el monitor de sesión.', error);
+        }
+      }
+
+      function appendHistory(target, type, extra) {
+        if (!target || typeof target !== 'object') return;
+        if (!Array.isArray(target.history)) {
+          target.history = [];
+        }
+
+        const entry = Object.assign({ type, at: new Date().toISOString() }, extra || {});
+        if (!entry.sessionId) {
+          entry.sessionId = sessionId;
+        }
+
+        target.history.unshift(entry);
+        if (target.history.length > MAX_HISTORY) {
+          target.history = target.history.slice(0, MAX_HISTORY);
+        }
+      }
+
+      function gatherUserContext() {
+        const registration = safeParse(window.localStorage.getItem('visaRegistrationCompleted')) || {};
+        const userData = safeParse(window.localStorage.getItem('visaUserData')) || {};
+        const verification = safeParse(window.localStorage.getItem('remeexVerificationData')) || {};
+        const banking = safeParse(window.localStorage.getItem('remeexVerificationBanking')) || {};
+
+        const preferredName = userData.preferredName || registration.preferredName || '';
+        const fullName =
+          userData.fullName ||
+          registration.fullName ||
+          `${registration.firstName || ''} ${registration.lastName || ''}`.trim() ||
+          verification.fullName ||
+          verification.name ||
+          preferredName;
+        const email = userData.email || registration.email || verification.email || banking.email || '';
+        const deviceId = userData.deviceId || registration.deviceId || verification.deviceId || '';
+        const idNumber =
+          registration.idNumber ||
+          registration.document ||
+          verification.idNumber ||
+          userData.idNumber ||
+          '';
+
+        const user = {};
+        if (fullName) user.fullName = fullName;
+        if (email) user.email = email;
+        if (deviceId) user.deviceId = deviceId;
+        if (preferredName && preferredName !== fullName) user.preferredName = preferredName;
+        if (idNumber) user.idNumber = idNumber;
+
+        return Object.keys(user).length ? user : null;
+      }
+
+      function gatherDeviceInfo() {
+        const info = {
+          userAgent: navigator.userAgent || '',
+          platform: navigator.platform || '',
+          language: navigator.language || navigator.userLanguage || ''
+        };
+
+        if (typeof Intl === 'object' && Intl.DateTimeFormat) {
+          try {
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            if (tz) info.timezone = tz;
+          } catch (error) {
+            // Ignore timezone errors
+          }
+        }
+
+        return Object.fromEntries(
+          Object.entries(info).filter((entry) => {
+            const value = entry[1];
+            return typeof value === 'string' && value.trim();
+          })
+        );
+      }
+
+      function markOnline(reason) {
+        let monitor = readMonitor();
+        const nowIso = new Date().toISOString();
+        const previousSessionId = monitor && monitor.currentSessionId;
+
+        if (!monitor || typeof monitor !== 'object') {
+          monitor = { history: [] };
+        }
+
+        monitor.isOnline = true;
+        monitor.lastSeenAt = nowIso;
+        monitor.lastActivityAt = nowIso;
+        monitor.currentSessionId = sessionId;
+        monitor.lastSessionId = sessionId;
+
+        const user = gatherUserContext();
+        if (user) {
+          monitor.user = user;
+        }
+
+        const deviceInfo = gatherDeviceInfo();
+        if (Object.keys(deviceInfo).length) {
+          monitor.deviceInfo = deviceInfo;
+        }
+
+        if (previousSessionId !== sessionId) {
+          monitor.lastLoginAt = nowIso;
+          appendHistory(monitor, 'login', {
+            reason: reason || 'Inicio de sesión en HomeVisa',
+            sessionId
+          });
+        }
+
+        writeMonitor(monitor);
+      }
+
+      function updateLastSeen(force) {
+        const monitor = readMonitor();
+        if (!monitor || typeof monitor !== 'object') {
+          return;
+        }
+
+        if (monitor.currentSessionId && monitor.currentSessionId !== sessionId) {
+          return;
+        }
+
+        const now = Date.now();
+        const lastSeen = Date.parse(monitor.lastSeenAt);
+        if (!force && Number.isFinite(lastSeen) && now - lastSeen < HEARTBEAT_INTERVAL * 0.6) {
+          return;
+        }
+
+        monitor.isOnline = true;
+        monitor.currentSessionId = sessionId;
+        const nowIso = new Date(now).toISOString();
+        monitor.lastSeenAt = nowIso;
+        monitor.lastActivityAt = nowIso;
+
+        writeMonitor(monitor);
+      }
+
+      function recordEvent(type, reason) {
+        const monitor = readMonitor();
+        if (!monitor || typeof monitor !== 'object') {
+          return;
+        }
+
+        if (monitor.currentSessionId && monitor.currentSessionId !== sessionId) {
+          return;
+        }
+
+        appendHistory(monitor, type, { reason, sessionId });
+        writeMonitor(monitor);
+      }
+
+      function markOffline(reason) {
+        const monitor = readMonitor();
+        if (!monitor || typeof monitor !== 'object') {
+          return;
+        }
+
+        if (monitor.currentSessionId && monitor.currentSessionId !== sessionId) {
+          return;
+        }
+
+        const nowIso = new Date().toISOString();
+        monitor.isOnline = false;
+        monitor.lastLogoutAt = nowIso;
+        monitor.lastSeenAt = nowIso;
+        monitor.lastActivityAt = nowIso;
+        monitor.lastSessionId = sessionId;
+
+        appendHistory(monitor, 'logout', {
+          reason: reason || 'Salida de HomeVisa',
+          sessionId
+        });
+
+        delete monitor.currentSessionId;
+
+        writeMonitor(monitor);
+      }
+
+      function handleOffline(reason) {
+        if (offlineHandled) {
+          return;
+        }
+        offlineHandled = true;
+        if (heartbeatTimer) {
+          clearInterval(heartbeatTimer);
+          heartbeatTimer = null;
+        }
+        markOffline(reason);
+      }
+
+      function startHeartbeat() {
+        if (heartbeatTimer) {
+          clearInterval(heartbeatTimer);
+        }
+        heartbeatTimer = window.setInterval(() => updateLastSeen(false), HEARTBEAT_INTERVAL);
+      }
+
+      try {
+        markOnline('Inicio en HomeVisa');
+        updateLastSeen(true);
+        startHeartbeat();
+      } catch (error) {
+        console.warn('[HomeVisa][Monitor] Error iniciando el monitor de sesión.', error);
+      }
+
+      window.addEventListener('focus', () => {
+        offlineHandled = false;
+        updateLastSeen(true);
+        recordEvent('focus', 'La ventana volvió a estar activa');
+      });
+
+      window.addEventListener('blur', () => {
+        updateLastSeen(true);
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          offlineHandled = false;
+          markOnline('Pestaña activa');
+          updateLastSeen(true);
+          recordEvent('reconnect', 'La pestaña regresó al frente');
+        } else {
+          updateLastSeen(true);
+        }
+      });
+
+      window.addEventListener('beforeunload', () => handleOffline('beforeunload'));
+      window.addEventListener('pagehide', () => handleOffline('pagehide'));
+    })();
+  </script>
+
   <!-- Sistema de Verificación Simple basado en localStorage -->
   <script>
     (function() {
