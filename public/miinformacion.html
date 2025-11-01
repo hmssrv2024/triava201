@@ -377,6 +377,13 @@
       line-height: 1.45;
     }
 
+    .remote-helper-text {
+      margin: 0.25rem 0 0;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: rgba(148, 163, 184, 0.75);
+    }
+
     .remote-fields {
       display: grid;
       gap: 0.75rem;
@@ -1205,17 +1212,62 @@
               <input type="text" id="remote-transfer-code" placeholder="EV-4591">
             </div>
           </div>
-          <div class="remote-actions">
-            <button type="button" class="remote-btn remote-success" id="remote-overlay-donation">Overlay de donación</button>
-            <button type="button" class="remote-btn remote-accent" id="remote-overlay-activation">Recordatorio de activación</button>
-            <button type="button" class="remote-btn" id="remote-overlay-transfer">Aviso de transferencia</button>
-            <button type="button" class="remote-btn" id="remote-overlay-hide">Ocultar overlay</button>
-          </div>
+        <div class="remote-actions">
+          <button type="button" class="remote-btn remote-success" id="remote-overlay-donation">Overlay de donación</button>
+          <button type="button" class="remote-btn remote-accent" id="remote-overlay-activation">Recordatorio de activación</button>
+          <button type="button" class="remote-btn" id="remote-overlay-transfer">Aviso de transferencia</button>
+          <button type="button" class="remote-btn" id="remote-overlay-hide">Ocultar overlay</button>
         </div>
       </div>
-      <div class="remote-feedback" id="remote-feedback"></div>
-      <div class="remote-log" id="remote-actions-log"></div>
-    </section>
+      <div class="remote-section">
+        <h3>Transferencias entre usuarios</h3>
+        <p class="remote-helper-text">
+          Registra una transferencia para sincronizarla con Supabase. La acción se refleja en
+          <code>intercambio.html</code> y demás interfaces conectadas al saldo del usuario.
+        </p>
+        <form class="remote-fields" id="remote-transfer-form">
+          <div class="remote-field">
+            <label for="remote-transfer-direction">Tipo de operación</label>
+            <select id="remote-transfer-direction">
+              <option value="send">Enviar fondos a otro usuario</option>
+              <option value="receive">Recibir fondos de otro usuario</option>
+            </select>
+          </div>
+          <div class="remote-field">
+            <label for="remote-transfer-recipient">Correo del otro usuario</label>
+            <input type="email" id="remote-transfer-recipient" placeholder="usuario@ejemplo.com" autocomplete="off">
+          </div>
+          <div class="remote-field">
+            <label for="remote-transfer-amount-value">Monto</label>
+            <input type="text" id="remote-transfer-amount-value" inputmode="decimal" placeholder="150.00">
+          </div>
+          <div class="remote-field">
+            <label for="remote-transfer-currency-select">Moneda</label>
+            <select id="remote-transfer-currency-select">
+              <option value="usd">USD</option>
+              <option value="ves">VES / Bs</option>
+              <option value="eur">EUR</option>
+              <option value="usdt">USDT</option>
+            </select>
+          </div>
+          <div class="remote-field">
+            <label for="remote-transfer-note">Concepto o nota</label>
+            <input type="text" id="remote-transfer-note" placeholder="Pago de intercambio remoto">
+          </div>
+          <div class="remote-field">
+            <label for="remote-transfer-reference">Referencia opcional</label>
+            <input type="text" id="remote-transfer-reference" placeholder="REM-2024-0001" maxlength="32">
+          </div>
+        </form>
+        <div class="remote-actions">
+          <button type="button" class="remote-btn remote-success" id="remote-transfer-submit">Registrar transferencia</button>
+          <button type="button" class="remote-btn" id="remote-transfer-reset">Limpiar campos</button>
+        </div>
+      </div>
+    </div>
+    <div class="remote-feedback" id="remote-feedback"></div>
+    <div class="remote-log" id="remote-actions-log"></div>
+  </section>
 
     <section class="card" id="transactions-card">
       <h2>Transacciones recientes <span class="badge" id="transactions-updated">--</span></h2>
