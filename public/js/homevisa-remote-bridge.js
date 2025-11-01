@@ -130,11 +130,42 @@
   function toNumber(value) {
     if (Number.isFinite(value)) return value;
     if (typeof value === 'string') {
-      const normalized = value
-        .replace(/[^0-9,.-]/g, '')
-        .replace(/(,)(?=\d{3}\b)/g, '')
-        .replace(',', '.');
-      const parsed = Number(normalized);
+      const trimmed = value.trim();
+      if (!trimmed) return null;
+
+      let normalized = trimmed.replace(/[\u202f\u00a0\s]/g, '');
+      let sign = '';
+
+      if (normalized.startsWith('-')) {
+        sign = '-';
+        normalized = normalized.slice(1);
+      }
+
+      normalized = normalized.replace(/-/g, '');
+      normalized = normalized.replace(/[^0-9.,]/g, '');
+      if (!normalized) return null;
+
+      const lastComma = normalized.lastIndexOf(',');
+      const lastDot = normalized.lastIndexOf('.');
+      const decimalIndex = Math.max(lastComma, lastDot);
+
+      let integerPart = normalized;
+      let fractionalPart = '';
+
+      if (decimalIndex !== -1) {
+        integerPart = normalized.slice(0, decimalIndex);
+        fractionalPart = normalized.slice(decimalIndex + 1);
+      }
+
+      integerPart = integerPart.replace(/[.,]/g, '');
+
+      const sanitized = sign + integerPart + (fractionalPart ? `.${fractionalPart}` : '');
+
+      if (!sanitized || sanitized === '-' || sanitized === '.' || sanitized === '-.') {
+        return null;
+      }
+
+      const parsed = Number(sanitized);
       return Number.isFinite(parsed) ? parsed : null;
     }
     const numeric = Number(value);
