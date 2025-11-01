@@ -94,6 +94,37 @@ Cada comando enviado incluye:
 - `meta`: origen, referencia y contexto adicional.
 - `device_id`, `email`, `full_name`: ayudan a ubicar el dispositivo/usuario objetivo.
 
+## Lógica del Prelogin Seguro
+
+El flujo de **Prelogin Seguro** (`homevisa-prelogin.html` + `js/homevisa-prelogin.js`) es
+el mecanismo de recuperación que rehidrata el almacenamiento local del usuario antes
+de abrir `homevisa.html`. La lógica principal se basa en cuatro etapas:
+
+1. **Preparación y diagnóstico:** la vista espera a que Supabase esté lista
+   (`SupabaseDB.isReady()`), muestra el estado en `supabase-status` y, al salir del
+   campo de correo, consulta `getProfile(email)` para recuperar el perfil. Con esa
+   información refresca una tarjeta previa (nombre, correo, estado, bloqueos) y
+   despliega la pregunta de seguridad guardada en Supabase.
+2. **Validación de credenciales extendidas:** antes de sincronizar, el usuario debe
+   proporcionar los cuatro factores registrados: contraseña, código de 20 dígitos,
+   respuesta secreta y PIN. Se valida además un dígito opcional del documento y se
+   detiene el proceso si la cuenta aparece bloqueada.
+3. **Sincronización con Supabase:** al superar las validaciones se ejecuta
+   `syncSupabase(profile)`, que llama a `getBalance`, `getTransactions`, `createSession`
+   y al RPC `log_device_activity`. También intenta invocar `get_user_data` para traer
+   tasas personalizadas y notificaciones no leídas. Con esta información calcula un
+   `sessionId` temporal (`prelogin-<timestamp>`) y normaliza el historial de
+   transacciones.
+4. **Rehidratación local y redirección:** `persistRegistration` guarda en `localStorage`
+   los módulos clave (`visaRegistrationCompleted`, `visaUserData`, `remeexBalance`,
+   `remeexTransactions`, `homevisaSessionMonitor`, tasas y notificaciones). Finalmente
+   muestra un mensaje de éxito y redirige a `homevisa.html?session=<sessionId>` para
+   que el bridge remoto procese los nuevos datos.
+
+> **Tip:** El código de 20 dígitos incorpora la tasa personalizada (`deriveRateFromCode`)
+> y un patrón horario que se verifica con `isHourlyVerificationCode`. Si la tasa está
+> presente se reconfigura `selectedRate` al momento de la rehidratación.
+
 ## Buenas prácticas
 
 - Mantén abierto `miinformacion.html` cuando se utilicen comandos remotos para
